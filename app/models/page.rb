@@ -15,13 +15,18 @@ class Page
   end
 
   def revise(content, created_at, author)
+    if not @revisions.empty? and content == @revisions.last.content
+      raise Instiki::ValidationError.new(
+          "You have tried to save page '#{name}' without changing its content")
+    end
+  
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 
     # by the same author, not more than 30 minutes ago, then update the last revision instead of
     # creating a new one
     if !@revisions.empty? && continous_revision?(created_at, author)
       @revisions.last.created_at = created_at
-      @revisions.last.content    = content
+      @revisions.last.content = content
       @revisions.last.clear_display_cache
     else
       @revisions << Revision.new(self, @revisions.length, content, created_at, author)
@@ -38,11 +43,11 @@ class Page
   def revisions?
     revisions.length > 1
   end
-  
+
   def revised_on
     created_on
   end
-  
+
   def in_category?(cat)
     cat.nil? || cat.empty? || categories.include?(cat)
   end
@@ -50,7 +55,7 @@ class Page
   def categories
     display_content.find_chunks(Category).map { |cat| cat.list }.flatten
   end
-  
+
   def authors
     revisions.collect { |rev| rev.author }
   end
@@ -67,18 +72,19 @@ class Page
   def link(options = {})
     web.make_link(name, nil, options)
   end
-  
+
   def author_link(options = {})
     web.make_link(author, nil, options)
   end
-  
+
   private
     def continous_revision?(created_at, author)
       @revisions.last.author == author && @revisions.last.created_at + 30.minutes > created_at
     end
-  
+
     # Forward method calls to the current revision, so the page responds to all revision calls
     def method_missing(method_symbol)
       revisions.last.send(method_symbol)
     end
+
 end
