@@ -87,16 +87,16 @@ class Web
     link = CGI.escape(name)
     case mode
     when :export
-      if has_page?(name) then "<a class=\"existingWikiWord\" href=\"#{link}.html\">#{text}</a>"
-      else "<span class=\"newWikiWord\">#{text}</span>" end
+      if has_page?(name) then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
+      else %{<span class="newWikiWord">#{text}</span>} end
     when :publish
-      if has_page?(name) then "<a class=\"existingWikiWord\" href=\"../published/#{link}\">#{text}</a>"
-      else "<span class=\"newWikiWord\">#{text}</span>" end
+      if has_page?(name) then %{<a class="existingWikiWord" href="../published/#{link}">#{text}</a>}
+      else %{<span class="newWikiWord">#{text}</span>} end
     else 
       if has_page?(name)
-        "<a class=\"existingWikiWord\" href=\"../show/#{link}\">#{text}</a>"
+        %{<a class="existingWikiWord" href="../show/#{link}">#{text}</a>}
       else 
-        "<span class=\"newWikiWord\">#{text}<a href=\"../show/#{link}\">?</a></span>"
+        %{<span class="newWikiWord">#{text}<a href="../show/#{link}">?</a></span>}
       end
     end
   end
@@ -105,14 +105,14 @@ class Web
     link = CGI.escape(name)
     case mode
     when :export
-      if has_file?(name) then "<img alt=\"#{text}\" src=\"#{link}\" />"
-      else "<img alt=\"#{text}\" src=\"no image\" />" end
+      if has_file?(name) then %{<img alt="#{text}" src="#{link}" />}
+      else %{<img alt="#{text}" src="no image" />} end
     when :publish
-      if has_file?(name) then "<img alt=\"#{text}\" src=\"#{link}\" />"
-      else "<span class=\"newWikiWord\">#{text}</span>" end
+      if has_file?(name) then %{<img alt="#{text}" src="#{link}" />}
+      else %{<span class="newWikiWord">#{text}</span>} end
     else 
-      if has_file?(name) then "<img alt=\"#{text}\" src=\"../pic/#{link}\" />"
-      else "<span class=\"newWikiWord\">#{text}<a href=\"../pic/#{link}\">?</a></span>" end
+      if has_file?(name) then %{<img alt="#{text}" src="../pic/#{link}" />}
+      else %{<span class="newWikiWord">#{text}<a href="../pic/#{link}">?</a></span>} end
     end
   end
 
