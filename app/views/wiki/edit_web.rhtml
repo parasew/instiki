@@ -47,14 +47,14 @@
     &nbsp;&nbsp;
     
     <small>
-      <input type="checkbox" name="safe_mode"<%= " CHECKED" if @web.safe_mode %> /> Safe mode
+      <input type="checkbox" name="safe_mode" <%= 'checked="on"' if @web.safe_mode %> /> Safe mode
       &nbsp;&nbsp;
-      <input type="checkbox" name="brackets_only"<%= " CHECKED" if @web.brackets_only %> /> 
+      <input type="checkbox" name="brackets_only" <%= 'checked="on"' if @web.brackets_only %> /> 
       Brackets only 
       &nbsp;&nbsp;
-      <input type="checkbox" name="count_pages"<%= " CHECKED" if @web.count_pages %> /> Count pages
+      <input type="checkbox" name="count_pages" <%= 'checked="on"' if @web.count_pages %> /> Count pages
       &nbsp;&nbsp;
-      <input type="checkbox" name="allow_uploads"<%= " CHECKED" if @web.allow_uploads %> /> Allow uploads
+      <input type="checkbox" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads %> /> Allow uploads
     </small>
 
     <textarea id="additionalStyle" 
@@ -83,7 +83,7 @@
     The published version is accessible through URLs like /wiki/published/HomePage.
   </div>
   <div class="inputBox">
-    <input type="checkbox" name="published"<%= " CHECKED" if @web.published %> /> Publish this web
+    <input type="checkbox" name="published" <%= 'checked="on"' if @web.published %> /> Publish this web
   </div>
 
 <p align="right">
