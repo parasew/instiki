@@ -5,7 +5,7 @@ require 'test/unit'
 require 'action_controller/test_process'
 
 # Uncomment this variable to have assert_success check that response bodies are valid XML
-# $validate_xml_in_assert_success = true
+$validate_xml_in_assert_success = true
 
 # Convenient setup method for Test::Unit::TestCase
 class Test::Unit::TestCase
@@ -99,7 +99,9 @@ if defined? $validate_xml_in_assert_success and $validate_xml_in_assert_success 
   module Test
     module Unit
       module Assertions
-        alias :__assert_success_before_ovverride_by_instiki :assert_success
+        unless method_defined? :__assert_success_before_ovverride_by_instiki
+          alias :__assert_success_before_ovverride_by_instiki :assert_success 
+        end
         def assert_success
           __assert_success_before_ovverride_by_instiki
           if @response.body.kind_of?(Proc) then # it's a file download, not an HTML content
