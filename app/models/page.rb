@@ -15,6 +15,7 @@ class Page
   end
 
   def revise(content, created_at, author)
+
     if not @revisions.empty? and content == @revisions.last.content
       raise Instiki::ValidationError.new(
           "You have tried to save page '#{name}' without changing its content")
@@ -34,7 +35,7 @@ class Page
     
     web.refresh_pages_with_references(name) if @revisions.length == 1
   end
-  
+
   def rollback(revision_number, created_at, author_ip = nil)
     roll_back_revision = @revisions[revision_number].dup
     revise(roll_back_revision.content, created_at, Author.new(roll_back_revision.author, author_ip))
