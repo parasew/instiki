@@ -119,7 +119,8 @@ class AdminControllerTest < Test::Unit::TestCase
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
         'safe_mode' => 'on', 'password' => 'new_password', 'published' => 'on', 
-        'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on')
+        'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on',
+        'max_upload_size' => '300')
 
     assert_redirected_to :web => 'renamed_wiki1', :action => 'show', :id => 'HomePage'
     assert_equal 'renamed_wiki1', @web.address
@@ -132,6 +133,7 @@ class AdminControllerTest < Test::Unit::TestCase
     assert @web.brackets_only
     assert @web.count_pages
     assert @web.allow_uploads
+    assert_equal 300, @web.max_upload_size
   end
 
   def test_update_web_opposite_values

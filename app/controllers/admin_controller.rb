@@ -58,7 +58,8 @@ class AdminController < ApplicationController
         @params['published'] ? true : false, 
         @params['brackets_only'] ? true : false,
         @params['count_pages'] ? true : false,
-        @params['allow_uploads'] ? true : false
+        @params['allow_uploads'] ? true : false,
+        @params['max_upload_size']
       )
       redirect_show('HomePage', @params['address'])
     else
