@@ -7,7 +7,7 @@ require 'page'
 class PageTest < Test::Unit::TestCase
 
   class MockWeb < Web
-    def initialize() super('test','test') end
+    def initialize() super(nil, 'test','test') end
     def [](wiki_word) %w( MyWay ThatWay SmartEngine ).include?(wiki_word) end
     def refresh_pages_with_references(name) end
   end

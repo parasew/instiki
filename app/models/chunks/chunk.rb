@@ -18,21 +18,30 @@ module Chunk
     # in this content with its mask.
 	def self.apply_to(content)
 	  content.gsub!( self.pattern ) do |match|	
-        content.chunks << self.new($~)
-        content.chunks.last.mask(content)
+	    new_chunk = self.new($~)
+        content.chunks << new_chunk
+        new_chunk.mask(content)
       end
     end
-	
-	def pre_mask() 
-	  "chunk#{self.object_id}start " 
+
+	def pre_mask
+	  "chunk#{self.object_id}#{self.class.to_s.delete(':').downcase}start"
 	end
 
-	def post_mask() 
-	  " chunk#{self.object_id}end"
+	def post_mask
+	  "chunk#{self.object_id}end"
 	end
+
+    def bracketing_mask(content)
+      "#{pre_mask} #{content} #{post_mask}"
+    end
+
+    def bracketing_mask_regexp
+      Regexp.new("#{pre_mask} (.*)[ \n]#{post_mask}")
+    end
 
 	def mask(content) 
-	  "chunk#{self.object_id}chunk"
+	  "chunk#{self.object_id}#{self.class.to_s.delete(':').downcase}chunk"
 	end
 
 	def revert(content) 

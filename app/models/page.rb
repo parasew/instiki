@@ -7,7 +7,8 @@ require 'chunks/wiki'
 class Page
   include PageLock
 
-  attr_reader :name, :revisions, :web
+  attr_reader :name, :web
+  attr_accessor :revisions
   
   def initialize(web, name, content, created_at, author)
     @web, @name, @revisions = web, name, []

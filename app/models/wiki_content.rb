@@ -66,11 +66,12 @@ class WikiContent < String
     @options[:pre_engine_actions].delete(WikiChunk::Word) if @web.brackets_only
 
     super(@revision.content)
-
+    
     begin
       render!(@options[:pre_engine_actions] + [@options[:engine]] + @options[:post_engine_actions])
-    rescue => e
-      @rendered = e.message
+# FIXME this is where all the parsing problems were shoved under the carpet
+#   rescue => e
+#     @rendered = e.message
     end
   end
 

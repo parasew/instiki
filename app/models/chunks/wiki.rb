@@ -38,10 +38,13 @@ module WikiChunk
     # By default, no escaped text
     def escaped_text() nil end
 
-    # Replace link with a mask, but if the word is escaped, then don't replace it
-    def mask(content) escaped_text || "#{pre_mask}#{link_text}#{post_mask}" end
+    # FIXME: do not use the bracketing mask - URI chunk thinks that 'index.jpg' 
+    # contains URL http://index.jp
 
-    def regexp() /#{pre_mask}(.*)#{post_mask}/ end
+    # Replace link with a mask, but if the word is escaped, then don't replace it
+    def mask(content) escaped_text || bracketing_mask(link_text) end
+
+    def regexp() bracketing_mask_regexp end
 
     def revert(content) content.sub!(regexp, text) end
     

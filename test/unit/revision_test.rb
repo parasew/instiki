@@ -4,28 +4,16 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'web'
 require 'revision'
 
-class WebStub < Web
-  def initialize(); end 
-  attr_accessor :markup
-  def pages() PagesStub.new end
-  def safe_mode() false end
-end
-class PagesStub
-  def [](wiki_word) %w( MyWay ThatWay SmartEngine ).include?(wiki_word) end
-end
-class PageStub
-  attr_accessor :web, :revisions
-  def name() 'page' end
-end
-
 class RevisionTest < Test::Unit::TestCase
 
   def setup
-    @web  = WebStub.new
+    setup_test_wiki
     @web.markup = :textile
 
-    @page = PageStub.new
-    @page.web = @web
+    @page = @wiki.read_page('wiki1', 'HomePage')
+    ['MyWay', 'SmartEngine', 'ThatWay'].each do |page|
+      @wiki.write_page('wiki1', page, page, Time.now, 'Me')
+    end
 
     @revision = Revision.new(@page, 1,
       'HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- ' +
@@ -218,8 +206,11 @@ class RevisionTest < Test::Unit::TestCase
 
   def test_link_to_pic
   	assert_markup_parsed_as( 
-  	    '<p><span class="newWikiWord">Square<a href="../pic/square.jpg">?</a></span></p>',
+  	    '<p><img alt="Square" src="../pic/square.jpg" /></p>',
 	    '[[square.jpg|Square:pic]]')
+  	assert_markup_parsed_as( 
+  	    '<p><img alt="square.jpg" src="../pic/square.jpg" /></p>',
+	    '[[square.jpg:pic]]')
   end
 
   # TODO Remove the leading underscores from this test when upgrading to RedCloth 3.0.1; 

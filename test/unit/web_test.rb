@@ -5,7 +5,7 @@ require 'wiki_service'
 
 class WebTest < Test::Unit::TestCase
   def setup
-    @web = Web.new 'Instiki', 'instiki'
+    @web = Web.new nil, 'Instiki', 'instiki'
   end
   
   def test_wiki_word_linking

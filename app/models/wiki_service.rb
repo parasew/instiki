@@ -18,7 +18,7 @@ module AbstractWikiService
   end
 
   def create_web(name, address, password = nil)
-    @webs[address] = Web.new(name, address, password) unless @webs[address]
+    @webs[address] = Web.new(self, name, address, password) unless @webs[address]
   end
 
   def delete_web(address)
