@@ -54,13 +54,13 @@ module ChunkMatch
 end
 
 
-module AbstractController
+module ActionController
   class TestResponse
     def binary_content
         sio = StringIO.new
         begin 
           $stdout = sio
-          r.body.call
+          body.call
         ensure
           $stdout = STDOUT
         end
