@@ -38,8 +38,12 @@ module WikiChunk
   # method will return the WikiWord instead of the usual +nil+.
   # The +page_name+ method returns the matched WikiWord.
   class Word < WikiLink
+    unless defined? WIKI_LINK
+      WIKI_WORD = Regexp.new('(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, "utf-8")
+    end
+    
     def self.pattern
-      Regexp.new('(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, "utf-8")
+      WIKI_WORD
     end
 
     attr_reader :page_name
