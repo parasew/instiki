@@ -10,7 +10,7 @@ OPTIONS = {
 
   # Overridable options
   :port        => 2500,
-  :ip          => '127.0.0.1',
+  :ip          => '0.0.0.0',
   :environment => 'production',
   :server_root => File.expand_path(File.dirname(__FILE__) + '/../public/'),
   :server_type => WEBrick::SimpleServer,
