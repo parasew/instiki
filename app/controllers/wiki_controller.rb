@@ -6,15 +6,13 @@ class WikiController < ApplicationController
 
   before_filter :pre_process
 
-  EXPORT_DIRECTORY = File.dirname(__FILE__) + "/../../storage/" unless const_defined?("EXPORT_DIRECTORY")
-
   def index
     if @web_name
       redirect_show 'HomePage'
-    elsif not wiki.setup?
+    elsif not @wiki.setup?
       redirect_to :action => 'new_system'
-    elsif wiki.webs.length == 1
-      redirect_show 'HomePage', wiki.webs.values.first.address
+    elsif @wiki.webs.length == 1
+      redirect_show 'HomePage', @wiki.webs.values.first.address
     else
       redirect_to :action => 'web_list'
     end
@@ -23,13 +21,13 @@ class WikiController < ApplicationController
   # Administrating the Instiki setup --------------------------------------------
 
   def create_system
-    wiki.setup(@params['password'], @params['web_name'], @params['web_address']) unless wiki.setup?
-    redirect_to :action => 'index'
+    @wiki.setup(@params['password'], @params['web_name'], @params['web_address']) unless @wiki.setup?
+    redirect_show('HomePage', @params['web_address'])
   end
 
   def create_web
-    if wiki.authenticate(@params['system_password'])
-      wiki.create_web(@params['name'], @params['address'])
+    if @wiki.authenticate(@params['system_password'])
+      @wiki.create_web(@params['name'], @params['address'])
       redirect_show('HomePage', @params['address'])
     else 
       redirect_to :action => 'index'
@@ -82,7 +80,7 @@ class WikiController < ApplicationController
 
   def export_pdf
     file_name = "#{web.address}-tex-#{web.revised_on.strftime("%Y-%m-%d-%H-%M")}"
-    file_path = EXPORT_DIRECTORY + file_name
+    file_path = WikiService.storage_path + file_name
 
     export_web_to_tex(file_path + ".tex") unless FileTest.exists?(file_path + ".tex")
     convert_tex_to_pdf(file_path + ".tex")
@@ -91,7 +89,7 @@ class WikiController < ApplicationController
 
   def export_tex
     file_name = "#{web.address}-tex-#{web.revised_on.strftime("%Y-%m-%d-%H-%M")}.tex"
-    file_path = EXPORT_DIRECTORY + file_name
+    file_path = WikiService.storage_path + file_name
 
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)
     send_export(file_name, file_path)
@@ -184,7 +182,7 @@ class WikiController < ApplicationController
     page = wiki.read_page(@web_name, @page_name)
     safe_page_name = @page.name.gsub(/\W/, '')
     file_name = "#{safe_page_name}-#{@web.address}-#{@page.created_at.strftime("%Y-%m-%d-%H-%M")}"
-    file_path = EXPORT_DIRECTORY + file_name
+    file_path = WikiService.storage_path + file_name
 
     export_page_to_tex(file_path + '.tex') unless FileTest.exists?(file_path + '.tex')
     convert_tex_to_pdf(file_path + '.tex')
@@ -286,7 +284,7 @@ class WikiController < ApplicationController
 
     file_prefix = "#{@web.address}-#{file_type}-"
     timestamp = @web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')
-    file_path = EXPORT_DIRECTORY + file_prefix + timestamp + '.zip'
+    file_path = WikiService.storage_path + file_prefix + timestamp + '.zip'
     tmp_path = "#{file_path}.tmp"
 
     Zip::ZipOutputStream.open(tmp_path) do |zip_out|
@@ -306,7 +304,7 @@ class WikiController < ApplicationController
         EOL
       end
     end
-    FileUtils.rm_rf(Dir[EXPORT_DIRECTORY + file_prefix + '*.zip'])
+    FileUtils.rm_rf(Dir[WikiService.storage_path + file_prefix + '*.zip'])
     FileUtils.mv(tmp_path, file_path)
     send_file(file_path, :type => 'application/zip')
   end

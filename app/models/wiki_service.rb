@@ -100,7 +100,7 @@ class WikiService
   include AbstractWikiService
   include Madeleine::Automatic::Interceptor
 
-  @@storage_path = self.name.downcase + '_storage'
+  @@storage_path = './storage/'
 
   class << self
     def storage_path

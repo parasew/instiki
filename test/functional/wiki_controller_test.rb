@@ -73,7 +73,7 @@ class WikiControllerTest < Test::Unit::TestCase
     process('create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki')
       
-    assert_redirected_to :action => 'index'
+    assert_redirected_to :web => 'my_wiki', :action => 'show', :id => 'HomePage'
     assert @controller.wiki.setup?
     assert_equal 'a_password', @controller.wiki.system[:password]
     assert_equal 1, @controller.wiki.webs.size
@@ -89,7 +89,7 @@ class WikiControllerTest < Test::Unit::TestCase
     process 'create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki'
 
-    assert_redirected_to :action => 'index'
+    assert_redirected_to :web => 'my_wiki', :action => 'show', :id => 'HomePage'
     assert_equal wiki_before, @controller.wiki
     # and no new wikis shuld be created either
     assert_equal 1, @controller.wiki.webs.size
