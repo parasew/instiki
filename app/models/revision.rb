@@ -1,13 +1,9 @@
-$: << File.dirname(__FILE__) + "../../libraries"
-
-require "diff"
-
-require "wiki_content"
-require "chunks/wiki"
-
-require "date"
-require "author"
-require "page"
+require 'diff'
+require 'wiki_content'
+require 'chunks/wiki'
+require 'date'
+require 'author'
+require 'page'
 
 class Revision
   attr_accessor :page, :number, :content, :created_at, :author
@@ -15,11 +11,6 @@ class Revision
   def initialize(page, number, content, created_at, author)
     @page, @number, @created_at, @author = page, number, created_at, author
     self.content = content
-  end
-
-  # Ensure that the wiki content is parsed when ever it is updated.
-  def content=(content)
-    @content = content
   end
 
   def created_on

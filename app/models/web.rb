@@ -5,12 +5,16 @@ require "wiki_words"
 require "zip/zip"
 
 class Web
-  attr_accessor :pages, :name, :address, :password
-  attr_accessor :markup, :color, :safe_mode, :additional_style, :published, :brackets_only, :count_pages
+  attr_accessor :name, :address, :password, :markup, :color, :safe_mode, :pages
+  attr_accessor :additional_style, :published, :brackets_only, :count_pages
   
   def initialize(name, address, password = nil)
     @name, @address, @password, @safe_mode = name, address, password, false
     @pages = {}
+
+    # assign default values
+    @color = '008B26'
+    @markup = :textile 
   end
 
   def add_page(page)
@@ -69,12 +73,6 @@ class Web
   def refresh_revisions
     select.each { |page| page.revisions.each { |revision| revision.clear_display_cache } }
   end
-  
-  # Default values
-  def markup()        @markup || :textile end
-  def color()         @color  || "008B26" end
-  def brackets_only() @brackets_only || false end
-  def count_pages()   @count_pages || false end
 
   private
     # Returns an array of all the wiki words in any current revision

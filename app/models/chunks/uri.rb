@@ -64,11 +64,11 @@ class URIChunk < Chunk::Abstract
 
   end
 
-  def self.pattern
+  def URIChunk.pattern
     INTERNET_URI_REGEXP
   end
 
-  attr_reader :uri, :scheme, :user, :host, :port, :path, :query, :fragment, :link_text
+  attr_reader :user, :host, :port, :path, :query, :fragment, :link_text
   
   def self.apply_to(content)
     content.gsub!( self.pattern ) do |matched_text|
@@ -172,7 +172,7 @@ class LocalURIChunk < URIChunk
     LOCAL_URI_REGEXP = Regexp.new(TEXTILE_SYNTAX_PREFIX + LOCAL_URI, Regexp::EXTENDED, 'N')
   end
 
-  def self.pattern
+  def LocalURIChunk.pattern
     LOCAL_URI_REGEXP
   end
 
