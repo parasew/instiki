@@ -38,7 +38,7 @@
     <li>
       <a href="../show/<%= page_name %>"><%= truncate(WikiWords.separate(page_name), 35) %></a>
       wanted by
-      <%= web.select.pages_that_reference(page_name).collect { |page| page.link }.join(", ") %>
+      <%= @web.select.pages_that_reference(page_name).collect { |page| page.link }.join(", ") %>
     </li>
   <% end %>
   </ul>
