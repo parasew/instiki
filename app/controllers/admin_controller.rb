@@ -15,7 +15,12 @@ class AdminController < ApplicationController
     elsif @params['web_name']
       # form submitted -> create a wiki
       @wiki.setup(@params['password'], @params['web_name'], @params['web_address']) 
-      redirect_show('HomePage', @params['web_address'])
+      flash[:info] = <<-EOL
+          Your new wiki '#{@params['web_name']}' is created!<br/>
+          Please edit its home page and press Submit when finished.
+      EOL
+      redirect_to  :web => @params['web_address'], :controller => 'wiki', :action => 'new', 
+          :id => 'HomePage'
     else
       # no form submitted -> go to template
     end

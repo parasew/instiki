@@ -31,7 +31,8 @@ class AdminControllerTest < Test::Unit::TestCase
     process('create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki')
       
-    assert_redirected_to :web => 'my_wiki', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'my_wiki', :controller => 'wiki', :action => 'new', 
+        :id => 'HomePage'
     assert @controller.wiki.setup?
     assert_equal 'a_password', @controller.wiki.system[:password]
     assert_equal 1, @controller.wiki.webs.size
