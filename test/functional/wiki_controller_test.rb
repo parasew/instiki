@@ -558,6 +558,20 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
 
+  def test_tex
+    r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
+    assert_success
+    
+    assert_equal "\\documentclass[12pt,titlepage]{article}\n\n\\usepackage[danish]{babel}      " +
+        "%danske tekster\n\\usepackage[OT1]{fontenc}       %rigtige danske bogstaver...\n" +
+        "\\usepackage{a4}\n\\usepackage{graphicx}\n\\usepackage{ucs}\n\\usepackage[utf8x]" +
+        "{inputenc}\n\\input epsf \n\n%----------------------------------------------------" +
+        "---------------\n\n\\begin{document}\n\n\\sloppy\n\n%-----------------------------" +
+        "--------------------------------------\n\n\\section*{HomePage}\n\nFirst revision of " +
+        "the HomePage end\n\n\\end{document}", r.body
+  end
+
+
   def test_update_web
     @wiki.system[:password] = 'pswd'
   
