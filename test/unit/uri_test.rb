@@ -131,6 +131,11 @@ class URITest < Test::Unit::TestCase
     match(URIChunk, 'This http://hobix.com/sample.jpg should match', 
           :link_text => 'http://hobix.com/sample.jpg')
   end
+  
+  def test_inline_html
+    assert_conversion_does_not_apply(URIChunk, '<IMG SRC="http://hobix.com/sample.jpg">')
+    assert_conversion_does_not_apply(URIChunk, "<img src='http://hobix.com/sample.jpg'/>")
+  end
 
   def test_non_uri
     # "so" is a valid country code; "libproxy.so" is a valid url

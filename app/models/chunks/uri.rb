@@ -61,19 +61,20 @@ class URIChunk < Chunk::Abstract
     PORT = '\\d*'
 
     INTERNET_URI =
-        "(?:(#{SCHEME}):/{0,2})?" + # Optional scheme:        (\1)
-        "(?:(#{USERINFO})@)?" +     # Optional userinfo@      (\2)
-        "(#{INTERNET_HOSTNAME})" +  # Mandatory hostname      (\3)
-        "(?::(#{PORT}))?" +         # Optional :port          (\4)
-        "(#{ABS_PATH})?"  +         # Optional absolute path  (\5)
-        "(?:\\?(#{QUERY}))?" +      # Optional ?query         (\6)
-      "(?:\\#(#{FRAGMENT}))?"  +    # Optional #fragment      (\7)
-        '(?=\.?(?:\s|\)|\z))'       # ends only with 
-                                    # optional dot +  space or ")" or end of string  
+        "(?:(#{SCHEME}):/{0,2})?" +   # Optional scheme:        (\1)
+        "(?:(#{USERINFO})@)?" +       # Optional userinfo@      (\2)
+        "(#{INTERNET_HOSTNAME})" +    # Mandatory hostname      (\3)
+        "(?::(#{PORT}))?" +           # Optional :port          (\4)
+        "(#{ABS_PATH})?"  +           # Optional absolute path  (\5)
+        "(?:\\?(#{QUERY}))?" +        # Optional ?query         (\6)
+        "(?:\\#(#{FRAGMENT}))?"  +    # Optional #fragment      (\7)
+        '(?=\.?(?:\s|\)|\z))'         # ends only with optional dot + space or ")" 
+                                      # or end of the string
 
-    TEXTILE_SYNTAX_PREFIX = '(!|\"\:)?'  # ! or ":
+    SUSPICIOUS_PRECEDING_CHARACTER = '(!|\"\:|\"|\\\')?'  # any of !, ":, ", '
   
-    INTERNET_URI_REGEXP = Regexp.new(TEXTILE_SYNTAX_PREFIX + INTERNET_URI, Regexp::EXTENDED, 'N')
+    INTERNET_URI_REGEXP = 
+        Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + INTERNET_URI, Regexp::EXTENDED, 'N')
 
   end
 
@@ -86,7 +87,7 @@ class URIChunk < Chunk::Abstract
   def self.apply_to(content)
     content.gsub!( self.pattern ) do |matched_text|
       chunk = self.new($~)
-      if chunk.textile_url? or chunk.textile_image?
+      if chunk.avoid_autolinking?
         # do not substitute
         matched_text
       else
@@ -99,17 +100,13 @@ class URIChunk < Chunk::Abstract
   def initialize(match_data)
     super(match_data)
     @link_text = match_data[0]
-    @textile_prefix, @original_scheme, @user, @host, @port, @path, @query, @fragment = 
-        match_data[1..-1]
+    @suspicious_preceding_character = match_data[1]
+    @original_scheme, @user, @host, @port, @path, @query, @fragment = match_data[2..-1]
     treat_trailing_character
   end
 
-  def textile_url?
-    @textile_prefix == '":'
-  end
-
-  def textile_image?
-    @textile_prefix == '!' and @trailing_punctuation == '!'
+  def avoid_autolinking?
+    not @suspicious_preceding_character.nil?
   end
 
   def treat_trailing_character
@@ -121,6 +118,8 @@ class URIChunk < Chunk::Abstract
       @trailing_punctuation = last_char
       @link_text.chop!
       [@original_scheme, @user, @host, @port, @path, @query, @fragment].compact.last.chop!
+    else 
+      @trailing_punctuation = nil
     end
   end
 
@@ -174,15 +173,17 @@ class LocalURIChunk < URIChunk
     # The basic URI expression as a string
     # Scheme and hostname are mandatory
     LOCAL_URI =
-           "(?:(#{SCHEME})://)+" +  # Mandatory scheme://     (\1)
-           "(?:(#{USERINFO})@)?" +  # Optional userinfo@      (\2)
-           "(#{ANY_HOSTNAME})" +    # Mandatory hostname      (\3)
-           "(?::(#{PORT}))?" +      # Optional :port          (\4)
-           "(#{ABS_PATH})?"  +      # Optional absolute path  (\5)
-           "(?:\\?(#{QUERY}))?" +   # Optional ?query         (\6)
-           "(?:\\#(#{FRAGMENT}))?"  # Optional #fragment      (\7)
+        "(?:(#{SCHEME})://)+" +       # Mandatory scheme://     (\1)
+        "(?:(#{USERINFO})@)?" +       # Optional userinfo@      (\2)
+        "(#{ANY_HOSTNAME})" +         # Mandatory hostname      (\3)
+        "(?::(#{PORT}))?" +           # Optional :port          (\4)
+        "(#{ABS_PATH})?"  +           # Optional absolute path  (\5)
+        "(?:\\?(#{QUERY}))?" +        # Optional ?query         (\6)
+        "(?:\\#(#{FRAGMENT}))?" +     # Optional #fragment      (\7)
+        '(?=\.?(?:\s|\)|\z))'         # ends only with optional dot + space or ")" 
+                                      # or end of the string
   
-    LOCAL_URI_REGEXP = Regexp.new(TEXTILE_SYNTAX_PREFIX + LOCAL_URI, Regexp::EXTENDED, 'N')
+    LOCAL_URI_REGEXP = Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + LOCAL_URI, Regexp::EXTENDED, 'N')
   end
 
   def LocalURIChunk.pattern

@@ -12,6 +12,7 @@ class Revision
   def initialize(page, number, content, created_at, author)
     @page, @number, @created_at, @author = page, number, created_at, author
     self.content = content
+    @display_cache = nil
   end
 
   def created_on

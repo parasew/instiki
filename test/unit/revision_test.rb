@@ -139,6 +139,15 @@ class RevisionTest < Test::Unit::TestCase
 	    'This !http://hobix.com/sample.jpg! is a Textile image link.')
   end
 
+  def test_content_with_inlined_img_tag
+	assert_markup_parsed_as( 
+	    '<p>This <img src="http://hobix.com/sample.jpg" alt="" /> is an inline image link.</p>', 
+	    'This <img src="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
+	assert_markup_parsed_as( 
+	    '<p>This <IMG SRC="http://hobix.com/sample.jpg" alt=""> is an inline image link.</p>', 
+	    'This <IMG SRC="http://hobix.com/sample.jpg" alt=""> is an inline image link.')
+  end
+
   def test_content_with_nowiki_text
 	assert_markup_parsed_as( 
 	    '<p>Do not mark up [[this text]] or http://www.thislink.com.</p>', 
