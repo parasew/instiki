@@ -75,7 +75,7 @@ class WikiController < ApplicationController
   end
 
   def feeds
-    # to template
+    # show the template
   end
 
   def list
