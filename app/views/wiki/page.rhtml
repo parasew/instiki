@@ -28,17 +28,17 @@
 <div class="navigation">
   <% if @page.name == "HomePage" %>
     <%= link_to('Edit Page', 
-          {:web => @web.name, :action => 'edit', :id => @page.name}, 
+          {:web => @web.address, :action => 'edit', :id => @page.name}, 
           {:class => 'navlink', :accesskey => 'E'})
     %>
     | 
     <%= link_to('Edit Web', 
-            {:web => @web.name, :action => 'edit_web'}, 
+            {:web => @web.address, :action => 'edit_web'}, 
             {:class => 'navlink'})
     %>
   <% else %>
     <%= link_to('Edit', 
-          {:web => @web.name, :action => 'edit', :id => @page.name}, 
+          {:web => @web.address, :action => 'edit', :id => @page.name}, 
           {:class => 'navlink', :accesskey => 'E'})
     %>
   <% end %>
@@ -46,7 +46,7 @@
   <% if @page.revisions.length > 1 %>
     | 
     <%= link_to('Back in time', 
-          {:web => @web.name, :action => 'edit', :id => @page.name, 
+          {:web => @web.address, :action => 'edit', :id => @page.name, 
            :rev => @page.revisions.length - 2},
           {:class => 'navlink', :accesskey => 'R'})
     %>
@@ -65,13 +65,13 @@
   <small>
     | Views: 
     <%= link_to('Print',
-          {:web => @web.name, :action => 'print', :id => @page.name},
+          {:web => @web.address, :action => 'print', :id => @page.name},
           {:accesskey => 'p'}) %>
   <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
     | 
-    <%= link_to 'TeX', :web => @web.name, :action => 'tex', :id => @page.name %>
+    <%= link_to 'TeX', :web => @web.address, :action => 'tex', :id => @page.name %>
     | 
-    <%= link_to 'PDF', :web => @web.name, :action => 'pdf', :id => @page.name %>
+    <%= link_to 'PDF', :web => @web.address, :action => 'pdf', :id => @page.name %>
   <% end %>
   </small>
 

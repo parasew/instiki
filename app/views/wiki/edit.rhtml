@@ -20,7 +20,7 @@
     <input type="text" name="author" id="authorName" value="<%= @author %>" 
         onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
     | 
-    <%= link_to('Cancel', {:web => @web.name, :action => 'cancel_edit', :id => @page.name},
+    <%= link_to('Cancel', {:web => @web.address, :action => 'cancel_edit', :id => @page.name},
           {:accesskey => 'c'})
     %>
     <small>(unlocks page)</small>

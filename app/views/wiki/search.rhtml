@@ -5,7 +5,7 @@
   <ul>
     <% for page in @title_results %>
       <li>
-        <%= link_to page.plain_name, :web => @web.name, :action => 'show', :id => page.name %>
+        <%= link_to page.plain_name, :web => @web.address, :action => 'show', :id => page.name %>
       </li>
     <% end %>
   </ul>
@@ -17,7 +17,7 @@
   <ul>
     <% for page in @results %>
       <li>
-        <%= link_to page.plain_name, :web => @web.name, :action => 'show', :id => page.name %>
+        <%= link_to page.plain_name, :web => @web.address, :action => 'show', :id => page.name %>
       </li>
     <% end %>
   </ul>
