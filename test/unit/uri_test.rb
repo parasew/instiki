@@ -97,6 +97,15 @@ class URITest < Test::Unit::TestCase
         :scheme =>'http', :host =>'www.example.com.tw', :port => '80', 
         :path => '/~jdoe123/Help%20Me%20', :query => 'arg=val&arg2=val2',
         :link_text => 'http://www.example.com.tw:80/~jdoe123/Help%20Me%20?arg=val&arg2=val2')
+ 
+    # from 0.9 bug reports 
+    match(URIChunk, 'http://www2.pos.to/~tosh/ruby/rdtool/en/doc/rd-draft.html',
+        :scheme =>'http', :host => 'www2.pos.to', 
+        :path => '/~tosh/ruby/rdtool/en/doc/rd-draft.html')
+
+    match(URIChunk, 'http://support.microsoft.com/default.aspx?scid=kb;en-us;234562',
+        :scheme =>'http', :host => 'support.microsoft.com', :path => '/default.aspx',
+        :query => 'scid=kb;en-us;234562')
   end
 
   def test_email_uri
@@ -110,10 +119,32 @@ class URITest < Test::Unit::TestCase
 	match(URIChunk, 'Not an email: @example.com', :user => nil, :uri => 'http://example.com')
   end
 
+  def test_textile_image
+    assert_conversion_does_not_apply(URIChunk, 
+             'This !http://hobix.com/sample.jpg! is a Textile image link.')
+  end
+
+  def test_textile_link
+    assert_conversion_does_not_apply(URIChunk, 
+             'This "hobix (hobix)":http://hobix.com/sample.jpg is a Textile link.')
+    # just to be sure ...
+    match(URIChunk, 'This http://hobix.com/sample.jpg should match', 
+          :link_text => 'http://hobix.com/sample.jpg')
+  end
+
   def test_non_uri
+    # "so" is a valid country code; "libproxy.so" is a valid url
+    match(URIChunk, 'libproxy.so', :link_text => 'libproxy.so')
+
     assert_conversion_does_not_apply URIChunk, 'httpd.conf'
-	assert_conversion_does_not_apply URIChunk, 'libproxy.so'
-	assert_conversion_does_not_apply URIChunk, 'ld.so.conf'
+    assert_conversion_does_not_apply URIChunk, 'ld.so.conf'
+    assert_conversion_does_not_apply URIChunk, 'index.jpeg'
+    assert_conversion_does_not_apply URIChunk, 'index.jpg'
+    assert_conversion_does_not_apply URIChunk, 'file.txt'
+    assert_conversion_does_not_apply URIChunk, 'file.doc'
+    assert_conversion_does_not_apply URIChunk, 'file.pdf'
+    assert_conversion_does_not_apply URIChunk, 'file.png'
+    assert_conversion_does_not_apply URIChunk, 'file.ps'
   end
 
   def test_uri_in_text
@@ -123,8 +154,10 @@ class URITest < Test::Unit::TestCase
         'Email david@loudthinking.com', 
         :scheme =>'mailto', :user =>'david', :host =>'loudthinking.com')
     # check that trailing punctuation is not included in the hostname
-    match(URIChunk, '"link":http://fake.link.com.', :scheme => 'http', :host => 'fake.link.com')
-  end
+    match(URIChunk, 'Hey dude, http://fake.link.com.', :scheme => 'http', :host => 'fake.link.com')
+    # this is a textile link, no match please.
+    assert_conversion_does_not_apply(URIChunk, '"link":http://fake.link.com.')
+   end
 
   def test_uri_in_parentheses
     match(URIChunk, 'URI (http://brackets.com.de) in brackets', :host => 'brackets.com.de')
@@ -172,7 +205,7 @@ class URITest < Test::Unit::TestCase
 
   def assert_conversion_does_not_apply(chunk_type, str)
     processed_str = str.dup
-    URIChunk.apply_to(processed_str)
+    chunk_type.apply_to(processed_str)
     assert_equal(str, processed_str)
   end
 
