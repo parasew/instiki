@@ -16,8 +16,11 @@
   </h2>
 <% end %>
 
-<ul><% for page in @pages_by_name %>
-  <li><a href="../show/<%= page.url %>"><%= truncate(page.plain_name, 35) %></a></li>
+<ul>
+  <% @pages_by_name.each do |page| %>
+    <li>
+      <%= link_to_existing_page page, truncate(page.plain_name, 35) %>
+    </li>
 <% end %></ul>
 
 <% if @web.count_pages %>
@@ -30,15 +33,21 @@
 <% unless @page_names_that_are_wanted.empty? %>
   <h2>
     Wanted Pages
-    <br/><small style="font-size: 12px"><i>Unexisting pages that other pages in <%= @set_name %> reference</i></small>
+    <br/>
+    <small style="font-size: 12px">
+      <i>Unexisting pages that other pages in <%= @set_name %> reference</i>
+    </small>
   </h2>
 
   <ul style="margin-bottom: 10px">
-  <% for page_name in @page_names_that_are_wanted %>
+  <% @page_names_that_are_wanted.each do |wanted_page_name| %>
     <li>
-      <a href="../show/<%= page_name %>"><%= truncate(WikiWords.separate(page_name), 35) %></a>
+      <%= link_to_page wanted_page_name, truncate(WikiWords.separate(@page_name), 35) %>
       wanted by
-      <%= @web.select.pages_that_reference(page_name).collect { |page| page.link }.join(", ") %>
+      <%= @web.select.pages_that_reference(page_name).collect { |referring_page|
+            link_to_existing_page referring_page
+          }.join(", ") 
+      %>
     </li>
   <% end %>
   </ul>
@@ -51,7 +60,11 @@
   </h2>
 
   <ul style="margin-bottom: 35px">
-    <% for page in @pages_that_are_orphaned %><li><a href="../show/<%= page.url %>"><%= truncate(page.plain_name, 35) %></a></li><% end %>
+    <% @pages_that_are_orphaned.each do |orphan_page| %>
+      <li>
+        link_to_existing_page orphan_page
+      </li>
+    <% end %>
   </ul>
 <% end %>
 </div>

@@ -6,7 +6,10 @@
 
 <%= render("#{@web.markup}_help") if @web %>
 
-<form action="../save/<%= @page_name %>" method="post" onSubmit="cleanAuthorName();">
+<%= form_tag({ :action => 'save', :web => @web.address, :id => CGI.escape(@page_name)},
+             {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();'})
+%>
+
 <p>
     <textarea name="content" style="width: 450px; height: 500px"></textarea>
 </p>
@@ -14,7 +17,7 @@
     <input type="submit" value="Submit" accesskey="s"/> as 
     <input type="text" name="author" id="authorName" value="<%= @author %>" onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
 </p>
-</form>
+<%= end_form_tag %>
 
 <script language="JavaScript1.2">
 function cleanAuthorName() {

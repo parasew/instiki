@@ -85,10 +85,6 @@ class Page
     @web.make_link(author, nil, options)
   end
 
-  def url
-    CGI.escape(self.name)
-  end
-
   private
 
   def continous_revision?(created_at, author)

@@ -11,12 +11,12 @@
 
 <p>
   <%= link_to 'Edit the page anyway',
-        {:web => @web_name, :action => 'edit', :id => @page.url, :params => {'break_lock' => '1'} },
+        {:web => @web_name, :action => 'edit', :id => @page.name, :params => {'break_lock' => '1'} },
         {:accesskey => 'E'}
   %>
 
   <%= link_to 'Cancel',
-        {:web => @web_name, :action => 'show', :id => @page.url},
+        {:web => @web_name, :action => 'show', :id => @page.name},
         {:accesskey => 'C'}
   %>
 

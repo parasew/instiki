@@ -27,14 +27,29 @@
 
 <div class="navigation">
   <% if @page.name == "HomePage" %>
-    <a href="../edit/<%= @page.url %>" class="navlink" accesskey="E">Edit Page</a>
-    | <a href="../edit_web" class="navlink">Edit Web</a>
+    <%= link_to('Edit Page', 
+          {:web => @web.name, :action => 'edit', :id => @page.name}, 
+          {:class => 'navlink', :accesskey => 'E'})
+    %>
+    | 
+    <%= link_to('Edit Web', 
+            {:web => @web.name, :action => 'edit_web'}, 
+            {:class => 'navlink'})
+    %>
   <% else %>
-    <a href="../edit/<%= @page.url %>" class="navlink" accesskey="E">Edit</a>
+    <%= link_to('Edit', 
+          {:web => @web.name, :action => 'edit', :id => @page.name}, 
+          {:class => 'navlink', :accesskey => 'E'})
+    %>
   <% end %>
 
   <% if @page.revisions.length > 1 %>
-    | <a href="../revision/<%= @page.url %>?rev=<%= @page.revisions.length - 2 %>" class="navlink" accesskey="R">Back in time</a> 
+    | 
+    <%= link_to('Back in time', 
+          {:web => @web.name, :action => 'edit', :id => @page.name, 
+           :rev => @page.revisions.length - 2},
+          {:class => 'navlink', :accesskey => 'R'})
+    %>
     <small>(<%= @page.revisions.length - 1 %> revisions)</small>
   <% end %>
 
@@ -48,15 +63,25 @@
   <% end %>
 
   <small>
-    | Views: <a href="../print/<%= @page.url %>" accesskey="p">Print</a>
+    | Views: 
+    <%= link_to('Print',
+          {:web => @web.name, :action => 'print', :id => @page.name},
+          {:accesskey => 'p'}) %>
   <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
-    | <a href="../tex/<%= @page.url %>">TeX</a> | <a href="../pdf/<%= @page.url %>">PDF</a>
+    | 
+    <%= link_to 'TeX', :web => @web.name, :action => 'tex', :id => @page.name %>
+    | 
+    <%= link_to 'PDF', :web => @web.name, :action => 'pdf', :id => @page.name %>
   <% end %>
   </small>
 
   <% if @page.references.length > 0 %>
     <small>
-      | Linked from: <%= @page.references.collect { |ref| ref.link }.join(", ") %>
+      | Linked from: 
+      <%= @page.references.collect { |referring_page| 
+            link_to_existing_page referring_page
+          }.join(", ")
+      %>
     </small>
   <% end %>
 </div>

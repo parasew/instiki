@@ -4,7 +4,9 @@
 <h2><%= @title_results.length %> page(s) containing search string in the page name:</h2>
   <ul>
     <% for page in @title_results %>
-      <li><a href="../show/<%= page.url %>"><%= page.plain_name %></a></li>
+      <li>
+        <%= link_to page.plain_name, :web => @web.name, :action => 'show', :id => page.name %>
+      </li>
     <% end %>
   </ul>
 <% end %>
@@ -14,7 +16,9 @@
   <h2> <%= @results.length %> page(s) containing search string in the page text:</h2>
   <ul>
     <% for page in @results %>
-      <li><a href="../show/<%= page.url %>"><%= page.plain_name %></a></li>
+      <li>
+        <%= link_to page.plain_name, :web => @web.name, :action => 'show', :id => page.name %>
+      </li>
     <% end %>
   </ul>
 <% end %>

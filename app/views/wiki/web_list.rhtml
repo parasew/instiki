@@ -1,7 +1,7 @@
 <% @title = "Wiki webs" %>
 
 <ul>
-<% for web in @webs %>
+<% @webs.each do |web| %>
   <li>
     <% if web.published %>
       <%= link_to_page 'HomePage', web, web.name, :mode => 'publish' %>

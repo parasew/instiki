@@ -25,11 +25,17 @@
 
   <% if @revision.next_revision %>
     <% if @revision.next_revision.number < (@page.revisions.length - 1) %>
-      <a href="../revision/<%= @page.url %>?rev=<%= @revision.next_revision.number %>" class="navlink">
+      <%= link_to('Forward in time',
+              {:web => @web.name, :action => 'revision', :id => @page.name, 
+               :rev => @revision.next_revision.number},
+              {:class => 'navlink'})
+      %>
     <% else %>
-      <a href="../show/<%= @page.url %>" class="navlink">
+      <%= link_to('Forward in time',
+              {:web => @web.name, :action => 'show', :id => @page.name},
+              {:class => 'navlink'})
+      %>
     <% end %>
-      Forward in time</a>
     (<%= @revision.page.revisions.length - @revision.next_revision.number %> more)
   <% end %>
 
@@ -38,11 +44,18 @@
   <% end %>
 
   <% if @revision.previous_revision %>
-    <a href="../revision/<%= @page.url %>?rev=<%= @revision.previous_revision.number %>" class="navlink">Back in time</a>
+    <%= link_to('Back in time',
+          {:web => @web.name, :action => 'revision', :id => @page.name, 
+           :rev => @revision.previous_revision.number},
+          {:class => 'navlink'})
+    %>
     (<%= @revision.previous_revision.number + 1 %> more)
   <% end %>
 
-  | <a href="../show/<%= @page.url %>" class="navlink">See current</a>
+  | 
+  <%= link_to('See current', {:web => @web.name, :action => 'show', :id => @page.name},
+          {:class => 'navlink'})
+  %>
 
   <% if @revision.previous_revision %>
     <span id="show_changes">
@@ -53,12 +66,23 @@
     </span>
   <% end %>
 
-  | <a href="../rollback/<%= @page.url %>?rev=<%= @revision.number %>" class="navlink">Rollback</a>  
+  | 
+  
+  <%= link_to('Rollback', 
+        {:web => @web.name, :action => 'rollback', :id => @page.name, :rev => @revision.number},
+        {:class => 'navlink'})
+  %>
   
   <% if @page.references.length > 0 %>
     <small>
-      | Linked from: <%= @page.references.collect { |ref| "<a href='#{ref.name}'>#{ref.name}</a>" }.join(", ") %>
+      | Linked from: 
+      <%= @page.references.collect { |ref| 
+            link_to ref.name, :web => @web.name, :action => 'show', :id => ref.name 
+          }.join(", ") 
+      %>
     </small>
+  <% else %>
+    Orphan page
   <% end %>
 </div>
 

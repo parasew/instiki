@@ -8,7 +8,10 @@
 
 <%= render("#{@web.markup}_help") if @web %>
 
-<form id="editForm" action="../save/<%= @page.url %>" method="post" onSubmit="cleanAuthorName();">
+<%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name},
+             {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();'})
+%>
+
 <p>
     <textarea name="content" style="width: 450px; height: 500px"><%= @page.content %></textarea>
 </p>
@@ -16,9 +19,13 @@
     <input type="submit" value="Submit" accesskey="s"/> as 
     <input type="text" name="author" id="authorName" value="<%= @author %>" 
         onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
-    | <a href="../cancel_edit/<%= @page.url %>" accesskey="c">Cancel</a> <small>(unlocks page)</small>
+    | 
+    <%= link_to('Cancel', {:web => @web.name, :action => 'cancel_edit', :id => @page.name},
+          {:accesskey => 'c'})
+    %>
+    <small>(unlocks page)</small>
 </p>
-</form>
+<%= end_form_tag %>
 
 <script language="JavaScript1.2">
 function cleanAuthorName() {
