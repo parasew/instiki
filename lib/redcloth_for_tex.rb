@@ -7,6 +7,7 @@ class String
     gsub!( '&', '\\\\&' )
     gsub!( '%', '\%' )
     gsub!( '$', '\$' )
+    gsub!( '~', '$\sim$' )
   end
 end
 
@@ -459,14 +460,16 @@ class RedClothForTex < String
                            (?=\s|$)
       /x ) do |m|
         pre,atts,text,title,url,slash,post = $~[1..7]
-        
+
+        url.gsub!(/(\\)(.)/, '\2')
         url = check_refs( url )
         
         atts = pba( atts )
         atts << " title=\"#{ title }\"" if title
         atts = shelve( atts ) if atts
         
-            "#{ pre }<a href=\"#{ url }#{ slash }\"#{ atts }>#{ text }</a>#{ post }"
+        "#{ pre }\\textit{#{ text }} \\footnote{\\texttt{\\textless #{ url }#{ slash }" + 
+            "\\textgreater}#{ post }}"
       end
     end
     
