@@ -1,0 +1,68 @@
+===What is Instiki?
+
+Admitted, it's YetAnotherWikiClone[http://c2.com/cgi/wiki?WikiWikiClones], but with a strong focus
+on simplicity of installation and running:
+
+Step 1. Download
+
+Step 2. Run "instiki"
+
+Step 3. Chuckle... "There's no step three!" (TM)
+
+You're now running a perfectly suitable wiki on port 2500 
+that'll present you with one-step setup, followed by a textarea for the home page
+on http://localhost:2500.
+
+Instiki lowers the barriers of interest for when you might consider
+using a wiki. It's so simple to get running that you'll find yourself
+using it for anything -- taking notes, brainstorming, organizing a 
+gathering.
+
+===Features:
+* Regular expression search: Find deep stuff really fast
+* Revisions: Follow the changes on every page from birth. Rollback to an earlier rev
+* Export to HTML or markup in a zip: Take the entire wiki with you home or for reference
+* RSS feeds to track recently revised pages
+* Multiple webs: Create separate wikis with their own namespace
+* Password-protected webs: Keep it private
+* Authors: Each revision is associated with an author, so you can see who changed what
+* Reference tracker: Which other pages are pointing to the current?
+* Speed: Using Madelein[http://madeleine.sourceforge.net] for persistence (all pages are in memory)
+* Three markup choices: Textile[http://www.textism.com/tools/textile] 
+  (default / RedCloth[http://www.whytheluckystiff.net/ruby/redcloth]), 
+  Markdown (BlueCloth[http://bluecloth.rubyforge.org]), and RDoc[http://rdoc.sourceforge.net/doc]
+* Embedded webserver: Through WEBrick[http://www.webrick.org]
+* Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
+* Color diffs: Track changes through revisions
+
+===Missing:
+* File attachments
+
+===Install from gem:
+* Install rubygems
+* Run "gem install instiki"
+* Change to a directory where you want Instiki to keep its data files (for example,  ~/instiki/)
+* Run "instiki" - this will create a "storage" directory (for example, ~/instiki/storage), and start a new Wiki service
+
+Make sure that you always launch Instiki from the same working directory, or specify the storage directory in runtime parameters, such as:
+  instiki --storage ~/instiki/storage
+
+===Command-line options:
+* Run "instiki --help"
+
+===History:
+ * See CHANGELOG
+
+===Download latest from: 
+* http://rubyforge.org/project/showfiles.php?group_id=186
+
+===Visit the official Instiki wiki:
+* http://www.instiki.org
+
+===License:
+* same as Ruby's
+
+---
+Author:: David Heinemeier Hansson
+Email::  david@loudthinking.com
+Weblog:: http://www.loudthinking.com

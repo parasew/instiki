@@ -1,0 +1,81 @@
+<% @title = @page.plain_name %>
+<%= render 'top' %>
+
+<div id="revision">
+  <%= @page.display_content %>
+</div>
+
+<div id="changes" style="display: none">
+  <p style="background: #eee; padding: 3px; border: 1px solid silver">
+    <small>
+      Showing changes from revision #<%= @page.number - 1 %> to #<%= @page.number %>:
+      <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>
+    </small>
+  </p>
+
+  <%= @page.display_diff %>
+</div>
+
+<div class="byline">
+  <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_at %> 
+  by <%= @page.author_link %>
+  <%= "(#{@page.author.ip})" if @page.author.respond_to?(:ip) %>
+  <% if @web.count_pages %>
+    <% total_chars = @page.content.length %>
+    (<%= total_chars %> characters / <%= sprintf("%-.1f", (total_chars / 2275 rescue 0)) %> pages)
+  <% end %>
+</div>
+
+<div class="navigation">
+  <% if @page.name == "HomePage" %>
+    <a href="../edit/<%= @page.name %>" class="navlink" accesskey="E">Edit Page</a>
+    | <a href="../edit_web/" class="navlink">Edit Web</a>
+  <% else %>
+    <a href="../edit/<%= @page.name %>" class="navlink" accesskey="E">Edit</a>
+  <% end %>
+
+  <% if @page.revisions.length > 1 %>
+    | <a href="../revision/<%= @page.name %>?rev=<%= @page.revisions.length - 2 %>" class="navlink" accesskey="R">Back in time</a> 
+    <small>(<%= @page.revisions.length - 1 %> revisions)</small>
+  <% end %>
+
+  <% if @page.revisions.length > 1 %>
+    <span id="show_changes">
+      | <a href="#" onClick="toggleChanges(); return false;">See changes</a>
+    </span>
+    <span id="hide_changes" style="display: none">
+      | <a href="#" onClick="toggleChanges(); return false;">Hide changes</a>
+    </span>
+  <% end %>
+
+  <small>
+    | Views: <a href="../print/<%= @page.name %>">Print</a>
+  <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
+    | <a href="../tex/<%= @page.name %>">TeX</a> | <a href="../pdf/<%= @page.name %>">PDF</a>
+  <% end %>
+  </small>
+
+  <% if @page.references.length > 0 %>
+    <small>
+      | Linked from: <%= @page.references.collect { |ref| ref.link }.join(", ") %>
+    </small>
+  <% end %>
+</div>
+
+<script language="Javascript">
+  function toggleChanges() {
+    if (document.getElementById("changes").style.display == "none") {
+      document.getElementById("changes").style.display  = "block";
+      document.getElementById("revision").style.display = "none";
+      document.getElementById("show_changes").style.display  = "none";
+      document.getElementById("hide_changes").style.display = "inline";
+    } else {
+      document.getElementById("changes").style.display  = "none";
+      document.getElementById("revision").style.display = "block";
+      document.getElementById("show_changes").style.display  = "inline";
+      document.getElementById("hide_changes").style.display = "none";
+    }
+  }
+</script>
+
+<%= render 'bottom' %>

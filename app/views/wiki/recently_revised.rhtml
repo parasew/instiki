@@ -1,0 +1,30 @@
+<% @title = "Recently Revised" %><%= render 'top' %>
+
+<% unless @categories.empty? %>
+<div id="categories">
+  <strong>Categories</strong>: 
+  [<a href=".">Any</a>]
+  <%= @category_links.join(', ') %>
+</div>
+<% end %>
+
+<% revision_date = Date.new(2100) %>
+<ul>
+<% for page in @pages_by_revision %>
+  <% if page.revised_on < revision_date %>
+    </ul><b><%= page.pretty_revised_on %></b><ul>
+  <% end %>
+  
+  <li>
+    <a href="../show/<%= page.name %>"><%= page.plain_name %></a>
+    <div class="byline" style="margin-bottom: 0px">
+      by <%= page.author_link %>
+      at <%= page.created_at.strftime "%H:%M" %>
+      <%= "from #{page.author.ip}" if page.author.respond_to?(:ip) %>
+    </div>
+  </li>
+
+  <% revision_date = page.revised_on %>
+<% end %>
+
+<%= render 'bottom' %>

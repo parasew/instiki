@@ -1,0 +1,15 @@
+<% @title = @results.length > 0 ? "#{@results.length} pages contains \"#{@params["query"]}\"" : "No pages contains \"#{@query}\"" %><%= render 'top' %>
+
+<% if @results.length > 0 %>
+  <ul>
+    <% for page in @results %>
+      <li><a href="../show/<%= page.name %>"><%= page.plain_name %></a></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Perhaps you should try expanding your query. Remember that Instiki searches for entire phrases, so if you search for "all that jazz" it will not match pages that contain these words in separation&mdash;only as a sentence fragment.</p>
+
+  <p>If you're a high-tech computer wizard, you might even want try constructing a regular expression. That's actually what Instiki uses, so go right ahead and flex your "[a-z]*Leet?RegExpSkill(s|z)"</p>
+<% end %>
+
+<%= render 'bottom' %>
