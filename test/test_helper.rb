@@ -68,3 +68,21 @@ module ChunkMatch
     end
   end
 end
+
+
+module AbstractController
+  class TestResponse
+    def binary_content
+        sio = StringIO.new
+        begin 
+          $stdout = sio
+          r.body.call
+        ensure
+          $stdout = STDOUT
+        end
+        
+        sio.rewind
+        sio.read
+    end
+  end
+end

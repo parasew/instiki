@@ -2,7 +2,7 @@
 
 # Uncomment the line below to enable pdflatex tests; don't forget to comment them again 
 # commiting to SVN
-$INSTIKI_TEST_PDFLATEX = true
+# $INSTIKI_TEST_PDFLATEX = true
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_controller'
@@ -263,19 +263,53 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
 
-if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
+  if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
+  
+    def test_pdf
+      assert RedClothForTex.available?, 'Cannot do test_pdf when pdflatex is not available'
+      r = process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
+      assert_success
 
-  def test_pdf
-    if RedClothForTex.available?
-      process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
+      content = r.binary_content
+      
+      assert_equal '%PDF', content[0..3]
+      assert_equal "EOF\n", content[-4..-1]
+
+      assert_equal 'application/octet_stream', r.headers['Content-Type']
+      assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
+          r.headers['Content-Disposition']
     end
-  end
+    
+    def test_pdf
+      assert RedClothForTex.available?, 'Cannot do test_pdf when pdflatex is not available'
+      r = process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
+      assert_success
+      
+      sio = StringIO.new
+      begin 
+        $stdout = sio
+        r.body.call
+      ensure
+        $stdout = STDOUT
+      end
+      
+      sio.rewind
+      content = sio.read
+      
+      assert_equal '%PDF', content[0..3]
+      assert_equal "EOF\n", content[-4..-1]
 
-else
-  puts "Warning: tests involving pdflatex are very slow, therefore they are disable by default."
-  puts "         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable"
-  puts "         $INSTIKI_TEST_PDFLATEX to enable them."
-end
+      assert_equal 'application/octet_stream', r.headers['Content-Type']
+      assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
+          r.headers['Content-Disposition']
+    end
+    
+  
+  else
+    puts 'Warning: tests involving pdflatex are very slow, therefore they are disable by default.'
+    puts '         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable'
+    puts '         $INSTIKI_TEST_PDFLATEX to enable them.'
+  end
 
 
   def test_print
