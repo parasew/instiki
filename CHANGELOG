@@ -1,4 +1,5 @@
 HEAD:
+          Files/pictures can be uploaded to a wiki and served from / displayed in wiki pages
           Wiki link syntax doesn't conflict with Textile hyperlink syntax. Therefore
           "textile link":LinkToSomePlace will not look insane.
           Instiki can serve static content (such as HTML or plain-text files) from ./public 
