@@ -28,9 +28,11 @@ rss_with_content
 rss_with_headlines
 export_html
 export_markup
+pdf
 
 TODO
 
-pdf
+tex
 export_pdf
 export_tex
+

@@ -186,8 +186,9 @@ class WikiController < ApplicationController
     file_path = WikiService.storage_path + file_name
 
     export_page_to_tex(file_path + '.tex') unless FileTest.exists?(file_path + '.tex')
+    # NB: this is _very_ slow
     convert_tex_to_pdf(file_path + '.tex')
-    send_file(file_name + '.pdf')
+    send_file(file_path + '.pdf')
   end
 
   def print
@@ -273,7 +274,9 @@ class WikiController < ApplicationController
   end
 
   def convert_tex_to_pdf(tex_path)
-    `cd #{File.dirname(tex_path)}; pdflatex --interaction=scrollmode '#{File.basename(tex_path)}'`
+    # TODO remove earlier PDF files with the same prefix
+    # TODO handle gracefully situation where pdflatex is not available
+    logger.info `pdflatex --interaction=nonstopmode --output-directory #{File.dirname(tex_path)} #{File.basename(tex_path)}`
   end
 
   def export_page_to_tex(file_path)

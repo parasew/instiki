@@ -1,12 +1,12 @@
 #!/bin/env ruby
 
+# Uncomment the line below to enable pdflatex tests; don't forget to comment them again 
+# commiting to SVN
+$INSTIKI_TEST_PDFLATEX = true
+
 require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_controller'
 require 'rexml/document'
-
-unless RedClothForTex.available?
-  $stderr.puts 'Warning: latex is not available, skipping all related tests' 
-end
 
 # Raise errors beyond the default web-based presentation
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
@@ -33,7 +33,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_authenticate
     @web.password = 'pswd'
-    
+
     r = process('authenticate', 'web' => 'wiki1', 'password' => 'wrong password')
     assert_redirected_to :action => 'login'
     assert_nil r.cookies['web_address']
@@ -263,11 +263,19 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
 
+if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
+
   def test_pdf
     if RedClothForTex.available?
       process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
     end
   end
+
+else
+  puts "Warning: tests involving pdflatex are very slow, therefore they are disable by default."
+  puts "         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable"
+  puts "         $INSTIKI_TEST_PDFLATEX to enable them."
+end
 
 
   def test_print
