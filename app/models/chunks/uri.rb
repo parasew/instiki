@@ -70,24 +70,21 @@ class URIChunk < Chunk::Abstract
   
   def initialize(match_data)
     super(match_data)
-    @scheme, @user, @host, @port, @path, @query, @fragment = match_data[1..-1]
 
-    # If there is no scheme, add an appropriate one, otherwise
-    # set the URI to the matched text.
-	@text_scheme = scheme
-    @uri = (scheme ? match_data[0] : nil )
-    @scheme = scheme || ( user ? 'mailto' : 'http' )
-    @delimiter = ( scheme == 'mailto' ? ':' : '://' ) 
-    @uri ||= scheme + @delimiter + match_data[0]
+    @link_text = match_data[0]
+    
+    @original_scheme, @user, @host, @port, @path, @query, @fragment = match_data[1..-1]
 
-    # Build up the link text. Schemes are omitted unless explicitly given.
-	@link_text = ''
-      @link_text << "#{@scheme}#{@delimiter}" if @text_scheme
-      @link_text << "#{@user}@" if @user
-      @link_text << "#{@host}" if @host
-      @link_text << ":#{@port}" if @port
-      @link_text << "#{@path}" if @path
-      @link_text << "?#{@query}" if @query
+    # If the last character matched by URI pattern is in ! or ), this may be part of the markup,
+    # not a URL. We should handle it as such. It is possible to do it by a regexp, but 
+    # much easier to do programmatically
+
+    last_char = @link_text[-1..-1]
+    if last_char == ')' or last_char == '!'
+      @trailing_punctuation = last_char
+      @link_text.chop!
+      [@original_scheme, @user, @host, @port, @path, @query, @fragment].compact.last.chop!
+    end
   end
 
   # If the text should be escaped then don't keep this chunk.
@@ -101,4 +98,30 @@ class URIChunk < Chunk::Abstract
   # If there is no hostname in the URI, do not render it
   # It's probably only contains the scheme, eg 'something:' 
   def escaped_text() ( host.nil? ? @uri : nil )  end
+
+  def scheme
+    @original_scheme or (@user ? 'mailto' : 'http')
+  end
+
+  def scheme_delimiter
+    scheme == 'mailto' ? ':' : '://'
+  end
+
+  def user_delimiter
+     '@' unless @user.nil?
+  end
+
+  def port_delimiter
+     ':' unless @port.nil?
+  end
+
+  def query_delimiter
+     '?' unless @query.nil?
+  end
+
+  def uri
+    [scheme, scheme_delimiter, user, user_delimiter, host, port_delimiter, port, path, 
+      query_delimiter, query].compact.join
+  end
+
 end
