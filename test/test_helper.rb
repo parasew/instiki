@@ -33,22 +33,6 @@ class WikiServiceWithNoPersistence
 end
 
 
-# With the new cookies infrastructure, @response.cookies['foo'] is no good anymore.
-# Pending implementation in Rails, here is a convenience method for accessing cookies from a test
-
-module ActionController
-  class TestResponse
-    # Returns the response cookies, converted to a Hash of (name => CGI::Cookie) pairs
-    # Example:
-    # 
-    # assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
-    def cookies
-      headers['cookie'].inject({}) { |hash, cookie| hash[cookie.name] = cookie; hash }
-    end
-  end
-end
-
-
 # This module is to be included in unit tests that involve matching chunks.
 # It provides a easy way to test whether a chunk matches a particular string
 # and any the values of any fields that should be set after a match.
