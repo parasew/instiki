@@ -154,6 +154,12 @@ ol.setup li {
   width: 450px;
 }
 
+#info {
+  color: darkgreen;
+  font-style: italic;
+  width: 450px;
+}
+
 #TextileHelp table {
 	margin-bottom: 0;
 }
