@@ -8,7 +8,8 @@ require 'chunks/chunk'
 #
 # Category lines can be hidden using ':category: news', for example
 class Category < Chunk::Abstract
-  def self.pattern() return /^(:)?category\s*:(.*)$/i end
+  CATEGORY_PATTERN = /^(:)?category\s*:(.*)$/i
+  def self.pattern() CATEGORY_PATTERN  end
 
   attr_reader :hidden, :list
 

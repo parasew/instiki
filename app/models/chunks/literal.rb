@@ -8,12 +8,14 @@ module Literal
   # A literal chunk that protects 'code' and 'pre' tags from wiki rendering.
   class Pre < Chunk::Abstract
     PRE_BLOCKS = "a|pre|code"
-    def self.pattern() Regexp.new('<('+PRE_BLOCKS+')\b[^>]*?>.*?</\1>', Regexp::MULTILINE) end
+    PRE_PATTERN = Regexp.new('<('+PRE_BLOCKS+')\b[^>]*?>.*?</\1>', Regexp::MULTILINE)
+    def self.pattern() PRE_PATTERN end
   end 
 
   # A literal chunk that protects HTML tags from wiki rendering.
   class Tags < Chunk::Abstract
     TAGS = "a|img|em|strong|div|span|table|td|th|ul|ol|li|dl|dt|dd"
-    def self.pattern() Regexp.new('<(?:'+TAGS+')[^>]*?>', Regexp::MULTILINE) end
+    TAGS_PATTERN = Regexp.new('<(?:'+TAGS+')[^>]*?>', Regexp::MULTILINE) 
+    def self.pattern() TAGS_PATTERN  end
   end
 end

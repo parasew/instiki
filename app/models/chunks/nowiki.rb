@@ -14,8 +14,8 @@ require 'chunks/chunk'
 # Author: Mark Reid <mark at threewordslong dot com>
 # Created: 8th June 2004
 class NoWiki < Chunk::Abstract
-
-  def self.pattern() Regexp.new('<nowiki>(.*?)</nowiki>') end
+  NOWIKI_PATTERN = Regexp.new('<nowiki>(.*?)</nowiki>')
+  def self.pattern() NOWIKI_PATTERN end
 
   attr_reader :plain_text
 
