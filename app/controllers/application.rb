@@ -1,11 +1,6 @@
-require 'url_rewriting_hack'
-
 # The filters added to this controller will be run for all controllers in the application.
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
-
-  # implements Instiki's legacy URLs
-  require 'url_rewriting_hack'
 
   before_filter :set_utf8_http_header, :connect_to_model
   after_filter :remember_location
@@ -88,7 +83,7 @@ class ApplicationController < ActionController::Base
   def remember_location
     if @response.headers['Status'] == '200 OK'
       unless @@REMEMBER_NOT.include? action_name or @request.method != :get
-        @session[:return_to] = url_for 
+        @session[:return_to] = @request.request_uri
         logger.debug("Session ##{session.object_id}: remembered URL '#{@session[:return_to]}'")
       end
     end

@@ -33,7 +33,7 @@ class AdminController < ApplicationController
         @wiki.create_web(@params['name'], @params['address'])
         redirect_show('HomePage', @params['address'])
       else 
-        redirect_to :action => 'index'
+        redirect_to :controller => 'wiki', :action => 'index'
       end
     else
       # no form submitted -> render template
@@ -80,7 +80,7 @@ class AdminController < ApplicationController
     if wiki.authenticate(@params['system_password_orphaned'])
       wiki.remove_orphaned_pages(@web_name)
       flash[:info] = 'Orphaned pages removed'
-      redirect_to :action => 'list'
+      redirect_to :controller => 'wiki', :web => @web_name, :action => 'list'
     else
       flash[:error] = password_error(@params['system_password'])
       return_to_last_remembered

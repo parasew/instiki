@@ -26,32 +26,32 @@ class AdminControllerTest < Test::Unit::TestCase
 
   def test_create_system_form_submitted
     ApplicationController.wiki = WikiServiceWithNoPersistence.new
-    assert !@controller.wiki.setup?
+    assert !ApplicationController.wiki.setup?
     
     process('create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki')
       
     assert_redirected_to :web => 'my_wiki', :controller => 'wiki', :action => 'new', 
         :id => 'HomePage'
-    assert @controller.wiki.setup?
-    assert_equal 'a_password', @controller.wiki.system[:password]
-    assert_equal 1, @controller.wiki.webs.size
-    new_web = @controller.wiki.webs['my_wiki']
+    assert ApplicationController.wiki.setup?
+    assert_equal 'a_password', ApplicationController.wiki.system[:password]
+    assert_equal 1, ApplicationController.wiki.webs.size
+    new_web = ApplicationController.wiki.webs['my_wiki']
     assert_equal 'My Wiki', new_web.name
     assert_equal 'my_wiki', new_web.address
   end
 
   def test_create_system_form_submitted_and_wiki_already_initialized
-    wiki_before = @controller.wiki
-    assert @controller.wiki.setup?
+    wiki_before = ApplicationController.wiki
+    assert ApplicationController.wiki.setup?
 
     process 'create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki'
 
     assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
-    assert_equal wiki_before, @controller.wiki
+    assert_equal wiki_before, ApplicationController.wiki
     # and no new web should be created either
-    assert_equal 1, @controller.wiki.webs.size
+    assert_equal 1, ApplicationController.wiki.webs.size
     assert_flash_has :error
   end
 
@@ -200,19 +200,19 @@ class AdminControllerTest < Test::Unit::TestCase
 
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
 
-    assert_redirected_to :action => 'list'
+    assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
     assert_equal [@home, @oak], @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
 
 
     # Oak is now orphan, second pass should remove it
-    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password' => 'pswd')
-    assert_redirected_to :action => 'list'
+    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
+    assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
     assert_equal [@home], @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
 
     # third pass does not destroy HomePage
-    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password' => 'pswd')
+    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
     assert_redirected_to :action => 'list'
     assert_equal [@home], @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"

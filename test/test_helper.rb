@@ -14,9 +14,9 @@ class Test::Unit::TestCase
 
   def setup_controller_test(controller_class = nil, host = nil)
     if controller_class
-      @controller = controller_class
+      @controller = controller_class.new
     elsif self.class.to_s =~ /^(\w+Controller)Test$/
-      @controller = Object::const_get($1)
+      @controller = Object::const_get($1).new
     else
       raise "Cannot derive the name of controller under test from class name #{self.class}"
     end

@@ -1,10 +1,10 @@
 <%
   @title = "Upload #{@file_name}"
-  @hide_navigatio = false
+  @hide_navigation = false
 %>
 
 <p>
-<%= form_tag({}, {:multipart => true}) %>
+<%= form_tag({:controller => 'file', :web => @web_name, :action => 'file'}, {:multipart => true}) %>
   <p>
     File to upload:
     <br/>
@@ -14,9 +14,6 @@
     <input type="submit" value="Update" /> as 
     <input type="text" name="author" id="authorName" value="<%= @author %>" 
         onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
-	<% if @page %>
-      | <a href="../file/">Cancel</a> <small>(unlocks page)</small>
-    <% end %>
   </p>
 <%= end_form_tag %>
 </p>
