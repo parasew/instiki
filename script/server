@@ -73,6 +73,7 @@ else
   puts "=> Data files are stored in #{storage_path}"
 
   require 'webrick_server'
+  require_dependency 'application'
 
   OPTIONS[:index_controller] = 'wiki'
   ApplicationController.wiki = WikiService.instance
