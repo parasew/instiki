@@ -8,7 +8,7 @@ class AdminController < ApplicationController
     if wiki.setup?
       flash[:error] = <<-EOL
           Wiki has already been created in '#{@wiki.storage_path}'. Shut down Instiki and delete 
-          this directory if you want to recreate it from scratch.<br/>
+          this directory if you want to recreate it from scratch.<br/><br/>
           (WARNING: this will destroy content of your current wiki).
       EOL
       redirect_show('HomePage', @wiki.webs.keys.first)

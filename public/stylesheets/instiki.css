@@ -151,13 +151,13 @@ ol.setup li {
 #error {
   color: darkred;
   font-style: italic;
-  width: 450px;
+  width: 600px;
 }
 
 #info {
   color: darkgreen;
   font-style: italic;
-  width: 450px;
+  width: 600px;
 }
 
 #TextileHelp table {
