@@ -4,7 +4,8 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'web'
 require 'revision'
 
-class WebStub < Web; 
+class WebStub < Web
+  def initialize(); end 
   attr_accessor :markup
   def pages() PagesStub.new end
   def safe_mode() false end
@@ -20,58 +21,16 @@ end
 class RevisionTest < Test::Unit::TestCase
 
   def setup
-    @page = PageStub.new
     @web  = WebStub.new
-    @page.web = @web
-
     @web.markup = :textile
+
+    @page = PageStub.new
+    @page.web = @web
 
     @revision = Revision.new(@page, 1,
       'HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- ' +
           'see SmartEngine in that SmartEngineGUI', 
       Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
-    
-    @revision_with_auto_links = Revision.new(@page, 1,
-      "http://www.loudthinking.com/ points to ThatWay from david@loudthinking.com", 
-      Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
-
-	@revision_with_aliased_links = Revision.new(@page, 1,
-      'Would a [[SmartEngine|clever motor]] go by any other name?',
-      Time.local(2004, 4, 4, 16, 50), 'MarkReid')
-
-	@revision_with_wiki_word_in_em = Revision.new(@page, 1, '_should we go ThatWay or ThisWay _',
-      Time.local(2004, 4, 4, 16, 50), 'MarkReid')
-
-	@revision_with_pre_blocks = Revision.new(@page, 1,
-	    'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>',
-        Time.local(2004, 4, 4, 16, 50), 'MarkReid')
-
-	@revision_with_wikiword_in_tag = Revision.new(@page, 1,
-	  'That is some <em style=\"WikiWord\">Stylish Emphasis</em>',
-      Time.local(2004, 4, 4, 16, 50), 'MarkReid')
-
-	@revision_with_autolink_in_parentheses = Revision.new(
-	  @page, 1, 'The W3C body (http://www.w3c.org) sets web standards',
-      Time.local(2004, 4, 4, 16, 50), 'MarkReid')
-
-	@revision_with_link_in_parentheses = Revision.new(
-	  @page, 1,
-      'Instiki is a "Wiki Clone":http://www.c2.com/cgi/wiki?WikiWikiClones ' +
-          '("What is a wiki?":http://wiki.org/wiki.cgi?WhatIsWiki) that\'s so easy to setup',
-	  Time.local(2004, 4, 4, 16, 50), 'MarkReid'
-    )
-
-	@revision_with_image_link = Revision.new(@page, 1,
-      'This !http://hobix.com/sample.jpg! is a Textile image link.',
-	  Time.local(2004, 4, 4, 16, 50), 'MarkReid')
-
-	@revision_with_nowiki_text = Revision.new(@page, 1,
-	  'Do not mark up <nowiki>[[this text]]</nowiki> or <nowiki>http://www.thislink.com</nowiki>.',
-	  Time.local(2004, 4, 4, 16, 50), 'MarkReid')
-
-	@revision_with_bracketted_wiki_word = Revision.new(@page, 1,
-	  'This is a WikiWord and a tricky name [[Sperberg-McQueen]].',
-	  Time.local(2004, 4, 4, 16, 50), 'MarkReid')
   end
 
   def test_wiki_words
@@ -101,27 +60,24 @@ class RevisionTest < Test::Unit::TestCase
   def test_bluecloth
     @web.markup = :markdown
 
-    @revision = Revision.new(@page, 1, "My Headline\n===========\n\n that SmartEngineGUI",
-      Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
+    assert_markup_parsed_as(
+        %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
+        %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
+        "My Headline\n===========\n\n that SmartEngineGUI")
 
-	@revision_with_code_block = Revision.new(@page, 1,
-      [ 'This is a code block:',
+	code_block = [ 
+	    'This is a code block:',
         '',
         '    def a_method(arg)',
         '    return ThatWay',
         '',
-        'Nice!'].join("\n"),
-      Time.local(2004, 4, 4, 16, 50),
-      'MarkReid'
-    )
+        'Nice!'
+      ].join("\n")
 
-    assert_equal %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
-        %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
-        @revision.display_content
-
-	assert_equal %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
+	assert_markup_parsed_as(
+	    %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
 	    %{return ThatWay\n</code></pre>\n\n<p>Nice!</p>}, 
-	    @revision_with_code_block.display_content
+	    code_block)
   end
 
   def test_rdoc
@@ -130,65 +86,81 @@ class RevisionTest < Test::Unit::TestCase
     @revision = Revision.new(@page, 1, '+hello+ that SmartEngineGUI', 
         Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
 
-    assert_equal "<tt>hello</tt> that <span class=\"newWikiWord\">Smart Engine GUI' +
+    assert_equal "<tt>hello</tt> that <span class=\"newWikiWord\">Smart Engine GUI" +
         "<a href=\"../show/SmartEngineGUI\">?</a></span>\n\n", @revision.display_content
   end
   
   def test_content_with_auto_links
-    assert_equal '<p><a href="http://www.loudthinking.com/">http://www.loudthinking.com/</a> ' +
+    assert_markup_parsed_as(
+        '<p><a href="http://www.loudthinking.com/">http://www.loudthinking.com/</a> ' +
         'points to <a class="existingWikiWord" href="../show/ThatWay">That Way</a> from ' +
         '<a href="mailto:david@loudthinking.com">david@loudthinking.com</a></p>', 
-        @revision_with_auto_links.display_content
+        'http://www.loudthinking.com/ points to ThatWay from david@loudthinking.com')
+
   end  
 
   def test_content_with_aliased_links
-	assert_equal '<p>Would a <a class="existingWikiWord" href="../show/SmartEngine">clever motor' +
-	    '</a> go by any other name?</p>', @revision_with_aliased_links.display_content
+    assert_markup_parsed_as(
+        '<p>Would a <a class="existingWikiWord" href="../show/SmartEngine">clever motor' +
+	    '</a> go by any other name?</p>',
+        'Would a [[SmartEngine|clever motor]] go by any other name?')
   end
 
   def test_content_with_wikiword_in_em
-	assert_equal '<p><em>should we go <a class="existingWikiWord" href="../show/ThatWay">' +
+    assert_markup_parsed_as(
+        '<p><em>should we go <a class="existingWikiWord" href="../show/ThatWay">' +
 	    'That Way</a> or <span class="newWikiWord">This Way<a href="../show/ThisWay">?</a>' +
-	    '</span> </em></p>', @revision_with_wiki_word_in_em.display_content
+	    '</span> </em></p>', 
+        '_should we go ThatWay or ThisWay _')
   end
 
   def test_content_with_wikiword_in_tag
-    assert_equal '<p>That is some <em style="WikiWord">Stylish Emphasis</em></p>', 
-        @revision_with_wikiword_in_tag.display_content
+    assert_markup_parsed_as(
+        '<p>That is some <em style="WikiWord">Stylish Emphasis</em></p>', 
+	    'That is some <em style="WikiWord">Stylish Emphasis</em>')
   end
 
   def test_content_with_pre_blocks
-	assert_equal 'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>', 
-	    @revision_with_pre_blocks.display_content
+    assert_markup_parsed_as(
+	    'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>', 
+	    'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>')
   end
 
   def test_content_with_autolink_in_parentheses
-	assert_equal '<p>The <span class="caps">W3C</span> body (<a href="http://www.w3c.org">' +
+    assert_markup_parsed_as(
+        '<p>The <span class="caps">W3C</span> body (<a href="http://www.w3c.org">' +
 	    'http://www.w3c.org</a>) sets web standards</p>', 
-	    @revision_with_autolink_in_parentheses.display_content
+	    'The W3C body (http://www.w3c.org) sets web standards')
   end
 
   def test_content_with_link_in_parentheses
-	assert_equal '<p>Instiki is a <a href="http://www.c2.com/cgi/wiki?WikiWikiClones">Wiki Clone' +
+    assert_markup_parsed_as(
+        '<p>Instiki is a <a href="http://www.c2.com/cgi/wiki?WikiWikiClones">Wiki Clone' +
 	    '</a> (<a href="http://wiki.org/wiki.cgi?WhatIsWiki">What is a wiki?</a>) that&#8217;s ' +
-	    'so easy to setup</p>', @revision_with_link_in_parentheses.display_content
+	    'so easy to setup</p>', 
+        'Instiki is a "Wiki Clone":http://www.c2.com/cgi/wiki?WikiWikiClones ' +
+        '("What is a wiki?":http://wiki.org/wiki.cgi?WhatIsWiki) that\'s so easy to setup')
   end
 
   def test_content_with_image_link
-	assert_equal '<p>This <img src="http://hobix.com/sample.jpg" alt="" /> is a Textile image ' +
-	    'link.</p>', @revision_with_image_link.display_content
+	assert_markup_parsed_as( 
+	    '<p>This <img src="http://hobix.com/sample.jpg" alt="" /> is a Textile image link.</p>', 
+	    'This !http://hobix.com/sample.jpg! is a Textile image link.')
   end
 
   def test_content_with_nowiki_text
-	assert_equal '<p>Do not mark up [[this text]] or http://www.thislink.com.</p>', 
-	    @revision_with_nowiki_text.display_content
+	assert_markup_parsed_as( 
+	    '<p>Do not mark up [[this text]] or http://www.thislink.com.</p>', 
+	    'Do not mark up <nowiki>[[this text]]</nowiki> ' +
+	    'or <nowiki>http://www.thislink.com</nowiki>.')
   end
 
   def test_content_with_bracketted_wiki_word
 	@web.brackets_only = true
-	assert_equal '<p>This is a WikiWord and a tricky name <span class="newWikiWord">' +
+	assert_markup_parsed_as( 
+        '<p>This is a WikiWord and a tricky name <span class="newWikiWord">' +
 	    'Sperberg-McQueen<a href="../show/Sperberg-McQueen">?</a></span>.</p>', 
-	    @revision_with_bracketted_wiki_word.display_content
+	    'This is a WikiWord and a tricky name [[Sperberg-McQueen]].')
   end
 
   def test_content_for_export
@@ -228,21 +200,23 @@ class RevisionTest < Test::Unit::TestCase
   end
   
   def test_revisions_diff
-    page = PageStub.new
-    web  = WebStub.new
-    web.markup = :textile
-    page.web = web
 
-    page.revisions = [ 0 ] 
-    page.revisions << Revision.new(page, 1, 'What a blue and lovely morning', 
-        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
+    @page.revisions = [
+        Revision.new(@page, 0, 'What a blue and lovely morning', 
+            Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson'),
+        Revision.new(@page, 1, 'What a red and lovely morning today', 
+            Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
+      ]
 
-    page.revisions << Revision.new(page, 2, 'What a red and lovely morning today', 
-        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
-    
     assert_equal "<p>What a <del class=\"diffmod\">blue </del><ins class=\"diffmod\">red " +
         "</ins>and lovely <del class=\"diffmod\">morning</del><ins class=\"diffmod\">morning " +
-        "today</ins></p>", page.revisions.last.display_diff
+        "today</ins></p>", @page.revisions.last.display_diff
+  end
+
+
+  def assert_markup_parsed_as(expected_output, input)
+    revision = Revision.new(@page, 1, input, Time.local(2004, 4, 4, 16, 50), 'AnAuthor')
+    assert_equal expected_output, revision.display_content, 'Textile output not as expected'
   end
 
 end
