@@ -28,10 +28,8 @@ class ApplicationController < ActionController::Base
   end
 
   def check_authorization
-    if in_a_web? and 
-        not authorized? and 
-        not %w( login authenticate published ).include?(@action_name)
-      redirect_to :action => 'login', :web => @web_name
+    if in_a_web? and needs_authorization?(@action_name) and not authorized? and 
+      redirect_to :controller => 'wiki', :action => 'login', :web => @web_name
       return false
     end
   end
@@ -124,6 +122,10 @@ class ApplicationController < ActionController::Base
 
   def wiki
     $instiki_wiki_service
+  end
+
+  def needs_authorization?(action)
+    not %w( login authenticate published rss_with_content rss_with_headlines ).include?(action)
   end
 
 end

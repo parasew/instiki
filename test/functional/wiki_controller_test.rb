@@ -369,6 +369,16 @@ class WikiControllerTest < Test::Unit::TestCase
     assert !r.template_objects['hide_description']
   end
 
+  def test_rss_with_content_when_blocked
+    setup_wiki_with_three_pages
+    @web.password = 'aaa'
+    @web.published = false
+    
+    r = process 'rss_with_content', 'web' => 'wiki1'
+    
+    assert_equal 403, r.response_code
+  end
+  
 
   def test_rss_with_headlines
     setup_wiki_with_three_pages
@@ -396,6 +406,30 @@ class WikiControllerTest < Test::Unit::TestCase
 
     assert_template_xpath_match '/rss/channel/link', 
         'http://localhost:8080/wiki1/show/HomePage'
+    assert_template_xpath_match '/rss/channel/item/guid', expected_page_links
+    assert_template_xpath_match '/rss/channel/item/link', expected_page_links
+  end
+
+  def test_rss_switch_links_to_published
+    setup_wiki_with_three_pages
+    @web.password = 'aaa'
+    @web.published = true
+    
+    @request.host = 'foo.bar.info'
+    @request.port = 80
+
+    r = process 'rss_with_headlines', 'web' => 'wiki1'
+
+    assert_success
+    xml = REXML::Document.new(r.body)
+
+    expected_page_links =
+        ['http://foo.bar.info/wiki1/published/HomePage',
+         'http://foo.bar.info/wiki1/published/Oak',
+         'http://foo.bar.info/wiki1/published/Elephant']
+    
+    assert_template_xpath_match '/rss/channel/link', 
+        'http://foo.bar.info/wiki1/published/HomePage'
     assert_template_xpath_match '/rss/channel/item/guid', expected_page_links
     assert_template_xpath_match '/rss/channel/item/link', expected_page_links
   end

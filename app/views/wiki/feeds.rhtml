@@ -4,7 +4,7 @@
 
 <ul id="feedsList">
   <li>
-    <% unless @web.password and not @web.published %>
+    <% if @rss_with_content_allowed %>
       <%= link_to 'Full content (RSS 2.0)', :web => @web.address, :action => :rss_with_content %>
     <% end %>
   </li>

@@ -75,6 +75,7 @@ class WikiController < ApplicationController
   end
 
   def feeds
+    @rss_with_content_allowed = rss_with_content_allowed?
     # show the template
   end
 
@@ -91,7 +92,12 @@ class WikiController < ApplicationController
   end
 
   def rss_with_content
-    render_rss(hide_description = false, *parse_rss_params)
+    if rss_with_content_allowed?
+      render_rss(hide_description = false, *parse_rss_params)
+    else
+      render_text 'RSS feed with content for this web is blocked for security reasons. ' +
+        'The web is password-protected and not published', '403 Forbidden'
+    end
   end
 
   def rss_with_headlines
@@ -326,6 +332,8 @@ class WikiController < ApplicationController
     
     @hide_description = hide_description
     @response.headers['Content-Type'] = 'text/xml'
+    @link_action = @web.password ? 'published' : 'show'
+    
     render 'wiki/rss_feed'
   end
 
@@ -341,6 +349,10 @@ class WikiController < ApplicationController
     render template_name
     @performed_render = false
     @template.render_file(template_name)
+  end
+  
+  def rss_with_content_allowed?
+    @web.password.nil? or @web.published
   end
   
   def truncate(text, length = 30, truncate_string = '...')
