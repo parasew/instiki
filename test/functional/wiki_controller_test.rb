@@ -552,6 +552,14 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'UnknownPage'
   end
 
+  def test_show_no_page
+    r = process('show', 'id' => '', 'web' => 'wiki1')
+    assert_equal 404, r.response_code
+    
+    r = process('show', 'web' => 'wiki1')
+    assert_equal 404, r.response_code
+  end
+
 
   def test_tex
     r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')

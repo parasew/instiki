@@ -207,7 +207,11 @@ class WikiController < ApplicationController
         end
       end
     else
-      redirect_to :web => @web_name, :action => 'new', :id => CGI.escape(@page_name)
+      if not @page_name.nil? and not @page_name.empty?
+        redirect_to :web => @web_name, :action => 'new', :id => CGI.escape(@page_name)
+      else
+        render_text 'Page name is not specified', '404 Not Found'
+      end
     end
   end
 
