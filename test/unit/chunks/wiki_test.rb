@@ -2,9 +2,15 @@
 
 require File.dirname(__FILE__) + '/../../test_helper'
 require 'chunks/wiki'
-require 'chunks/match'
 
 class WikiTest < Test::Unit::TestCase
+
+  class ContentStub < String
+    def chunks
+      @chunks ||= []
+    end
+  end
+  
   include ChunkMatch
 
   def test_simple
@@ -30,7 +36,46 @@ class WikiTest < Test::Unit::TestCase
   end
 
   def test_textile_link
-	assert_no_match(WikiChunk::Word.pattern, '"Here is a special link":SpecialLink')
+    textile_link = ContentStub.new('"Here is a special link":SpecialLink')
+    WikiChunk::Word.apply_to(textile_link)
+    assert_equal '"Here is a special link":SpecialLink', textile_link
+    assert textile_link.chunks.empty?
+  end
+
+  def test_file_types
+    # only link
+    assert_link_parsed_as 'only text', 'only text', 'show', '[[only text]]'
+    # link and text
+    assert_link_parsed_as 'page name', 'link text', 'show', '[[page name|link text]]'
+    # link and type (file)
+    assert_link_parsed_as 'foo.tar.gz', 'foo.tar.gz', 'file', '[[foo.tar.gz:file]]'
+    # link and type (pic)
+    assert_link_parsed_as 'foo.tar.gz', 'foo.tar.gz', 'pic', '[[foo.tar.gz:pic]]'
+    # link, text and type
+    assert_link_parsed_as 'foo.tar.gz', 'FooTar', 'file', '[[foo.tar.gz|FooTar:file]]'
+
+    # NEGATIVE TEST CASES
+
+    # empty page name
+    assert_link_parsed_as '|link text?', '|link text?', 'file', '[[|link text?:file]]'
+    # empty link text
+    assert_link_parsed_as 'page name?|', 'page name?|', 'file', '[[page name?|:file]]'
+    # empty link type
+    assert_link_parsed_as 'page name', 'link?:', 'show', '[[page name|link?:]]'
+    # unknown link type
+    assert_link_parsed_as 'page name:create_system', 'page name:create_system', 'show', 
+        '[[page name:create_system]]'
+  end
+
+  def assert_link_parsed_as(expected_page_name, expected_link_text, expected_link_type, link)
+    link_to_file = ContentStub.new(link)
+    WikiChunk::Link.apply_to(link_to_file)
+    chunk = link_to_file.chunks.last
+    assert chunk
+    assert_equal expected_page_name, chunk.page_name
+    assert_equal expected_link_text, chunk.link_text
+    assert_equal expected_link_type, chunk.link_type
   end
 
 end
+

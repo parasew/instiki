@@ -3,14 +3,31 @@ require 'chunks/chunk'
 require 'chunks/wiki'
 require 'cgi'
 
-# Contains all the methods for finding and replacing wiki related
-# links.
+# Contains all the methods for finding and replacing wiki related links.
 module WikiChunk
   include Chunk
 
   # A wiki link is the top-level class for anything that refers to
   # another wiki page.
   class WikiLink < Chunk::Abstract
+
+    def self.apply_to(content)
+      content.gsub!( self.pattern ) do |matched_text|
+        chunk = self.new($~)
+        if chunk.textile_url?
+          # do not substitute
+          matched_text
+        else
+          content.chunks << chunk
+          chunk.mask(content)
+        end
+      end
+    end
+
+    def textile_url?
+      not @textile_link_suffix.nil?
+    end
+
     # By default, no escaped text
     def escaped_text() nil end
 
@@ -31,6 +48,7 @@ module WikiChunk
         content.page_link(page_name, $1)
       end
     end
+
   end
 
   # This chunk matches a WikiWord. WikiWords can be escaped
@@ -39,9 +57,9 @@ module WikiChunk
   # The +page_name+ method returns the matched WikiWord.
   class Word < WikiLink
     unless defined? WIKI_LINK
-      WIKI_WORD = Regexp.new('(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, "utf-8")
+      WIKI_WORD = Regexp.new('(":)?(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, "utf-8")
     end
-    
+
     def self.pattern
       WIKI_WORD
     end
@@ -50,8 +68,7 @@ module WikiChunk
 
     def initialize(match_data)
       super(match_data)
-      @escape = match_data[1]
-      @page_name = match_data[2]
+      @textile_link_suffix, @escape, @page_name = match_data[1..3]
     end
 
     def escaped_text() (@escape.nil? ? nil : page_name) end
@@ -69,25 +86,41 @@ module WikiChunk
   #       a WikiWords can be a substring of a WikiLink. 
   class Link < WikiLink
     
-    WIKI_LINK = /\[\[([^\]]+)\]\]/ unless defined? WIKI_LINK
-    ALIASED_LINK_PATTERN = 
-        Regexp.new('^(.*)?\|(.*)$', 0, 'utf-8') unless defined? ALIASED_LINK_PATTERN
-
+    unless defined? WIKI_LINK
+      WIKI_LINK = /(":)?\[\[([^\]]+)\]\]/
+      LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic))$', 0, 'utf-8')
+      ALIAS_SEPARATION = Regexp.new('^(.+)\|(.+)$', 0, 'utf-8')
+    end    
+        
     def self.pattern() WIKI_LINK end
 
-    attr_reader :page_name, :link_text
+
+    attr_reader :page_name, :link_text, :link_type
 
     def initialize(match_data)
       super(match_data)
 
-	  # If the like is aliased, set the page name to the first bit
-	  # and the link text to the second, otherwise set both to the
-	  # contents of the double brackets.
-      if match_data[1] =~ ALIASED_LINK_PATTERN
-        @page_name, @link_text = $1, $2
-      else
-        @page_name, @link_text = match_data[1], match_data[1]
+      @textile_link_suffix, @page_name = match_data[1..2]
+
+      # defaults
+      @link_type = 'show'
+      @link_text = @page_name
+
+      # if link wihin the brackets has a form of [[filename:file]] or [[filename:pic]], 
+      # this means a link to a picture or a file
+      link_type_match = LINK_TYPE_SEPARATION.match(@page_name)
+      if link_type_match
+        @link_text = @page_name = link_type_match[1]
+        @link_type = link_type_match[2..3].compact[0]
       end
+
+      # link text may be different from page name. this will look like [[actual page|link text]]
+      alias_match = ALIAS_SEPARATION.match(@page_name)
+      if alias_match
+        @page_name, @link_text = alias_match[1..2]
+      end
+      # note that [[filename|link text:file]] is also supported
     end
   end
+
 end
