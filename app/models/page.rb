@@ -67,7 +67,7 @@ class Page
 
   # Returns the original wiki-word name as separate words, so "MyPage" becomes "My Page".
   def plain_name
-    WikiWords.separate(name, web.brackets_only)
+    web.brackets_only ? name : WikiWords.separate(name)
   end
 
   def link(options = {})
