@@ -115,11 +115,11 @@ CLEAN << 'pkg' << 'storage/2500' << 'doc' << 'html'
 begin
   require 'rubygems'
   require 'rake/gempackagetask'
-rescue Exception
+rescue Exception => e
   nil
 end
 
-if defined? GemPackageTask
+if defined? Rake::GemPackageTask
   gemspec = eval(File.read('instiki.gemspec'))
   Rake::GemPackageTask.new(gemspec) do |p|
     p.gem_spec = gemspec

@@ -1,4 +1,4 @@
-$__instiki_source_patterns = ['[A-Z]*', 'instiki', 'app/**/*', 'libraries/**/*', 'vendor/**/*']
+$__instiki_source_patterns = ['[A-Z]*', 'instiki', 'app/**/*', 'lib/**/*', 'vendor/**/*']
 
 spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
@@ -29,12 +29,12 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('RedCloth', '= 2.0.11')
   s.add_dependency('rubyzip', '= 0.5.5')
   s.requirements << 'none'
-  s.require_path = 'libraries'
+  s.require_path = 'lib'
 
   s.files = $__instiki_source_patterns.inject([]) { |list, glob|
   	list << Dir[glob].delete_if { |path|
       File.directory?(path) or
-      path.include?('CVS/') or 
+      path.include?('.svn/') or 
       path.include?('vendor/') or 
       path.include?('test/') or
       path.include?('_test.rb')

@@ -1,4 +1,4 @@
-$: << File.dirname(__FILE__) + "../../libraries"
+$: << File.dirname(__FILE__) + "../../lib"
 
 require 'redcloth'
 require 'rdocsupport'
