@@ -13,9 +13,9 @@
     <textarea name="content" style="width: 450px; height: 500px"><%= @page.content %></textarea>
 </p>
 <p>
-    <input type="submit" value="Update"> as 
+    <input type="submit" value="Update" /> as 
     <input type="text" name="author" id="authorName" value="<%= @author %>" 
-        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true">
+        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
     | <a href="../cancel_edit/<%= @page.name %>">Cancel</a> <small>(unlocks page)</small>
 </p>
 </form>

@@ -2,7 +2,8 @@
 
 <p>
   Congratulations on succesfully installing and starting Instiki. 
-  Since this is the first time Instiki has been run on this port, you'll need to do a brief one-time setup.
+  Since this is the first time Instiki has been run on this port, 
+  you'll need to do a brief one-time setup.
 </p>
 
 <form action="../create_system" id="setup" method="post" onSubmit="return validateSetup()">
@@ -11,12 +12,17 @@
 
     <h2 style="margin-bottom: 3px">Name and address for your first web</h2>
     <div class="help">
-      The name of the web is included in the title on all pages. The address is the base path that all pages within the web live beneath. Ex: the address "rails" gives URLs like <i>/rails/show/HomePage</i>. The address can only consist of letters & digits.
+      The name of the web is included in the title on all pages. 
+      The address is the base path that all pages within the web live beneath. 
+      Ex: the address "rails" gives URLs like <i>/rails/show/HomePage</i>. 
+      The address can only consist of letters and digits.
     </div>
     <div class="inputBox">
-      Name: <input type="text" id="web_name" name="web_name" value="Wiki" onChange="proposeAddress();" 
-          onClick="this.value == 'Wiki' ? this.value = '' : true"> &nbsp;&nbsp;
-      Address: <input type="text" id="web_address" name="web_address" onChange="cleanAddress();" value="wiki">
+      Name: <input type="text" id="web_name" name="web_name" value="Wiki" 
+            onChange="proposeAddress();" onClick="this.value == 'Wiki' ? this.value = '' : true" /> 
+      &nbsp;&nbsp;
+      Address: <input type="text" id="web_address" name="web_address" onChange="cleanAddress();"
+               value="wiki" />
     </div>
   </li>
 
@@ -27,14 +33,15 @@
       Everyone with this password will be able to do this, so pick it carefully.
     </div>
     <div class="inputBox">
-      Password: <input type="password" id="password" name="password"> &nbsp;&nbsp;
-      Verify: <input type="password" id="password_check" name="password_check">
+      Password: <input type="password" id="password" name="password" />
+      &nbsp;&nbsp;
+      Verify: <input type="password" id="password_check" name="password_check" />
     </div>
   </li>
 </ol>
 
 <p align="right">
-    <input type="submit" value="Setup" style="margin-left: 40px">
+    <input type="submit" value="Setup" style="margin-left: 40px" />
 </p>
 </form>
 
