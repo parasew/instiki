@@ -9,6 +9,7 @@ HEAD:
           restart
           Fixed parsing of URIs with a port number (http://someplace.org:8080)
           Instiki will not fork itself on a *nix, unless explicitly asked to
+          Instiki can bind to IPs other than 127.0.0.1 (command-line option)
           Automated tests for all controller actions
           Various usability enhancements
 
