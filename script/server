@@ -29,14 +29,11 @@ ARGV.options do |opts|
   opts.on('-b', '--binding=ip', String,
           'Binds Rails to the specified ip.',
           'Default: 127.0.0.1') { |OPTIONS[:ip]| }
-  opts.on('-i', '--index=controller', String,
-          'Specifies an index controller that requests for root will go to (instead of congratulations screen).'
-          ) { |OPTIONS[:index_controller]| }
   opts.on('-e', '--environment=name', String,
           'Specifies the environment to run this server under (test/development/production).',
           'Default: production') { |OPTIONS[:environment]| }
   opts.on('-d', '--daemon',
-          'Make Rails run as a Daemon (only works if fork is available -- meaning on *nix).'
+          'Make Instiki run as a Daemon (only works if fork is available -- meaning on *nix).'
           ) { OPTIONS[:server_type] = WEBrick::Daemon }
   opts.on('-s', '--simple', '--simple-server',
           '[deprecated] Forces Instiki not to run as a Daemon if fork is available.',
@@ -57,27 +54,25 @@ ARGV.options do |opts|
   opts.parse!
 end
 
-ENV['RAILS_ENV'] = OPTIONS[:environment]
-require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
-
-if OPTIONS[:verbose]
-  ActionController::Base.logger.level = Logger::DEBUG
-end
-
-OPTIONS[:index_controller] = 'wiki'
-require 'webrick_server'
-
 if OPTIONS[:environment] == 'production'
-  storage_path = OPTIONS[:storage] + "/" + OPTIONS[:port].to_s
-else 
-  storage_path = OPTIONS[:storage] + "/" + OPTIONS[:environment] + "/" + OPTIONS[:port].to_s
+  storage_path = "#{OPTIONS[:storage]}/#{OPTIONS[:port]}"
+else
+  storage_path = "#{OPTIONS[:storage]}/#{OPTIONS[:environment]}/#{OPTIONS[:port]}"
 end
 FileUtils.mkdir_p(storage_path)
 
-puts "=> Starting Instiki on http://#{OPTIONS[:ip]}:#{OPTIONS[:port]}"
-puts "=> Data files are stored in #{storage_path}"
-
-require 'application'
+ENV['RAILS_ENV'] = OPTIONS[:environment]
+INSTIKI_DEBUG_LOG = OPTIONS[:verbose]
+require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
 WikiService.storage_path = storage_path
-ApplicationController.wiki = WikiService.instance
-DispatchServlet.dispatch(OPTIONS)
+require 'application'
+
+unless defined? INSTIKI_BATCH_JOB
+  puts "=> Starting Instiki on http://#{OPTIONS[:ip]}:#{OPTIONS[:port]}"
+  puts "=> Data files are stored in #{storage_path}"
+
+  OPTIONS[:index_controller] = 'wiki'
+  require 'webrick_server'
+  ApplicationController.wiki = WikiService.instance
+  DispatchServlet.dispatch(OPTIONS)
+end

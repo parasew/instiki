@@ -50,8 +50,14 @@ require 'instiki_errors'
 
 unless defined? RAILS_DEFAULT_LOGGER
   RAILS_DEFAULT_LOGGER = Logger.new(STDERR)
-  RAILS_DEFAULT_LOGGER.level = Logger::INFO
   ActionController::Base.logger ||= RAILS_DEFAULT_LOGGER
+  if defined? INSTIKI_DEBUG_LOG and INSTIKI_DEBUG_LOG
+    RAILS_DEFAULT_LOGGER.level = Logger::DEBUG
+    ActionController::Base.logger.level = Logger::DEBUG
+  else
+    RAILS_DEFAULT_LOGGER.level = Logger::INFO
+    ActionController::Base.logger.level = Logger::INFO
+  end
 end
 
 # Environment-specific configuration.
