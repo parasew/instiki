@@ -77,7 +77,7 @@ class WikiContent < String
 
   # Call @web.page_link using current options.
   def page_link(name, text) 
-    @web.make_link(name, text, @options) 
+    @web.make_link(name, text, @options)
   end
 
   # Find all the chunks of the given types

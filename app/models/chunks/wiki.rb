@@ -18,7 +18,7 @@ module WikiChunk
     # the word is escaped. In that case, just return the link text
     def mask(content) escaped_text || pre_mask + link_text + post_mask end
 
-    def regexp() Regexp.new(pre_mask + '(.*)?' + post_mask) end
+    def regexp() /#{pre_mask}(.*)?#{post_mask}/ end
 
     def revert(content) content.sub!(regexp, text) end
 
@@ -27,7 +27,9 @@ module WikiChunk
     # get back a string of HTML to replace the mask with.
     def unmask(content)
       return nil if escaped_text
-      return self if content.sub!(regexp) { |match| content.page_link(page_name, $1) }
+      return self if content.sub!(regexp) do |match|
+        content.page_link(page_name, $1)
+      end
     end
   end
 
