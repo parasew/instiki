@@ -1,9 +1,9 @@
-if RUBY_VERSION < "1.8.1" 
-  puts "Instiki requires Ruby 1.8.1+" 
+if RUBY_VERSION < '1.8.1' 
+  puts 'Instiki requires Ruby 1.8.1+'
   exit
 end
 
-RAILS_ROOT = File.dirname(__FILE__) + "/../" unless defined? RAILS_ROOT
+RAILS_ROOT = File.dirname(__FILE__) + '/../' unless defined? RAILS_ROOT
 RAILS_ENV  = ENV['RAILS_ENV'] || 'production' unless defined? RAILS_ENV
 
 unless defined? ADDITIONAL_LOAD_PATHS
