@@ -1,13 +1,20 @@
 HEAD:
-          Parsing of URIs with a port (http://someplace.org:8080) fixed
+          Ported to ActionPack
           Madeleine will check every hour if there are new commands in the log or 24 hours have 
           passed since last snapshot, and take snapshot if either of these conditions is true
+          Madeleine will also not log read-only operations, resulting in a better performance
           Wiki extracts (to HTML and plain text) will leave only the last extract file in ./storage
           Local hyperlinks in published pages point to published pages [Michael DeHaan]
+          Fixed a bug that sometimes caused all past revisions of a page to be "forgotten" on 
+          restart
+          Fixed parsing of URIs with a port number (http://someplace.org:8080)
+          Instiki will not fork itself on a *nix, unless explicitly asked to
+          Automated tests for all controller actions
           Various usability enhancements
 
  * 0.9.2:
-          Rollback takes the user to an edit form. The form has to be submitted for the change to take place.
+          Rollback takes the user to an edit form. The form has to be submitted for the change to 
+          take place.
           Changed to use inline style on published pages
           Fixed "forward in time" on the last revision before current page
           Instiki won't log bogus error messages when creating a new Wiki.
