@@ -1,7 +1,7 @@
 HEAD:
           RSS feeds accept query parameters, sush as 
           http://localhost:2500/wiki/rss_with_headlines?start=2005-02-18&end=2005-02-19&limit=10
-          RedCloth 3.0.3 (read: mixing Textile and Markdown in the same page)
+          RedCloth 3.0.3 (mixing Textile and Markdown in the same page)
           Files/pictures can be uploaded to a wiki and served from / displayed in wiki pages
           Wiki link syntax doesn't conflict with Textile hyperlink syntax. Therefore
           "textile link":LinkToSomePlace will not look insane.
