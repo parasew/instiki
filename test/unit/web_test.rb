@@ -139,12 +139,30 @@ class WebTest < Test::Unit::TestCase
     assert_equal [home], @web.select.pages_that_link_to('AnotherPage')
   end
 
+  def test_orphaned_pages
+    add_sample_pages
+    home = @web.add_page(Page.new(@web, 'HomePage', 
+        'This is a home page, it should not be an orphan',
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky'))
+    author = @web.add_page(Page.new(@web, 'AlexeyVerkhovsky', 
+        'This is an author page, it should not be an orphan',
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky'))
+    self_linked = @web.add_page(Page.new(@web, 'SelfLinked', 
+        'I am me SelfLinked and link to EverBeenInLove',
+        Time.local(2004, 4, 4, 16, 50), 'AnonymousCoward'))
+        
+    # page that links to itself, and nobody else links to it must be an orphan
+    assert_equal ['EverBeenHated', 'SelfLinked'], 
+       @web.select.orphaned_pages.collect{ |page| page.name }.sort
+  end  
+
+
   private
 
   def add_sample_pages
-    @web.add_page(Page.new(@web, 'EverBeenInLove', 'Who am I me', 
-    Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson'))
-    @web.add_page(Page.new(@web, 'EverBeenHated', 'I am me EverBeenHated', 
-    Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson'))
+    @in_love = @web.add_page(Page.new(@web, 'EverBeenInLove', 'Who am I me', 
+        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson'))
+    @hated = @web.add_page(Page.new(@web, 'EverBeenHated', 'I am me EverBeenHated', 
+        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson'))
   end
 end

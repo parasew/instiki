@@ -55,9 +55,17 @@ class PageSet < Array
   # pages in this set for which there is no reference in the web.
   # The HomePage and author pages are always assumed to have
   # references and so cannot be orphans
+  # Pages that refer to themselves and have no links from outside are oprphans.
   def orphaned_pages
-    references = web.select.wiki_words + ['HomePage'] + web.select.authors
-    self.reject { |page| references.include?(page.name) } 
+    never_orphans = web.select.authors + ['HomePage']
+    self.select { |page|
+      if never_orphans.include? page.name
+        false
+      else
+        references = pages_that_reference(page.name)
+        references.empty? or references == [page]
+      end
+    }
   end
 
   # Returns all the wiki words in this page set for which
