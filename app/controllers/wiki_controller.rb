@@ -1,10 +1,11 @@
 require 'application'
 require 'fileutils'
 require 'redcloth_for_tex'
+require 'parsedate'
 
 class WikiController < ApplicationController
 
-  layout 'default', :except => [:rss_feed, :rss_with_headlines, :tex,  :export_tex, :export_html]
+  layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex,  :export_tex, :export_html]
 
   def index
     if @web_name
@@ -89,11 +90,11 @@ class WikiController < ApplicationController
   end
 
   def rss_with_content
-    render_rss
+    render_rss(hide_description = false, *parse_rss_params)
   end
 
   def rss_with_headlines
-    render_rss(hide_description = true)
+    render_rss(hide_description = true, *parse_rss_params)
   end
 
   def search
@@ -291,6 +292,18 @@ class WikiController < ApplicationController
     }
   end
 
+  def parse_rss_params
+    if @params.include? 'limit'
+      limit = @params['limit'].to_i rescue nil
+      limit = nil if limit == 0
+    else
+      limit = 15
+    end
+    start_date = Time.local(*ParseDate::parsedate(@params['start'])) rescue nil
+    end_date = Time.local(*ParseDate::parsedate(@params['end'])) rescue nil
+    [ limit, start_date, end_date ]
+  end
+  
   def password_check(password)
     if password == @web.password
       cookies['web_address'] = password
@@ -306,8 +319,15 @@ class WikiController < ApplicationController
     ip
   end
 
-  def render_rss(hide_description = false)
-    @pages_by_revision = @web.select.by_revision.first(15)
+  def render_rss(hide_description = false, limit = 15, start_date = nil, end_date = nil)
+    if limit && !start_date && !end_date
+      @pages_by_revision = @web.select.by_revision.first(limit)
+    else
+      @pages_by_revision = @web.select.by_revision
+      @pages_by_revision.reject! { |page| page.created_at < start_date } if start_date
+      @pages_by_revision.reject! { |page| page.created_at > end_date } if end_date
+    end
+    
     @hide_description = hide_description
     @response.headers['Content-Type'] = 'text/xml'
     render 'wiki/rss_feed'

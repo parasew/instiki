@@ -45,6 +45,13 @@ class Test::Unit::TestCase
         10.minutes.ago, Author.new('Guest', '127.0.0.2'))
   end
   
+  def setup_wiki_with_30_pages
+    (1..30).each { |i|
+      @wiki.write_page('wiki1', "page#{i}", "Test page #{i}\ncategory: test", 
+                                Time.local(1976, 10, i, 12, 00, 00), Author.new('Dema', '127.0.0.2'))
+    }
+  end
+  
   def tear_down_wiki
     ApplicationController.wiki = nil
   end

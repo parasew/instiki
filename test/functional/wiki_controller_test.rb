@@ -344,7 +344,6 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal @home.revisions[0], r.template_objects['revision']
   end
 
-
   def test_rss_with_content
     setup_wiki_with_three_pages
   
@@ -388,6 +387,45 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_template_xpath_match '/rss/channel/item/link', expected_page_links
   end
 
+  def test_rss_with_params
+    setup_wiki_with_30_pages
+
+    r = process 'rss_with_headlines', 'web' => 'wiki1'
+    assert_success
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 15, pages.size, 15
+    
+    r = process 'rss_with_headlines', 'web' => 'wiki1', 'limit' => '5'
+    assert_success
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 5, pages.size
+    
+    r = process 'rss_with_headlines', 'web' => 'wiki1', 'limit' => '25'
+    assert_success
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 25, pages.size
+    
+    r = process 'rss_with_headlines', 'web' => 'wiki1', 'limit' => 'all'
+    assert_success
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 31, pages.size
+    
+    r = process 'rss_with_headlines', 'web' => 'wiki1', 'start' => '1976-10-16'
+    assert_success
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 16, pages.size
+    
+    r = process 'rss_with_headlines', 'web' => 'wiki1', 'end' => '1976-10-16'
+    assert_success
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 15, pages.size
+    
+    r = process 'rss_with_headlines', 'web' => 'wiki1', 'start' => '1976-10-01', 'end' => '1976-10-06'
+    assert_success
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 5, pages.size
+  end
+  
   def test_save
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => 'AuthorOfNewPage'
