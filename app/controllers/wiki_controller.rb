@@ -4,7 +4,7 @@ require 'redcloth_for_tex'
 
 class WikiController < ApplicationController
 
-  layout 'default', :except => [:rss_feed, :rss_with_headlines, :tex_web, :tex]
+  layout 'default', :except => [:rss_feed, :rss_with_headlines, :tex,  :export_tex, :export_html]
   before_filter :pre_process
 
   def index
@@ -317,7 +317,7 @@ class WikiController < ApplicationController
     end
     FileUtils.rm_rf(Dir[WikiService.storage_path + file_prefix + '*.zip'])
     FileUtils.mv(tmp_path, file_path)
-    send_file(file_path, :type => 'application/zip')
+    send_file(file_path, :type => 'application/zip', :streaming => false)
   end
 
   def export_web_to_tex(file_path)
