@@ -26,53 +26,49 @@ class URIChunk < Chunk::Abstract
     COUNTRY = '(?:au|at|be|ca|ch|de|dk|fr|hk|in|ir|it|jp|nl|no|pt|ru|se|sw|tv|tw|uk|us)'
   
     # These are needed otherwise HOST will match almost anything
-    TLDS = "\\.(?:#{GENERIC}|#{COUNTRY})" 
-  
+    TLDS = "(?:#{GENERIC}|#{COUNTRY})"
+    
     # Redefine USERINFO so that it must have non-zero length
     USERINFO = "(?:[#{UNRESERVED};:&=+$,]|#{ESCAPED})+"
   
-    # Pattern of legal URI endings to stop interference with some Textile
-    # markup. (Images: !URI!) and other punctuation eg, (http://wiki.com/)
-    URI_ENDING = '[)!]'
-  
+    # unreserved_no_ending = alphanum | mark, but URI_ENDING [)!] excluded
+    UNRESERVED_NO_ENDING = "-_.~*'(#{ALNUM}"  
+
+    # this ensures that query or fragment do not end with URI_ENDING
+    # and enable us to use a much simpler self.pattern Regexp
+
+    # uric_no_ending = reserved | unreserved_no_ending | escaped
+    URIC_NO_ENDING = "(?:[#{UNRESERVED_NO_ENDING}#{RESERVED}]|#{ESCAPED})"
+    # query = *uric
+    QUERY = "#{URIC_NO_ENDING}*"
+    # fragment = *uric
+    FRAGMENT = "#{URIC_NO_ENDING}*"
+
+    # DOMLABEL is defined in the ruby uri library, TLDS is defined above
+    FULL_HOSTNAME = "(?:#{DOMLABEL}\\.)+#{TLDS}" 
+
     # Correct a typo bug in ruby 1.8.x lib/uri/common.rb 
     PORT = '\\d*'
 
-    # The basic URI expression as a string
-    URI_PATTERN = 
-  	"(?:(#{SCHEME})://)?" +    # Optional scheme://              (\1|\8)
-  	"(?:(#{USERINFO})@)?" +    # Optional userinfo@              (\2|\9)
-  	"(#{HOSTNAME}#{TLDS})" +   # Mandatory host eg, HOST.com.au  (\3|\10)
-  	"(?::(#{PORT}))?" +        # Optional :port                  (\4|\11)
-  	"(#{ABS_PATH})?" +         # Optional absolute path          (\5|\12)
-  	"(?:\\?(#{QUERY}))?" +     # Optional ?query                 (\6|\13)
-  	"(?:\\#(#{FRAGMENT}))?"    # Optional #fragment              (\7|\14)
-
+    URI_PATTERN =
+        "(?:(#{SCHEME}):/{0,2})?" + # Optional scheme:        (\1)
+        "(?:(#{USERINFO})@)?" +     # Optional userinfo@      (\2)
+        "(#{FULL_HOSTNAME})" +      # Mandatory hostname      (\3)
+        "(?::(#{PORT}))?" +         # Optional :port          (\4)
+        "(#{ABS_PATH})?"  +         # Optional absolute path  (\5)
+        "(?:\\?(#{QUERY}))?" +      # Optional ?query         (\6)
+        "(?:\\#(#{FRAGMENT}))?"     # Optional #fragment      (\7)
   end
 
   def self.pattern()
-    # This pattern first tries to match the URI_PATTERN that ends with 
-    # punctuation that is a valid URI character (eg, ')', '!'). If
-    # such a match occurs, there should be no backtracking (hence the ?> ). 
-    # If the string cannot match a URI ending with URI_ENDING, then a second
-    # attempt is tried.
-    Regexp.new("(?>#{URI_PATTERN}(?=#{URI_ENDING}))|#{URI_PATTERN}", Regexp::EXTENDED, 'N')
+    Regexp.new(URI_PATTERN, Regexp::EXTENDED, 'N')
   end
 
   attr_reader :uri, :scheme, :user, :host, :port, :path, :query, :fragment, :link_text
   
   def initialize(match_data)
     super(match_data)
-    # Since the URI_PATTERN is tried twice, there are two sets of
-    # groups, one from \1 to \7 and the second from \8 to \14.
-    # The fields are set by which ever group matches.
-    @scheme   	= match_data[1] || match_data[8]
-    @user     	= match_data[2] || match_data[9]
-    @host     	= match_data[3] || match_data[10]
-    @port		= match_data[4] || match_data[11]
-    @path		= match_data[5] || match_data[12]
-    @query		= match_data[6] || match_data[13]
-    @fragment	= match_data[7] || match_data[14]
+    @scheme, @user, @host, @port, @path, @query, @fragment = match_data[1..-1]
 
     # If there is no scheme, add an appropriate one, otherwise
     # set the URI to the matched text.
@@ -95,7 +91,7 @@ class URIChunk < Chunk::Abstract
   # If the text should be escaped then don't keep this chunk.
   # Otherwise only keep this chunk if it was substituted back into the
   # content.
-  def unmask(content) 
+  def unmask(content)
     return nil if escaped_text
     return self if content.sub!( Regexp.new(mask(content)), "<a href=\"#{uri}\">#{link_text}</a>" )
   end
