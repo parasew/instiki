@@ -56,7 +56,8 @@ class Web
     wiki.file_yard(self).has_file?(name)
   end
 
-  def make_file_link(mode, link, text, base_url)
+  def make_file_link(mode, name, text, base_url)
+    link = CGI.escape(name)
     case mode
     when :export
       if has_file?(name) then "<a class=\"existingWikiWord\" href=\"#{link}.html\">#{text}</a>"
@@ -80,23 +81,23 @@ class Web
   # It should not be used in menus, templates and such - instead, use link_to_page helper
   def make_link(name, text = nil, options = {})
     text = CGI.escapeHTML(text || WikiWords.separate(name))
-    link = CGI.escape(name)
     mode = options[:mode] || :show
     base_url = options[:base_url] || '..'
     link_type = options[:link_type] || :show
     case link_type.to_sym
     when :show
-      make_page_link(mode, link, text, base_url)
+      make_page_link(mode, name, text, base_url)
     when :file
-      make_file_link(mode, link, text, base_url)
+      make_file_link(mode, name, text, base_url)
     when :pic
-      make_pic_link(mode, link, text, base_url)
+      make_pic_link(mode, name, text, base_url)
     else
       raise "Unknown link type: #{link_type}"
     end
   end
 
-  def make_page_link(mode, link, text, base_url)
+  def make_page_link(mode, name, text, base_url)
+    link = CGI.escape(name)
     case mode.to_sym
     when :export
       if has_page?(name) then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
@@ -113,7 +114,8 @@ class Web
     end
   end
 
-  def make_pic_link(mode, link, text, base_url)
+  def make_pic_link(mode, name, text, base_url)
+    link = CGI.escape(name)
     case mode.to_sym
     when :export
       if has_file?(name) then %{<img alt="#{text}" src="#{link}" />}
