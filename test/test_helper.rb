@@ -102,12 +102,8 @@ if defined? $validate_xml_in_assert_success and $validate_xml_in_assert_success 
         alias :__assert_success_before_ovverride_by_instiki :assert_success
         def assert_success
           __assert_success_before_ovverride_by_instiki
-          if @response.body.kind_of?(Proc)
-            body = @response.body.call
-          else
-            body = @response.body
-          end
-          assert_nothing_raised(body) { REXML::Document.new(body) }
+          if @response.body.kind_of?(Proc) then # it's a file download, not an HTML content
+          else assert_nothing_raised(@response.body) { REXML::Document.new(@response.body) } end
         end
       end
     end
