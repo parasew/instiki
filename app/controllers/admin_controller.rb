@@ -19,7 +19,7 @@ class AdminController < ApplicationController
           Your new wiki '#{@params['web_name']}' is created!<br/>
           Please edit its home page and press Submit when finished.
       EOL
-      redirect_to  :web => @params['web_address'], :controller => 'wiki', :action => 'new', 
+      redirect_to :web => @params['web_address'], :controller => 'wiki', :action => 'new', 
           :id => 'HomePage'
     else
       # no form submitted -> go to template
@@ -30,8 +30,14 @@ class AdminController < ApplicationController
     if @params['address']
       # form submitted
       if @wiki.authenticate(@params['system_password'])
-        @wiki.create_web(@params['name'], @params['address'])
-        redirect_show('HomePage', @params['address'])
+        begin
+          @wiki.create_web(@params['name'], @params['address'])
+          flash[:info] = "New web '#{@params['name']}' successfully created."
+          redirect_to :web => @params['address'], :controller => 'wiki', :action => 'new', 
+              :id => 'HomePage'
+        rescue Instiki::ValidationError => e
+          flash[:error] = e.message
+        end
       else 
         redirect_to :controller => 'wiki', :action => 'index'
       end
