@@ -2,7 +2,7 @@
 
 # Uncomment the line below to enable pdflatex tests; don't forget to comment them again 
 # commiting to SVN
-$INSTIKI_TEST_PDFLATEX = true
+# $INSTIKI_TEST_PDFLATEX = true
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_controller'

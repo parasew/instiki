@@ -220,7 +220,13 @@ class WikiController < ApplicationController
   def convert_tex_to_pdf(tex_path)
     # TODO remove earlier PDF files with the same prefix
     # TODO handle gracefully situation where pdflatex is not available
-    logger.info `pdflatex --interaction=nonstopmode --output-directory #{File.dirname(tex_path)} #{File.basename(tex_path)}`
+    begin
+      wd = Dir.getwd
+      Dir.chdir(File.dirname(tex_path))
+      logger.info `pdflatex --interaction=nonstopmode #{File.basename(tex_path)}`
+    ensure
+      Dir.chdir(wd)
+    end
   end
 
   def export_page_to_tex(file_path)
