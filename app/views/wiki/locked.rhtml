@@ -7,6 +7,14 @@
 <% end %>
 
 <p>
-  <a href="<%= @page.name %>?break_lock=1" accesskey="E">Edit the page anyway</a> |
-  <a href="../show/<%= @page.name %>">Cancel</a>
+  <%= link_to 'Edit the page anyway',
+        {:web => @web_name, :action => 'edit', :id => @page.name, :params => {'break_lock' => '1'} },
+        {:accesskey => 'E'}
+  %>
+
+  <%= link_to 'Cancel',
+        {:web => @web_name, :action => 'show', :id => @page.name},
+        {:accesskey => 'C'}
+  %>
+
 </p>
