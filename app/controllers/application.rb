@@ -28,12 +28,15 @@ class ApplicationController < ActionController::Base
     $instiki_wiki_service
   end
 
-  @@REMEMBER_NOT = []
+  @@REMEMBER_NOT = ['locked', 'save']
   
   def remember_location
+logger.debug @request.method
     if @response.headers['Status'] == '200 OK'
-      @session[:return_to] = url_for unless @@REMEMBER_NOT.include? action_name
-      @session[:already_tried_index_as_fallback] = false
+      unless @@REMEMBER_NOT.include? action_name or @request.method != :get
+        @session[:return_to] = url_for 
+        logger.debug("Session ##{session.object_id}: remembered URL '#{@session[:return_to]}'")
+      end
     end
   end
 
@@ -42,10 +45,11 @@ class ApplicationController < ActionController::Base
     redirect_target, @session[:return_to] = @session[:return_to], nil
     # then try to redirect to it
     if redirect_target.nil?
-      raise 'Cannot redirect to index' if @session[:already_tried_index_as_fallback]
-      @session[:already_tried_index_as_fallback] = true
+      logger.debug("Session ##{session.object_id}: no remembered redirect location, trying /")
       redirect_to_url '/'
     else
+      logger.debug("Session ##{session.object_id}: " +
+          "redirect to the last remembered URL #{redirect_target}")
       redirect_to_url(redirect_target)
     end
   end

@@ -216,20 +216,22 @@ class WikiController < ApplicationController
     cookies['author'] = @params['author']
 
     begin
+      page = @web.pages[@page_name]
       if @web.pages[@page_name]
-        page = wiki.revise_page(
+        wiki.revise_page(
             @web_name, @page_name, @params['content'], Time.now, 
             Author.new(@params['author'], remote_ip)
         )
         page.unlock
       else
-        page = wiki.write_page(
+        wiki.write_page(
             @web_name, @page_name, @params['content'], Time.now, 
             Author.new(@params['author'], remote_ip)
         )
       end
       redirect_show(@page_name)
     rescue Instiki::ValidationError => e
+      page.unlock if defined? page
       flash[:error] = e
       return_to_last_remembered
     end

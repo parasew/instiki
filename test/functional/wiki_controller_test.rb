@@ -542,6 +542,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_save_new_revision_identical_to_last
     revisions_before = @home.revisions.size
+    @home.lock(Time.now, 'AnAuthor')
   
     r = process 'save', {'web' => 'wiki1', 'id' => 'HomePage', 
         'content' => @home.revisions.last.content.dup, 
@@ -553,7 +554,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     revisions_after = @home.revisions.size
     assert_equal revisions_before, revisions_after
-    
+    assert !@home.locked?(Time.now), 'HomePage should be unlocked if an edit was unsuccessful'
   end
 
 
