@@ -83,9 +83,9 @@ class URITest < Test::Unit::TestCase
         :scheme =>'ftp', :host =>'www.example.com', :port => nil, :path => nil, :query => nil,
         :link_text => 'ftp://www.example.com')
 	# mailto
-	match(URIChunk, 'mailto:www@example.com',
+	match(URIChunk, 'mailto:jdoe123@example.com',
         :scheme =>'mailto', :host =>'example.com', :port => nil, :path => nil, :query => nil,
-        :link_text => 'mailto:www@example.com')
+        :user => 'jdoe123', :link_text => 'mailto:jdoe123@example.com')
     # something nonexistant
 	match(URIChunk, 'foobar://www.example.com',
         :scheme =>'foobar', :host =>'www.example.com', :port => nil, :path => nil, :query => nil,
@@ -142,13 +142,14 @@ class URITest < Test::Unit::TestCase
     )
   end
   
-  def test_uri_with_port
+  def test_interesting_uri_with__comma
+    # Counter-intuitively, this URL matches, but the query part includes the trailing comma.
+    # It has no way to know that the query does not include the comma.
     match(
-      URIChunk, 
-      "This text contains a URL http://someplace.org:8080/~person/stuff.cgi?arg=val, doesn't it?", 
-      :scheme => 'http', :host => 'someplace.org', :port => '8080', :path => '/~person/stuff.cgi', 
-      :query => 'arg=val'
-    )
+        URIChunk, 
+        "This text contains a URL http://someplace.org:8080/~person/stuff.cgi?arg=val, doesn't it?",
+        :scheme => 'http', :host => 'someplace.org', :port => '8080', :path => '/~person/stuff.cgi',
+        :query => 'arg=val,')
   end
 
 end
