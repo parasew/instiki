@@ -126,12 +126,12 @@ ol.setup li {
   font-size: 10px;
 }
 
-.diffdel {
+.diffdel, del.diffmod {
   background: pink;
 }
 
-.diffins {
-  background: lightgreen;
+.diffins, ins.diffmod {
+   background: lightgreen;
 }
 
 #footer {
