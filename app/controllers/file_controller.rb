@@ -94,9 +94,15 @@ class FileController < ApplicationController
       page_content = entry.get_input_stream.read
       logger.info "Processing page '#{page_name}'"
       begin
-        if @wiki.read_page(@web.address, page_name)
-          logger.info "Page '#{page_name}' already exists. Adding a new revision to it."
-          wiki.revise_page(@web.address, page_name, page_content, Time.now, @author)
+        existing_page = @wiki.read_page(@web.address, page_name)
+        if existing_page
+          if existing_page.content == page_content
+            logger.info "Page '#{page_name}' with the same content already exists. Skipping."
+            next
+          else
+            logger.info "Page '#{page_name}' already exists. Adding a new revision to it."
+            wiki.revise_page(@web.address, page_name, page_content, Time.now, @author)
+          end
         else
           wiki.write_page(@web.address, page_name, page_content, Time.now, @author)
         end

@@ -79,5 +79,21 @@ class Revision
   def display_content_for_export
     WikiContent.new(self, {:mode => :export} )
   end
+  
+  def force_rendering
+    begin
+      display_content
+    rescue Exception => e
+      ApplicationController.logger.error "Failed rendering page #{@name}"
+      ApplicationController.logger.error e
+      message = e.message.gsub(/\n/, '<br/>')
+      # substitute content with an error message
+      content = <<-EOL
+          <p>Markup engine has failed to render this page, raising the following error:</p>
+          <p>#{message}</p>
+      EOL
+      raise e
+    end
+  end
 
 end

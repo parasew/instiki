@@ -21,7 +21,7 @@ class Page
       raise Instiki::ValidationError.new(
           "You have tried to save page '#{name}' without changing its content")
     end
-  
+
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 
     # by the same author, not more than 30 minutes ago, then update the last revision instead of
@@ -33,8 +33,14 @@ class Page
     else
       @revisions << Revision.new(self, @revisions.length, content, created_at, author)
     end
+
+    self.revisions.last.force_rendering
+    # at this point the page may not be inserted in the web yet, and therefore 
+    # references to the page itself are rendered as "unresolved". Clearing the cache allows 
+    # the page to re-render itself once again, hopefully _after_ it is inserted in the web
+    self.revisions.last.clear_display_cache
     
-    web.refresh_pages_with_references(name) if @revisions.length == 1
+    web.refresh_pages_with_references(@name) if @revisions.length == 1
   end
 
   def rollback(revision_number, created_at, author_ip = nil)
@@ -79,14 +85,16 @@ class Page
     web.make_link(author, nil, options)
   end
 
-  private
-    def continous_revision?(created_at, author)
-      @revisions.last.author == author && @revisions.last.created_at + 30.minutes > created_at
-    end
 
-    # Forward method calls to the current revision, so the page responds to all revision calls
-    def method_missing(method_symbol)
-      revisions.last.send(method_symbol)
-    end
+  private
+
+  def continous_revision?(created_at, author)
+    @revisions.last.author == author && @revisions.last.created_at + 30.minutes > created_at
+  end
+
+  # Forward method calls to the current revision, so the page responds to all revision calls
+  def method_missing(method_symbol)
+    revisions.last.send(method_symbol)
+  end
 
 end
