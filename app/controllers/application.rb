@@ -52,6 +52,21 @@ class ApplicationController < ActionController::Base
     check_authorization
   end
 
+  FILE_TYPES = {
+    '.exe' => 'application/octet-stream',
+    '.gif' => 'image/gif',
+    '.jpg' => 'image/jpeg',
+    '.pdf' => 'application/pdf',
+    '.png' => 'image/png',
+    '.txt' => 'text/plain',
+    '.zip' => 'application/zip'
+  }
+
+  def send_file(file, options = {})
+    options[:type] ||= (FILE_TYPES[File.extname(file)] || 'application/octet-stream')
+    super(file, options)
+  end
+
   def in_a_web?
     not @web_name.nil?
   end

@@ -2,7 +2,7 @@
 
 # Uncomment the line below to enable pdflatex tests; don't forget to comment them again 
 # commiting to SVN
-# $INSTIKI_TEST_PDFLATEX = true
+$INSTIKI_TEST_PDFLATEX = true
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_controller'
@@ -181,7 +181,7 @@ class WikiControllerTest < Test::Unit::TestCase
     def test_export_pdf
       r = process 'export_pdf', 'web' => 'wiki1'
       assert_success
-      assert_equal 'application/octet_stream', r.headers['Content-Type']
+      assert_equal 'application/pdf', r.headers['Content-Type']
       assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
           r.headers['Content-Disposition']
       content = r.binary_content
@@ -202,7 +202,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_tex', 'web' => 'wiki1'
 
     assert_success
-    assert_equal 'application/octet_stream', r.headers['Content-Type']
+    assert_equal 'application/octet-stream', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
         r.headers['Content-Disposition']
     content = r.binary_content
@@ -310,7 +310,7 @@ class WikiControllerTest < Test::Unit::TestCase
       assert_equal '%PDF', content[0..3]
       assert_equal "EOF\n", content[-4..-1]
 
-      assert_equal 'application/octet_stream', r.headers['Content-Type']
+      assert_equal 'application/pdf', r.headers['Content-Type']
       assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
           r.headers['Content-Disposition']
     end

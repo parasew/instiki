@@ -84,7 +84,7 @@ class WikiController < ApplicationController
 
     export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
     convert_tex_to_pdf "#{file_path}.tex"
-    send_file("#{file_path}.pdf")
+    send_file "#{file_path}.pdf"
   end
 
   def export_tex
@@ -92,7 +92,7 @@ class WikiController < ApplicationController
     file_path = @wiki.storage_path + file_name
 
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)
-    send_file(file_path)
+    send_file file_path
   end
 
   def feeds
@@ -184,10 +184,10 @@ class WikiController < ApplicationController
     file_name = "#{safe_page_name}-#{@web.address}-#{@page.created_at.strftime('%Y-%m-%d-%H-%M-%S')}"
     file_path = @wiki.storage_path + file_name
 
-    export_page_to_tex(file_path + '.tex') unless FileTest.exists?(file_path + '.tex')
+    export_page_to_tex("#{file_path}.tex") unless FileTest.exists?("#{file_path}.tex")
     # NB: this is _very_ slow
-    convert_tex_to_pdf(file_path + '.tex')
-    send_file(file_path + '.pdf')
+    convert_tex_to_pdf("#{file_path}.tex")
+    send_file "#{file_path}.pdf"
   end
 
   def print
@@ -300,7 +300,7 @@ class WikiController < ApplicationController
     end
     FileUtils.rm_rf(Dir[@wiki.storage_path + file_prefix + '*.zip'])
     FileUtils.mv(tmp_path, file_path)
-    send_file(file_path, :type => 'application/zip')
+    send_file file_path
   end
 
   def export_web_to_tex(file_path)
