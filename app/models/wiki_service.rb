@@ -8,6 +8,7 @@ require 'web'
 require 'page'
 require 'author'
 require 'file_yard'
+require 'instiki_errors'
 
 module AbstractWikiService
 
@@ -77,7 +78,15 @@ module AbstractWikiService
   def edit_web(old_address, new_address, name, markup, color, additional_style, safe_mode = false, 
       password = nil, published = false, brackets_only = false, count_pages = false, 
       allow_uploads = true, max_upload_size = nil)
+
+    if not @webs.key? old_address
+      raise Instiki::ValidationError.new("Web with address '#{old_address}' does not exist")
+    end
+
     if old_address != new_address
+      if @webs.key? new_address
+        raise Instiki::ValidationError.new("There is already a web with address '#{new_address}'")
+      end
       @webs[new_address] = @webs[old_address]
       @webs.delete(old_address)
       @webs[new_address].address = new_address

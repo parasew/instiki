@@ -69,6 +69,19 @@ class WikiServiceTest < Test::Unit::TestCase
     assert_equal(@s.storage_path + '/instiki', file_yard.files_path)
   end
 
+  def test_edit_web_validations
+    another_web = @s.create_web 'Another', 'another'
+    
+    # try to rename instiki web to another (which is the name of an already existing one)
+    assert_raises(Instiki::ValidationError) {
+      @s.edit_web('instiki', 'another', @web.name, @web.markup, @web.color, @web.additional_style)
+    }
+
+    assert_raises(Instiki::ValidationError) {
+      @s.edit_web('nonexistant', 'another', @web.name, @web.markup, @web.color, @web.additional_style)
+    }
+  end
+
 
   # Checks that a method call or a block doesn;t change the persisted state of the wiki
   # Usage:
