@@ -20,7 +20,7 @@ class Page
     # by the same author, not more than 30 minutes ago, then update the last revision instead of
     # creating a new one
     if !@revisions.empty? && continous_revision?(created_at, author)
-      @revisions.last.created_at = Time.now
+      @revisions.last.created_at = created_at
       @revisions.last.content    = content
       @revisions.last.clear_display_cache
     else

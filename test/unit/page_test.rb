@@ -64,6 +64,7 @@ class PageTest < Test::Unit::TestCase
     @page.revise("HisWay would be MyWay in kinda update", Time.local(2004, 4, 4, 16, 57), "MarianneSyhler")
     assert_equal 2, @page.revisions.length
     assert_equal "HisWay would be MyWay in kinda update", @page.revisions.last.content
+    assert_equal Time.local(2004, 4, 4, 16, 57), @page.revisions.last.created_at
 
     @page.revise("HisWay would be MyWay in the house", Time.local(2004, 4, 4, 16, 58), "DavidHeinemeierHansson")
     assert_equal 3, @page.revisions.length
