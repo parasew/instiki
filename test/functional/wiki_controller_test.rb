@@ -543,13 +543,17 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_save_new_revision_identical_to_last
     revisions_before = @home.revisions.size
   
-    assert_raise(Instiki::ValidationError) {
-      process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 
+    r = process 'save', {'web' => 'wiki1', 'id' => 'HomePage', 
         'content' => @home.revisions.last.content.dup, 
-        'author' => 'SomeOtherAuthor'
-    }
+        'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/HomePage'}
+
+    assert_redirect_url '/wiki1/show/HomePage'
+    assert_flash_has :error
+    assert r.flash[:error].kind_of?(Instiki::ValidationError)
+
     revisions_after = @home.revisions.size
     assert_equal revisions_before, revisions_after
+    
   end
 
 

@@ -213,21 +213,26 @@ class WikiController < ApplicationController
 
   def save
     redirect_to :action => 'index' if @page_name.nil?
-
-    if @web.pages[@page_name]
-      page = wiki.revise_page(
-          @web_name, @page_name, @params['content'], Time.now, 
-          Author.new(@params['author'], remote_ip)
-      )
-      page.unlock
-    else
-      page = wiki.write_page(
-          @web_name, @page_name, @params['content'], Time.now, 
-          Author.new(@params['author'], remote_ip)
-      )
-    end
     cookies['author'] = @params['author']
-    redirect_show(@page_name)
+
+    begin
+      if @web.pages[@page_name]
+        page = wiki.revise_page(
+            @web_name, @page_name, @params['content'], Time.now, 
+            Author.new(@params['author'], remote_ip)
+        )
+        page.unlock
+      else
+        page = wiki.write_page(
+            @web_name, @page_name, @params['content'], Time.now, 
+            Author.new(@params['author'], remote_ip)
+        )
+      end
+      redirect_show(@page_name)
+    rescue Instiki::ValidationError => e
+      flash[:error] = e
+      return_to_last_remembered
+    end
   end
 
   def show
