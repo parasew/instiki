@@ -29,10 +29,8 @@ class WikiTest < Test::Unit::TestCase
 	)
   end
 
-# MDR: I'm not sure how to deal with this case just yet...
-#
-#  def test_textile_link
-#	assert_no_match(WikiChunk::Word.pattern, '"Here is a special link":SpecialLink')
-#  end
+  def test_textile_link
+	assert_no_match(WikiChunk::Word.pattern, '"Here is a special link":SpecialLink')
+  end
 
 end
