@@ -25,7 +25,7 @@ class WikiController < ApplicationController
     if password_check(@params['password'])
       redirect_show('HomePage')
     else 
-      redirect_to :action => 'login'
+      redirect_to :action => 'login', :web => @web_name
     end
   end
 

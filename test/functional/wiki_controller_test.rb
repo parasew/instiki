@@ -35,7 +35,7 @@ class WikiControllerTest < Test::Unit::TestCase
     @web.password = 'pswd'
 
     r = process('authenticate', 'web' => 'wiki1', 'password' => 'wrong password')
-    assert_redirected_to :action => 'login'
+    assert_redirected_to :action => 'login', :web => 'wiki1'
     assert_nil r.cookies['web_address']
   end
 

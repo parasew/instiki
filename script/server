@@ -28,7 +28,7 @@ ARGV.options do |opts|
           'Default: 2500') { |OPTIONS[:port]| }
   opts.on('-b', '--binding=ip', String,
           'Binds Rails to the specified ip.',
-          'Default: 127.0.0.1') { |OPTIONS[:ip]| }
+          'Default: 0.0.0.0') { |OPTIONS[:ip]| }
   opts.on('-e', '--environment=name', String,
           'Specifies the environment to run this server under (test/development/production).',
           'Default: production') { |OPTIONS[:environment]| }
@@ -43,7 +43,7 @@ ARGV.options do |opts|
           'Makes Instiki use the specified directory for storage.',
           'Default: ./storage/[port]') { |OPTIONS[:storage]| }
   opts.on('-v', '--verbose', 
-          'Enable debug-level logging'
+          'Enables debug-level logging'
           ) { OPTIONS[:verbose] = true }
 
   opts.separator ''
@@ -73,7 +73,6 @@ else
   puts "=> Data files are stored in #{storage_path}"
 
   require 'webrick_server'
-  require 'application'
 
   OPTIONS[:index_controller] = 'wiki'
   ApplicationController.wiki = WikiService.instance

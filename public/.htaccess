@@ -3,27 +3,23 @@ AddHandler fastcgi-script .fcgi
 AddHandler cgi-script .cgi
 Options +FollowSymLinks +ExecCGI
 
-# Make sure that mod_ruby.c has been added and loaded as a module with Apache
+# Redirect all requests not available on the filesystem to Rails
+# By default the cgi dispatcher is used which is very slow
+# 
+# For better performance replace the dispatcher with the fastcgi one
+#
+# Example:
+#   RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
 RewriteEngine On
+RewriteRule ^$ index.html [QSA]
+RewriteRule ^([^.]+)$ $1.html [QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ dispatch.cgi [QSA,L]
 
-# Change extension from .cgi to .fcgi to switch to FCGI and to .rb to switch to mod_ruby
-RewriteBase /dispatch.cgi
+# In case Rails experiences terminal errors
+# Instead of displaying this message you can supply a file here which will be rendered instead
+# 
+# Example:
+#   ErrorDocument 500 /500.html
 
-# Enable this rewrite rule to point to the controller/action that should serve root.
-# RewriteRule ^$ /wiki/ [R]
-
-# Add missing slash
-RewriteRule ^([-_a-zA-Z0-9]+)$                                            /$1/ [R]
-
-# Default rewriting rules. 
-RewriteRule ^([-_a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)/([0-9]+)$                  ?controller=$1&action=$2&id=$3 [QSA,L]
-RewriteRule ^([-_a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)$                           ?controller=$1&action=$2 [QSA,L]
-RewriteRule ^([-_a-zA-Z0-9]+)/$                                           ?controller=$1&action=index [QSA,L]
-
-RewriteRule ^([-_a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)/([0-9]+)$ ?module=$1&controller=$2&action=$3&id=$4 [QSA,L]
-RewriteRule ^([-_a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)$          ?module=$1&controller=$2&action=$3 [QSA,L]
-RewriteRule ^([-_a-zA-Z0-9]+)/([-_a-zA-Z0-9]+)/$                          ?module=$1&controller=$2&action=index [QSA,L]
-
-# You can also point these error messages to a controller/action
-ErrorDocument 500 /500.html
-ErrorDocument 404 /404.html
+ErrorDocument 500 "<h2>Application error</h2>Rails application failed to start properly"

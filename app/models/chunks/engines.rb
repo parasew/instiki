@@ -1,11 +1,10 @@
 $: << File.dirname(__FILE__) + "../../libraries"
 
 require 'redcloth'
-require 'bluecloth'
 require 'rdocsupport'
 require 'chunks/chunk'
 
-# The markup engines are Chunks that call the one of RedCloth, BlueCloth
+# The markup engines are Chunks that call the one of RedCloth
 # or RDoc to convert text. This markup occurs when the chunk is required
 # to mask itself.
 module Engines
@@ -39,7 +38,7 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask(content)
-      BlueCloth.new(text,content.options[:engine_opts]).to_html
+      RedCloth.new(text,content.options[:engine_opts]).to_html
     end
   end
 

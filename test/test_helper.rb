@@ -1,5 +1,5 @@
-ENV['RAILS_ENV'] ||= 'test'
-require File.dirname(__FILE__) + '/../config/environment'
+ENV['RAILS_ENV'] = 'test'
+require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
 require 'application'
 require 'test/unit'
 require 'action_controller/test_process'
@@ -54,23 +54,6 @@ class Test::Unit::TestCase
   
   def tear_down_wiki
     ApplicationController.wiki = nil
-  end
-
-
-  # Checks that a given URI path is recognized as expected options
-  # Delete it when patch #638 is commiteed to Rails (http://dev.rubyonrails.org/ticket/638)
-  def assert_recognizes(expected_options, path)
-    # Load routes.rb if it hasn't been loaded.
-    ActionController::Routing::Routes.reload if ActionController::Routing::Routes.empty? 
-    
-    # Assume given controller
-    request = ActionController::TestRequest.new({}, {}, nil)
-    request.path = path
-    ActionController::Routing::Routes.recognize!(request)
-     
-    msg = build_message(nil, "The recognized options <?> did not match <?>", 
-        request.path_parameters, expected_options)
-    assert_block(msg) { request.path_parameters == expected_options }
   end
 
 end

@@ -46,7 +46,7 @@ class RevisionTest < Test::Unit::TestCase
         @revision.display_content
   end
 
-  def test_bluecloth
+  def test_markdown
     @web.markup = :markdown
 
     assert_markup_parsed_as(
@@ -220,6 +220,8 @@ class RevisionTest < Test::Unit::TestCase
   end
 
   def test_link_to_pic
+    FileUtils.mkdir_p "#{RAILS_ROOT}/storage/test/wiki1"
+    FileUtils.rm(Dir["#{RAILS_ROOT}/storage/test/wiki1/*"])
     @wiki.file_yard(@web).upload_file('square.jpg', StringIO.new(''))
   	assert_markup_parsed_as(
   	    '<p><img alt="Square" src="../pic/square.jpg" /></p>',
