@@ -31,7 +31,7 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal ['pswd'], r.cookies['web_address']
   end
 
-  def test_authenticate
+  def test_authenticate_wrong_password
     @web.password = 'pswd'
 
     r = process('authenticate', 'web' => 'wiki1', 'password' => 'wrong password')
