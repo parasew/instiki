@@ -57,7 +57,7 @@ class WikiController < ApplicationController
   end
 
   def login
-    # go straight to template
+    # to template
   end
   
   def web_list
@@ -176,7 +176,7 @@ class WikiController < ApplicationController
   end
   
   def new
-    # go straight to template, all necessary variables are already set in the filter
+    # to template
   end
 
   def pdf
@@ -278,9 +278,9 @@ class WikiController < ApplicationController
 
   def export_page_to_tex(file_path)
     tex
-    File.open(file_path, 'w') { |f| f.write(template_engine("tex").result(binding)) }
+    File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex')) }
   end
-  
+
   def export_pages_as_zip(file_type, &block)
 
     file_prefix = "#{@web.address}-#{file_type}-"
@@ -392,13 +392,6 @@ class WikiController < ApplicationController
     @template.render_file(template_name)
   end
   
-  # Returns an array with each of the parts in the request as an element. So /something/cool/dude
-  # returns ["something", "cool", "dude"]
-  def request_path
-    request_path_parts = @request.path.to_s.split(/\//)
-    request_path_parts.length > 1 ? request_path_parts[1..-1] : []
-  end
-
   def template_engine(template_name)
     ERB.new(IO.readlines(RAILS_ROOT + '/app/views/wiki/' + template_name + '.rhtml').join)
   end
