@@ -151,6 +151,13 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
 
+  def test_edit_web
+    process 'edit_web', 'web' => 'wiki1'
+    # this action simply renders a form
+    assert_success
+  end
+
+
   def test_export_html
     setup_wiki_with_three_pages
     

@@ -34,6 +34,10 @@ class WikiController < ApplicationController
     end
   end
 
+  def edit_web
+    # to template
+  end
+
   def new_system
     redirect_to(:action => 'index') if wiki.setup?
     # otherwise, to template
