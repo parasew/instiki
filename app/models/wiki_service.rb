@@ -75,21 +75,22 @@ module AbstractWikiService
   end
 
   def update_web(old_address, new_address, name, markup, color, additional_style, safe_mode = false, 
-      password = nil, published = false, brackets_only = false, count_pages = false)
+      password = nil, published = false, brackets_only = false, count_pages = false, 
+      allow_uploads = true)
     if old_address != new_address
       @webs[new_address] = @webs[old_address]
       @webs.delete(old_address)
       @webs[new_address].address = new_address
     end
-    
+
     web = @webs[new_address]
     web.refresh_revisions if settings_changed?(web, markup, safe_mode, brackets_only)
-    
+
     web.name, web.markup, web.color, web.additional_style, web.safe_mode = 
       name, markup, color, additional_style, safe_mode
-      
-    web.password, web.published, web.brackets_only, web.count_pages =
-      password, published, brackets_only, count_pages
+
+    web.password, web.published, web.brackets_only, web.count_pages, web.allow_uploads =
+      password, published, brackets_only, count_pages, allow_uploads
   end
 
   def write_page(web_address, page_name, content, written_on, author)

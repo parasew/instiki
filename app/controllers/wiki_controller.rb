@@ -148,7 +148,8 @@ class WikiController < ApplicationController
         @params['password'].empty? ? nil : @params['password'],
         @params['published'] ? true : false, 
         @params['brackets_only'] ? true : false,
-        @params['count_pages'] ? true : false
+        @params['count_pages'] ? true : false,
+        @params['allow_uploads'] ? true : false
       )
       redirect_show('HomePage', @params['address'])
     else

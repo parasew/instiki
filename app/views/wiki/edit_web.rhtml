@@ -21,6 +21,8 @@
     Turning safe mode on will strip HTML tags and stylesheet options from the content of all pages.
     Turning on "brackets only" will require all wiki words to be as [[wiki word]] and WikiWord 
     won't work.
+    Turning "allow uploads" on will let wiki users to upload pictures and other files to the wiki
+    and include them on wiki pages.
     Additions to the stylesheet take precedence over the existing styles. 
     <i>Hint:</i> View source on a page you want to style to find ID names on individual tags. 
     <a href="#" onClick="document.getElementById('additionalStyle').style.display='block';return false;">
@@ -51,6 +53,8 @@
       Brackets only 
       &nbsp;&nbsp;
       <input type="checkbox" name="count_pages"<%= " CHECKED" if @web.count_pages %> /> Count pages
+      &nbsp;&nbsp;
+      <input type="checkbox" name="allow_uploads"<%= " CHECKED" if @web.allow_uploads %> /> Allow uploads
     </small>
 
     <textarea id="additionalStyle" 

@@ -636,8 +636,8 @@ class WikiControllerTest < Test::Unit::TestCase
     process('update_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
-        'safe_mode' => 'y', 'password' => 'new_password', 'published' => 'y', 
-        'brackets_only' => 'y', 'count_pages' => 'y')
+        'safe_mode' => 'on', 'password' => 'new_password', 'published' => 'on', 
+        'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on')
 
     assert_redirected_to :web => 'renamed_wiki1', :action => 'show', :id => 'HomePage'
     assert_equal 'renamed_wiki1', @web.address
@@ -649,8 +649,26 @@ class WikiControllerTest < Test::Unit::TestCase
     assert @web.published
     assert @web.brackets_only
     assert @web.count_pages
+    assert @web.allow_uploads
   end
 
+  def test_update_web_opposite_values
+    @wiki.system[:password] = 'pswd'
+  
+    process('update_web', 'system_password' => 'pswd',
+        'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
+        'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+        'password' => 'new_password')
+    # safe_mode, published, brackets_only, count_pages, allow_uploads not set 
+    # and should become false
+
+    assert_redirected_to :web => 'renamed_wiki1', :action => 'show', :id => 'HomePage'
+    assert !@web.safe_mode
+    assert !@web.published
+    assert !@web.brackets_only
+    assert !@web.count_pages
+    assert !@web.allow_uploads
+  end
 
   def test_web_list
     another_wiki = @wiki.create_web('Another Wiki', 'another_wiki')
