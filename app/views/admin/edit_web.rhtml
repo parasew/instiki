@@ -1,6 +1,7 @@
 <% @title = "Edit Web" %>
 
-<form action="edit_web" id="setup" method="post" onSubmit="cleanAddress(); return validateSetup()">
+<form action="edit_web" id="setup" method="post" 
+      onSubmit="cleanAddress(); return validateEditWebForm()">
   <h2 style="margin-bottom: 3px">Name and address</h2>
   <div class="help">
     The name of the web is included in the title on all pages. 
@@ -57,7 +58,8 @@
     </small>
     </p>
 
-    <a href="#" onClick="document.getElementById('additionalStyle').style.display='block';return false;">
+    <a href="#" 
+       onClick="document.getElementById('additionalStyle').style.display='block';return false;">
     Stylesheet tweaks &gt;&gt;</a>
     <small><em>
     - add or change styles used by this web; styles defined here take precedence over 
@@ -90,13 +92,15 @@
     The published version is accessible through URLs like /wiki/published/HomePage.
   </div>
   <div class="inputBox">
-    <input type="checkbox" name="published" <%= 'checked="on"' if @web.published %> /> Publish this web
+    <input type="checkbox" name="published" <%= 'checked="on"' if @web.published %> /> 
+    Publish this web
   </div>
 
 <p align="right">
   <small>
     Enter system password
-    <input type="password" class="disableAutoComplete" id="system_password" name="system_password" />
+    <input type="password" class="disableAutoComplete" id="system_password" 
+           name="system_password" />
     and
     <input type="submit" value="Update Web" />
     <br/><br/>
@@ -109,11 +113,12 @@
 <br/>
 <h1>Other administrative tasks</h1>
 
-<form action="remove_orphaned_pages" id="remove_orphaned_pages" method="post">
+<form action="remove_orphaned_pages" id="remove_orphaned_pages" method="post" 
+      onSubmit="return checkSystemPassword(document.getElementById('system_password_orphaned').value)">
   <p align="right">
     <small>
       Clean up by entering system password
-      <input type="password" id="system_password" name="system_password" />
+      <input type="password" id="system_password_orphaned" name="system_password" />
       and
       <input type="submit" value="Delete Orphan Pages" />
     </small>

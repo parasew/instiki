@@ -8,11 +8,18 @@ function cleanAddress() {
     document.getElementById('address').value.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
 }
 
-function validateSetup() {
-  if (document.getElementById('system_password').value == "") {
+function checkSystemPassword(password) {
+  if (password == "") {
     alert("You must enter the system password");
     return false;
   }
+}
+
+function validateEditWebForm() {
+
+  if (!checkSystemPassword(document.getElementById('system_password').value))
+  	return false
+  end
 
   if (document.getElementById('name').value == "") {
     alert("You must pick a name for the web");
