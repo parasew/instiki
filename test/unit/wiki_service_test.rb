@@ -1,4 +1,4 @@
-#!/bin/env ruby
+#!/bin/env ruby -w
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_service'

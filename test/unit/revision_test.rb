@@ -1,4 +1,4 @@
-#!/bin/env ruby
+#!/bin/env ruby -w
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'web'
@@ -209,6 +209,19 @@ class RevisionTest < Test::Unit::TestCase
         "</ins>and lovely <del class=\"diffmod\">morning</del><ins class=\"diffmod\">morning " +
         "today</ins></p>", @page.revisions.last.display_diff
   end
+
+  def test_list_with_tildas
+    list_with_tildas = <<-EOL
+      * "a":~b
+      * c~ d
+    EOL
+    
+    assert_markup_parsed_as(
+        "<li><a href=\"~b\">a</a></li>\n" +
+        "<li>c~ d</li>\n",
+        list_with_tildas)
+  end
+
 
 
   def assert_markup_parsed_as(expected_output, input)

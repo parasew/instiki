@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/ruby -w
 
 # Executable file for a gem
 # must be same as ./instiki.rb
