@@ -103,6 +103,10 @@ class WikiService
 
   include AbstractWikiService
   include Madeleine::Automatic::Interceptor
+  
+  # These methods do not change the state of persistent objects, and 
+  # should not be ogged by Madeleine
+  automatic_read_only :authenticate, :read_page, :setup?, :webs
 
   @@storage_path = './storage/'
 
@@ -120,8 +124,15 @@ class WikiService
     end
 
     def instance
-      @system ||= MadeleineServer.new(self).system
+      @madeleine ||= MadeleineServer.new(self)
+      @system = @madeleine.system
+      return @system
     end
+
+    def snapshot
+      @madeleine.snapshot
+    end
+  
   end
 
   def initialize
@@ -157,14 +168,14 @@ class MadeleineServer
     start_snapshot_thread
   end
 
-  def system
-    @server.system
-  end
-
   def command_log_present?
     not Dir[storage_path + '/*.command_log'].empty?
   end
 
+  def snapshot
+    @server.take_snapshot
+  end
+  
   def start_snapshot_thread
     Thread.new(@server) {
       hours_since_last_snapshot = 0
@@ -176,7 +187,7 @@ class MadeleineServer
           if command_log_present? or hours_since_last_snapshot >= 24 
             ActionController::Base.logger.info "[#{Time.now.strftime('%Y-%m-%d %H:%M:%S')}] " +
               'Taking a Madeleine snapshot'
-            @server.take_snapshot
+            snapshot
             hours_since_last_snapshot = 0
           end
           sleep(1.hour)
@@ -189,6 +200,10 @@ class MadeleineServer
         end
       end
     }
+  end
+
+  def system
+    @server.system
   end
   
 end
