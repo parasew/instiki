@@ -6,7 +6,7 @@
 
 <%= render("#{@web.markup}_help") if @web %>
 
-<%= form_tag({ :action => 'save', :web => @web.address, :id => CGI.escape(@page_name)},
+<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name},
              {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();'})
 %>
 

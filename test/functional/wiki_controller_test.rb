@@ -89,6 +89,18 @@ class WikiControllerTest < Test::Unit::TestCase
     process 'edit', 'web' => 'wiki1', 'id' => 'UnknownPage', 'break_lock' => 'y'
     assert_redirected_to :action => 'index'
   end
+  
+  def test_edit_page_with_special_symbols
+    @wiki.write_page('wiki1', 'With : Special /> symbols',
+    'This page has special symbols in the name',
+    Time.now, Author.new('Special', '127.0.0.3'))
+    
+    r = process 'edit', 'web' => 'wiki1', 'id' => 'With : Special /> symbols'
+    assert_success
+    xml = REXML::Document.new(r.body)
+    form = REXML::XPath.first(xml, '//form')
+    assert_equal '/wiki1/save/With+%3A+Special+%2F%3E+symbols', form.attributes['action']
+  end
 
 
   def test_export_html

@@ -202,14 +202,14 @@ class WikiController < ApplicationController
         logger.error e
         if in_a_web?
           redirect_to :web => @web_name, :action => 'edit',
-              :action_suffix => "#{CGI.escape(@page_name)}?msg=#{CGI.escape(e.message)}"
+              :action_suffix => "#{@page_name}?msg=#{e.message}"
         else
           raise e
         end
       end
     else
       if not @page_name.nil? and not @page_name.empty?
-        redirect_to :web => @web_name, :action => 'new', :id => CGI.escape(@page_name)
+        redirect_to :web => @web_name, :action => 'new', :id => @page_name
       else
         render_text 'Page name is not specified', '404 Not Found'
       end

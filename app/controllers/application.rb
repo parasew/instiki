@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
 
   def redirect_show(page_name = @page_name, web = @web_name)
     redirect_to :web => web, :controller => 'wiki', :action => 'show', 
-        :id => CGI.escape(page_name || 'HomePage')
+        :id => (page_name || 'HomePage')
   end
 
   @@REMEMBER_NOT = ['locked', 'save', 'back', 'file', 'pic', 'import']
