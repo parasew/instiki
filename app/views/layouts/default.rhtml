@@ -47,6 +47,10 @@
     <% end %>
   </h1>
 
+<% if @flash[:error] %> <div id="error" class="error">
+    <hr/><p><%= @flash[:error].to_s %></p><hr/></div>
+<% end %>
+
 <%= render 'navigation' unless @web.nil? || @hide_navigation %>
 <%= @content_for_layout %>
 

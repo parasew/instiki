@@ -137,6 +137,12 @@ ol.setup li {
   background: lightgreen;
 }
 
+.error {
+  color: darkred;
+  font-style: italic;
+  width: 450px;
+}
+
 #TextileHelp table {
 	margin-bottom: 0;
 }
