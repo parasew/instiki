@@ -72,5 +72,21 @@ class UrlRewritingHackTest < Test::Unit::TestCase
     assert_equal 'http://test.host/',
         ur.rewrite(:controller => 'wiki')
   end
+  
+  def test_controller_mapping
+    request = ActionController::TestRequest.new
+    ur = ActionController::UrlRewriter.new(request, 'wiki', 'show')
+
+    assert_equal 'http://test.host/file',
+        ur.rewrite(:controller => 'file', :action => 'file')
+    assert_equal 'http://test.host/pic/abc.jpg',
+        ur.rewrite(:controller => 'file', :action => 'pic', :id => 'abc.jpg')
+    assert_equal 'http://test.host/web/pic/abc.jpg',
+        ur.rewrite(:web => 'web', :controller => 'file', :action => 'pic', :id => 'abc.jpg')
+        
+    # default option is wiki
+    assert_equal 'http://test.host/unknown_action',
+        ur.rewrite(:controller => 'wiki', :action => 'unknown_action')
+  end
 
 end

@@ -6,7 +6,7 @@
 # In Instiki URLs are mapped to the ActionPack actions, possibly performed on a particular 
 # web (sub-wiki) and page within that web.
 #
-# 1. Controller is always 'wiki'
+# 1. Controller is determined by action name (default is 'wiki')
 # 2. '/name1/' maps to action 'name1', unspecified web
 #    Example: http://localhost/new_system/
 # 3. Special case of above, URI '/wiki/' maps to action 'index', because Rails sets this address 
@@ -24,6 +24,16 @@ require 'dispatcher'
 class DispatchServlet
 
   def self.parse_uri(path)
+    result = parse_path(path)
+    if result
+      result[:controller] = ActionMapper.map_to_controller(result[:action])
+      result
+    else
+      false
+    end
+  end
+
+  def self.parse_path(path)
     ApplicationController.logger.debug "Parsing URI '#{path}'"
     component = '([-_a-zA-Z0-9]+)'
     page_name = '(.*)'
@@ -47,6 +57,19 @@ class DispatchServlet
     else
       line
     end
+  end
+  
+  class ActionMapper
+
+    @@action_to_controller_map = {
+      'file' => 'file',
+      'pic' => 'file'
+    }
+    
+    def self.map_to_controller(action)
+      @@action_to_controller_map[action] || 'wiki'
+    end
+  
   end
 
 end

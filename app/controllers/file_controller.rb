@@ -1,4 +1,5 @@
 require 'application'
+
 class FileController < ApplicationController
 
   layout 'default', :except => [:rss_feed, :rss_with_headlines, :tex,  :export_tex, :export_html]
