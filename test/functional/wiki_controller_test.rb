@@ -160,7 +160,8 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    # TODO assert contents of the output file
+    content = r.binary_content
+    assert_equal 'PK', content[0..1], 'Content is not a zip file'
   end
 
   def test_export_markup
@@ -170,9 +171,43 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-textile-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    # TODO assert contents of the output file
+    content = r.binary_content
+    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+  end
+
+
+  if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
+
+    def test_export_pdf
+      r = process 'export_pdf', 'web' => 'wiki1'
+      assert_success
+      assert_equal 'application/octet_stream', r.headers['Content-Type']
+      assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
+          r.headers['Content-Disposition']
+      content = r.binary_content
+      assert_equal '%PDF', content[0..3]
+      assert_equal "EOF\n", content[-4..-1]
+    end
+
+  else
+    puts 'Warning: tests involving pdflatex are very slow, therefore they are disable by default.'
+    puts '         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable'
+    puts '         $INSTIKI_TEST_PDFLATEX to enable them.'
   end
   
+  
+  def test_export_tex
+    setup_wiki_with_three_pages
+    
+    r = process 'export_tex', 'web' => 'wiki1'
+
+    assert_success
+    assert_equal 'application/octet_stream', r.headers['Content-Type']
+    assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
+        r.headers['Content-Disposition']
+    content = r.binary_content
+    assert_equal '\documentclass', content[0..13], 'Content is not a TeX file'
+  end
 
   def test_feeds
     process('feeds', 'web' => 'wiki1')
@@ -280,10 +315,6 @@ class WikiControllerTest < Test::Unit::TestCase
           r.headers['Content-Disposition']
     end
 
-  else
-    puts 'Warning: tests involving pdflatex are very slow, therefore they are disable by default.'
-    puts '         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable'
-    puts '         $INSTIKI_TEST_PDFLATEX to enable them.'
   end
 
 

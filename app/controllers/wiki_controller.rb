@@ -80,20 +80,20 @@ class WikiController < ApplicationController
   end
 
   def export_pdf
-    file_name = "#{web.address}-tex-#{web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}"
+    file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}"
     file_path = WikiService.storage_path + file_name
 
     export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
     convert_tex_to_pdf "#{file_path}.tex"
-    send_export("#{file_name}.tex", "#{file_path}.tex")
+    send_file("#{file_path}.pdf")
   end
 
   def export_tex
-    file_name = "#{web.address}-tex-#{web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
+    file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
     file_path = WikiService.storage_path + file_name
 
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)
-    send_export(file_name, file_path)
+    send_file(file_path)
   end
 
   def feeds
@@ -314,8 +314,8 @@ class WikiController < ApplicationController
   end
 
   def export_web_to_tex(file_path)
-    @tex_content = table_of_contents(web.pages['HomePage'].content.dup, render_tex_web)
-    File.open(file_path, 'w') { |f| f.write(template_engine('tex_web').result(binding)) }
+    @tex_content = table_of_contents(@web.pages['HomePage'].content.dup, render_tex_web)
+    File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex_web')) }
   end
 
   def get_page_and_revision
