@@ -71,6 +71,14 @@ class ApplicationController < ActionController::Base
     not @web_name.nil?
   end
 
+  def password_error(password)
+    if password.nil? or password.empty?
+      'Please enter the password.'
+    else 
+      'You entered a wrong password. Please enter the right one.'
+    end
+  end
+
   def redirect_show(page_name = @page_name, web = @web_name)
     redirect_to :web => web, :controller => 'wiki', :action => 'show', 
         :id => CGI.escape(page_name || 'HomePage')

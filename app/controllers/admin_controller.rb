@@ -44,9 +44,10 @@ class AdminController < ApplicationController
   end
 
   def edit_web
-    if @params['system_password']
+    system_password = @params['system_password']
+    if system_password
       # form submitted
-      if wiki.authenticate(@params['system_password'])
+      if wiki.authenticate(system_password)
         wiki.edit_web(
           @web.address, @params['address'], @params['name'], 
           @params['markup'].intern, 
@@ -61,11 +62,7 @@ class AdminController < ApplicationController
         )
         redirect_show('HomePage', @params['address'])
       else
-        if @params['system_password'].empty?
-          flash[:error] = 'Please enter the system password'
-        else
-          flash[:error] = 'You entered a wrong system password. Please enter the right one'
-        end
+        flash[:error] = password_error(system_password)
         # and re-render the same template again
       end
     else

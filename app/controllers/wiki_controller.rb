@@ -93,7 +93,8 @@ class WikiController < ApplicationController
       wiki.remove_orphaned_pages(@web_name)
       redirect_to :action => 'list'
     else
-      redirect_show 'HomePage'
+      flash[:error] = password_error(@params['system_password'])
+      return_to_last_remembered
     end
   end
 
