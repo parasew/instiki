@@ -409,7 +409,7 @@ class WikiControllerTest < Test::Unit::TestCase
         ['http://localhost:8080/wiki1/show/HomePage',
          'http://localhost:8080/wiki1/show/Oak',
          'http://localhost:8080/wiki1/show/Elephant',
-         'http://localhost:8080/wiki1/show/Title With Spaces']
+         'http://localhost:8080/wiki1/show/Title+With+Spaces']
 
     assert_template_xpath_match '/rss/channel/link', 
         'http://localhost:8080/wiki1/show/HomePage'

@@ -17,7 +17,7 @@
 <% end %>
 
 <ul><% for page in @pages_by_name %>
-  <li><a href="../show/<%= page.name %>"><%= truncate(page.plain_name, 35) %></a></li>
+  <li><a href="../show/<%= page.url %>"><%= truncate(page.plain_name, 35) %></a></li>
 <% end %></ul>
 
 <% if @web.count_pages %>
@@ -51,7 +51,7 @@
   </h2>
 
   <ul style="margin-bottom: 35px">
-    <% for page in @pages_that_are_orphaned %><li><a href="../show/<%= page.name %>"><%= truncate(page.plain_name, 35) %></a></li><% end %>
+    <% for page in @pages_that_are_orphaned %><li><a href="../show/<%= page.url %>"><%= truncate(page.plain_name, 35) %></a></li><% end %>
   </ul>
 <% end %>
 </div>

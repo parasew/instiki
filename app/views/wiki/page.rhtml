@@ -27,14 +27,14 @@
 
 <div class="navigation">
   <% if @page.name == "HomePage" %>
-    <a href="../edit/<%= @page.name %>" class="navlink" accesskey="E">Edit Page</a>
+    <a href="../edit/<%= @page.url %>" class="navlink" accesskey="E">Edit Page</a>
     | <a href="../edit_web" class="navlink">Edit Web</a>
   <% else %>
-    <a href="../edit/<%= @page.name %>" class="navlink" accesskey="E">Edit</a>
+    <a href="../edit/<%= @page.url %>" class="navlink" accesskey="E">Edit</a>
   <% end %>
 
   <% if @page.revisions.length > 1 %>
-    | <a href="../revision/<%= @page.name %>?rev=<%= @page.revisions.length - 2 %>" class="navlink" accesskey="R">Back in time</a> 
+    | <a href="../revision/<%= @page.url %>?rev=<%= @page.revisions.length - 2 %>" class="navlink" accesskey="R">Back in time</a> 
     <small>(<%= @page.revisions.length - 1 %> revisions)</small>
   <% end %>
 
@@ -48,9 +48,9 @@
   <% end %>
 
   <small>
-    | Views: <a href="../print/<%= @page.name %>" accesskey="p">Print</a>
+    | Views: <a href="../print/<%= @page.url %>" accesskey="p">Print</a>
   <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
-    | <a href="../tex/<%= @page.name %>">TeX</a> | <a href="../pdf/<%= @page.name %>">PDF</a>
+    | <a href="../tex/<%= @page.url %>">TeX</a> | <a href="../pdf/<%= @page.url %>">PDF</a>
   <% end %>
   </small>
 

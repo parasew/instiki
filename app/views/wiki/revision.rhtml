@@ -25,9 +25,9 @@
 
   <% if @revision.next_revision %>
     <% if @revision.next_revision.number < (@page.revisions.length - 1) %>
-      <a href="../revision/<%= @page.name %>?rev=<%= @revision.next_revision.number %>" class="navlink">
+      <a href="../revision/<%= @page.url %>?rev=<%= @revision.next_revision.number %>" class="navlink">
     <% else %>
-      <a href="../show/<%= @page.name %>" class="navlink">
+      <a href="../show/<%= @page.url %>" class="navlink">
     <% end %>
       Forward in time</a>
     (<%= @revision.page.revisions.length - @revision.next_revision.number %> more)
@@ -38,11 +38,11 @@
   <% end %>
 
   <% if @revision.previous_revision %>
-    <a href="../revision/<%= @page.name %>?rev=<%= @revision.previous_revision.number %>" class="navlink">Back in time</a>
+    <a href="../revision/<%= @page.url %>?rev=<%= @revision.previous_revision.number %>" class="navlink">Back in time</a>
     (<%= @revision.previous_revision.number + 1 %> more)
   <% end %>
 
-  | <a href="../show/<%= @page.name %>" class="navlink">See current</a>
+  | <a href="../show/<%= @page.url %>" class="navlink">See current</a>
 
   <% if @revision.previous_revision %>
     <span id="show_changes">
@@ -53,7 +53,7 @@
     </span>
   <% end %>
 
-  | <a href="../rollback/<%= @page.name %>?rev=<%= @revision.number %>" class="navlink">Rollback</a>  
+  | <a href="../rollback/<%= @page.url %>?rev=<%= @revision.number %>" class="navlink">Rollback</a>  
   
   <% if @page.references.length > 0 %>
     <small>

@@ -13,8 +13,8 @@
       <description><%= CGI.escapeHTML(page.display_content) %></description>
     <% end %>
       <pubDate><%= page.created_at.strftime "%a, %e %b %Y %H:%M:%S %Z" %></pubDate>
-      <guid><%= url_for :only_path => false, :web => @web_name, :action => 'show', :id => page.name %></guid>
-      <link><%= url_for :only_path => false, :web => @web_name, :action => 'show', :id => page.name %></link>
+      <guid><%= url_for :only_path => false, :web => @web_name, :action => 'show', :id => page.url %></guid>
+      <link><%= url_for :only_path => false, :web => @web_name, :action => 'show', :id => page.url %></link>
       <dc:creator><%= WikiWords.separate(page.author) %></dc:creator>
     </item>
   <% end %>
