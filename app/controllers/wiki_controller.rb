@@ -103,8 +103,12 @@ class WikiController < ApplicationController
 
   def search
     @query = @params['query']
+    @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
-    redirect_show(@results.first.name) if @results.length == 1
+    all_pages_found = (@results + @title_results).uniq
+    if all_pages_found.size == 1
+      redirect_show(all_pages_found.first.name)
+    end
   end
 
   # Within a single page --------------------------------------------------------

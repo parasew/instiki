@@ -477,7 +477,9 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_search
     setup_wiki_with_three_pages
-    process 'search', 'web' => 'wiki1', 'query' => '\s[A-Z]ak'
+    
+    r = process 'search', 'web' => 'wiki1', 'query' => '\s[A-Z]ak'
+    
     assert_redirected_to :action => 'show', :id => 'Oak'
   end
 
@@ -489,6 +491,18 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_success
     assert_equal 'All about', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
+    assert_equal [], r.template_objects['title_results']
+  end
+
+  def test_search_by_content_and_title
+    setup_wiki_with_three_pages
+    
+    r = process 'search', 'web' => 'wiki1', 'query' => '(Oak|Elephant)'
+    
+    assert_success
+    assert_equal '(Oak|Elephant)', r.template_objects['query']
+    assert_equal [@elephant, @oak], r.template_objects['results']
+    assert_equal [@elephant, @oak], r.template_objects['title_results']
   end
 
   def test_search_zero_results
@@ -498,7 +512,10 @@ class WikiControllerTest < Test::Unit::TestCase
     
     assert_success
     assert_equal [], r.template_objects['results']
+    assert_equal [], r.template_objects['title_results']
   end
+  
+  
 
 
   def test_show_page
