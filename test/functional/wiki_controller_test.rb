@@ -264,7 +264,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
 
   if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
-  
+
     def test_pdf
       assert RedClothForTex.available?, 'Cannot do test_pdf when pdflatex is not available'
       r = process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
@@ -279,32 +279,7 @@ class WikiControllerTest < Test::Unit::TestCase
       assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
           r.headers['Content-Disposition']
     end
-    
-    def test_pdf
-      assert RedClothForTex.available?, 'Cannot do test_pdf when pdflatex is not available'
-      r = process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
-      assert_success
-      
-      sio = StringIO.new
-      begin 
-        $stdout = sio
-        r.body.call
-      ensure
-        $stdout = STDOUT
-      end
-      
-      sio.rewind
-      content = sio.read
-      
-      assert_equal '%PDF', content[0..3]
-      assert_equal "EOF\n", content[-4..-1]
 
-      assert_equal 'application/octet_stream', r.headers['Content-Type']
-      assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
-          r.headers['Content-Disposition']
-    end
-    
-  
   else
     puts 'Warning: tests involving pdflatex are very slow, therefore they are disable by default.'
     puts '         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable'
