@@ -105,14 +105,13 @@ class AdminControllerTest < Test::Unit::TestCase
   end
 
 
-  def test_edit_web
+  def test_edit_web_no_form
     process 'edit_web', 'web' => 'wiki1'
     # this action simply renders a form
     assert_success
   end
 
-
-  def test_edit_web
+  def test_edit_web_form_submitted
     @wiki.system[:password] = 'pswd'
   
     process('edit_web', 'system_password' => 'pswd',
@@ -154,5 +153,26 @@ class AdminControllerTest < Test::Unit::TestCase
     assert !@web.allow_uploads
   end
 
+  def test_edit_web_wrong_password
+    process('edit_web', 'system_password' => 'wrong',
+      'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
+      'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+      'password' => 'new_password')
+      
+    #returns to the same form
+    assert_success
+    assert_flash_has :error
+  end
+
+  def test_edit_web_empty_password
+    process('edit_web', 'system_password' => '',
+      'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
+      'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+      'password' => 'new_password')
+      
+    #returns to the same form
+    assert_success
+    assert_flash_has :error
+  end
 
 end
