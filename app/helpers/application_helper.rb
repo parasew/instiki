@@ -33,4 +33,11 @@ module ApplicationHelper
     html_options.join("\n")
   end
 
+  def link_to_page(page_name, web = @web, text = nil, options = {})
+    raise 'Web not defined' if web.nil?
+    home_page_url = url_for :web => web.address, :action => 'show', :id => 'HomePage', :only_path => true
+    base_url = home_page_url.sub(%r-/show/HomePage/?$-, '')
+    web.make_link(page_name, text, options.merge(:base_url => base_url))
+  end
+
 end

@@ -44,26 +44,26 @@ class WikiTest < Test::Unit::TestCase
 
   def test_file_types
     # only link
-    assert_link_parsed_as 'only text', 'only text', 'show', '[[only text]]'
+    assert_link_parsed_as 'only text', 'only text', :show, '[[only text]]'
     # link and text
-    assert_link_parsed_as 'page name', 'link text', 'show', '[[page name|link text]]'
+    assert_link_parsed_as 'page name', 'link text', :show, '[[page name|link text]]'
     # link and type (file)
-    assert_link_parsed_as 'foo.tar.gz', 'foo.tar.gz', 'file', '[[foo.tar.gz:file]]'
+    assert_link_parsed_as 'foo.tar.gz', 'foo.tar.gz', :file, '[[foo.tar.gz:file]]'
     # link and type (pic)
-    assert_link_parsed_as 'foo.tar.gz', 'foo.tar.gz', 'pic', '[[foo.tar.gz:pic]]'
+    assert_link_parsed_as 'foo.tar.gz', 'foo.tar.gz', :pic, '[[foo.tar.gz:pic]]'
     # link, text and type
-    assert_link_parsed_as 'foo.tar.gz', 'FooTar', 'file', '[[foo.tar.gz|FooTar:file]]'
+    assert_link_parsed_as 'foo.tar.gz', 'FooTar', :file, '[[foo.tar.gz|FooTar:file]]'
 
     # NEGATIVE TEST CASES
 
     # empty page name
-    assert_link_parsed_as '|link text?', '|link text?', 'file', '[[|link text?:file]]'
+    assert_link_parsed_as '|link text?', '|link text?', :file, '[[|link text?:file]]'
     # empty link text
-    assert_link_parsed_as 'page name?|', 'page name?|', 'file', '[[page name?|:file]]'
+    assert_link_parsed_as 'page name?|', 'page name?|', :file, '[[page name?|:file]]'
     # empty link type
-    assert_link_parsed_as 'page name', 'link?:', 'show', '[[page name|link?:]]'
+    assert_link_parsed_as 'page name', 'link?:', :show, '[[page name|link?:]]'
     # unknown link type
-    assert_link_parsed_as 'page name:create_system', 'page name:create_system', 'show', 
+    assert_link_parsed_as 'page name:create_system', 'page name:create_system', :show, 
         '[[page name:create_system]]'
   end
 
@@ -78,4 +78,3 @@ class WikiTest < Test::Unit::TestCase
   end
   
 end
-

@@ -18,7 +18,7 @@
 
 <div class="byline">
   <%= "Revision from #{@revision.pretty_created_at} by" %>
-  <%= @page.web.make_link(@revision.author) %>
+  <%= link_to_page @revision.author %>
 </div>
 
 <div class="navigation">

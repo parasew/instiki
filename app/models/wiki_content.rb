@@ -31,7 +31,7 @@ require 'chunks/nowiki'
 #       engine. By default these are:    
 #       Literal::Pre, Literal::Tags
 #  * :mode
-#    => How should the content be rendered? For normal display (:display), 
+#    => How should the content be rendered? For normal display (show), 
 #       publishing (:publish) or export (:export)?
 #
 # AUTHOR: Mark Reid <mark @ threewordslong . com>
@@ -47,7 +47,7 @@ class WikiContent < String
     :post_engine_actions => POST_ENGINE_ACTIONS,
     :engine              => Engines::Textile,
     :engine_opts         => [],
-    :mode                => [:display]
+    :mode                => :show
   }
 
   attr_reader :web, :options, :rendered, :chunks

@@ -15,7 +15,7 @@ module WikiChunk
 
     def initialize(*args)
       super
-      @link_type = 'show'
+      @link_type = :show
     end
 
     def self.apply_to(content)
@@ -124,7 +124,7 @@ module WikiChunk
       link_type_match = LINK_TYPE_SEPARATION.match(@page_name)
       if link_type_match
         @link_text = @page_name = link_type_match[1]
-        @link_type = link_type_match[2..3].compact[0]
+        @link_type = link_type_match[2..3].compact[0].to_sym
       end
     end
 

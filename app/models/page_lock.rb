@@ -2,6 +2,8 @@
 module PageLock
   LOCKING_PERIOD = 30 * 60 # 30 minutes
 
+  attr_reader :locked_by
+
   def lock(time, locked_by)
     @locked_at, @locked_by = time, locked_by
   end
@@ -18,7 +20,4 @@ module PageLock
     @locked_at + LOCKING_PERIOD > comparison_time unless @locked_at.nil?
   end
 
-  def locked_by_link
-    web.make_link(@locked_by)
-  end
 end
