@@ -20,9 +20,9 @@
       <ul>
     <% end %>
     <li>
-      <%= link_to page.name, :web => @web.address, :action => 'show', :id => page.name %>
+      <%= link_to_existing_page page %>
       <div class="byline" style="margin-bottom: 0px">
-        by <%= page.author_link %>
+        by <%= link_to_page(page.author) %>
         at <%= page.created_at.strftime "%H:%M" %>
         <%= "from #{page.author.ip}" if page.author.respond_to?(:ip) %>
       </div>
@@ -30,3 +30,4 @@
   <% end %>
   </ul>
 <% end %>
+	
