@@ -189,4 +189,33 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_flash_has :error
   end
 
+
+  def test_remove_orphaned_pages
+    setup_wiki_with_three_pages
+    @wiki.system[:password] = 'pswd'
+    orhan_page_linking_to_oak = @wiki.write_page('wiki1', 'Pine',
+        "Refers to [[Oak]].\n" +
+        "category: trees", 
+        Time.now, Author.new('TreeHugger', '127.0.0.2'))
+
+    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
+
+    assert_redirected_to :action => 'list'
+    assert_equal [@home, @oak], @web.select.sort,
+        "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
+
+
+    # Oak is now orphan, second pass should remove it
+    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password' => 'pswd')
+    assert_redirected_to :action => 'list'
+    assert_equal [@home], @web.select.sort,
+        "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
+
+    # third pass does not destroy HomePage
+    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password' => 'pswd')
+    assert_redirected_to :action => 'list'
+    assert_equal [@home], @web.select.sort,
+        "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
+  end
+
 end

@@ -1,5 +1,7 @@
 <% @title = "Edit Web" %>
 
+<p><%= @wiki.system[:password] %></p>
+
 <form action="edit_web" id="setup" method="post" 
       onSubmit="cleanAddress(); return validateEditWebForm()">
   <h2 style="margin-bottom: 3px">Name and address</h2>

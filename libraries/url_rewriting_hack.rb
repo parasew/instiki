@@ -65,6 +65,7 @@ class DispatchServlet
       'create_system' => 'admin',
       'create_web' => 'admin',
       'edit_web' => 'admin',
+      'remove_orphaned_pages' => 'admin',
       'file' => 'file',
       'import' => 'file',
       'pic' => 'file',

@@ -88,17 +88,6 @@ class WikiController < ApplicationController
     @pages_by_revision = @pages_in_category.by_revision
   end
 
-  def remove_orphaned_pages
-    if wiki.authenticate(@params['system_password_orphaned'])
-      wiki.remove_orphaned_pages(@web_name)
-      flash[:info] = 'Orphaned pages removed'
-      redirect_to :action => 'list'
-    else
-      flash[:error] = password_error(@params['system_password'])
-      return_to_last_remembered
-    end
-  end
-
   def rss_with_content
     render_rss
   end
