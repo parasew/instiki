@@ -18,14 +18,18 @@ class Category < Chunk::Abstract
     @list = match_data[2].split(',').map { |c| c.strip }
   end
 
-  # Mark this chunk's start and end points but allow the terms
-  # after the ':' to be marked up.
-  def mask(content) pre_mask + list.join(', ') + post_mask end
-
   # If the chunk is hidden, erase the mask and return this chunk
   # otherwise, surround it with a 'div' block.
   def unmask(content)
-	replacement = ( hidden ? '' : '<div class="property">category:\1</div>' )
-    self if content.sub!( Regexp.new( pre_mask+'(.*)?'+post_mask ), replacement )
+    return '' if hidden
+    
+    category_urls = @list.map{|category| url(category) }.join(', ')
+	replacement = '<div class="property"> category: ' + category_urls + '</div>'
+    self if content.sub!(mask(content), replacement)
+  end
+  
+  # TODO move presentation of page metadata to controller/view
+  def url(category)
+    %{<a class="category_link" href="../list/?category=#{category}">#{category}</a>}
   end
 end
