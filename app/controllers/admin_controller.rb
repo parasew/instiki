@@ -44,26 +44,32 @@ class AdminController < ApplicationController
   end
 
   def edit_web
-    # to template
-  end
-
-  def update_web
-    if wiki.authenticate(@params['system_password'])
-      wiki.update_web(
-        @web.address, @params['address'], @params['name'], 
-        @params['markup'].intern, 
-        @params['color'], @params['additional_style'], 
-        @params['safe_mode'] ? true : false, 
-        @params['password'].empty? ? nil : @params['password'],
-        @params['published'] ? true : false, 
-        @params['brackets_only'] ? true : false,
-        @params['count_pages'] ? true : false,
-        @params['allow_uploads'] ? true : false,
-        @params['max_upload_size']
-      )
-      redirect_show('HomePage', @params['address'])
+    if @params['system_password']
+      # form submitted
+      if wiki.authenticate(@params['system_password'])
+        wiki.edit_web(
+          @web.address, @params['address'], @params['name'], 
+          @params['markup'].intern, 
+          @params['color'], @params['additional_style'], 
+          @params['safe_mode'] ? true : false, 
+          @params['password'].empty? ? nil : @params['password'],
+          @params['published'] ? true : false, 
+          @params['brackets_only'] ? true : false,
+          @params['count_pages'] ? true : false,
+          @params['allow_uploads'] ? true : false,
+          @params['max_upload_size']
+        )
+        redirect_show('HomePage', @params['address'])
+      else
+        if @params['system_password'].empty?
+          flash[:error] = 'Please enter the system password'
+        else
+          flash[:error] = 'You entered a wrong system password. Please enter the right one'
+        end
+        # and re-render the same template again
+      end
     else
-      redirect_show('HomePage') 
+      # no form submitted - go to template
     end
   end
 

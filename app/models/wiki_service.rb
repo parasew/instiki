@@ -74,7 +74,7 @@ module AbstractWikiService
     not (@webs.empty?)
   end
 
-  def update_web(old_address, new_address, name, markup, color, additional_style, safe_mode = false, 
+  def edit_web(old_address, new_address, name, markup, color, additional_style, safe_mode = false, 
       password = nil, published = false, brackets_only = false, count_pages = false, 
       allow_uploads = true, max_upload_size = nil)
     if old_address != new_address

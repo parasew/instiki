@@ -112,10 +112,10 @@ class AdminControllerTest < Test::Unit::TestCase
   end
 
 
-  def test_update_web
+  def test_edit_web
     @wiki.system[:password] = 'pswd'
   
-    process('update_web', 'system_password' => 'pswd',
+    process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
         'safe_mode' => 'on', 'password' => 'new_password', 'published' => 'on', 
@@ -136,10 +136,10 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_equal 300, @web.max_upload_size
   end
 
-  def test_update_web_opposite_values
+  def test_edit_web_opposite_values
     @wiki.system[:password] = 'pswd'
   
-    process('update_web', 'system_password' => 'pswd',
+    process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
         'password' => 'new_password')

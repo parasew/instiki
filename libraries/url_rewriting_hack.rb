@@ -68,7 +68,6 @@ class DispatchServlet
       'file' => 'file',
       'import' => 'file',
       'pic' => 'file',
-      'update_web' => 'admin'
     }
     
     def self.map_to_controller(action)
