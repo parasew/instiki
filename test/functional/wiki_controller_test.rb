@@ -472,6 +472,8 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_rss_with_headlines
     setup_wiki_with_three_pages
+    @title_with_spaces = @wiki.write_page('wiki1', 'Title With Spaces', 
+      'About spaces', 1.hour.ago, Author.new('TreeHugger', '127.0.0.2'))
     
     @request.host = 'localhost'
     @request.port = 8080
@@ -480,7 +482,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     assert_success
     pages = r.template_objects['pages_by_revision']
-    assert_equal [@home, @oak, @elephant], pages,
+    assert_equal [@home, @oak, @elephant, @title_with_spaces], pages,
         "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
     
@@ -489,7 +491,8 @@ class WikiControllerTest < Test::Unit::TestCase
     expected_page_links =
         ['http://localhost:8080/wiki1/show/HomePage',
          'http://localhost:8080/wiki1/show/Oak',
-         'http://localhost:8080/wiki1/show/Elephant']
+         'http://localhost:8080/wiki1/show/Elephant',
+         'http://localhost:8080/wiki1/show/Title With Spaces']
 
     assert_template_xpath_match '/rss/channel/link', 
         'http://localhost:8080/wiki1/show/HomePage'

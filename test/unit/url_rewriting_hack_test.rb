@@ -35,10 +35,25 @@ class UrlRewritingHackTest < Test::Unit::TestCase
 
     assert_equal false, DispatchServlet.parse_uri('')
     assert_equal false, DispatchServlet.parse_uri('//')
-    assert_equal false, DispatchServlet.parse_uri('/web/show/$HOME_PAGE')
-    assert_equal false, DispatchServlet.parse_uri('/web/show/HomePage/something_else')
     assert_equal false, DispatchServlet.parse_uri('web')
-    assert_equal false, DispatchServlet.parse_uri('/web/show/HomePage?arg1=value1&arg2=value2')
+  end
+  
+  def test_parse_uri_liberal_with_pagenames
+
+    assert_equal({:controller => 'wiki', :web => 'web', :action => 'show', :id => '$HOME_PAGE'}, 
+      DispatchServlet.parse_uri('/web/show/$HOME_PAGE'))
+      
+    assert_equal({:controller => 'wiki', :web => 'web', :action => 'show', 
+        :id => 'HomePage/something_else'}, 
+        DispatchServlet.parse_uri('/web/show/HomePage/something_else'))
+    
+    assert_equal({:controller => 'wiki', :web => 'web', :action => 'show', 
+        :id => 'HomePage?arg1=value1&arg2=value2'}, 
+        DispatchServlet.parse_uri('/web/show/HomePage?arg1=value1&arg2=value2'))
+    
+    assert_equal({:controller => 'wiki', :web => 'web', :action => 'show', 
+        :id => 'Page+With+Spaces'}, 
+        DispatchServlet.parse_uri('/web/show/Page+With+Spaces'))
   end
 
   def test_url_rewriting
@@ -58,5 +73,4 @@ class UrlRewritingHackTest < Test::Unit::TestCase
         ur.rewrite(:controller => 'wiki')
   end
 
-  
 end

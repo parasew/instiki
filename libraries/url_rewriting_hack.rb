@@ -25,7 +25,8 @@ class DispatchServlet
 
   def self.parse_uri(path)
     ApplicationController.logger.debug "Parsing URI '#{path}'"
-    component = /([-_a-zA-Z0-9]+)/
+    component = '([-_a-zA-Z0-9]+)'
+    page_name = '(.*)'
     case path.sub(%r{^/(?:fcgi|mruby|cgi)/}, "/")
       when '/wiki/'
         { :web => nil, :controller => 'wiki', :action => 'index' }
@@ -33,10 +34,18 @@ class DispatchServlet
         { :web => nil, :controller => 'wiki', :action => $1 }
       when %r{^/#{component}/#{component}/?$}
         { :web => $1, :controller => 'wiki', :action => $2 }
-      when %r{^/#{component}/#{component}/#{component}/?$}
-        { :web => $1, :controller => 'wiki', :action => $2, :id => $3 }
+      when %r{^/#{component}/#{component}/(.*)/?$}
+        { :web => $1, :controller => 'wiki', :action => $2, :id => drop_trailing_slash($3) }
       else
         false
+    end
+  end
+
+  def self.drop_trailing_slash(line) 
+    if line[-1] == ?/
+      line.chop
+    else
+      line
     end
   end
 
