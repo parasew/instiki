@@ -42,9 +42,9 @@
   <ul style="margin-bottom: 10px">
   <% @page_names_that_are_wanted.each do |wanted_page_name| %>
     <li>
-      <%= link_to_page wanted_page_name, truncate(WikiWords.separate(@page_name), 35) %>
+      <%= link_to_page(wanted_page_name, @web, truncate(WikiWords.separate(wanted_page_name), 35)) %>
       wanted by
-      <%= @web.select.pages_that_reference(page_name).collect { |referring_page|
+      <%= @web.select.pages_that_reference(wanted_page_name).collect { |referring_page|            
             link_to_existing_page referring_page
           }.join(", ") 
       %>
@@ -62,7 +62,7 @@
   <ul style="margin-bottom: 35px">
     <% @pages_that_are_orphaned.each do |orphan_page| %>
       <li>
-        link_to_existing_page orphan_page
+        <%= link_to_existing_page orphan_page %>
       </li>
     <% end %>
   </ul>
