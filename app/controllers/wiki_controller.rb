@@ -89,7 +89,7 @@ class WikiController < ApplicationController
   end
 
   def remove_orphaned_pages
-    if wiki.authenticate(@params['system_password'])
+    if wiki.authenticate(@params['system_password_orphaned'])
       wiki.remove_orphaned_pages(@web_name)
       flash[:info] = 'Orphaned pages removed'
       redirect_to :action => 'list'

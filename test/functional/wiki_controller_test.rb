@@ -333,7 +333,7 @@ class WikiControllerTest < Test::Unit::TestCase
         "category: trees", 
         Time.now, Author.new('TreeHugger', '127.0.0.2'))
 
-    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password' => 'pswd')
+    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
 
     assert_redirected_to :action => 'list'
     assert_equal [@home, @oak], @web.select.sort,
