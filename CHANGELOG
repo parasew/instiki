@@ -12,6 +12,7 @@ HEAD:
           Instiki can bind to IPs other than 127.0.0.1 (command-line option)
           Revisions that do not change anything on the page are rejected
           Automated tests for all controller actions
+          category: lines are presented as links to "All Pages" for relevant categories
           Various usability enhancements
 
  * 0.9.2:
