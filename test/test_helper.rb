@@ -56,7 +56,7 @@ class WikiServiceWithNoPersistence
   end
   
   def storage_path
-    RAILS_ROOT + '/storage/test'
+    RAILS_ROOT + '/storage/test/'
   end
 end
 

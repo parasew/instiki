@@ -80,7 +80,7 @@ class WikiController < ApplicationController
 
   def export_pdf
     file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}"
-    file_path = WikiService.storage_path + file_name
+    file_path = @wiki.storage_path + file_name
 
     export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
     convert_tex_to_pdf "#{file_path}.tex"
@@ -89,7 +89,7 @@ class WikiController < ApplicationController
 
   def export_tex
     file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
-    file_path = WikiService.storage_path + file_name
+    file_path = @wiki.storage_path + file_name
 
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)
     send_file(file_path)
@@ -182,7 +182,7 @@ class WikiController < ApplicationController
     page = wiki.read_page(@web_name, @page_name)
     safe_page_name = @page.name.gsub(/\W/, '')
     file_name = "#{safe_page_name}-#{@web.address}-#{@page.created_at.strftime('%Y-%m-%d-%H-%M-%S')}"
-    file_path = WikiService.storage_path + file_name
+    file_path = @wiki.storage_path + file_name
 
     export_page_to_tex(file_path + '.tex') unless FileTest.exists?(file_path + '.tex')
     # NB: this is _very_ slow
@@ -263,13 +263,6 @@ class WikiController < ApplicationController
 
   private
     
-  def authorized?
-    @web.nil? ||
-    @web.password.nil? || 
-    cookies['web_address'] == @web.password || 
-    password_check(@params['password'])
-  end
-
   def convert_tex_to_pdf(tex_path)
     # TODO remove earlier PDF files with the same prefix
     # TODO handle gracefully situation where pdflatex is not available
@@ -285,7 +278,7 @@ class WikiController < ApplicationController
 
     file_prefix = "#{@web.address}-#{file_type}-"
     timestamp = @web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')
-    file_path = WikiService.storage_path + file_prefix + timestamp + '.zip'
+    file_path = @wiki.storage_path + file_prefix + timestamp + '.zip'
     tmp_path = "#{file_path}.tmp"
 
     Zip::ZipOutputStream.open(tmp_path) do |zip_out|
@@ -305,7 +298,7 @@ class WikiController < ApplicationController
         EOL
       end
     end
-    FileUtils.rm_rf(Dir[WikiService.storage_path + file_prefix + '*.zip'])
+    FileUtils.rm_rf(Dir[@wiki.storage_path + file_prefix + '*.zip'])
     FileUtils.mv(tmp_path, file_path)
     send_file(file_path, :type => 'application/zip')
   end

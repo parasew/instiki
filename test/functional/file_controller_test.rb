@@ -18,7 +18,7 @@ class FileControllerTest < Test::Unit::TestCase
   end
 
   def test_file
-    process 'file', 'id' => 'foo.tgz'
+    process 'file', 'web' => 'wiki', 'id' => 'foo.tgz'
   end
 
 end

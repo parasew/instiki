@@ -25,12 +25,38 @@ class ApplicationController < ActionController::Base
 
   protected
   
-  def wiki
-    $instiki_wiki_service
+  def authorized?
+    @web.nil? ||
+    @web.password.nil? || 
+    cookies['web_address'] == @web.password || 
+    password_check(@params['password'])
+  end
+
+  def check_authorization
+    if in_a_web? and 
+        not authorized? and 
+        not %w( login authenticate published ).include?(@action_name)
+      redirect_to :action => 'login'
+      return false
+    end
+  end
+
+  def connect_to_model
+    @action_name = @params['action'] || 'index'
+    @web_name = @params['web']
+    @wiki = wiki
+    @web = @wiki.webs[@web_name] unless @web_name.nil?
+    @page_name = @file_name = @params['id']
+    @page = @wiki.read_page(@web_name, @page_name) unless @page_name.nil?
+    @author = cookies['author'] || 'AnonymousCoward'
+    check_authorization
+  end
+
+  def in_a_web?
+    not @web_name.nil?
   end
 
   @@REMEMBER_NOT = ['locked', 'save']
-  
   def remember_location
     if @response.headers['Status'] == '200 OK'
       unless @@REMEMBER_NOT.include? action_name or @request.method != :get
@@ -58,28 +84,8 @@ class ApplicationController < ActionController::Base
     @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
   end
 
-  def connect_to_model
-    @action_name = @params['action'] || 'index'
-    @web_name = @params['web']
-    @wiki = wiki
-    @web = @wiki.webs[@web_name] unless @web_name.nil?
-    @page_name = @params['id']
-    @page = @wiki.read_page(@web_name, @page_name) unless @page_name.nil?
-    @author = cookies['author'] || 'AnonymousCoward'
-    check_authorization(@action_name)
-  end
-
-  def check_authorization(action_name)
-    if in_a_web? and 
-        not authorized? and 
-        not %w( login authenticate published ).include?(action_name)
-      redirect_to :action => 'login'
-      return false
-    end
-  end
-
-  def in_a_web?
-    not @web_name.nil?
+  def wiki
+    $instiki_wiki_service
   end
 
 end

@@ -90,6 +90,10 @@ module AbstractWikiService
     @webs[web_address].add_page(page)
     page
   end
+
+  def storage_path
+    self.class.storage_path
+  end
   
   private
     def settings_changed?(web, markup, safe_mode, brackets_only)
@@ -106,19 +110,20 @@ class WikiService
   
   # These methods do not change the state of persistent objects, and 
   # should not be ogged by Madeleine
-  automatic_read_only :authenticate, :read_page, :setup?, :webs
+  automatic_read_only :authenticate, :read_page, :setup?, :webs, :storage_path
 
   @@storage_path = './storage/'
 
   class << self
-    def storage_path
-      @@storage_path
-    end
-  
+
     def storage_path=(storage_path)
       @@storage_path = storage_path
     end
 
+    def storage_path
+      @@storage_path
+    end
+  
     def clean_storage
       MadeleineServer.clean_storage(self)
     end
