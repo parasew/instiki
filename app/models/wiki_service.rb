@@ -7,6 +7,7 @@ require 'madeleine/zmarshal'
 require 'web'
 require 'page'
 require 'author'
+require 'file_yard'
 
 module AbstractWikiService
 
@@ -22,6 +23,12 @@ module AbstractWikiService
 
   def delete_web(address)
     @webs[address] = nil
+  end
+
+  def file_yard(web)
+    raise "Web #{@web.name} does not belong to this wiki service" unless @webs.values.include?(web)
+    # TODO cache FileYards
+    FileYard.new("#{self.storage_path}/#{web.address}")
   end
 
   def init_wiki_service
@@ -110,7 +117,7 @@ class WikiService
   
   # These methods do not change the state of persistent objects, and 
   # should not be ogged by Madeleine
-  automatic_read_only :authenticate, :read_page, :setup?, :webs, :storage_path
+  automatic_read_only :authenticate, :read_page, :setup?, :webs, :storage_path, :file_yard
 
   @@storage_path = './storage/'
 

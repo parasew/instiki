@@ -9,7 +9,7 @@ class FileController; def rescue_action(e) logger.error(e); raise e end; end
 
 class FileControllerTest < Test::Unit::TestCase
 
-  FILE_AREA = RAILS_ROOT + '/storage/test/wiki'
+  FILE_AREA = RAILS_ROOT + '/storage/test/wiki1'
   FileUtils.mkdir_p(FILE_AREA) unless File.directory?(FILE_AREA)
 
   def setup
@@ -22,7 +22,7 @@ class FileControllerTest < Test::Unit::TestCase
   end
 
   def test_file
-    process 'file', 'web' => 'wiki', 'id' => 'foo.tgz'
+    process 'file', 'web' => 'wiki1', 'id' => 'foo.tgz'
     
     assert_success
     assert_rendered_file 'file/file'
@@ -31,7 +31,7 @@ class FileControllerTest < Test::Unit::TestCase
   def test_file_download_text_file
     File.open(FILE_AREA + '/foo.txt', 'wb') { |f| f.write "aaa\nbbb\n" }
   
-    r = process 'file', 'web' => 'wiki', 'id' => 'foo.txt'
+    r = process 'file', 'web' => 'wiki1', 'id' => 'foo.txt'
     
     assert_success
     assert_equal "aaa\nbbb\n", r.binary_content
@@ -41,7 +41,7 @@ class FileControllerTest < Test::Unit::TestCase
   def test_file_download_pdf_file
     File.open(FILE_AREA + '/foo.pdf', 'wb') { |f| f.write "aaa\nbbb\n" }
   
-    r = process 'file', 'web' => 'wiki', 'id' => 'foo.pdf'
+    r = process 'file', 'web' => 'wiki1', 'id' => 'foo.pdf'
     
     assert_success
     assert_equal "aaa\nbbb\n", r.binary_content

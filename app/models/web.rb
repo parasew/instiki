@@ -7,7 +7,6 @@ require "zip/zip"
 class Web
   attr_accessor :name, :address, :password, :markup, :color, :safe_mode, :pages
   attr_accessor :additional_style, :published, :brackets_only, :count_pages
-  
   def initialize(name, address, password = nil)
     @name, @address, @password, @safe_mode = name, address, password, false
     @pages = {}

@@ -8,11 +8,12 @@ class WikiServiceTest < Test::Unit::TestCase
 
   # Clean the test storage directory before the run
   unless defined? @@storage_cleaned
-    FileUtils.rm(Dir[RAILS_ROOT + 'storage/test/*.command_log'])
-    FileUtils.rm(Dir[RAILS_ROOT + 'storage/test/*.snapshot'])
-    FileUtils.rm(Dir[RAILS_ROOT + 'storage/test/*.tex'])
-    FileUtils.rm(Dir[RAILS_ROOT + 'storage/test/*.zip'])
-    FileUtils.rm(Dir[RAILS_ROOT + 'storage/test/*.pdf'])
+    FileUtils.rm(Dir[RAILS_ROOT + '/storage/test/*.command_log'])
+    FileUtils.rm(Dir[RAILS_ROOT + '/storage/test/*.snapshot'])
+    FileUtils.rm(Dir[RAILS_ROOT + '/storage/test/*.tex'])
+    FileUtils.rm(Dir[RAILS_ROOT + '/storage/test/*.zip'])
+    FileUtils.rm(Dir[RAILS_ROOT + '/storage/test/*.pdf'])
+    FileUtils.rm(Dir[RAILS_ROOT + '/storage/test/instiki/*'])
     @@cleaned_storage = true
     WikiService.instance.setup('pswd', 'Wiki', 'wiki')
   end
@@ -20,6 +21,7 @@ class WikiServiceTest < Test::Unit::TestCase
   def setup
     @s = WikiService.instance
     @s.create_web 'Instiki', 'instiki'
+    @web = @s.webs['instiki']
   end
 
   def teardown
@@ -59,6 +61,12 @@ class WikiServiceTest < Test::Unit::TestCase
       rescue Instiki::ValidationError
       end
     }
+  end
+
+  def test_file_yard
+    file_yard = @s.file_yard(@web)
+    assert_equal FileYard, file_yard.class
+    assert_equal(@s.storage_path + '/instiki', file_yard.files_path)
   end
 
 
