@@ -119,6 +119,12 @@ class WebTest < Test::Unit::TestCase
     assert_equal 100, web.max_upload_size
   end
 
+  def test_initialize_invalid_name
+    wiki_stub = Object.new
+    assert_raises(Instiki::ValidationError) { 
+      Web.new(wiki_stub, 'Wiki2', "wiki\234", '123') 
+    }
+  end
 
   private
 

@@ -5,12 +5,15 @@ require "wiki_words"
 require "zip/zip"
 
 class Web
-  attr_accessor :name, :address, :password, :markup, :color, :safe_mode, :pages
+  attr_accessor :name, :password, :markup, :color, :safe_mode, :pages
   attr_accessor :additional_style, :published, :brackets_only, :count_pages, :allow_uploads
   attr_accessor :max_upload_size
+  
+  attr_reader :address
 
   def initialize(parent_wiki, name, address, password = nil)
-    @wiki, @name, @address, @password = parent_wiki, name, address, password
+    self.address = address
+    @wiki, @name, @password = parent_wiki, name, password
 
     # default values
     @markup = :textile 
@@ -28,6 +31,13 @@ class Web
 
   def add_page(page)
     @pages[page.name] = page
+  end
+
+  def address=(the_address)
+    if the_address != CGI.escape(the_address)
+      raise Instiki::ValidationError.new("Web name should contain only valid URI characters") 
+    end
+    @address = the_address
   end
 
   def authors 

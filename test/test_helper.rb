@@ -2,6 +2,7 @@ ENV['RAILS_ENV'] = 'test'
 require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
 require 'application'
 require 'test/unit'
+require 'breakpoint'
 require 'action_controller/test_process'
 
 # Uncomment this variable to have assert_success check that response bodies are valid XML
