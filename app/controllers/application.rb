@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   # implements Instiki's legacy URLs
   require 'url_rewriting_hack'
 
+  before_filter :set_utf8_http_header
   after_filter :remember_location
 
   # For injecting a different wiki model implementation. Intended for use in tests
@@ -31,7 +32,6 @@ class ApplicationController < ActionController::Base
   @@REMEMBER_NOT = ['locked', 'save']
   
   def remember_location
-logger.debug @request.method
     if @response.headers['Status'] == '200 OK'
       unless @@REMEMBER_NOT.include? action_name or @request.method != :get
         @session[:return_to] = url_for 
@@ -52,6 +52,10 @@ logger.debug @request.method
           "redirect to the last remembered URL #{redirect_target}")
       redirect_to_url(redirect_target)
     end
+  end
+
+  def set_utf8_http_header
+    @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
   end
 
 end
