@@ -60,8 +60,10 @@ class URIChunk < Chunk::Abstract
         "(?:\\#(#{FRAGMENT}))?"     # Optional #fragment      (\7)
   end
 
-  def self.pattern()
-    Regexp.new(URI_PATTERN, Regexp::EXTENDED, 'N')
+  URI_PATTERN_REGEXP = Regexp.new(URI_PATTERN, Regexp::EXTENDED, 'N')
+
+  def self.pattern
+    URI_PATTERN_REGEXP
   end
 
   attr_reader :uri, :scheme, :user, :host, :port, :path, :query, :fragment, :link_text
