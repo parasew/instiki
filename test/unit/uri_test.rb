@@ -2,7 +2,6 @@
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'chunks/uri'
-require 'chunks/match'
 
 class URITest < Test::Unit::TestCase
   include ChunkMatch
