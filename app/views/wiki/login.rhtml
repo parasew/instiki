@@ -1,11 +1,14 @@
 <% @title = "#{@web_name} Login" %><% @hide_navigation = true %>
 
-
+<p>
 <%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
-    {'id' => 'loginForm', 'method' => 'post'})
+    { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post'})
 %>
-  <p>
     <b>Password</b><br />
-    <input type="password" name="password" />
-  </p>
+    <input type="password" name="password" id="password" default="yes" />
 <%= end_form_tag %>
+</p>
+
+<script language="JavaScript">
+  document.forms["loginForm"].elements["password"].focus();
+</script>
