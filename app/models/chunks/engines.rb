@@ -50,4 +50,5 @@ module Engines
   end
 
   MAP = { :textile => Textile, :markdown => Markdown, :rdoc => RDoc }
+  MAP.default = Textile
 end

@@ -39,16 +39,17 @@ require 'chunks/nowiki'
 # UPDATED: 22nd May 2004
 class WikiContent < String
 
-  PRE_ENGINE_ACTIONS  = [ NoWiki, Category, Include, WikiChunk::Link, URIChunk, LocalURIChunk, 
-                          WikiChunk::Word ] 
-  POST_ENGINE_ACTIONS = [ Literal::Pre, Literal::Tags ]
+  PRE_ENGINE_ACTIONS = [ NoWiki, Category, Include, WikiChunk::Link, URIChunk, 
+      LocalURIChunk, WikiChunk::Word ].freeze
+  POST_ENGINE_ACTIONS = [ Literal::Pre, Literal::Tags ].freeze
+
   DEFAULT_OPTS = {
     :pre_engine_actions  => PRE_ENGINE_ACTIONS,
     :post_engine_actions => POST_ENGINE_ACTIONS,
     :engine              => Engines::Textile,
     :engine_opts         => [],
     :mode                => :show
-  }
+  }.freeze
 
   attr_reader :web, :options, :rendered, :chunks
 
@@ -58,26 +59,19 @@ class WikiContent < String
     @revision = revision
     @web = @revision.page.web
 
-    # Deep copy of DEFAULT_OPTS to ensure that changes to PRE/POST_ENGINE_ACTIONS stay local
-    @options = Marshal.load(Marshal.dump(DEFAULT_OPTS)).update(options)
-    @options[:engine] = Engines::MAP[@web.markup] || Engines::Textile
-    @options[:engine_opts] = (@web.safe_mode ? [:filter_html, :filter_styles] : [])
-
-    @options[:pre_engine_actions].delete(WikiChunk::Word) if @web.brackets_only
+    @options = DEFAULT_OPTS.dup.merge(options)
+    @options[:engine] = Engines::MAP[@web.markup]
+    @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode 
+    @options[:pre_engine_actions] = (PRE_ENGINE_ACTIONS - [WikiChunk::Word]) if @web.brackets_only
 
     super(@revision.content)
     
-    begin
-      render!(@options[:pre_engine_actions] + [@options[:engine]] + @options[:post_engine_actions])
-# FIXME this is where all the parsing problems were shoved under the carpet
-#   rescue => e
-#     @rendered = e.message
-    end
+    render!(@options[:pre_engine_actions] + [@options[:engine]] + @options[:post_engine_actions])
   end
 
   # Call @web.page_link using current options.
   def page_link(name, text, link_type)
-    @options[:link_type] = link_type || :show
+    @options[:link_type] = (link_type || :show)
     @web.make_link(name, text, @options)
   end
 
