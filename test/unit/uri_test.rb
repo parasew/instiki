@@ -7,8 +7,9 @@ class URITest < Test::Unit::TestCase
   include ChunkMatch
 
   def test_non_matches
-    assert_no_match(URIChunk.pattern, 'There is no URI here') 
-    assert_no_match(URIChunk.pattern, 'One gemstone is the garnet:reddish in colour, like ruby') 
+    assert_conversion_does_not_apply(URIChunk, 'There is no URI here')
+    assert_conversion_does_not_apply(URIChunk, 
+        'One gemstone is the garnet:reddish in colour, like ruby') 
   end
 
   def test_simple_uri
@@ -110,9 +111,9 @@ class URITest < Test::Unit::TestCase
   end
 
   def test_non_uri
-	assert_no_match(URIChunk.pattern, 'httpd.conf')
-	assert_no_match(URIChunk.pattern, 'libproxy.so')
-	assert_no_match(URIChunk.pattern, 'ld.so.conf')
+    assert_conversion_does_not_apply URIChunk, 'httpd.conf'
+	assert_conversion_does_not_apply URIChunk, 'libproxy.so'
+	assert_conversion_does_not_apply URIChunk, 'ld.so.conf'
   end
 
   def test_uri_in_text
@@ -150,6 +151,29 @@ class URITest < Test::Unit::TestCase
         "This text contains a URL http://someplace.org:8080/~person/stuff.cgi?arg=val, doesn't it?",
         :scheme => 'http', :host => 'someplace.org', :port => '8080', :path => '/~person/stuff.cgi',
         :query => 'arg=val,')
+  end
+  
+  def test_local_urls
+    # normal
+    match(LocalURIChunk, 'http://perforce:8001/toto.html', 
+          :scheme => 'http', :host => 'perforce', 
+          :port => '8001', :link_text => 'http://perforce:8001/toto.html')
+
+    # in parentheses
+    match(LocalURIChunk, 'URI (http://localhost:2500) in brackets', 
+          :host => 'localhost', :port => '2500')
+    match(LocalURIChunk, 'because (as shown at http://perforce:8001) the results', 
+          :host => 'perforce', :port => '8001')
+    match(LocalURIChunk, 
+      'A wiki (http://localhost:2500/wiki.cgi?WhatIsWiki) page', 
+          :scheme => 'http', :host => 'localhost', :path => '/wiki.cgi', 
+          :port => '2500', :query => 'WhatIsWiki')
+  end
+
+  def assert_conversion_does_not_apply(chunk_type, str)
+    processed_str = str.dup
+    URIChunk.apply_to(processed_str)
+    assert_equal(str, processed_str)
   end
 
 end

@@ -39,7 +39,9 @@ require 'chunks/nowiki'
 # UPDATED: 22nd May 2004
 class WikiContent < String
 
-  PRE_ENGINE_ACTIONS  = [ NoWiki, Category, Include, URIChunk, WikiChunk::Link, WikiChunk::Word ] 
+  PRE_ENGINE_ACTIONS  = [ NoWiki, Category, Include, 
+                          URIChunk, LocalURIChunk,
+                          WikiChunk::Link, WikiChunk::Word ] 
   POST_ENGINE_ACTIONS = [ Literal::Pre, Literal::Tags ]
   DEFAULT_OPTS = {
     :pre_engine_actions  => PRE_ENGINE_ACTIONS,

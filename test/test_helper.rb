@@ -36,37 +36,32 @@ end
 # This module is to be included in unit tests that involve matching chunks.
 # It provides a easy way to test whether a chunk matches a particular string
 # and any the values of any fields that should be set after a match.
+class ContentStub < String
+  attr_reader :chunks, :content
+  def initialize(str)
+    super
+    @chunks = []
+  end
+end
+
 module ChunkMatch
 
   # Asserts a number of tests for the given type and text.
-  def match(type, test_text, expected)
-	pattern = type.pattern
-    assert_match(pattern, test_text)
-    pattern =~ test_text   # Previous assertion guarantees match
-    chunk = type.new($~)
-    
+  def match(chunk_type, test_text, expected_chunk_state)
+    if chunk_type.respond_to? :pattern
+      assert_match(chunk_type.pattern, test_text)
+    end
+
+    content = ContentStub.new(test_text)
+	chunk_type.apply_to(content)
+
     # Test if requested parts are correct.
-    for method_sym, value in expected do
-      assert_respond_to(chunk, method_sym)
-      assert_equal(value, chunk.method(method_sym).call, "Checking value of '#{method_sym}'")
+    expected_chunk_state.each_pair do |a_method, expected_value|
+      assert content.chunks.last.kind_of?(chunk_type)
+      assert_respond_to(content.chunks.last, a_method)
+      assert_equal(expected_value, content.chunks.last.send(a_method.to_sym), 
+          "Wrong #{a_method} value")
     end
   end
 end
 
-
-module ActionController
-  class TestResponse
-    def binary_content
-        sio = StringIO.new
-        begin 
-          $stdout = sio
-          body.call
-        ensure
-          $stdout = STDOUT
-        end
-        
-        sio.rewind
-        sio.read
-    end
-  end
-end

@@ -19,8 +19,7 @@ class URIChunk < Chunk::Abstract
   include URI::REGEXP::PATTERN
 
   # this condition is to get rid of pesky warnings in tests
-  unless defined? URI_CHUNK_CONSTANTS_DEFINED
-    URI_CHUNK_CONSTANTS_DEFINED = true
+  unless defined? URIChunk::INTERNET_URI_REGEXP
 
     GENERIC = '(?:aero|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org)'
     COUNTRY = '(?:au|at|be|ca|ch|de|dk|fr|hk|in|ir|it|jp|nl|no|pt|ru|se|sw|tv|tw|uk|us)'
@@ -45,27 +44,28 @@ class URIChunk < Chunk::Abstract
     FRAGMENT = "#{URIC_NO_ENDING}*"
 
     # DOMLABEL is defined in the ruby uri library, TLDS is defined above
-    FULL_HOSTNAME = "(?:#{DOMLABEL}\\.)+#{TLDS}" 
+    INTERNET_HOSTNAME = "(?:#{DOMLABEL}\\.)+#{TLDS}" 
 
     # Correct a typo bug in ruby 1.8.x lib/uri/common.rb 
     PORT = '\\d*'
 
-    URI_PATTERN =
+    INTERNET_URI =
         "(?:(#{SCHEME}):/{0,2})?" + # Optional scheme:        (\1)
         "(?:(#{USERINFO})@)?" +     # Optional userinfo@      (\2)
-        "(#{FULL_HOSTNAME})" +      # Mandatory hostname      (\3)
+        "(#{INTERNET_HOSTNAME})" +  # Mandatory hostname      (\3)
         "(?::(#{PORT}))?" +         # Optional :port          (\4)
         "(#{ABS_PATH})?"  +         # Optional absolute path  (\5)
         "(?:\\?(#{QUERY}))?" +      # Optional ?query         (\6)
         "(?:\\#(#{FRAGMENT}))?"     # Optional #fragment      (\7)
+
+    TEXTILE_SYNTAX_PREFIX = '(!)?'
+  
+    INTERNET_URI_REGEXP = Regexp.new(TEXTILE_SYNTAX_PREFIX + INTERNET_URI, Regexp::EXTENDED, 'N')
+
   end
 
-  TEXTILE_SYNTAX_PREFIX = '(!)?'
-
-  URI_PATTERN_REGEXP = Regexp.new(TEXTILE_SYNTAX_PREFIX + URI_PATTERN, Regexp::EXTENDED, 'N')
-
   def self.pattern
-    URI_PATTERN_REGEXP
+    INTERNET_URI_REGEXP
   end
 
   attr_reader :uri, :scheme, :user, :host, :port, :path, :query, :fragment, :link_text
@@ -146,6 +146,34 @@ class URIChunk < Chunk::Abstract
   def uri
     [scheme, scheme_delimiter, user, user_delimiter, host, port_delimiter, port, path, 
       query_delimiter, query].compact.join
+  end
+
+end
+
+# uri with mandatory scheme but less restrictive hostname, like
+# http://localhost:2500/blah.html
+class LocalURIChunk < URIChunk
+
+  unless defined? LocalURIChunk::LOCAL_URI_REGEXP
+    # hostname can be just a simple word like 'localhost'
+    ANY_HOSTNAME = "(?:#{DOMLABEL}\\.)*#{TOPLABEL}\\.?"
+    
+    # The basic URI expression as a string
+    # Scheme and hostname are mandatory
+    LOCAL_URI =
+           "(?:(#{SCHEME})://)+" +  # Mandatory scheme://     (\1)
+           "(?:(#{USERINFO})@)?" +  # Optional userinfo@      (\2)
+           "(#{ANY_HOSTNAME})" +    # Mandatory hostname      (\3)
+           "(?::(#{PORT}))?" +      # Optional :port          (\4)
+           "(#{ABS_PATH})?"  +      # Optional absolute path  (\5)
+           "(?:\\?(#{QUERY}))?" +   # Optional ?query         (\6)
+           "(?:\\#(#{FRAGMENT}))?"  # Optional #fragment      (\7)
+  
+    LOCAL_URI_REGEXP = Regexp.new(TEXTILE_SYNTAX_PREFIX + LOCAL_URI, Regexp::EXTENDED, 'N')
+  end
+
+  def self.pattern
+    LOCAL_URI_REGEXP
   end
 
 end
