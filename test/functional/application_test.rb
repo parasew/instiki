@@ -22,5 +22,10 @@ class ApplicationTest < Test::Unit::TestCase
     r = process('show', 'web' => 'wiki1', 'id' => 'HomePage')
     assert_equal 'text/html; charset=UTF-8', r.headers['Content-Type']
   end
+  
+  def test_connect_to_model_unknown_wiki
+    r = process('show', 'web' => 'unknown_wiki', 'id' => 'HomePage')
+    assert_equal 404, r.response_code
+  end
 
 end

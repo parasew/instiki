@@ -40,7 +40,13 @@ class ApplicationController < ActionController::Base
     @action_name = @params['action'] || 'index'
     @web_name = @params['web']
     @wiki = wiki
-    @web = @wiki.webs[@web_name] unless @web_name.nil?
+    if @web_name
+      @web = @wiki.webs[@web_name] 
+      if @web.nil?
+        render_text "Unknown web '#{@web_name}'", '404 Not Found'
+        return false
+      end
+    end
     @page_name = @file_name = @params['id']
     @page = @wiki.read_page(@web_name, @page_name) unless @page_name.nil?
     @author = cookies['author'] || 'AnonymousCoward'

@@ -166,6 +166,7 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
   def test_index_multiple_webs_web_explicit
+    @wiki.create_web('Test Wiki 2', 'wiki2')
     process('index', 'web' => 'wiki2')
     assert_redirected_to :web => 'wiki2', :action => 'show', :id => 'HomePage'
   end
