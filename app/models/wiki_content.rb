@@ -39,10 +39,17 @@ require 'chunks/nowiki'
 # UPDATED: 22nd May 2004
 
 module ChunkManager
-  attr_reader :chunks_by_type, :chunks_by_id
+  attr_reader :chunks_by_type, :chunks_by_id, :chunks, :chunk_id
   
-  # regexp that match all chunk type masks
-  CHUNK_MASK_RE = Chunk::Abstract.mask_re(Chunk::Abstract::derivatives)
+  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link, URIChunk, LocalURIChunk, 
+                    WikiChunk::Word ] 
+
+  HIDE_CHUNKS = [ Literal::Pre, Literal::Tags ]
+
+  MASK_RE = { 
+    ACTIVE_CHUNKS => Chunk::Abstract.mask_re(ACTIVE_CHUNKS),
+    HIDE_CHUNKS => Chunk::Abstract.mask_re(HIDE_CHUNKS)
+  }
   
   def init_chunk_manager
     @chunks_by_type = Hash.new
@@ -50,33 +57,40 @@ module ChunkManager
       @chunks_by_type[chunk_type] = Array.new 
     }
     @chunks_by_id = Hash.new
+    @chunks = []
+    @chunk_id = 0
   end
 
   def add_chunk(c)
-    @chunks_by_type[c.class] << c
-    @chunks_by_id[c.object_id] = c
+      @chunks_by_type[c.class] << c
+      @chunks_by_id[c.id] = c
+      @chunks << c
+      @chunk_id += 1
   end
 
   def delete_chunk(c)
     @chunks_by_type[c.class].delete(c)
-    @chunks_by_id.delete(c.object_id)
-  end
-
-  def chunks
-    @chunks_by_id.values
+    @chunks_by_id.delete(c.id)
+    @chunks.delete(c)
   end
 
   def merge_chunks(other)
-    other.chunks_by_id.each_value{|c| add_chunk(c)}
+    other.chunks.each{|c| add_chunk(c)}
   end
 
   def scan_chunkid(text)
-    text.scan(CHUNK_MASK_RE){|a| yield a[0].to_i }
+    text.scan(MASK_RE[ACTIVE_CHUNKS]){|a| yield a[0] }
   end
   
   def find_chunks(chunk_type)
-    @chunks_by_id.values.select { |chunk| chunk.kind_of?(chunk_type) and chunk.rendered? }
+    @chunks.select { |chunk| chunk.kind_of?(chunk_type) and chunk.rendered? }
   end
+
+  # for testing and WikiContentStub; we need a page_id even if we have no page
+  def page_id
+    0
+  end
+
 end
 
 # A simplified version of WikiContent. Useful to avoid recursion problems in 
@@ -106,14 +120,7 @@ end
 
 class WikiContent < String
 
-  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link, URIChunk, LocalURIChunk, 
-                    WikiChunk::Word ] 
-  HIDE_CHUNKS = [ Literal::Pre, Literal::Tags ]
-
-  MASK_RE = { 
-    ACTIVE_CHUNKS => Chunk::Abstract.mask_re(ACTIVE_CHUNKS),
-    HIDE_CHUNKS => Chunk::Abstract.mask_re(HIDE_CHUNKS)
-  }
+  include ChunkManager
 
   DEFAULT_OPTS = {
     :active_chunks       => ACTIVE_CHUNKS,
@@ -124,8 +131,6 @@ class WikiContent < String
 
   attr_reader :web, :options, :revision, :not_rendered, :pre_rendered
 
-  include ChunkManager
-  
   # Create a new wiki content string from the given one.
   # The options are explained at the top of this file.
   def initialize(revision, options = {})
@@ -179,9 +184,9 @@ class WikiContent < String
   def render!
     pre_render!
     @options[:engine].apply_to(self)
-    # unmask in one go. $~[1].to_i is the chunk id
+    # unmask in one go. $~[1] is the chunk id
     gsub!(MASK_RE[ACTIVE_CHUNKS]){ 
-      if chunk = @chunks_by_id[$~[1].to_i]
+      if chunk = @chunks_by_id[$~[1]]
         chunk.unmask_text 
         # if we match a chunkmask that existed in the original content string
         # just keep it as it is
@@ -193,6 +198,10 @@ class WikiContent < String
 
   def page_name
     @revision.page.name
+  end
+
+  def page_id
+    @revision.page.id
   end
 
 end

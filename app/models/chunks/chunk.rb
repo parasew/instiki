@@ -1,4 +1,3 @@
-require 'digest/md5'
 require 'uri/common'
 
 # A chunk is a pattern of text that can be protected
@@ -29,12 +28,12 @@ module Chunk
     # a regexp that matches all chunk_types masks
     def Abstract::mask_re(chunk_types)
       tmp = chunk_types.map{|klass| klass.mask_string}.join("|")
-      Regexp.new("chunk(\\d+)(#{tmp})chunk")
+      Regexp.new("chunk([0-9a-f]+n\\d+)(#{tmp})chunk")
     end
     
     attr_reader :text, :unmask_text, :unmask_mode
 
-	def initialize(match_data, content) 
+    def initialize(match_data, content) 
       @text = match_data[0] 
       @content = content
       @unmask_mode = :normal
@@ -52,9 +51,17 @@ module Chunk
       end
     end
 
+    # should contain only [a-z0-9]
     def mask
-      "chunk#{self.object_id}#{self.class.mask_string}chunk"
-	end
+      @mask ||="chunk#{@id}#{self.class.mask_string}chunk"
+    end
+
+    # We should not use object_id because object_id is not guarantied 
+    # to be unique when we restart the wiki (new object ids can equal old ones
+    # that were restored form madeleine storage)  
+    def id
+      @id ||= "#{@content.page_id}n#{@content.chunk_id}"
+    end
 
     def unmask
       @content.sub!(mask, @unmask_text)

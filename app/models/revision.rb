@@ -88,11 +88,15 @@ class Revision
   end
 
   def clear_display_cache
-    @wiki_references_cache = @wiki_includes = @display_cache = nil
+    @wiki_references_cache = @published_cache = @display_cache = nil
+    @wiki_includes_cache = nil
   end
 
   def display_published
-    @published_cache = WikiContent.new(self, {:mode => :publish}) if @published_cache.nil?
+    unless @published_cache && @published_cache.respond_to?(:chunks_by_type)
+      @published_cache = WikiContent.new(self, {:mode => :publish})
+      @published_cache.render!
+    end
     @published_cache
   end
 
