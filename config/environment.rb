@@ -3,16 +3,16 @@ if RUBY_VERSION < '1.8.1'
   exit
 end
 
-RAILS_ROOT = File.dirname(__FILE__) + '/../' unless defined? RAILS_ROOT
+RAILS_ROOT = File.expand_path(File.dirname(__FILE__) + '/../') unless defined? RAILS_ROOT
 RAILS_ENV  = ENV['RAILS_ENV'] || 'production' unless defined? RAILS_ENV
 
 unless defined? ADDITIONAL_LOAD_PATHS
 # Mocks first.
   ADDITIONAL_LOAD_PATHS = ["#{RAILS_ROOT}/test/mocks/#{RAILS_ENV}"]
-  
+
 # Then model subdirectories.
   ADDITIONAL_LOAD_PATHS.concat(Dir["#{RAILS_ROOT}/app/models/[_a-z]*"]) 
-  
+
 # Followed by the standard includes.
   ADDITIONAL_LOAD_PATHS.concat %w(
     app
@@ -22,7 +22,7 @@ unless defined? ADDITIONAL_LOAD_PATHS
     config
     libraries
   ).map { |dir| "#{File.expand_path(File.join(RAILS_ROOT, dir))}" }
-  
+
 # Third party vendors
   ADDITIONAL_LOAD_PATHS.concat %w(
     vendor/bluecloth-1.0.0/lib
@@ -35,7 +35,7 @@ unless defined? ADDITIONAL_LOAD_PATHS
   ).map { |dir| 
     "#{File.expand_path(File.join(RAILS_ROOT, dir))}" 
   }.delete_if { |dir| not File.exist?(dir) }
-  
+
 # Prepend to $LOAD_PATH
   ADDITIONAL_LOAD_PATHS.reverse.each { |dir| $:.unshift(dir) if File.directory?(dir) }
 end
@@ -57,4 +57,3 @@ require 'wiki_service'
 Socket.do_not_reverse_lookup = true
 
 ActionController::Base.template_root ||= "#{RAILS_ROOT}/app/views/"
-
