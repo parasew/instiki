@@ -48,7 +48,7 @@ class PageSet < Array
   # The HomePage and author pages are always assumed to have
   # references and so cannot be orphans
   def orphaned_pages
-    references = web.select.wiki_words + ["HomePage"] + web.select.authors
+    references = web.select.wiki_words + ['HomePage'] + web.select.authors
     self.reject { |page| references.include?(page.name) } 
   end
 
