@@ -29,7 +29,7 @@ class FileControllerTest < Test::Unit::TestCase
   end
 
   def test_file_download_text_file
-    File.open(FILE_AREA + '/foo.txt', 'wb') { |f| f.write "aaa\nbbb\n" }
+    File.open("#{FILE_AREA}/foo.txt", 'wb') { |f| f.write "aaa\nbbb\n" }
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.txt'
     
@@ -39,13 +39,22 @@ class FileControllerTest < Test::Unit::TestCase
   end
 
   def test_file_download_pdf_file
-    File.open(FILE_AREA + '/foo.pdf', 'wb') { |f| f.write "aaa\nbbb\n" }
+    File.open("#{FILE_AREA}/foo.pdf", 'wb') { |f| f.write "aaa\nbbb\n" }
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.pdf'
     
     assert_success
     assert_equal "aaa\nbbb\n", r.binary_content
     assert_equal 'application/pdf', r.headers['Content-Type']
+  end
+
+  def test_pic_download_gif
+    FileUtils.cp("#{RAILS_ROOT}/test/fixtures/rails.gif", FILE_AREA)
+    
+    r = process 'pic', 'web' => 'wiki1', 'id' => 'rails.gif'
+    
+    assert_success
+    assert_equal File.size("#{FILE_AREA}/rails.gif"), r.binary_content.size
   end
 
 end
