@@ -49,7 +49,7 @@ class WikiContent < String
     :mode                => [:display]
   }
 
-  attr_reader :web, :options, :rendered
+  attr_reader :web, :options, :rendered, :chunks
 
   # Create a new wiki content string from the given one.
   # The options are explained at the top of this file.
@@ -86,20 +86,10 @@ class WikiContent < String
   # Render this content using the specified actions.
   def render!(chunk_types)
     @chunks = []
-    chunk_types.each { |chunk_type| self.apply_type!(chunk_type) }
+    chunk_types.each { |chunk_type| chunk_type.apply_to(self) }
     
     @rendered = @chunks.map { |chunk| chunk.unmask(self) }.compact
     (@chunks - @rendered).each { |chunk| chunk.revert(self) }
   end
   
-  # Find all the chunks of the given type in this content
-  # Each time the type's pattern is matched, create a new
-  # chunk for it, and replace the occurance of the chunk
-  # in this content with its mask.
-  def apply_type!(chunk_type)
-    self.gsub!( chunk_type.pattern ) do |match|	
-      @chunks << chunk_type.new($~)
-      @chunks.last.mask(self)
-    end
-  end
 end
