@@ -17,7 +17,7 @@ end
     <%= list_item "Authors", "../authors/", "Who wrote what" %> | 
     <%= list_item "Feeds", "../feeds/", "Subscribe to changes by RSS" %> | 
     <%= list_item "Export", "../export/", "Download a zip with all the pages in this wiki", "X" %> | 
-    <input type="text" id="searchField" name="query" style="font-size: 10px" value="Search" onClick="this.value == 'Search' ? this.value = '' : true">
+    <input type="text" id="searchField" name="query" style="font-size: 10px" value="Search" onClick="this.value == 'Search' ? this.value = '' : true" />
   <% else %>
   	<%= list_item "Home Page", "../published/HomePage", "Home, Sweet Home", "H" %> | 
   <% end%>

@@ -8,8 +8,8 @@
   </div>
 
   <div class="inputBox">
-    Name: <input type="text" id="name" name="name" value="<%= @web.name %>" onChange="proposeAddress();"> &nbsp;&nbsp;
-    Address: <input type="text" id="address" name="address" value="<%= @web.address %>" onChange="cleanAddress();">
+    Name: <input type="text" id="name" name="name" value="<%= @web.name %>" onChange="proposeAddress();" /> &nbsp;&nbsp;
+    Address: <input type="text" id="address" name="address" value="<%= @web.address %>" onChange="cleanAddress();" />
     <i>(Letters & digits only)</i>
   </div>
 
@@ -30,24 +30,17 @@
 
     Color:
     <select name="color">
-      <%= html_options({ "Green" => "008B26", "Purple" => "504685", "Red" => "DA0006", "Orange" => "FA6F00", "Grey" => "8BA2B0" }, 
-          @web.color) %>
+      <%= html_options({ "Green" => "008B26", "Purple" => "504685", "Red" => "DA0006", "Orange" => "FA6F00", "Grey" => "8BA2B0" }, @web.color) %>
     </select>
     
     &nbsp;&nbsp;
     
     <small>
-
-    <input type="checkbox" name="safe_mode"<%= " CHECKED" if @web.safe_mode %>> Safe mode
-
-    &nbsp;&nbsp;
-
-    <input type="checkbox" name="brackets_only"<%= " CHECKED" if @web.brackets_only %>> Brackets only
-
-    &nbsp;&nbsp;
-    
-    <input type="checkbox" name="count_pages"<%= " CHECKED" if @web.count_pages %>> Count pages
-
+      <input type="checkbox" name="safe_mode"<%= " CHECKED" if @web.safe_mode %>> Safe mode
+      &nbsp;&nbsp;
+      <input type="checkbox" name="brackets_only"<%= " CHECKED" if @web.brackets_only %>> Brackets only
+      &nbsp;&nbsp;
+      <input type="checkbox" name="count_pages"<%= " CHECKED" if @web.count_pages %>> Count pages
     </small>
 
     <textarea id="additionalStyle" style="display: none; margin-top: 10px; margin-bottom: 5px; width: 560px; height: 200px" name="additional_style"><%= @web.additional_style %></textarea>
@@ -114,23 +107,23 @@ function validateSetup() {
     alert("You must enter the system password");
     return false;
   }
-  
+
   if (document.getElementById('name').value == "") {
     alert("You must pick a name for the web");
     return false;
   }
-  
+
   if (document.getElementById('address').value == "") {
     alert("You must pick an address for the web");
     return false;
   }
-  
+
   if (document.getElementById('password').value != "" &&
       document.getElementById('password').value != document.getElementById('password_check').value) {
     alert("The password and its verification doesn't match");
     return false;
   }
-  
+
   return true;
 }
 </script>

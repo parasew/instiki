@@ -1,9 +1,11 @@
 ENV['RAILS_ENV'] ||= 'test'
 require File.dirname(__FILE__) + '/../config/environment'
 require 'application'
-
 require 'test/unit'
 require 'action_controller/test_process'
+
+# Uncomment this variable to have assert_success check that response bodies are valid XML
+# $validate_xml_in_assert_success = true
 
 # Convenient setup method for Test::Unit::TestCase
 class Test::Unit::TestCase
@@ -93,3 +95,21 @@ module ChunkMatch
   end
 end
 
+if defined? $validate_xml_in_assert_success and $validate_xml_in_assert_success == true
+  module Test
+    module Unit
+      module Assertions
+        alias :__assert_success_before_ovverride_by_instiki :assert_success
+        def assert_success
+          __assert_success_before_ovverride_by_instiki
+          if @response.body.kind_of?(Proc)
+            body = @response.body.call
+          else
+            body = @response.body
+          end
+          assert_nothing_raised(body) { REXML::Document.new(body) }
+        end
+      end
+    end
+  end
+end

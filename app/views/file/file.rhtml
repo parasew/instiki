@@ -8,12 +8,12 @@
   <p>
     File to upload:
     <br/>
-    <input type="file" name="file" size="40">
+    <input type="file" name="file" size="40" />
   </p>
   <p>
-    <input type="submit" value="Update"> as 
+    <input type="submit" value="Update" /> as 
     <input type="text" name="author" id="authorName" value="<%= @author %>" 
-        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true">
+        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
 	<% if @page %>
       | <a href="../file/">Cancel</a> <small>(unlocks page)</small>
     <% end %>
