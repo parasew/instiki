@@ -403,10 +403,6 @@ class WikiController < ApplicationController
     @template.render_file(template_name)
   end
   
-  def template_engine(template_name)
-    ERB.new(IO.readlines(RAILS_ROOT + '/app/views/' + template_name + '.rhtml').join)
-  end
-  
   def truncate(text, length = 30, truncate_string = '...')
     if text.length > length then text[0..(length - 3)] + truncate_string else text end
   end
