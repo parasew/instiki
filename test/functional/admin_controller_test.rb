@@ -164,6 +164,20 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_flash_has :error
   end
 
+  def test_edit_web_rename_to_already_existing_web_name
+    @wiki.system[:password] = 'pswd'
+    
+    @wiki.create_web('Another', 'another')
+    process('edit_web', 'system_password' => 'pswd',
+      'web' => 'wiki1', 'address' => 'another', 'name' => 'Renamed Wiki1',
+      'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+      'password' => 'new_password')
+      
+    #returns to the same form
+    assert_success
+    assert_flash_has :error
+  end
+
   def test_edit_web_empty_password
     process('edit_web', 'system_password' => '',
       'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',

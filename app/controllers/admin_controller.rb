@@ -48,19 +48,25 @@ class AdminController < ApplicationController
     if system_password
       # form submitted
       if wiki.authenticate(system_password)
-        wiki.edit_web(
-          @web.address, @params['address'], @params['name'], 
-          @params['markup'].intern, 
-          @params['color'], @params['additional_style'], 
-          @params['safe_mode'] ? true : false, 
-          @params['password'].empty? ? nil : @params['password'],
-          @params['published'] ? true : false, 
-          @params['brackets_only'] ? true : false,
-          @params['count_pages'] ? true : false,
-          @params['allow_uploads'] ? true : false,
-          @params['max_upload_size']
-        )
-        redirect_show('HomePage', @params['address'])
+        begin
+          wiki.edit_web(
+            @web.address, @params['address'], @params['name'], 
+            @params['markup'].intern, 
+            @params['color'], @params['additional_style'], 
+            @params['safe_mode'] ? true : false, 
+            @params['password'].empty? ? nil : @params['password'],
+            @params['published'] ? true : false, 
+            @params['brackets_only'] ? true : false,
+            @params['count_pages'] ? true : false,
+            @params['allow_uploads'] ? true : false,
+            @params['max_upload_size']
+          )
+          flash[:info] = "Web '#{@params['address']}' was successfully updated"
+          redirect_show('HomePage', @params['address'])
+        rescue Instiki::ValidationError => e
+          flash[:error] = e.message
+          # and re-render the same template again
+        end
       else
         flash[:error] = password_error(system_password)
         # and re-render the same template again
