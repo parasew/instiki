@@ -1,5 +1,6 @@
 require 'wiki_words'
 require 'chunks/chunk'
+require 'chunks/wiki'
 require 'cgi'
 
 # Contains all the methods for finding and replacing wiki related
@@ -63,7 +64,7 @@ module WikiChunk
   class Link < WikiLink
     def self.pattern() /\[\[([^\]]+)\]\]/ end
     
-    ALIASED_LINK_PATTERN ||= Regexp.new('^(.*)?\|(.*)$', 0, "utf-8") 
+    ALIASED_LINK_PATTERN = Regexp.new('^(.*)?\|(.*)$', 0, "utf-8") unless defined? ALIASED_LINK_PATTERN
 
     attr_reader :page_name, :link_text
 

@@ -42,7 +42,6 @@ end
 
 require 'action_controller'
 require 'active_record_stub'
-require 'dependencies'
 
 unless defined? RAILS_DEFAULT_LOGGER
   RAILS_DEFAULT_LOGGER = Logger.new(STDERR)
@@ -57,3 +56,4 @@ require 'wiki_service'
 Socket.do_not_reverse_lookup = true
 
 ActionController::Base.template_root ||= "#{RAILS_ROOT}/app/views/"
+

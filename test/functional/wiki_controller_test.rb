@@ -154,7 +154,7 @@ class WikiControllerTest < Test::Unit::TestCase
     
     assert_success
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_equal 'attachment', r.headers['Content-Disposition']
+    assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, r.headers['Content-Disposition']
     # TODO assert contents of the output file
   end
 
@@ -163,7 +163,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     assert_success
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_equal 'attachment', r.headers['Content-Disposition']
+    assert_match /attachment; filename="wiki1-textile-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, r.headers['Content-Disposition']
     # TODO assert contents of the output file
   end
   
