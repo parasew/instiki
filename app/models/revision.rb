@@ -54,12 +54,12 @@ class Revision
 
   # Returns an array of all the WikiWords present in the content of this revision.
   def wiki_words
-    unless @wiki_words_cache 
+    unless @wiki_words_cache
       wiki_chunks = display_content.find_chunks(WikiChunk::WikiLink)
       @wiki_words_cache = wiki_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     end
     @wiki_words_cache
-  end  
+  end
 
   # Returns an array of all the WikiWords present in the content of this revision.
   # that already exists as a page in the web.
@@ -88,8 +88,8 @@ class Revision
   end
 
   def clear_display_cache
-    @wiki_references_cache = @published_cache = @display_cache = nil
-    @wiki_includes_cache = nil
+    @wiki_words_cache = @published_cache = @display_cache = @wiki_includes_cache = 
+      @wiki_references_cache = nil
   end
 
   def display_published

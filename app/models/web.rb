@@ -1,8 +1,8 @@
-require "cgi"
-require "page"
-require "page_set"
-require "wiki_words"
-require "zip/zip"
+require 'cgi'
+require 'page'
+require 'page_set'
+require 'wiki_words'
+require 'zip/zip'
 
 class Web
   attr_accessor :name, :password, :markup, :color, :safe_mode, :pages
@@ -35,7 +35,7 @@ class Web
 
   def address=(the_address)
     if the_address != CGI.escape(the_address)
-      raise Instiki::ValidationError.new("Web name should contain only valid URI characters") 
+      raise Instiki::ValidationError.new('Web name should contain only valid URI characters') 
     end
     @address = the_address
   end
@@ -162,6 +162,7 @@ class Web
   end
 
   private
+
     # Returns an array of all the wiki words in any current revision
     def wiki_words
       pages.values.inject([]) { |wiki_words, page| wiki_words << page.wiki_words }.flatten.uniq

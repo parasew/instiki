@@ -126,6 +126,19 @@ class WebTest < Test::Unit::TestCase
     }
   end
 
+  def test_new_page_linked_from_mother_page
+    # this was a bug in revision 204
+    home = Page.new(@web, 'HomePage', 'This page refers to AnotherPage', 
+        Time.local(2004, 4, 4, 16, 50), 'Alexey Verkhovsky')
+    another_page = Page.new(@web, 'AnotherPage', 'This is \AnotherPage', 
+        Time.local(2004, 4, 4, 16, 51), 'Alexey Verkhovsky')
+
+    @web.add_page(home)
+    @web.add_page(another_page)
+    
+    assert_equal [home], @web.select.pages_that_link_to('AnotherPage')
+  end
+
   private
 
   def add_sample_pages
