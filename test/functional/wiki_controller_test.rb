@@ -102,6 +102,7 @@ class WikiControllerTest < Test::Unit::TestCase
         r.headers['Content-Disposition']
     content = r.binary_content
     assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal :export, r.template_objects['link_mode']
   end
 
   def test_export_markup
@@ -233,8 +234,10 @@ class WikiControllerTest < Test::Unit::TestCase
 
 
   def test_print
-    process('print', 'web' => 'wiki1', 'id' => 'HomePage')
+    r = process('print', 'web' => 'wiki1', 'id' => 'HomePage')
+
     assert_success
+    assert_equal :show, r.template_objects['link_mode']
   end
 
 

@@ -44,7 +44,11 @@ class WikiController < ApplicationController
   end
   
   def export_html
-    export_pages_as_zip('html') { |page| @page = page; render_to_string 'wiki/print' }
+    export_pages_as_zip('html') do |page| 
+      @page = page
+      @link_mode = :export
+      render_to_string 'wiki/print'
+    end
   end
 
   def export_markup
@@ -149,6 +153,7 @@ class WikiController < ApplicationController
   end
 
   def print
+    @link_mode ||= :show
     # to template
   end
 

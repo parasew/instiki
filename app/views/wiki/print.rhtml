@@ -10,5 +10,5 @@
 <div class="byline">
   <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_at %> 
   by
-  <%= @page.author_link({ :mode => :export }) %>
+  <%= @page.author_link({ :mode => (@link_mode || :show) }) %>
 </div>
