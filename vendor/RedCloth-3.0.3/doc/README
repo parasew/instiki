@@ -1,17 +1,19 @@
-p=. !redcloth-title.png!
+p=. !redcloth3-title.png!
 
 <div id="sidebar">
 
-h4. Get RedCloth
+h4. Get RedCloth 3
 
-p(example1). *Latest version:* "2.0.10":http://rubyforge.org/frs/download.php/670/redcloth-2.0.10.tar.gz
+p(example1). *Stable version:* "2.0.11":http://rubyforge.org/frs/download.php/698/redcloth-2.0.11.tar.gz
+
+p(example1). *Unstable version:* "3.0.2":http://rubyforge.org/frs/download.php/2852/RedCloth-3.0.2.tar.gz
 
 Take a complete tour of Textile at "A Textile Reference":http://hobix.com/textile/.
 
 For fast syntax checking, try the "Quick Reference":http://hobix.com/textile/quick.html.
 
-p(example1). Upgrade with RubyGems!  Try: 
-@gem -Ri RedCloth@.
+p(example1). Upgrade with "RubyGems":http://rubygems.rubyforge.org/!  Try: 
+@gem install RedCloth@.
 
 See the "project page":http://rubyforge.org/projects/redcloth/ for bug reporting, old releases and CVS instructions.  "Documentation":http://redcloth.rubyforge.org/rdoc/ is also hosted at RubyForge.
 
@@ -38,10 +40,10 @@ Textile is a simple markup language.
 
 table{width:400px}.
 |_. textile|_. to|_. html|
-| ==_a phrase_== |->|_a phrase_|
-| ==*a phrase*== |->|*a phrase*|
-| ==_*a phrase*_== |->|_*a phrase*_|
-| =="Google":http://google.com== |->|"Google":http://google.com|
+| <notextile>_a phrase_</notextile> |->|_a phrase_|
+| <notextile>*a phrase*</notextile> |->|*a phrase*|
+| <notextile>_*a phrase*_</notextile> |->|_*a phrase*_|
+| <notextile>"Google":http://google.com</notextile> |->|"Google":http://google.com|
 
 No need to use verbose HTML to build your docs, your blogs, your pages.  Textile gives you readable text while you're writing and beautiful text for your readers.  And if you need to break out into HTML, Textile will allow you to do so.
 
@@ -58,7 +60,7 @@ Textile also handles some subtleties of formatting which will enhance your docum
 
 * The letter 'x' becomes a dimension sign when used alone.  Observe: 2 x 2.
 
-* Conversion of ==(TM)== to (TM), ==(R)== to (R), ==(C)== to (C).
+* Conversion of <notextile>(TM)</notextile> to (TM), <notextile>(R)</notextile> to (R), <notextile>(C)</notextile> to (C).
 
 For more on Textile's language, hop over to "A Textile Reference":http://hobix.com/textile/.
 
@@ -86,10 +88,10 @@ h2. Installing RedCloth
 To install RedCloth via RubyGems:
 
 <pre>
-  gem -Ri RedCloth
+  gem install RedCloth
 </pre>
 
-Or "download RedCloth":http://rubyforge.org/frs/download.php/670/redcloth-2.0.10.tar.gz and simply run the install.rb like so:
+Or "download RedCloth":http://rubyforge.org/frs/download.php/2852/RedCloth-3.0.2.tar.gz and simply run the install.rb like so:
 
 <pre>
   ruby install.rb config

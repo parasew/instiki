@@ -116,7 +116,7 @@ class RevisionTest < Test::Unit::TestCase
 
   def test_content_with_pre_blocks
     assert_markup_parsed_as(
-	    'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>', 
+	    '<p>A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre></p>', 
 	    'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>')
   end
 
@@ -168,7 +168,7 @@ class RevisionTest < Test::Unit::TestCase
   def test_double_replacing
     @revision.content = "VersionHistory\r\n\r\ncry VersionHistory"
     assert_equal '<p><span class="newWikiWord">Version History' +
-        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\t<p>cry " +
+        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
         '<span class="newWikiWord">Version History<a href="../show/VersionHistory">?</a>' +
         '</span></p>', 
         @revision.display_content
@@ -176,8 +176,8 @@ class RevisionTest < Test::Unit::TestCase
     @revision.clear_display_cache
 
     @revision.content = "f\r\nVersionHistory\r\n\r\ncry VersionHistory"
-    assert_equal "<p>f<br />\n<span class=\"newWikiWord\">Version History" +
-        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\t<p>cry " +
+    assert_equal "<p>f\n<span class=\"newWikiWord\">Version History" +
+        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
         "<span class=\"newWikiWord\">Version History<a href=\"../show/VersionHistory\">?</a>" +
         "</span></p>", 
         @revision.display_content

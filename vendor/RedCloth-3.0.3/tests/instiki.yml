@@ -18,17 +18,19 @@ out: '<p><span style="color:red;">nested span because of <span><span class="newW
 ---
 in: |-
   h2. Version History
-  * "Version 
+
+  * "Version
   0.0":http://www.threewordslong.com/render-0-8-9b.patch - Early version using MD5 hashes.
-  * "Version 
+  * "Version
   0.1":http://www.threewordslong.com/chunk-0-1.patch.gz - First cut of new system. Much cleaner.
   * "Version 0.2":http://www.threewordslong.com/chunk-0-2.patch.gz - Fixed problem with "authors" page and some tests.
 out: |-
   <h2>Version History</h2>
+
   	<ul>
-  	<li><a href="http://www.threewordslong.com/render-0-8-9b.patch">Version <br />
+  	<li><a href="http://www.threewordslong.com/render-0-8-9b.patch">Version
   0.0</a> &#8211; Early version using <span class="caps">MD5</span> hashes.</li>
-  		<li><a href="http://www.threewordslong.com/chunk-0-1.patch.gz">Version <br />
+  		<li><a href="http://www.threewordslong.com/chunk-0-1.patch.gz">Version
   0.1</a> &#8211; First cut of new system. Much cleaner.</li>
   		<li><a href="http://www.threewordslong.com/chunk-0-2.patch.gz">Version 0.2</a> &#8211; Fixed problem with &#8220;authors&#8221; page and some tests.</li>
   	</ul>

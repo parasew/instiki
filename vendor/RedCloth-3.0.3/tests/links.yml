@@ -150,3 +150,6 @@ out: <p>Go to <a href="http://www.dreammoods.com/cgibin/cutecast/cutecast.pl?for
 ---
 in: '* "rubylang":http://www.ruby-lang.org/en/'
 out: "<ul>\n\t<li><a href=\"http://www.ruby-lang.org/en/\">rubylang</a></li>\n\t</ul>"
+---
+in: 'The ION coding style document found at "IONCodingStyleGuide.doc":http://perforce:8081/@md=d&cd=//&c=82E@//depot/systest/system/main/pub/doc/IONCodingStyleGuide.doc?ac=22 codifies a couple of rules to ensure reasonably consistent code and documentation of libraries in ION. Test text'
+out: <p>The <span class="caps">ION</span> coding style document found at <a href="http://perforce:8081/@md=d&#38;cd=//&#38;c=82E@//depot/systest/system/main/pub/doc/IONCodingStyleGuide.doc?ac=22">IONCodingStyleGuide.doc</a> codifies a couple of rules to ensure reasonably consistent code and documentation of libraries in <span class="caps">ION</span>. Test text</p>

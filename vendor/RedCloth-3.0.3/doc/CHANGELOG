@@ -1,4 +1,42 @@
 --- %YAML:1.0
+- version: 3.0.3
+  date: 2005-02-06
+  changes:
+    - Stack overflow regexp on code inlines obliterated.
+    - Citations scaled back.
+    - Toggle span tags on CAPS with :no_span_tags accessor.
+
+- version: 3.0.2
+  date: 2005-02-02
+  changes:
+    - Stack overflow Regexps replaced.
+    - All code blocks protected from formatting.
+    - Hard breaks working.
+    - Filter HTML now uses detailed cleaner.
+
+- version: 3.0.1
+  date: 2004-11-15
+  changes:
+    - Using `float' rather than `text-align' to align image blocks.
+    - Shelving more HTML attributes to prevent them from clashing with Textile glyphs.
+    - Simplifying the block regexp.
+
+- version: 3.0
+  date: 2004-10-26
+  changes:
+    - Broke up the Textile engine into smaller parts, recoded central block parser.
+    - Added preliminary support for Markdown.
+    - Added support for custom Textile prefixes.
+    - RedCloth now generates XHTML fragments.
+    - Complete HTML documents should now work, RedCloth ignores complex HTML.
+      
+- version: 2.0.12
+  date: 2004-08-09
+  changes:
+    - Escaping tighter for <pre> tags that share a single line.
+    - No more String#htmlesc!.  Moved to RedCloth#htmlesc.
+    - Pruned out the code that was handling multibyte.
+
 - version: 2.0.11
   date: 2004-06-01
   changes:

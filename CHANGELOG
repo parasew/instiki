@@ -1,4 +1,5 @@
 HEAD:
+          RedCloth 3.0.3 (read: mixing Textile and Markdown in the same page)
           Files/pictures can be uploaded to a wiki and served from / displayed in wiki pages
           Wiki link syntax doesn't conflict with Textile hyperlink syntax. Therefore
           "textile link":LinkToSomePlace will not look insane.

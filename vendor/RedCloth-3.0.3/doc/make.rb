@@ -1,5 +1,19 @@
+$:.unshift '../lib'
 require 'yaml'
 require 'redcloth'
+
+class String
+    #
+    # Flexible HTML escaping
+    #
+    def htmlesc!( mode )
+        gsub!( '&', '&amp;' )
+        gsub!( '"', '&quot;' ) if mode != :NoQuotes
+        gsub!( "'", '&#039;' ) if mode == :Quotes
+        gsub!('<', '&lt;')
+        gsub!('>', '&gt;')
+    end
+end
 
 def a_name( phrase )
     phrase.downcase.
@@ -119,8 +133,8 @@ when 'QUICK-REFERENCE'
     sections.shift
 
     puts <<-HTML
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-         "DTD/xhtml1-transitional.dtd">
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -221,8 +235,8 @@ when 'REFERENCE'
     sections.shift
 
     puts <<-HTML
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-         "DTD/xhtml1-transitional.dtd">
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

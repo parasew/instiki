@@ -24,11 +24,10 @@ in: |-
   p. end
 out: |-
   <p>start</p>
-  
   	<ul>
-  	<li>one<br />
+  	<li>one
   and one</li>
-  		<li>two<br />
+  		<li>two
   and two</li>
   		<li>three</li>
   	</ul>
@@ -46,13 +45,11 @@ in: |-
   yeah number
   #* bullet
   *** okay
-
   ****# what
 
 
 out: |-
   <p>Funky:</p>
-  
   	<ul>
   	<li>Testing
   	<ol>
@@ -62,13 +59,12 @@ out: |-
   	</ul>
   	</li>
   		<li>number</li>
-  		<li>number<br />
+  		<li>number
   yeah number</li>
   	<ul>
   	<li>bullet
   	<ul>
   	<li>okay
-  
   	<ol>
   	<li>what</li>
   	</ul></li>

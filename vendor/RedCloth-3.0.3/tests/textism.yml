@@ -114,7 +114,7 @@ in: h3=. centered header
 out: <h3 style="text-align:center;">centered header</h3>
 ---
 in: '!>/image.gif! right-aligned image'
-out: <p><img src="/image.gif" align="right" alt="" /> right-aligned image</p>
+out: <p style="float:right"><img src="/image.gif" alt="" /> right-aligned image</p>
 ---
 in: p[no]{color:red}. A Norse of a different colour.
 out: <p style="color:red;" lang="no">A Norse of a different colour.</p>
@@ -255,7 +255,7 @@ in: |-
   # Yes they do
   # But you knew that
   
-  Some more text of dubious character. Here is a noisome string of CAPITAL letters. Here is something we want to _emphasize_. 
+  Some more text of dubious character. Here is a noisome string of CAPITAL letters. Here is something we want to _emphasize_.
   That was a linebreak. And something to indicate *strength*. Of course I could use <em>my own HTML tags</em> if I <strong>felt</strong> like it.
   
   h3. Coding
@@ -287,13 +287,12 @@ out: |-
   	<h3>This is a subhead</h3>
   
   	<p style="color:red;">This is some text of dubious character. Isn&#8217;t the use of &#8220;quotes&#8221; just lazy writing&#8212;and theft of &#8216;intellectual property&#8217; besides? I think the time has come to see a block quote.</p>
-  
+
   	<blockquote>
   		<p lang="fr">This is a block quote. I&#8217;ll admit it&#8217;s not the most exciting block quote ever devised.</p>
   	</blockquote>
   
   	<p>Simple list:</p>
-  
   	<ol style="color:blue;">
   	<li>one</li>
   		<li>two</li>
@@ -301,7 +300,6 @@ out: |-
   	</ol>
   
   	<p>Multi-level list:</p>
-  
   	<ol>
   	<li>one
   	<ol>
@@ -320,7 +318,6 @@ out: |-
   	</ol>
   
   	<p>Mixed list:</p>
-  
   	<ul>
   	<li>Point one</li>
   		<li>Point two
@@ -340,7 +337,7 @@ out: |-
   	<p>Well, that went well. How about we insert an <a href="/" title="watch out">old-fashioned hypertext link</a>? Will the quote marks in the tags get messed up? No!</p>
   
   	<p><a href="http://www.textism.com" title="optional title">This is a link</a></p>
-  
+
   	<table style="border:1px solid black;">
   		<tr>
   			<th>this</th>
@@ -361,23 +358,25 @@ out: |-
   		</tr>
   	</table>
   
+
+
   	<p>An image:</p>
   
   	<p><img src="/common/textist.gif" title="optional alt text" alt="optional alt text" /></p>
-  
   	<ol>
   	<li>Librarians rule</li>
   		<li>Yes they do</li>
   		<li>But you knew that</li>
   	</ol>
   
-  	<p>Some more text of dubious character. Here is a noisome string of <span class="caps">CAPITAL</span> letters. Here is something we want to <em>emphasize</em>. <br />
+  	<p>Some more text of dubious character. Here is a noisome string of <span class="caps">CAPITAL</span> letters. Here is something we want to <em>emphasize</em>.
   That was a linebreak. And something to indicate <strong>strength</strong>. Of course I could use <em>my own <span class="caps">HTML</span> tags</em> if I <strong>felt</strong> like it.</p>
-  
+
   	<h3>Coding</h3>
   
   	<p>This <code>is some code, "isn't it"</code>. Watch those quote marks! Now for some preformatted text:</p>
   
+
   <pre>
   <code>
       $text = str_replace("&lt;p&gt;%::%&lt;/p&gt;","",$text);
@@ -386,11 +385,9 @@ out: |-
   
   </code>
   </pre>
-  
   	<p>This isn&#8217;t code.</p>
   
   	<p>So you see, my friends:</p>
-  
   	<ul>
   	<li>The time is now</li>
   		<li>The time is not later</li>
@@ -398,7 +395,3 @@ out: |-
   		<li>We must act</li>
   	</ul>
 
-
-
-
- 

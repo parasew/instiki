@@ -27,7 +27,7 @@ Rake::TestTask.new { |t|
   t.libs << 'app/models'
   t.libs << 'vendor/bluecloth-1.0.0/lib'
   t.libs << 'vendor/madeleine-0.7.1/lib'
-  t.libs << 'vendor/redcloth-2.0.11/lib'
+  t.libs << 'vendor/RedCloth-3.0.3/lib'
   t.libs << 'vendor/rubyzip-0.5.6'
   t.pattern = 'test/**/*_test.rb'
   t.verbose = true

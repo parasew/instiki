@@ -31,7 +31,7 @@ unless defined? ADDITIONAL_LOAD_PATHS
   ADDITIONAL_LOAD_PATHS.concat %w(
     vendor/bluecloth-1.0.0/lib
     vendor/madeleine-0.7.1/lib
-    vendor/redcloth-2.0.11/lib
+    vendor/RedCloth-3.0.3/lib
     vendor/rubyzip-0.5.6
     vendor/actionpack/lib
     vendor/activesupport/lib
