@@ -62,11 +62,12 @@ module WikiChunk
   # NOTE: This chunk must be tested before WikiWord since
   #       a WikiWords can be a substring of a WikiLink. 
   class Link < WikiLink
-    def self.pattern() /\[\[([^\]]+)\]\]/ end
     
-    unless defined? ALIASED_LINK_PATTERN
-      ALIASED_LINK_PATTERN = Regexp.new('^(.*)?\|(.*)$', 0, 'utf-8')
-    end
+    WIKI_LINK = /\[\[([^\]]+)\]\]/ unless defined? WIKI_LINK
+    ALIASED_LINK_PATTERN = 
+        Regexp.new('^(.*)?\|(.*)$', 0, 'utf-8') unless defined? ALIASED_LINK_PATTERN
+
+    def self.pattern() WIKI_LINK end
 
     attr_reader :page_name, :link_text
 
