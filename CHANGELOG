@@ -1,4 +1,5 @@
 HEAD:
+          Parsing of URIs with a port (http://someplace.org:8080) fixed
           Madeleine will check every hour if there are new commands in the log or 24 hours have 
           passed since last snapshot, and take snapshot if either of these conditions is true
           Wiki extracts (to HTML and plain text) will leave only the last extract file in ./storage
