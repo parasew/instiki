@@ -79,7 +79,7 @@ class WikiController < ApplicationController
   end
 
   def export_pdf
-    file_name = "#{web.address}-tex-#{web.revised_on.strftime("%Y-%m-%d-%H-%M")}"
+    file_name = "#{web.address}-tex-#{web.revised_on.strftime('%Y-%m-%d-%H-%M')}"
     file_path = WikiService.storage_path + file_name
 
     export_web_to_tex(file_path + ".tex") unless FileTest.exists?(file_path + ".tex")
@@ -88,7 +88,7 @@ class WikiController < ApplicationController
   end
 
   def export_tex
-    file_name = "#{web.address}-tex-#{web.revised_on.strftime("%Y-%m-%d-%H-%M")}.tex"
+    file_name = "#{web.address}-tex-#{web.revised_on.strftime('%Y-%m-%d-%H-%M')}.tex"
     file_path = WikiService.storage_path + file_name
 
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)

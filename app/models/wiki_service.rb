@@ -127,8 +127,8 @@ class WikiService
 end
 
 class MadeleineServer
-  SNAPSHOT_INTERVAL   = 60 * 60 * 24 # Each day
-  AUTOMATIC_SNAPSHOTS = true
+
+  attr_reader :storage_path
 
   # Clears all the command_log and snapshot files located in the storage directory, so the
   # database is essentially dropped and recreated as blank
@@ -145,22 +145,44 @@ class MadeleineServer
   end
 
   def initialize(service)
+    @storage_path = service.storage_path
     @server = Madeleine::Automatic::AutomaticSnapshotMadeleine.new(service.storage_path, 
       Madeleine::ZMarshal.new) {
       service.new
     }
-    start_snapshot_thread if AUTOMATIC_SNAPSHOTS
+    start_snapshot_thread
   end
 
   def system
     @server.system
   end
 
+  def command_log_present?
+    not Dir[storage_path + '/*.command_log'].empty?
+  end
+
   def start_snapshot_thread
     Thread.new(@server) {
+      hours_since_last_snapshot = 0
       while true
-        sleep(SNAPSHOT_INTERVAL)
-        @server.take_snapshot
+        begin
+          hours_since_last_snapshot += 1
+          # Take a snapshot if there is a command log, or 24 hours 
+          # have passed since the last snapshot
+          if command_log_present? or hours_since_last_snapshot >= 24 
+            ActionController::Base.logger.info "[#{Time.now.strftime('%Y-%m-%d %H:%M:%S')}] " +
+              'Taking a Madeleine snapshot'
+            @server.take_snapshot
+            hours_since_last_snapshot = 0
+          end
+          sleep(1.hour)
+        rescue => e
+          ActionController::Base.logger.error(e)
+          # wait for a minute (not to spoof the log with the same error)
+          # and go back into the loop, to keep trying
+          sleep(1.minute)
+          ActionController::Base.logger.info("Retrying to save a snapshot")
+        end
       end
     }
   end
