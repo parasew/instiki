@@ -70,30 +70,36 @@ class URIChunk < Chunk::Abstract
 
   attr_reader :uri, :scheme, :user, :host, :port, :path, :query, :fragment, :link_text
   
-  def initialize(match_data)
-    super(match_data)
-
-    @link_text = match_data[0]
-    
-    @textile_syntax, @original_scheme, @user, @host, @port, @path, @query, @fragment = 
-        match_data[1..-1]
-    
-    case @textile_syntax
-    when '":'
-      # skip URL - need to refactor apply_chunk! into the chunk class itself
-    when '!'
-      # if the last char is also an exclamation, it's Textile syntax for an image; skip it
-      if @link_text[-1..-1] == '!'
-        # skip URL
-      else 
-        match_url
+  def self.apply_to(content)
+    content.gsub!( self.pattern ) do |matched_text|
+      chunk = self.new($~)
+      if chunk.textile_url? or chunk.textile_image?
+        # do not substitute
+        matched_text
+      else
+        content.chunks << chunk
+        chunk.mask(content)
       end
-    else
-      match_url
     end
   end
 
-  def match_url
+  def initialize(match_data)
+    super(match_data)
+    @link_text = match_data[0]
+    @textile_prefix, @original_scheme, @user, @host, @port, @path, @query, @fragment = 
+        match_data[1..-1]
+    treat_trailing_character
+  end
+
+  def textile_url?
+    @textile_prefix == '":'
+  end
+
+  def textile_image?
+    @textile_prefix == '!' and @trailing_punctuation == '!'
+  end
+
+  def treat_trailing_character
     # If the last character matched by URI pattern is in ! or ), this may be part of the markup,
     # not a URL. We should handle it as such. It is possible to do it by a regexp, but 
     # much easier to do programmatically

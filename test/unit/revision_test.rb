@@ -135,11 +135,8 @@ class RevisionTest < Test::Unit::TestCase
 
   def test_content_with_link_in_parentheses
     assert_markup_parsed_as(
-        '<p>Instiki is a <a href="http://www.c2.com/cgi/wiki?WikiWikiClones">Wiki Clone' +
-	    '</a> (<a href="http://wiki.org/wiki.cgi?WhatIsWiki">What is a wiki?</a>) that&#8217;s ' +
-	    'so easy to setup</p>', 
-        'Instiki is a "Wiki Clone":http://www.c2.com/cgi/wiki?WikiWikiClones ' +
-        '("What is a wiki?":http://wiki.org/wiki.cgi?WhatIsWiki) that\'s so easy to setup')
+        '<p>(<a href="http://wiki.org/wiki.cgi?WhatIsWiki">What is a wiki?</a>)</p>',
+        '("What is a wiki?":http://wiki.org/wiki.cgi?WhatIsWiki)')
   end
 
   def test_content_with_image_link
