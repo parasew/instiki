@@ -1,5 +1,7 @@
-require "test/unit"
-require "redcloth_for_tex"
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../test_helper'
+require 'redcloth_for_tex'
 
 class RedClothForTexTest < Test::Unit::TestCase
   def test_basics

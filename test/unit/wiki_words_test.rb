@@ -1,5 +1,7 @@
-require "test/unit"
-require "wiki_words"
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../test_helper'
+require 'wiki_words'
 
 class WikiWordsTest < Test::Unit::TestCase
   

@@ -1,6 +1,8 @@
-require "test/unit"
-require "web"
-require "page"
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../test_helper'
+require 'web'
+require 'page'
 
 class MockWeb < Web
   def initialize() super('test','test') end

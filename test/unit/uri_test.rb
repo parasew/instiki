@@ -1,6 +1,8 @@
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../test_helper'
 require 'chunks/uri'
 require 'chunks/match'
-require 'test/unit'
 
 class URITest < Test::Unit::TestCase
   include ChunkMatch

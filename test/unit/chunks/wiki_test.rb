@@ -1,6 +1,8 @@
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../../test_helper'
 require 'chunks/wiki'
 require 'chunks/match'
-require 'test/unit'
 
 class WikiTest < Test::Unit::TestCase
   include ChunkMatch

@@ -1,3 +1,5 @@
+#!/bin/env ruby
+
 require File.dirname(__FILE__) + '/../test_helper'
 require 'url_rewriting_hack'
 

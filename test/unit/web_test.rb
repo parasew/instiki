@@ -1,6 +1,6 @@
-#!/usr/bin/ruby
+#!/bin/env ruby
 
-require 'test/unit'
+require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_service'
 
 class WebTest < Test::Unit::TestCase

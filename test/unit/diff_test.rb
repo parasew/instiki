@@ -1,4 +1,6 @@
-require 'test/unit'
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../test_helper'
 require 'diff'
 
 include Diff

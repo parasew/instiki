@@ -1,6 +1,8 @@
-require "web"
-require "test/unit"
-require "revision"
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../test_helper'
+require 'web'
+require 'revision'
 
 class WebStub < Web; 
   attr_accessor :markup

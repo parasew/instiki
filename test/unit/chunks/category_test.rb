@@ -1,6 +1,8 @@
+#!/bin/env ruby
+
+require File.dirname(__FILE__) + '/../../test_helper'
 require 'chunks/category'
 require 'chunks/match'
-require 'test/unit'
 
 class CategoryTest < Test::Unit::TestCase
   include ChunkMatch
