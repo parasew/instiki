@@ -1,13 +1,11 @@
-require "date"
-require "page_lock"
-require "revision"
-require "wiki_words"
-require "chunks/wiki"
+require 'date'
+require 'page_lock'
+require 'revision'
+require 'wiki_words'
+require 'chunks/wiki'
 
 class Page
   include PageLock
-
-  CONTINOUS_REVISION_PERIOD = 30 * 60 # 30 minutes
 
   attr_reader :name, :revisions, :web
   
@@ -17,6 +15,10 @@ class Page
   end
 
   def revise(content, created_at, author)
+    # A user may change a page, look at it and make some more changes - several times.
+    # Not to record every such iteration as a new revision, if the previous revision was done 
+    # by the same author, not more than 30 minutes ago, then update the last revision instead of
+    # creating a new one
     if !@revisions.empty? && continous_revision?(created_at, author)
       @revisions.last.created_at = Time.now
       @revisions.last.content    = content
@@ -39,10 +41,6 @@ class Page
   
   def revised_on
     created_on
-  end
-  
-  def pretty_revised_on
-    DateTime.new(revised_on.year, revised_on.mon, revised_on.day).strftime "%B %e, %Y" 
   end
   
   def in_category?(cat)
@@ -76,7 +74,7 @@ class Page
   
   private
     def continous_revision?(created_at, author)
-      @revisions.last.author == author && @revisions.last.created_at + CONTINOUS_REVISION_PERIOD > created_at
+      @revisions.last.author == author && @revisions.last.created_at + 30.minutes > created_at
     end
   
     # Forward method calls to the current revision, so the page responds to all revision calls

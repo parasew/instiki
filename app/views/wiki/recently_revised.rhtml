@@ -12,7 +12,11 @@
 <ul>
 <% for page in @pages_by_revision %>
   <% if page.revised_on < revision_date %>
-    </ul><b><%= page.pretty_revised_on %></b><ul>
+    </ul><b>
+    	<%= DateTime.new(page.revised_on.year, page.revised_on.mon, 
+                page.revised_on.day).strftime('%B %e, %Y') 
+         %>
+    </b><ul>
   <% end %>
   
   <li>

@@ -21,7 +21,6 @@ class PageTest < Test::Unit::TestCase
 
   def test_basics
     assert_equal "First Page", @page.plain_name
-    assert_equal "April  4, 2004", @page.pretty_revised_on
   end
 
   def test_locking
