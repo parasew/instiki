@@ -2,7 +2,6 @@
 
 require File.dirname(__FILE__) + '/../../test_helper'
 require 'chunks/nowiki'
-require 'chunks/match'
 
 class NoWikiTest < Test::Unit::TestCase
   include ChunkMatch

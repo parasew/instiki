@@ -2,7 +2,6 @@
 
 require File.dirname(__FILE__) + '/../../test_helper'
 require 'chunks/category'
-require 'chunks/match'
 
 class CategoryTest < Test::Unit::TestCase
   include ChunkMatch
