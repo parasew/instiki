@@ -7,14 +7,24 @@ class FileController < ApplicationController
   layout 'default'
 
   def file
-    if have_file?
+    if @params['file']
+      # received a file
+      File.open(file_name) { |f| f.write(@params['file'].read }
+      
+    elsif have_file?
       send_file(file_path)
     else
       logger.debug("File not found: #{file_path}")
-      # to template, which is a file upload form
+      # go to the template, which is a file upload form
     end
   end
 
+  def cancel_upload
+    return_to_last_remembered
+  end
+  
+  def 
+  
   private
 
   def have_file?
