@@ -13,6 +13,7 @@ class FileController < ApplicationController
       # form supplied
       file_yard.upload_file(@file_name, @params['file'])
       flash[:info] = "File '#{@file_name}' successfully uploaded"
+      @web.refresh_pages_with_references(@file_name)
       return_to_last_remembered
     elsif file_yard.has_file?(@file_name)
       send_file(file_yard.file_path(@file_name))
@@ -32,6 +33,7 @@ class FileController < ApplicationController
       # form supplied
       file_yard.upload_file(@file_name, @params['file'])
       flash[:info] = "Image '#{@file_name}' successfully uploaded"
+      @web.refresh_pages_with_references(@file_name)
       return_to_last_remembered
     elsif file_yard.has_file?(@file_name)
       send_file(file_yard.file_path(@file_name))
