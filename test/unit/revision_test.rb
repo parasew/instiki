@@ -246,6 +246,12 @@ class RevisionTest < Test::Unit::TestCase
         '[[NonExistant.jpg:pic]]')
   end
 
+  def test_wiki_link_with_colon
+  	assert_markup_parsed_as(
+  	  '<p><span class="newWikiWord">With:Colon<a href="../show/With%3AColon">?</a></span></p>',
+  	  '[[With:Colon]]')
+  end
+
   # TODO Remove the leading underscores from this test when upgrading to RedCloth 3.0.1; 
   # also add a test for the "Unhappy Face" problem (another interesting RedCloth bug)
   def __test_list_with_tildas
