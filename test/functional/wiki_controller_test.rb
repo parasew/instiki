@@ -172,7 +172,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_index_wiki_not_initialized
     ApplicationController.wiki = WikiServiceWithNoPersistence.new
     process('index')
-    assert_redirected_to :action => 'new_system'
+    assert_redirected_to :controller => 'admin', :action => 'create_system'
   end
 
 

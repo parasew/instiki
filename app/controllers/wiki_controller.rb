@@ -10,7 +10,7 @@ class WikiController < ApplicationController
     if @web_name
       redirect_show 'HomePage'
     elsif not @wiki.setup?
-      redirect_to :action => 'new_system'
+      redirect_to :controller => 'admin', :action => 'create_system'
     elsif @wiki.webs.length == 1
       redirect_show 'HomePage', @wiki.webs.values.first.address
     else

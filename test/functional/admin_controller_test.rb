@@ -18,7 +18,13 @@ class AdminControllerTest < Test::Unit::TestCase
   end
 
 
-  def test_create_system
+  def test_create_system_form_displayed
+    ApplicationController.wiki = WikiServiceWithNoPersistence.new
+    process('create_system')
+    assert_success
+  end
+
+  def test_create_system_form_submitted
     ApplicationController.wiki = WikiServiceWithNoPersistence.new
     assert !@controller.wiki.setup?
     
@@ -34,17 +40,25 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_equal 'my_wiki', new_web.address
   end
 
-  def test_create_system_already_setup
+  def test_create_system_form_submitted_and_wiki_already_initialized
     wiki_before = @controller.wiki
     assert @controller.wiki.setup?
 
     process 'create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki'
 
-    assert_redirected_to :web => 'my_wiki', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
     assert_equal wiki_before, @controller.wiki
-    # and no new wikis shuld be created either
+    # and no new web should be created either
     assert_equal 1, @controller.wiki.webs.size
+    assert_flash_has :error
+  end
+
+  def test_create_system_no_form_and_wiki_already_initialized
+    assert @wiki.setup?
+    process('create_system')
+    assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
+    assert_flash_has :error
   end
 
 
@@ -82,19 +96,6 @@ class AdminControllerTest < Test::Unit::TestCase
     process 'edit_web', 'web' => 'wiki1'
     # this action simply renders a form
     assert_success
-  end
-
-
-  def test_new_system
-    ApplicationController.wiki = WikiServiceWithNoPersistence.new
-    process('new_system')
-    assert_success
-  end
-
-  def test_new_system_system_already_initialized
-    assert @wiki.setup?
-    process('new_system')
-    assert_redirected_to :action => 'index'
   end
 
 

@@ -5,8 +5,20 @@ class AdminController < ApplicationController
   layout 'default'
 
   def create_system
-    @wiki.setup(@params['password'], @params['web_name'], @params['web_address']) unless @wiki.setup?
-    redirect_show('HomePage', @params['web_address'])
+    if wiki.setup?
+      flash[:error] = <<-EOL
+          Wiki has already been created in '#{@wiki.storage_path}'. Shut down Instiki and delete 
+          this directory if you want to recreate it from scratch.<br/>
+          (WARNING: this will destroy content of your current wiki).
+      EOL
+      redirect_show('HomePage', @wiki.webs.keys.first)
+    elsif @params['web_name']
+      # form submitted -> create a wiki
+      @wiki.setup(@params['password'], @params['web_name'], @params['web_address']) 
+      redirect_show('HomePage', @params['web_address'])
+    else
+      # no form submitted -> go to template
+    end
   end
 
   def create_web
@@ -22,11 +34,6 @@ class AdminController < ApplicationController
     # to template
   end
 
-  def new_system
-    redirect_to(:action => 'index') if wiki.setup?
-    # otherwise, to template
-  end
-  
   def new_web
     redirect_to :action => 'index' if wiki.system['password'].nil?
     # otherwise, to template

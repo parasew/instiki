@@ -8,7 +8,7 @@
 #
 # 1. Controller is determined by action name (default is 'wiki')
 # 2. '/name1/' maps to action 'name1', unspecified web
-#    Example: http://localhost/new_system/
+#    Example: http://localhost/create_system/
 # 3. Special case of above, URI '/wiki/' maps to action 'index', because Rails sets this address 
 #    when default controller name is specified as 'wiki', and an application root 
 #    (http://localhost:2500/)is requested.
@@ -67,7 +67,6 @@ class DispatchServlet
       'edit_web' => 'admin',
       'file' => 'file',
       'import' => 'file',
-      'new_system' => 'admin',
       'new_web' => 'admin',
       'pic' => 'file',
       'update_web' => 'admin'
