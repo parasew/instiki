@@ -12,31 +12,28 @@ function checkSystemPassword(password) {
   if (password == "") {
     alert("You must enter the system password");
     return false;
+  } else {
+  	return true;
   }
 }
 
 function validateEditWebForm() {
-
-  if (!checkSystemPassword(document.getElementById('system_password').value))
-  	return false
-  end
-
+  if (!checkSystemPassword(document.getElementById('system_password').value)) {
+  	return false;
+  }
   if (document.getElementById('name').value == "") {
     alert("You must pick a name for the web");
     return false;
   }
-
   if (document.getElementById('address').value == "") {
     alert("You must pick an address for the web");
     return false;
   }
-
   if (document.getElementById('password').value != "" &&
       document.getElementById('password').value != document.getElementById('password_check').value) {
     alert("The password and its verification doesn't match");
     return false;
   }
-
   return true;
 }
 
