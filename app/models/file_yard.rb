@@ -17,7 +17,7 @@ class FileYard
     else
       File.open(file_path(name), 'wb') { |f| f.write(io.read) }
     end
-    # just in case, estrict read access and prohibit write access to the uploaded file
+    # just in case, restrict read access and prohibit write access to the uploaded file
     FileUtils.chmod(0440, file_path(name))
   end
 
