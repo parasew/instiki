@@ -46,7 +46,7 @@ class Web
   # on the render mode in options and whether the page exists
   # in the this web.
   def make_link(name, text = nil, options = {})
-    text = text || WikiWords.separate(name)
+    text = CGI.escapeHTML(text || WikiWords.separate(name))
     mode = options[:mode]
     link_type = options[:link_type] || 'show'
     case link_type

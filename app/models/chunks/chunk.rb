@@ -24,22 +24,6 @@ module Chunk
       end
     end
 
-	def pre_mask
-	  "chunk#{self.object_id}#{self.class.to_s.delete(':').downcase}start"
-	end
-
-	def post_mask
-	  "chunk#{self.object_id}end"
-	end
-
-    def bracketing_mask(content)
-      "#{pre_mask} #{content} #{post_mask}"
-    end
-
-    def bracketing_mask_regexp
-      Regexp.new("#{pre_mask} (.*)[ \n]#{post_mask}")
-    end
-
 	def mask(content) 
 	  "chunk#{self.object_id}#{self.class.to_s.delete(':').downcase}chunk"
 	end

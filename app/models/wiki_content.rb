@@ -39,7 +39,7 @@ require 'chunks/nowiki'
 # UPDATED: 22nd May 2004
 class WikiContent < String
 
-  PRE_ENGINE_ACTIONS  = [ NoWiki, Category, Include, URIChunk, LocalURIChunk, WikiChunk::Link, 
+  PRE_ENGINE_ACTIONS  = [ NoWiki, Category, Include, WikiChunk::Link, URIChunk, LocalURIChunk, 
                           WikiChunk::Word ] 
   POST_ENGINE_ACTIONS = [ Literal::Pre, Literal::Tags ]
   DEFAULT_OPTS = {
@@ -90,7 +90,6 @@ class WikiContent < String
   def render!(chunk_types)
     @chunks = []
     chunk_types.each { |chunk_type| chunk_type.apply_to(self) }
-    
     @rendered = @chunks.map { |chunk| chunk.unmask(self) }.compact
     (@chunks - @rendered).each { |chunk| chunk.revert(self) }
   end

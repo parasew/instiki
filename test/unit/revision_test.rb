@@ -16,7 +16,7 @@ class RevisionTest < Test::Unit::TestCase
     end
 
     @revision = Revision.new(@page, 1,
-      'HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- ' +
+      'HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \OverThere -- ' +
           'see SmartEngine in that SmartEngineGUI', 
       Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
   end
@@ -40,7 +40,7 @@ class RevisionTest < Test::Unit::TestCase
         '<span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
         'though <a class="existingWikiWord" href="../show/MyWay">My Way</a> OverThere&#8212;see ' +
         '<a class="existingWikiWord" href="../show/SmartEngine">Smart Engine</a> in that ' +
-        '<span class="newWikiWord">Smart Engine <span class="caps">GUI</span>' +
+        '<span class="newWikiWord">Smart Engine GUI' +
         '<a href="../show/SmartEngineGUI">?</a></span></p>', 
         @revision.display_content
   end
@@ -108,6 +108,11 @@ class RevisionTest < Test::Unit::TestCase
 	    'That is some <em style="WikiWord">Stylish Emphasis</em>')
   end
 
+  def test_content_with_escaped_wikiword
+    # there should be no wiki link
+    assert_markup_parsed_as('<p>WikiWord</p>', '\WikiWord')
+  end
+
   def test_content_with_pre_blocks
     assert_markup_parsed_as(
 	    'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>', 
@@ -155,7 +160,7 @@ class RevisionTest < Test::Unit::TestCase
         '<span class="newWikiWord">His Way</span> though ' +
         '<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere&#8212;see ' +
         '<a class="existingWikiWord" href="SmartEngine.html">Smart Engine</a> in that ' +
-        '<span class="newWikiWord">Smart Engine <span class="caps">GUI</span></span></p>', 
+        '<span class="newWikiWord">Smart Engine GUI</span></p>', 
         @revision.display_content_for_export
   end
 
@@ -179,8 +184,8 @@ class RevisionTest < Test::Unit::TestCase
 
   def test_difficult_wiki_words
     @revision.content = "[[It's just awesome GUI!]]"
-    assert_equal "<p><span class=\"newWikiWord\">It&#8217;s just awesome <span class=\"caps\">GUI" +
-        "</span>!<a href=\"../show/It%27s+just+awesome+GUI%21\">?</a></span></p>", 
+    assert_equal "<p><span class=\"newWikiWord\">It's just awesome GUI!" +
+        "<a href=\"../show/It%27s+just+awesome+GUI%21\">?</a></span></p>", 
         @revision.display_content
   end
   
@@ -205,7 +210,7 @@ class RevisionTest < Test::Unit::TestCase
   end
 
   def test_link_to_pic
-  	assert_markup_parsed_as( 
+  	assert_markup_parsed_as(
   	    '<p><img alt="Square" src="../pic/square.jpg" /></p>',
 	    '[[square.jpg|Square:pic]]')
   	assert_markup_parsed_as( 

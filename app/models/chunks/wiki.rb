@@ -38,23 +38,28 @@ module WikiChunk
     # By default, no escaped text
     def escaped_text() nil end
 
-    # FIXME: do not use the bracketing mask - URI chunk thinks that 'index.jpg' 
-    # contains URL http://index.jp
-
     # Replace link with a mask, but if the word is escaped, then don't replace it
-    def mask(content) escaped_text || bracketing_mask(link_text) end
+    def mask(content) 
+      escaped_text || super(content)
+    end
 
-    def regexp() bracketing_mask_regexp end
-
-    def revert(content) content.sub!(regexp, text) end
+    def revert(content) content.sub!(mask(content), text) end
     
     # Do not keep this chunk if it is escaped.
     # Otherwise, pass the link procedure a page_name and link_text and
     # get back a string of HTML to replace the mask with.
     def unmask(content)
-      return nil if escaped_text
-      return self if content.sub!(regexp) do |match|
-        content.page_link(page_name, $1, link_type)
+      if escaped_text 
+        return self
+      else 
+        chunk_found = content.sub!(mask(content)) do |match| 
+          content.page_link(page_name, link_text, link_type)
+        end
+        if chunk_found
+          return self
+        else
+          return nil
+        end
       end
     end
 
@@ -78,7 +83,9 @@ module WikiChunk
       @textile_link_suffix, @escape, @page_name = match_data[1..3]
     end
 
-    def escaped_text() (@escape.nil? ? nil : page_name) end
+    def escaped_text
+      page_name unless @escape.nil?
+    end
     def link_text() WikiWords.separate(page_name) end	
   end
 

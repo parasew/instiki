@@ -84,7 +84,7 @@ class WebTest < Test::Unit::TestCase
 
     # Escaping special characters in the name
     assert_equal(
-        '<span class="newWikiWord">Smith & Wesson<a href="../show/Smith+%26+Wesson">?</a></span>', 
+        '<span class="newWikiWord">Smith &amp; Wesson<a href="../show/Smith+%26+Wesson">?</a></span>', 
         @web.make_link('Smith & Wesson'))
 
     # optionally using text as the link text
