@@ -6,6 +6,7 @@ require 'author'
 require 'page'
 
 class Revision
+
   attr_accessor :page, :number, :content, :created_at, :author
 
   def initialize(page, number, content, created_at, author)
@@ -29,7 +30,7 @@ class Revision
   end
 
   def previous_revision
-    number - 1 >= 0 && page.revisions[number - 1]
+    number > 0 ? page.revisions[number - 1] : nil
   end
 
   # Returns an array of all the WikiWords present in the content of this revision.
@@ -53,8 +54,8 @@ class Revision
     wiki_words - existing_pages
   end  
 
-	# Explicit check for new type of display cache with find_chunks method.
-	# Ensures new version works with older snapshots.
+  # Explicit check for new type of display cache with find_chunks method.
+  # Ensures new version works with older snapshots.
   def display_content
     unless @display_cache && @display_cache.respond_to?(:find_chunks)
       @display_cache = WikiContent.new(self)
@@ -69,7 +70,7 @@ class Revision
   def clear_display_cache
     @display_cache = @published_cache = @wiki_words_cache = nil
   end
-  
+
   def display_published
     @published_cache = WikiContent.new(self, {:mode => :publish}) if @published_cache.nil?
     @published_cache
@@ -77,5 +78,6 @@ class Revision
 
   def display_content_for_export
     WikiContent.new(self, {:mode => :export} )
-  end  
+  end
+
 end
