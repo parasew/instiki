@@ -75,13 +75,22 @@
   <% end %>
   </small>
 
-  <% if @page.references.length > 0 %>
+  <% unless @page.linked_from.empty? %>
     <small>
       | Linked from: 
-      <%= @page.references.collect { |referring_page| 
+      <%= @page.linked_from.collect { |referring_page| 
             link_to_existing_page referring_page
           }.join(", ")
       %>
+    </small>
+  <% end %>
+
+  <% if @page.included_from.length > 0 %>
+    <small>
+      | Included from: <%= @page.included_from.collect { |referring_page|
+	 link_to_existing_page referring_page
+	}.join(", ") 
+	%>
     </small>
   <% end %>
 </div>

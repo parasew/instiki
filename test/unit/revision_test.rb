@@ -15,6 +15,7 @@ class RevisionTest < Test::Unit::TestCase
     ['MyWay', 'SmartEngine', 'ThatWay'].each do |page|
       @wiki.write_page('wiki1', page, page, Time.now, 'Me')
     end
+    @wiki.write_page('wiki1','NoWikiWord', 'hey you', Time.now, 'Me')
 
     @revision = Revision.new(@page, 1,
       'HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \OverThere -- ' +
@@ -24,6 +25,9 @@ class RevisionTest < Test::Unit::TestCase
 
   def test_wiki_words
     assert_equal %w( HisWay MyWay SmartEngine SmartEngineGUI ThatWay ), @revision.wiki_words.sort
+    
+    @wiki.write_page('wiki1', 'NoWikiWord', 'hey you', Time.now, 'Me')
+    assert_equal [], @wiki.read_page('wiki1', 'NoWikiWord').wiki_words
   end
   
   def test_existing_pages

@@ -13,38 +13,33 @@ module Engines
     # Create a new chunk for the whole content and replace it with its mask.
     def self.apply_to(content)
       new_chunk = self.new(content)
-      content.chunks << new_chunk
-      content.replace(new_chunk.mask(content))
-    end
-
-    def unmask(content) 
-      self
+      content.replace(new_chunk.mask)
     end
 
     private 
 
     # Never create engines by constructor - use apply_to instead
-    def initialize(text) 
-      @text = text 
+    def initialize(content) 
+      @content = content
     end
 
   end
 
   class Textile < AbstractEngine
-    def mask(content)
-      RedCloth.new(text,content.options[:engine_opts]).to_html
+    def mask
+      RedCloth.new(@content, @content.options[:engine_opts]).to_html
     end
   end
 
   class Markdown < AbstractEngine
-    def mask(content)
-      RedCloth.new(text,content.options[:engine_opts]).to_html
+    def mask
+      RedCloth.new(@content, @content.options[:engine_opts]).to_html
     end
   end
 
   class RDoc < AbstractEngine
-    def mask(content)
-      RDocSupport::RDocFormatter.new(text).to_html
+    def mask
+      RDocSupport::RDocFormatter.new(@content).to_html
     end
   end
 

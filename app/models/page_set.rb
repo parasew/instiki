@@ -32,7 +32,15 @@ class PageSet < Array
   end
   
   def pages_that_reference(page_name)
+    self.select { |page| page.wiki_references.include?(page_name) }
+  end
+  
+  def pages_that_link_to(page_name)
     self.select { |page| page.wiki_words.include?(page_name) }
+  end
+
+  def pages_that_include(page_name)
+    self.select { |page| page.wiki_includes.include?(page_name) }
   end
 
   def pages_authored_by(author)

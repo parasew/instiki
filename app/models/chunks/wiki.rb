@@ -7,60 +7,51 @@ require 'cgi'
 module WikiChunk
   include Chunk
 
-  # A wiki link is the top-level class for anything that refers to
+  # A wiki reference is the top-level class for anything that refers to
   # another wiki page.
-  class WikiLink < Chunk::Abstract
+  class WikiReference < Chunk::Abstract
 
-    attr_reader :page_name, :link_text, :link_type
+    # Name of the referenced page
+    attr_reader :page_name
+    
+    # the referenced page
+    def refpage
+      @content.web.pages[@page_name]
+    end
+  
+  end
 
-    def initialize(*args)
+  # A wiki link is the top-level class for links that refers to
+  # another wiki page.
+  class WikiLink < WikiReference
+ 
+    attr_reader :link_text, :link_type
+
+    def initialize(match_data, content)
       super
       @link_type = :show
     end
 
     def self.apply_to(content)
       content.gsub!( self.pattern ) do |matched_text|
-        chunk = self.new($~)
+        chunk = self.new($~, content)
         if chunk.textile_url?
           # do not substitute
           matched_text
         else
-          content.chunks << chunk
-          chunk.mask(content)
+          content.add_chunk(chunk)
+          chunk.mask
         end
       end
+    end
+
+    # the referenced page
+    def refpage
+      @content.web.pages[@page_name]
     end
 
     def textile_url?
       not @textile_link_suffix.nil?
-    end
-
-    # By default, no escaped text
-    def escaped_text() nil end
-
-    # Replace link with a mask, but if the word is escaped, then don't replace it
-    def mask(content) 
-      escaped_text || super(content)
-    end
-
-    def revert(content) content.sub!(mask(content), text) end
-    
-    # Do not keep this chunk if it is escaped.
-    # Otherwise, pass the link procedure a page_name and link_text and
-    # get back a string of HTML to replace the mask with.
-    def unmask(content)
-      if escaped_text 
-        return self
-      else 
-        chunk_found = content.sub!(mask(content)) do |match| 
-          content.page_link(page_name, link_text, link_type)
-        end
-        if chunk_found
-          return self
-        else
-          return nil
-        end
-      end
     end
 
   end
@@ -70,6 +61,9 @@ module WikiChunk
   # method will return the WikiWord instead of the usual +nil+.
   # The +page_name+ method returns the matched WikiWord.
   class Word < WikiLink
+
+    attr_reader :escaped_text
+    
     unless defined? WIKI_WORD
       WIKI_WORD = Regexp.new('(":)?(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, "utf-8")
     end
@@ -78,15 +72,19 @@ module WikiChunk
       WIKI_WORD
     end
 
-    def initialize(match_data)
-      super(match_data)
+    def initialize(match_data, content)
+      super
       @textile_link_suffix, @escape, @page_name = match_data[1..3]
+      if @escape 
+        @unmask_mode = :escape
+        @escaped_text = @page_name
+      else
+        @escaped_text = nil
+      end
+      @link_text = WikiWords.separate(@page_name)
+      @unmask_text = (@escaped_text || @content.page_link(@page_name, @link_text, @link_type))
     end
 
-    def escaped_text
-      page_name unless @escape.nil?
-    end
-    def link_text() WikiWords.separate(page_name) end	
   end
 
   # This chunk handles [[bracketted wiki words]] and 
@@ -108,12 +106,13 @@ module WikiChunk
         
     def self.pattern() WIKI_LINK end
 
-    def initialize(match_data)
-      super(match_data)
+    def initialize(match_data, content)
+      super
       @textile_link_suffix, @page_name = match_data[1..2]
       @link_text = @page_name
       separate_link_type
       separate_alias
+      @unmask_text = @content.page_link(@page_name, @link_text, @link_type)
     end
 
     private

@@ -86,23 +86,24 @@ class URIChunk < Chunk::Abstract
   
   def self.apply_to(content)
     content.gsub!( self.pattern ) do |matched_text|
-      chunk = self.new($~)
+      chunk = self.new($~, content)
       if chunk.avoid_autolinking?
-        # do not substitute
+        # do not substitute nor register the chunk
         matched_text
       else
-        content.chunks << chunk
-        chunk.mask(content)
+        content.add_chunk(chunk)
+        chunk.mask
       end
     end
   end
 
-  def initialize(match_data)
-    super(match_data)
+  def initialize(match_data, content)
+    super
     @link_text = match_data[0]
     @suspicious_preceding_character = match_data[1]
     @original_scheme, @user, @host, @port, @path, @query, @fragment = match_data[2..-1]
     treat_trailing_character
+    @unmask_text = "<a href=\"#{uri}\">#{link_text}</a>"
   end
 
   def avoid_autolinking?
@@ -122,18 +123,6 @@ class URIChunk < Chunk::Abstract
       @trailing_punctuation = nil
     end
   end
-
-  # If the text should be escaped then don't keep this chunk.
-  # Otherwise only keep this chunk if it was substituted back into the
-  # content.
-  def unmask(content)
-    return nil if escaped_text
-    return self if content.sub!(mask(content), "<a href=\"#{uri}\">#{link_text}</a>")
-  end
-
-  # If there is no hostname in the URI, do not render it
-  # It's probably only contains the scheme, eg 'something:' 
-  def escaped_text() ( host.nil? ? @uri : nil )  end
 
   def scheme
     @original_scheme or (@user ? 'mailto' : 'http')

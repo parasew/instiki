@@ -75,11 +75,12 @@ end
 # It provides a easy way to test whether a chunk matches a particular string
 # and any the values of any fields that should be set after a match.
 class ContentStub < String
-  attr_reader :chunks, :content
+  include ChunkManager
   def initialize(str)
     super
-    @chunks = []
+    init_chunk_manager
   end
+  def page_link(*); end
 end
 
 module ChunkMatch
@@ -97,7 +98,7 @@ module ChunkMatch
     expected_chunk_state.each_pair do |a_method, expected_value|
       assert content.chunks.last.kind_of?(chunk_type)
       assert_respond_to(content.chunks.last, a_method)
-      assert_equal(expected_value, content.chunks.last.send(a_method.to_sym), 
+      assert_equal(expected_value, content.chunks.last.send(a_method.to_sym),
           "Wrong #{a_method} value")
     end
   end

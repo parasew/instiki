@@ -72,6 +72,14 @@ class Page
     @web.select.pages_that_reference(name)
   end
 
+  def linked_from
+    @web.select.pages_that_link_to(name)
+  end
+
+  def included_from
+    @web.select.pages_that_include(name)
+  end
+
   # Returns the original wiki-word name as separate words, so "MyPage" becomes "My Page".
   def plain_name
     @web.brackets_only ? name : WikiWords.separate(name)

@@ -37,22 +37,95 @@ require 'chunks/nowiki'
 # AUTHOR: Mark Reid <mark @ threewordslong . com>
 # CREATED: 15th May 2004
 # UPDATED: 22nd May 2004
+
+module ChunkManager
+  attr_reader :chunks_by_type, :chunks_by_id
+  
+  # regexp that match all chunk type masks
+  CHUNK_MASK_RE = Chunk::Abstract.mask_re(Chunk::Abstract::derivatives)
+  
+  def init_chunk_manager
+    @chunks_by_type = Hash.new
+    Chunk::Abstract::derivatives.each{|chunk_type| 
+      @chunks_by_type[chunk_type] = Array.new 
+    }
+    @chunks_by_id = Hash.new
+  end
+
+  def add_chunk(c)
+    @chunks_by_type[c.class] << c
+    @chunks_by_id[c.object_id] = c
+  end
+
+  def delete_chunk(c)
+    @chunks_by_type[c.class].delete(c)
+    @chunks_by_id.delete(c.object_id)
+  end
+
+  def chunks
+    @chunks_by_id.values
+  end
+
+  def merge_chunks(other)
+    other.chunks_by_id.each_value{|c| add_chunk(c)}
+  end
+
+  def scan_chunkid(text)
+    text.scan(CHUNK_MASK_RE){|a| yield a[0].to_i }
+  end
+  
+  def find_chunks(chunk_type)
+    @chunks_by_id.values.select { |chunk| chunk.kind_of?(chunk_type) and chunk.rendered? }
+  end
+end
+
+# A simplified version of WikiContent. Useful to avoid recursion problems in 
+# WikiContent.new
+class WikiContentStub < String
+  attr_reader :options
+  include ChunkManager
+  def initialize(content, options)
+    super(content)
+    @options = options
+    init_chunk_manager
+  end
+
+  # Detects the mask strings contained in the text of chunks of type chunk_types
+  # and yields the corresponding chunk ids
+  # example: content = "chunk123categorychunk <pre>chunk456categorychunk</pre>" 
+  # inside_chunks(Literal::Pre) ==> yield 456
+  def inside_chunks(chunk_types)
+    chunk_types.each{|chunk_type|  chunk_type.apply_to(self) }
+    
+    chunk_types.each{|chunk_type| @chunks_by_type[chunk_type].each{|hide_chunk|
+        scan_chunkid(hide_chunk.text){|id| yield id }
+      }
+    } 
+  end
+end
+
 class WikiContent < String
 
-  PRE_ENGINE_ACTIONS = [ NoWiki, Category, Include, WikiChunk::Link, URIChunk, 
-      LocalURIChunk, WikiChunk::Word ].freeze
-  POST_ENGINE_ACTIONS = [ Literal::Pre, Literal::Tags ].freeze
+  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link, URIChunk, LocalURIChunk, 
+                    WikiChunk::Word ] 
+  HIDE_CHUNKS = [ Literal::Pre, Literal::Tags ]
+
+  MASK_RE = { 
+    ACTIVE_CHUNKS => Chunk::Abstract.mask_re(ACTIVE_CHUNKS),
+    HIDE_CHUNKS => Chunk::Abstract.mask_re(HIDE_CHUNKS)
+  }
 
   DEFAULT_OPTS = {
-    :pre_engine_actions  => PRE_ENGINE_ACTIONS,
-    :post_engine_actions => POST_ENGINE_ACTIONS,
+    :active_chunks       => ACTIVE_CHUNKS,
     :engine              => Engines::Textile,
     :engine_opts         => [],
     :mode                => :show
   }.freeze
 
-  attr_reader :web, :options, :rendered, :chunks
+  attr_reader :web, :options, :revision, :not_rendered, :pre_rendered
 
+  include ChunkManager
+  
   # Create a new wiki content string from the given one.
   # The options are explained at the top of this file.
   def initialize(revision, options = {})
@@ -60,13 +133,14 @@ class WikiContent < String
     @web = @revision.page.web
 
     @options = DEFAULT_OPTS.dup.merge(options)
-    @options[:engine] = Engines::MAP[@web.markup]
-    @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode 
-    @options[:pre_engine_actions] = (PRE_ENGINE_ACTIONS - [WikiChunk::Word]) if @web.brackets_only
+    @options[:engine] = Engines::MAP[@web.markup] 
+    @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode
+    @options[:active_chunks] = (ACTIVE_CHUNKS - [WikiChunk::Word] ) if @web.brackets_only
 
     super(@revision.content)
-    
-    render!(@options[:pre_engine_actions] + [@options[:engine]] + @options[:post_engine_actions])
+    init_chunk_manager
+    build_chunks
+    @not_rendered = String.new(self)
   end
 
   # Call @web.page_link using current options.
@@ -75,17 +149,50 @@ class WikiContent < String
     @web.make_link(name, text, @options)
   end
 
-  # Find all the chunks of the given types
-  def find_chunks(chunk_type)
-    rendered.select { |chunk| chunk.kind_of?(chunk_type) }
+  def build_chunks
+    # create and mask Includes and "active_chunks" chunks
+    Include.apply_to(self)
+    @options[:active_chunks].each{|chunk_type| chunk_type.apply_to(self)}
+
+    # Handle hiding contexts like "pre" and "code" etc..
+    # The markup (textile, rdoc etc) can produce such contexts with its own syntax.
+    # To reveal them, we work on a copy of the content.
+    # The copy is rendered and used to detect the chunks that are inside protecting context  
+    # These chunks are reverted on the original content string.
+
+    copy = WikiContentStub.new(self, @options)
+    @options[:engine].apply_to(copy)
+
+    copy.inside_chunks(HIDE_CHUNKS) do |id|
+      @chunks_by_id[id].revert
+    end
   end
 
-  # Render this content using the specified actions.
-  def render!(chunk_types)
-    @chunks = []
-    chunk_types.each { |chunk_type| chunk_type.apply_to(self) }
-    @rendered = @chunks.map { |chunk| chunk.unmask(self) }.compact
-    (@chunks - @rendered).each { |chunk| chunk.revert(self) }
+  def pre_render!
+    unless @pre_rendered 
+      @chunks_by_type[Include].each{|chunk| chunk.unmask }
+      @pre_rendered = String.new(self)
+    end
+    @pre_rendered 
   end
-  
+
+  def render!
+    pre_render!
+    @options[:engine].apply_to(self)
+    # unmask in one go. $~[1].to_i is the chunk id
+    gsub!(MASK_RE[ACTIVE_CHUNKS]){ 
+      if chunk = @chunks_by_id[$~[1].to_i]
+        chunk.unmask_text 
+        # if we match a chunkmask that existed in the original content string
+        # just keep it as it is
+      else 
+        $~[0]
+      end}
+    self
+  end
+
+  def page_name
+    @revision.page.name
+  end
+
 end

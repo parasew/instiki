@@ -156,6 +156,11 @@ class Web
     PageSet.new(self, @pages.values, condition)
   end
   
+  # This ensures compatibility with 0.9 storages
+  def wiki
+    @wiki ||= WikiService.instance
+  end
+
   private
     # Returns an array of all the wiki words in any current revision
     def wiki_words
@@ -167,9 +172,4 @@ class Web
       pages.keys
     end
     
-    # This ensures compatibility with 0.9 storages
-    def wiki
-      @wiki ||= WikiService.instance
-    end
-
 end

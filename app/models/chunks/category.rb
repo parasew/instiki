@@ -13,22 +13,19 @@ class Category < Chunk::Abstract
 
   attr_reader :hidden, :list
 
-  def initialize(match_data)
-    super(match_data)
-	@hidden = match_data[1]
+def initialize(match_data, content)
+    super(match_data, content)
+    @hidden = match_data[1]
     @list = match_data[2].split(',').map { |c| c.strip }
+    @unmask_text = ''
+    if @hidden
+      @unmask_text = ''
+    else
+      category_urls = @list.map { |category| url(category) }.join(', ')
+      @unmask_text = '<div class="property"> category: ' + category_urls + '</div>'
+    end
   end
 
-  # If the chunk is hidden, erase the mask and return this chunk
-  # otherwise, surround it with a 'div' block.
-  def unmask(content)
-    return '' if hidden
-    
-    category_urls = @list.map{|category| url(category) }.join(', ')
-	replacement = '<div class="property"> category: ' + category_urls + '</div>'
-    self if content.sub!(mask(content), replacement)
-  end
-  
   # TODO move presentation of page metadata to controller/view
   def url(category)
     %{<a class="category_link" href="../list/?category=#{category}">#{category}</a>}

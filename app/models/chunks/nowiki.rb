@@ -14,18 +14,15 @@ require 'chunks/chunk'
 # Author: Mark Reid <mark at threewordslong dot com>
 # Created: 8th June 2004
 class NoWiki < Chunk::Abstract
+
   NOWIKI_PATTERN = Regexp.new('<nowiki>(.*?)</nowiki>')
   def self.pattern() NOWIKI_PATTERN end
 
   attr_reader :plain_text
 
-  def initialize(match_data)
-	super(match_data)
-	@plain_text = match_data[1]
+  def initialize(match_data, content)
+    super
+    @plain_text = @unmask_text = match_data[1]
   end
-  
-  # The nowiki content is not unmasked. This means the chunk will be reverted
-  # using the plain text.
-  def unmask(content) nil end
-  def revert(content) content.sub!(mask(content), plain_text) end
+
 end

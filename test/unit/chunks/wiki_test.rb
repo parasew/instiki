@@ -5,12 +5,6 @@ require 'chunks/wiki'
 
 class WikiTest < Test::Unit::TestCase
 
-  class ContentStub < String
-    def chunks
-      @chunks ||= []
-    end
-  end
-  
   include ChunkMatch
 
   def test_simple
@@ -18,21 +12,19 @@ class WikiTest < Test::Unit::TestCase
   end
 
   def test_escaped
+    # escape is only implemented in WikiChunk::Word 
 	match(WikiChunk::Word, 'Do not link to an \EscapedWord',
 		:page_name => 'EscapedWord', :escaped_text => 'EscapedWord'
 	)
   end
 
   def test_simple_brackets
-	match(WikiChunk::Link, 'This is a [[bracketted link]]',
-		:page_name => 'bracketted link', :escaped_text => nil
-	)
+	match(WikiChunk::Link, 'This is a [[bracketted link]]', :page_name => 'bracketted link')
   end
 
   def test_complex_brackets
-	match(WikiChunk::Link, 'This is a tricky link [[Sperberg-McQueen]]',
-		:page_name => 'Sperberg-McQueen', :escaped_text => nil
-	)
+	match(WikiChunk::Link, 'This is a tricky link [[Sperberg-McQueen]]', 
+	      :page_name => 'Sperberg-McQueen')
   end
 
   def test_textile_link

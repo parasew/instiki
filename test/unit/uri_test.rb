@@ -209,7 +209,7 @@ class URITest < Test::Unit::TestCase
   end
 
   def assert_conversion_does_not_apply(chunk_type, str)
-    processed_str = str.dup
+    processed_str = ContentStub.new(str.dup)
     chunk_type.apply_to(processed_str)
     assert_equal(str, processed_str)
   end
