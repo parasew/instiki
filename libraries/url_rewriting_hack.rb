@@ -62,9 +62,15 @@ class DispatchServlet
   class ActionMapper
 
     @@action_to_controller_map = {
+      'create_system' => 'admin',
+      'create_web' => 'admin',
+      'edit_web' => 'admin',
       'file' => 'file',
+      'import' => 'file',
+      'new_system' => 'admin',
+      'new_web' => 'admin',
       'pic' => 'file',
-      'import' => 'file'
+      'update_web' => 'admin'
     }
     
     def self.map_to_controller(action)

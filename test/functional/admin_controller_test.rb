@@ -1,0 +1,155 @@
+#!/bin/env ruby -w 
+
+require File.dirname(__FILE__) + '/../test_helper'
+require 'admin_controller'
+
+# Raise errors beyond the default web-based presentation
+class AdminController; def rescue_action(e) logger.error(e); raise e end; end
+
+class AdminControllerTest < Test::Unit::TestCase
+
+  def setup
+    setup_test_wiki
+    setup_controller_test
+  end
+
+  def tear_down
+    tear_down_wiki
+  end
+
+
+  def test_create_system
+    ApplicationController.wiki = WikiServiceWithNoPersistence.new
+    assert !@controller.wiki.setup?
+    
+    process('create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
+        'web_address' => 'my_wiki')
+      
+    assert_redirected_to :web => 'my_wiki', :action => 'show', :id => 'HomePage'
+    assert @controller.wiki.setup?
+    assert_equal 'a_password', @controller.wiki.system[:password]
+    assert_equal 1, @controller.wiki.webs.size
+    new_web = @controller.wiki.webs['my_wiki']
+    assert_equal 'My Wiki', new_web.name
+    assert_equal 'my_wiki', new_web.address
+  end
+
+  def test_create_system_already_setup
+    wiki_before = @controller.wiki
+    assert @controller.wiki.setup?
+
+    process 'create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
+        'web_address' => 'my_wiki'
+
+    assert_redirected_to :web => 'my_wiki', :action => 'show', :id => 'HomePage'
+    assert_equal wiki_before, @controller.wiki
+    # and no new wikis shuld be created either
+    assert_equal 1, @controller.wiki.webs.size
+  end
+
+
+  def test_create_web
+    @wiki.system[:password] = 'pswd'
+  
+    process 'create_web', 'system_password' => 'pswd', 'name' => 'Wiki Two', 'address' => 'wiki2'
+    
+    assert_redirected_to :web => 'wiki2', :action => 'show', :id => 'HomePage'
+    wiki2 = @wiki.webs['wiki2']
+    assert wiki2
+    assert_equal 'Wiki Two', wiki2.name
+    assert_equal 'wiki2', wiki2.address
+  end
+
+  def test_create_web_default_password
+    @wiki.system[:password] = nil
+  
+    process 'create_web', 'system_password' => 'instiki', 'name' => 'Wiki Two', 'address' => 'wiki2'
+    
+    assert_redirected_to :web => 'wiki2', :action => 'show', :id => 'HomePage'
+  end
+
+  def test_create_web_failed_authentication
+    @wiki.system[:password] = 'pswd'
+  
+    process 'create_web', 'system_password' => 'wrong', 'name' => 'Wiki Two', 'address' => 'wiki2'
+    
+    assert_redirected_to :web => nil, :action => 'index'
+    assert_nil @wiki.webs['wiki2']
+  end
+
+
+  def test_edit_web
+    process 'edit_web', 'web' => 'wiki1'
+    # this action simply renders a form
+    assert_success
+  end
+
+
+  def test_new_system
+    ApplicationController.wiki = WikiServiceWithNoPersistence.new
+    process('new_system')
+    assert_success
+  end
+
+  def test_new_system_system_already_initialized
+    assert @wiki.setup?
+    process('new_system')
+    assert_redirected_to :action => 'index'
+  end
+
+
+  def test_new_web
+    @wiki.system['password'] = 'pswd'
+    process 'new_web'
+    assert_success
+  end
+
+  def test_new_web_no_password_set
+    @wiki.system['password'] = nil
+    process 'new_web'
+    assert_redirected_to :action => 'index'
+  end
+
+
+  def test_update_web
+    @wiki.system[:password] = 'pswd'
+  
+    process('update_web', 'system_password' => 'pswd',
+        'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
+        'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+        'safe_mode' => 'on', 'password' => 'new_password', 'published' => 'on', 
+        'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on')
+
+    assert_redirected_to :web => 'renamed_wiki1', :action => 'show', :id => 'HomePage'
+    assert_equal 'renamed_wiki1', @web.address
+    assert_equal 'Renamed Wiki1', @web.name
+    assert_equal :markdown, @web.markup
+    assert_equal 'blue', @web.color
+    assert @web.safe_mode
+    assert_equal 'new_password', @web.password
+    assert @web.published
+    assert @web.brackets_only
+    assert @web.count_pages
+    assert @web.allow_uploads
+  end
+
+  def test_update_web_opposite_values
+    @wiki.system[:password] = 'pswd'
+  
+    process('update_web', 'system_password' => 'pswd',
+        'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
+        'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+        'password' => 'new_password')
+    # safe_mode, published, brackets_only, count_pages, allow_uploads not set 
+    # and should become false
+
+    assert_redirected_to :web => 'renamed_wiki1', :action => 'show', :id => 'HomePage'
+    assert !@web.safe_mode
+    assert !@web.published
+    assert !@web.brackets_only
+    assert !@web.count_pages
+    assert !@web.allow_uploads
+  end
+
+
+end

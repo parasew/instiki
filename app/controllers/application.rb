@@ -71,6 +71,11 @@ class ApplicationController < ActionController::Base
     not @web_name.nil?
   end
 
+  def redirect_show(page_name = @page_name, web = @web_name)
+    redirect_to :web => web, :controller => 'wiki', :action => 'show', 
+        :id => CGI.escape(page_name || 'HomePage')
+  end
+
   @@REMEMBER_NOT = ['locked', 'save', 'back', 'file', 'pic', 'import']
   def remember_location
     if @response.headers['Status'] == '200 OK'

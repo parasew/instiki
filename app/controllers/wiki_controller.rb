@@ -18,37 +18,6 @@ class WikiController < ApplicationController
     end
   end
 
-  # Administrating the Instiki setup --------------------------------------------
-
-  def create_system
-    @wiki.setup(@params['password'], @params['web_name'], @params['web_address']) unless @wiki.setup?
-    redirect_show('HomePage', @params['web_address'])
-  end
-
-  def create_web
-    if @wiki.authenticate(@params['system_password'])
-      @wiki.create_web(@params['name'], @params['address'])
-      redirect_show('HomePage', @params['address'])
-    else 
-      redirect_to :action => 'index'
-    end
-  end
-
-  def edit_web
-    # to template
-  end
-
-  def new_system
-    redirect_to(:action => 'index') if wiki.setup?
-    # otherwise, to template
-  end
-  
-  def new_web
-    redirect_to :action => 'index' if wiki.system['password'].nil?
-    # otherwise, to template
-  end
-
-
   # Outside a single web --------------------------------------------------------
 
   def authenticate
@@ -137,26 +106,6 @@ class WikiController < ApplicationController
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     redirect_show(@results.first.name) if @results.length == 1
   end
-
-  def update_web
-    if wiki.authenticate(@params['system_password'])
-      wiki.update_web(
-        @web.address, @params['address'], @params['name'], 
-        @params['markup'].intern, 
-        @params['color'], @params['additional_style'], 
-        @params['safe_mode'] ? true : false, 
-        @params['password'].empty? ? nil : @params['password'],
-        @params['published'] ? true : false, 
-        @params['brackets_only'] ? true : false,
-        @params['count_pages'] ? true : false,
-        @params['allow_uploads'] ? true : false
-      )
-      redirect_show('HomePage', @params['address'])
-    else
-      redirect_show('HomePage') 
-    end
-  end
-  
 
   # Within a single page --------------------------------------------------------
   
@@ -343,10 +292,6 @@ class WikiController < ApplicationController
     else
       false
     end
-  end
-
-  def redirect_show(page_name = @page_name, web = @web_name)
-    redirect_to :web => web, :action => 'show', :id => CGI.escape(page_name)
   end
 
   def remote_ip
