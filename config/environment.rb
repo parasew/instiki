@@ -68,3 +68,8 @@ require 'wiki_service'
 Socket.do_not_reverse_lookup = true
 
 ActionController::Base.template_root ||= "#{RAILS_ROOT}/app/views/"
+ActionController::Routing::Routes.reload
+Controllers = Dependencies::LoadingModule.root(
+  File.expand_path(File.join(RAILS_ROOT, 'app', 'controllers')),
+  File.expand_path(File.join(RAILS_ROOT, 'components'))
+)
