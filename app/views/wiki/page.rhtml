@@ -46,7 +46,7 @@
   <% if @page.revisions.length > 1 %>
     | 
     <%= link_to('Back in time', 
-          {:web => @web.address, :action => 'edit', :id => @page.name, 
+          {:web => @web.address, :action => 'revision', :id => @page.name, 
            :rev => @page.revisions.length - 2},
           {:class => 'navlink', :accesskey => 'R'})
     %>

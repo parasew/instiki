@@ -337,7 +337,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_rollback
     # rollback shows a form where a revision can be edited.
     # its assigns the same as or revision
-    r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '0'
+    r = process 'rollback', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '0'
 
     assert_success
     assert_equal @home, r.template_objects['page']
