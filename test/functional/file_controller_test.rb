@@ -11,6 +11,7 @@ class FileControllerTest < Test::Unit::TestCase
 
   FILE_AREA = RAILS_ROOT + '/storage/test/wiki1'
   FileUtils.mkdir_p(FILE_AREA) unless File.directory?(FILE_AREA)
+  FileUtils.rm(Dir["#{FILE_AREA}/*"])
 
   def setup
     setup_test_wiki
@@ -62,6 +63,20 @@ class FileControllerTest < Test::Unit::TestCase
     
     assert_success
     assert_rendered_file 'file/file'
+  end
+
+  def test_pic_upload_end_to_end
+    # rails-e2e.gif is unknown to the system
+    r = process 'pic', 'web' => 'wiki1', 'id' => 'rails-e2e.gif'
+    assert_success
+    assert_rendered_file 'file/file'
+
+    # User uploads the picture
+    picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
+    r = process 'pic', 'web' => 'wiki1', 'id' => 'rails-e2e.gif', 'file' => StringIO.new(picture)
+    assert_redirect_url '/'
+    assert @wiki.file_yard(@web).has_file?('rails-e2e.gif')
+    assert_equal(picture, File.read("#{RAILS_ROOT}/storage/test/wiki1/rails-e2e.gif"))
   end
 
 end
