@@ -427,7 +427,7 @@ class WikiControllerTest < Test::Unit::TestCase
     @request.port = 8080
   
     r = process 'rss_with_headlines', 'web' => 'wiki1'
-    
+
     assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal [@home, @oak, @elephant], pages,

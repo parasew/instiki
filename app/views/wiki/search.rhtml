@@ -1,4 +1,4 @@
-<% @title = @results.length > 0 ? "#{@results.length} pages contains \"#{@params["query"]}\"" : "No pages contains \"#{@query}\"" %><%= render 'top' %>
+<% @title = @results.length > 0 ? "#{@results.length} pages contains \"#{@params["query"]}\"" : "No pages contains \"#{@query}\"" %>
 
 <% if @results.length > 0 %>
   <ul>
@@ -11,5 +11,3 @@
 
   <p>If you're a high-tech computer wizard, you might even want try constructing a regular expression. That's actually what Instiki uses, so go right ahead and flex your "[a-z]*Leet?RegExpSkill(s|z)"</p>
 <% end %>
-
-<%= render 'bottom' %>

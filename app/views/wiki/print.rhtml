@@ -3,7 +3,7 @@
   @hide_navigation = true
   @style_additions = ".newWikiWord { background-color: white; font-style: italic; }"
   @inline_style = true
-%><%= render 'top' %>
+%>
 
 <%= @page.display_content_for_export %>
 
@@ -12,5 +12,3 @@
   by
   <%= @page.author_link({ :mode => :export }) %>
 </div>
-
-<%= render 'bottom' %>

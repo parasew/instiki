@@ -1,4 +1,4 @@
-<% @title = "#{@page.plain_name} is locked" %><%= render 'top' %>
+<% @title = "#{@page.plain_name} is locked" %>
 
 <% if @page.lock_duration(Time.now) == 0 %>
   <p><%= @page.locked_by_link %> just started editing this page.</p>
@@ -10,5 +10,3 @@
   <a href="<%= @page.name %>?break_lock=1" accesskey="E">Edit the page anyway</a> |
   <a href="../show/<%= @page.name %>">Cancel</a>
 </p>
-
-<%= render 'bottom' %>

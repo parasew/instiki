@@ -2,7 +2,7 @@
   @title = "Creating #{WikiWords.separate(CGI.unescape(@page_name))}"
   @content_width = 720
   @hide_navigation = true
-%><%= render 'top' %>
+%>
 
 <%= render("#{@web.markup}_help") if @web %>
 
@@ -23,5 +23,3 @@ function cleanAuthorName() {
   }
 }
 </script>
-
-<%= render 'bottom' %>

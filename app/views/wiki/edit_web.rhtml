@@ -1,4 +1,4 @@
-<% @title = "Edit Web" %><%= render 'top' %>
+<% @title = "Edit Web" %>
 
 <form action="../update_web" id="setup" method="post" onSubmit="cleanAddress(); return validateSetup()">
   <h2 style="margin-bottom: 3px">Name and address</h2>
@@ -134,5 +134,3 @@ function validateSetup() {
   return true;
 }
 </script>
-
-<%= render 'bottom' %>

@@ -4,6 +4,7 @@ require 'redcloth_for_tex'
 
 class WikiController < ApplicationController
 
+  layout 'default', :except => [:rss_feed, :rss_with_headlines, :tex_web, :tex]
   before_filter :pre_process
 
   def index

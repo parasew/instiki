@@ -2,7 +2,7 @@
   @title = "Rollback to #{@page.plain_name} Rev ##{@revision.number}"
   @content_width = 720
   @hide_navigation = true
-%><%= render 'top' %>
+%>
 
 <%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{@params["msg"]}</small></p>" if @params["msg"] %>
 
@@ -27,5 +27,3 @@ function cleanAuthorName() {
   }
 }
 </script>
-
-<%= render 'bottom' %>
