@@ -5,8 +5,9 @@ class FileYard
 
   attr_reader :files_path
 
-  def initialize(files_path)
+  def initialize(files_path, max_upload_size)
     @files_path = files_path
+    @max_upload_size = max_upload_size
     FileUtils.mkdir_p(files_path) unless File.exist?(files_path)
     @files = Dir["#{files_path}/*"].collect{|path| File.basename(path) if File.file?(path) }.compact
   end

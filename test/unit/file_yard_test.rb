@@ -10,7 +10,7 @@ class FileYardTest < Test::Unit::TestCase
   def setup
     FileUtils.mkdir_p(file_path)
     FileUtils.rm(Dir["#{file_path}/*"])
-    @yard = FileYard.new(file_path)
+    @yard = FileYard.new(file_path, 100)
   end
 
   def test_files

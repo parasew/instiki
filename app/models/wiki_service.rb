@@ -29,7 +29,7 @@ module AbstractWikiService
   def file_yard(web)
     raise "Web #{@web.name} does not belong to this wiki service" unless @webs.values.include?(web)
     # TODO cache FileYards
-    FileYard.new("#{self.storage_path}/#{web.address}")
+    FileYard.new("#{self.storage_path}/#{web.address}", web.max_upload_size)
   end
 
   def init_wiki_service
