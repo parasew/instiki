@@ -65,14 +65,17 @@ ENV['RAILS_ENV'] = OPTIONS[:environment]
 INSTIKI_DEBUG_LOG = OPTIONS[:verbose]
 require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
 WikiService.storage_path = storage_path
-require 'application'
 
-unless defined? INSTIKI_BATCH_JOB
+if  defined? INSTIKI_BATCH_JOB
+  require 'application'
+else
   puts "=> Starting Instiki on http://#{OPTIONS[:ip]}:#{OPTIONS[:port]}"
   puts "=> Data files are stored in #{storage_path}"
 
-  OPTIONS[:index_controller] = 'wiki'
   require 'webrick_server'
+  require 'application'
+
+  OPTIONS[:index_controller] = 'wiki'
   ApplicationController.wiki = WikiService.instance
   DispatchServlet.dispatch(OPTIONS)
 end
