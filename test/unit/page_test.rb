@@ -4,13 +4,13 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'web'
 require 'page'
 
-class MockWeb < Web
-  def initialize() super('test','test') end
-  def [](wiki_word) %w( MyWay ThatWay SmartEngine ).include?(wiki_word) end
-  def refresh_pages_with_references(name) end
-end
-
 class PageTest < Test::Unit::TestCase
+
+  class MockWeb < Web
+    def initialize() super('test','test') end
+    def [](wiki_word) %w( MyWay ThatWay SmartEngine ).include?(wiki_word) end
+    def refresh_pages_with_references(name) end
+  end
 
   def setup
     @page = Page.new(
@@ -18,8 +18,7 @@ class PageTest < Test::Unit::TestCase
       "FirstPage", 
       "HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- see SmartEngine in that SmartEngineGUI", 
       Time.local(2004, 4, 4, 16, 50),
-      "DavidHeinemeierHansson"
-    )
+      "DavidHeinemeierHansson")
   end
 
   def test_lock
