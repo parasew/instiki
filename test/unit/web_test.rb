@@ -108,9 +108,9 @@ class WebTest < Test::Unit::TestCase
     assert_equal :textile, web.markup
     assert_equal '008B26', web.color
     assert !web.safe_mode
-    assert_equal {}, web.pages
+    assert_equal({}, web.pages)
     assert web.allow_uploads
-    assert_equal @wiki, web.parent_wiki
+    assert_equal wiki_stub, web.wiki
     assert_nil web.additional_style
     assert !web.published
     assert !web.brackets_only

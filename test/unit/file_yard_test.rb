@@ -47,16 +47,20 @@ class FileYardTest < Test::Unit::TestCase
 
     # as Tempfile
     require 'tempfile'
-    Tempfile.open('acceptable_file') { |f| f.write(one_kylobyte_string) } 
+
+    Tempfile.open('acceptable_file') do |f| 
+      f.write(one_kylobyte_string)
       assert_nothing_raised { 
         @yard.upload_file('acceptable_file', f) 
       }
-    }
-    Tempfile.open('one_byte_too_long') { |f| f.write(one_kylobyte_string + 'a')
+    end
+
+    Tempfile.open('one_byte_too_long') do |f|
+      f.write(one_kylobyte_string + 'a')
       assert_nothing_raised { 
         @yard.upload_file('one_byte_too_long_2', f)
       }
-    }
+    end
   end
 
   def file_path
