@@ -654,29 +654,4 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal [another_wiki, @web], r.template_objects['webs']
   end
   
-  
-  # Wiki fixture
-
-  def setup_test_wiki
-    @wiki = ApplicationController.wiki = WikiServiceWithNoPersistence.new
-    @web = @wiki.create_web('Test Wiki 1', 'wiki1')
-    @home = @wiki.write_page('wiki1', 'HomePage', 'First revision of the HomePage end', Time.now, 
-        Author.new('AnAuthor', '127.0.0.1'))
-  end
-  
-  def setup_wiki_with_three_pages
-    @oak = @wiki.write_page('wiki1', 'Oak',
-        "All about oak.\n" +
-        "category: trees", 
-        5.minutes.ago, Author.new('TreeHugger', '127.0.0.2'))
-    @elephant = @wiki.write_page('wiki1', 'Elephant',
-        "All about elephants.\n" +
-        "category: animals", 
-        10.minutes.ago, Author.new('Guest', '127.0.0.2'))
-  end
-  
-  def tear_down_wiki
-    ApplicationController.wiki = nil
-  end
-
 end
