@@ -5,6 +5,8 @@ require 'instiki_errors'
 class FileController < ApplicationController
 
   layout 'default'
+  
+  before_filter :check_allow_uploads
 
   def file
     check_path
@@ -42,6 +44,17 @@ class FileController < ApplicationController
       render_action 'file'
     end
   end
+
+
+  protected
+  
+  def check_allow_uploads
+    unless @web.allow_uploads
+      render_text 'File uploads are blocked by the webmaster', '403 Forbidden'
+      return false
+    end
+  end
+
 
   private 
   

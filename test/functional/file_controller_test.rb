@@ -114,4 +114,14 @@ class FileControllerTest < Test::Unit::TestCase
         @home.display_content
   end
 
+  def test_uploads_blocking
+    @web.allow_uploads = true
+    r = process 'file', 'web' => 'wiki1', 'id' => 'filename'
+    assert_success
+
+    @web.allow_uploads = false
+    r = process 'file', 'web' => 'wiki1', 'id' => 'filename'
+    assert_equal '403 Forbidden', r.headers['Status']
+  end
+
 end
