@@ -20,6 +20,10 @@ module AbstractWikiService
     @webs[address] = Web.new(name, address, password) unless @webs[address]
   end
 
+  def delete_web(address)
+    @webs[address] = nil
+  end
+
   def init_wiki_service
     @webs = {}
     @system = {}
