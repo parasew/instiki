@@ -540,6 +540,18 @@ class WikiControllerTest < Test::Unit::TestCase
     assert !home_page.locked?(Time.now)
   end
 
+  def test_save_new_revision_identical_to_last
+    revisions_before = @home.revisions.size
+  
+    assert_raise(Instiki::ValidationError) {
+      process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 
+        'content' => @home.revisions.last.content.dup, 
+        'author' => 'SomeOtherAuthor'
+    }
+    revisions_after = @home.revisions.size
+    assert_equal revisions_before, revisions_after
+  end
+
 
   def test_search
     setup_wiki_with_three_pages
