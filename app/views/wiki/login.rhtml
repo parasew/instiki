@@ -1,8 +1,11 @@
 <% @title = "#{@web_name} Login" %><% @hide_navigation = true %>
 
-<form action="authenticate" method="post">
-<p>
+
+<%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
+    {'id' => 'loginForm', 'method' => 'post'})
+%>
+  <p>
     <b>Password</b><br />
     <input type="password" name="password" />
-</p>
-</form>
+  </p>
+<%= end_form_tag %>

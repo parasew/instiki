@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
     if in_a_web? and 
         not authorized? and 
         not %w( login authenticate published ).include?(@action_name)
-      redirect_to :action => 'login'
+      redirect_to :action => 'login', :web => @web_name
       return false
     end
   end
@@ -70,6 +70,15 @@ class ApplicationController < ActionController::Base
 
   def in_a_web?
     not @web_name.nil?
+  end
+
+  def password_check(password)
+    if password == @web.password
+      cookies['web_address'] = password
+      true
+    else
+      false
+    end
   end
 
   def password_error(password)

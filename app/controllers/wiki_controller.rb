@@ -25,6 +25,7 @@ class WikiController < ApplicationController
     if password_check(@params['password'])
       redirect_show('HomePage')
     else 
+      flash[:info] = password_error(@params['password'])
       redirect_to :action => 'login', :web => @web_name
     end
   end
@@ -308,15 +309,6 @@ class WikiController < ApplicationController
     [ limit, start_date, end_date ]
   end
   
-  def password_check(password)
-    if password == @web.password
-      cookies['web_address'] = password
-      true
-    else
-      false
-    end
-  end
-
   def remote_ip
     ip = @request.remote_ip
     logger.info(ip)
