@@ -93,8 +93,34 @@ class WebTest < Test::Unit::TestCase
       @web.make_link('EverBeenInLove', "Haven't you ever been in love?", :mode => :publish))
 
   end
-  
+
+  def test_initialize
+    wiki_stub = Object.new
+
+    web = Web.new(wiki_stub, 'Wiki2', 'wiki2', '123')
+
+    assert_equal wiki_stub, web.wiki
+    assert_equal 'Wiki2', web.name
+    assert_equal 'wiki2', web.address
+    assert_equal '123', web.password
+
+    # new web should be set for maximum features enabled
+    assert_equal :textile, web.markup
+    assert_equal '008B26', web.color
+    assert !web.safe_mode
+    assert_equal {}, web.pages
+    assert web.allow_uploads
+    assert_equal @wiki, web.parent_wiki
+    assert_nil web.additional_style
+    assert !web.published
+    assert !web.brackets_only
+    assert !web.count_pages
+    assert web.allow_uploads
+  end
+
+
   private
+
   def add_sample_pages
     @web.add_page(Page.new(@web, 'EverBeenInLove', 'Who am I me', 
     Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson'))
