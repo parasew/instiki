@@ -2,30 +2,30 @@ require "web"
 require "test/unit"
 require "revision"
 
-class MockWeb < Web; 
+class WebStub < Web; 
   attr_accessor :markup
-  def pages() MockPages.new end
+  def pages() PagesStub.new end
   def safe_mode() false end
 end
-class MockPages
+class PagesStub
   def [](wiki_word) %w( MyWay ThatWay SmartEngine ).include?(wiki_word) end
 end
-class MockPage
+class PageStub
   attr_accessor :web, :revisions
-  def name() "page" end
+  def name() 'page' end
 end
 
 class RevisionTest < Test::Unit::TestCase
 
   def setup
-    @mock_page = MockPage.new
-    @mock_web  = MockWeb.new
-    @mock_page.web = @mock_web
+    @page = PageStub.new
+    @web  = WebStub.new
+    @page.web = @web
 
-    @mock_web.markup = :textile
+    @web.markup = :textile
 
     @revision = Revision.new(
-      @mock_page,
+      @page,
       1,
       "HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- see SmartEngine in that SmartEngineGUI", 
       Time.local(2004, 4, 4, 16, 50),
@@ -33,7 +33,7 @@ class RevisionTest < Test::Unit::TestCase
     )
     
     @revision_with_auto_links = Revision.new(
-      @mock_page,
+      @page,
       1,
       "http://www.loudthinking.com/ points to ThatWay from david@loudthinking.com", 
       Time.local(2004, 4, 4, 16, 50),
@@ -41,7 +41,7 @@ class RevisionTest < Test::Unit::TestCase
     )
 
 	@revision_with_aliased_links = Revision.new(
-	  @mock_page,
+	  @page,
 	  1,
       "Would a [[SmartEngine|clever motor]] go by any other name?",
       Time.local(2004, 4, 4, 16, 50),
@@ -49,7 +49,7 @@ class RevisionTest < Test::Unit::TestCase
 	)
 
 	@revision_with_wiki_word_in_em = Revision.new(
-	  @mock_page,
+	  @page,
 	  1,
       "_should we go ThatWay or ThisWay _",
       Time.local(2004, 4, 4, 16, 50),
@@ -57,7 +57,7 @@ class RevisionTest < Test::Unit::TestCase
     )
 
 	@revision_with_pre_blocks = Revision.new(
-	  @mock_page,
+	  @page,
 	  1,
       "A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>",
       Time.local(2004, 4, 4, 16, 50),
@@ -65,7 +65,7 @@ class RevisionTest < Test::Unit::TestCase
 	)
 
 	@revision_with_wikiword_in_tag = Revision.new(
-	  @mock_page,
+	  @page,
 	  1,
       "That is some <em style=\"WikiWord\">Stylish Emphasis</em>",
       Time.local(2004, 4, 4, 16, 50),
@@ -73,7 +73,7 @@ class RevisionTest < Test::Unit::TestCase
 	)
 
 	@revision_with_autolink_in_parentheses = Revision.new(
-	  @mock_page,
+	  @page,
       1,
       'The W3C body (http://www.w3c.org) sets web standards',
       Time.local(2004, 4, 4, 16, 50),
@@ -81,7 +81,7 @@ class RevisionTest < Test::Unit::TestCase
 	)
 
 	@revision_with_link_in_parentheses = Revision.new(
-	  @mock_page,
+	  @page,
       1,
       'Instiki is a "Wiki Clone":http://www.c2.com/cgi/wiki?WikiWikiClones ("What is a wiki?":http://wiki.org/wiki.cgi?WhatIsWiki) that\'s so easy to setup',
 	  Time.local(2004, 4, 4, 16, 50),
@@ -89,7 +89,7 @@ class RevisionTest < Test::Unit::TestCase
     )
 
 	@revision_with_image_link = Revision.new(
-	  @mock_page,
+	  @page,
       1,
       'This !http://hobix.com/sample.jpg! is a Textile image link.',
 	  Time.local(2004, 4, 4, 16, 50),
@@ -97,7 +97,7 @@ class RevisionTest < Test::Unit::TestCase
     )
 
 	@revision_with_nowiki_text = Revision.new(
-	  @mock_page,
+	  @page,
 	  1,
 	  'Do not mark up <nowiki>[[this text]]</nowiki> or <nowiki>http://www.thislink.com</nowiki>.',
 	  Time.local(2004, 4, 4, 16, 50),
@@ -105,7 +105,7 @@ class RevisionTest < Test::Unit::TestCase
 	)
 
 	@revision_with_bracketted_wiki_word = Revision.new(
-	  @mock_page,
+	  @page,
 	  1,
 	  'This is a WikiWord and a tricky name [[Sperberg-McQueen]].',
 	  Time.local(2004, 4, 4, 16, 50),
@@ -131,10 +131,10 @@ class RevisionTest < Test::Unit::TestCase
   end
 
   def test_bluecloth
-    @mock_web.markup = :markdown
+    @web.markup = :markdown
 
     @revision = Revision.new(
-      @mock_page,
+      @page,
       1,
       "My Headline\n===========\n\n that SmartEngineGUI", 
       Time.local(2004, 4, 4, 16, 50),
@@ -142,7 +142,7 @@ class RevisionTest < Test::Unit::TestCase
     )
 
 	@revision_with_code_block = Revision.new(
-      @mock_page,
+      @page,
       1,
       [ 'This is a code block:',
         '',
@@ -164,10 +164,10 @@ class RevisionTest < Test::Unit::TestCase
   end
 
   def test_rdoc
-    @mock_web.markup = :rdoc
+    @web.markup = :rdoc
 
     @revision = Revision.new(
-      @mock_page,
+      @page,
       1,
       "+hello+ that SmartEngineGUI", 
       Time.local(2004, 4, 4, 16, 50),
@@ -214,7 +214,7 @@ class RevisionTest < Test::Unit::TestCase
   end
 
   def test_content_with_bracketted_wiki_word
-	@mock_web.brackets_only = true
+	@web.brackets_only = true
 	assert_equal '<p>This is a WikiWord and a tricky name <span class="newWikiWord">Sperberg-McQueen<a href="../show/Sperberg-McQueen">?</a></span>.</p>', @revision_with_bracketted_wiki_word.display_content
   end
 
@@ -247,8 +247,8 @@ class RevisionTest < Test::Unit::TestCase
   end
   
   def test_revisions_diff
-    page = MockPage.new
-    web  = MockWeb.new
+    page = PageStub.new
+    web  = WebStub.new
     web.markup = :textile
     page.web = web
 
