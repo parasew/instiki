@@ -182,13 +182,13 @@ class WikiController < ApplicationController
 
   def pdf
     page = wiki.read_page(@web_name, @page_name)
-    safe_page_name = page.name.gsub(/\W/, '')
-    file_name = "#{safe_page_name}-#{web.address}-#{page.created_at.strftime("%Y-%m-%d-%H-%M")}"
+    safe_page_name = @page.name.gsub(/\W/, '')
+    file_name = "#{safe_page_name}-#{@web.address}-#{@page.created_at.strftime("%Y-%m-%d-%H-%M")}"
     file_path = EXPORT_DIRECTORY + file_name
 
     export_page_to_tex(file_path + '.tex') unless FileTest.exists?(file_path + '.tex')
     convert_tex_to_pdf(file_path + '.tex')
-    send_export(file_name + '.pdf', file_path + '.pdf')
+    send_file(file_name + '.pdf')
   end
 
   def print

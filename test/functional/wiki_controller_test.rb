@@ -4,6 +4,10 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_controller'
 require 'rexml/document'
 
+unless RedClothForTex.available?
+  $stderr.puts 'Warning: latex is not available, skipping all related tests' 
+end
+
 # Raise errors beyond the default web-based presentation
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
 
@@ -254,6 +258,13 @@ class WikiControllerTest < Test::Unit::TestCase
     @wiki.system['password'] = nil
     process 'new_web'
     assert_redirected_to :action => 'index'
+  end
+
+
+  def test_pdf
+    if RedClothForTex.available?
+      process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
+    end
   end
 
 
