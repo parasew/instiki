@@ -1,18 +1,18 @@
-HEAD:
-          RSS feeds accept query parameters, sush as 
-          http://localhost:2500/wiki/rss_with_headlines?start=2005-02-18&end=2005-02-19&limit=10
-          RedCloth 3.0.3 (mixing Textile and Markdown in the same page)
-          Files/pictures can be uploaded to a wiki and served from / displayed in wiki pages
-          Wiki link syntax doesn't conflict with Textile hyperlink syntax. Therefore
-          "textile link":LinkToSomePlace will not look insane.
+ * 0.10.0:
+          Ported to ActionPack
+          RedCloth 3.0.3 (mixing Textile and Markdown on the same page)
           Instiki can serve static content (such as HTML or plain-text files) from ./public 
           directory
-          Wiki search handles multibyte (UTF-8) characters correctly
-          Ported to ActionPack
+          Much friendlier admin interface
+          Wiki link syntax doesn't conflict with Textile hyperlink syntax. Therefore
+          "textile link":LinkToSomePlace will not look insane.
+          RSS feeds accept query parameters, sush as 
+          http://localhost:2500/wiki/rss_with_headlines?start=2005-02-18&end=2005-02-19&limit=10
           Madeleine will check every hour if there are new commands in the log or 24 hours have 
           passed since last snapshot, and take snapshot if either of these conditions is true
           Madeleine will also not log read-only operations, resulting in a better performance
           Wiki extracts (to HTML and plain text) will leave only the last extract file in ./storage
+          Wiki search handles multibyte (UTF-8) characters correctly
           Local hyperlinks in published pages point to published pages [Michael DeHaan]
           Fixed a bug that sometimes caused all past revisions of a page to be "forgotten" on 
           restart
@@ -23,7 +23,7 @@ HEAD:
           Automated tests for all controller actions
           category: lines are presented as links to "All Pages" for relevant categories
           Search looks at page titles, as well as content
-          Various other usability enhancements and bug fixes
+          Multiple other usability enhancements and bug fixes
 
  * 0.9.2:
           Rollback takes the user to an edit form. The form has to be submitted for the change to 

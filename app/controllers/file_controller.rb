@@ -2,6 +2,9 @@ require 'fileutils'
 require 'application'
 require 'instiki_errors'
 
+# Controller that is responsible for serving files and pictures.
+# Disabled in version 0.10
+
 class FileController < ApplicationController
 
   layout 'default'
@@ -45,6 +48,8 @@ class FileController < ApplicationController
   end
 
   def import
+    return if file_uploads_disabled?
+
     check_authorization
     if @params['file']
       @problems = []
@@ -64,8 +69,15 @@ class FileController < ApplicationController
   end
 
   protected
-  
+
   def check_allow_uploads
+
+    # TODO enable file uploads again after 0.10 release
+    unless RAILS_ENV == 'test'
+      render_text 'File uploads are not ready for general use in Instiki 0.10', '403 Forbidden'
+      return false
+    end
+
     unless @web.allow_uploads
       render_text 'File uploads are blocked by the webmaster', '403 Forbidden'
       return false
