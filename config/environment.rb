@@ -5,6 +5,7 @@ end
 
 # Enable UTF-8 support
 $KCODE = 'u'
+require 'jcode'
 
 RAILS_ROOT = File.expand_path(File.dirname(__FILE__) + '/../') unless defined? RAILS_ROOT
 RAILS_ENV  = ENV['RAILS_ENV'] || 'production' unless defined? RAILS_ENV
