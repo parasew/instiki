@@ -5,7 +5,6 @@ require 'redcloth_for_tex'
 class WikiController < ApplicationController
 
   layout 'default', :except => [:rss_feed, :rss_with_headlines, :tex,  :export_tex, :export_html]
-  before_filter :pre_process
 
   def index
     if @web_name
@@ -271,15 +270,6 @@ class WikiController < ApplicationController
     password_check(@params['password'])
   end
 
-  def check_authorization(action_name)
-    if in_a_web? and 
-        not authorized? and 
-        not %w( login authenticate published ).include?(action_name)
-      redirect_to :action => 'login'
-      return false
-    end
-  end
-
   def convert_tex_to_pdf(tex_path)
     # TODO remove earlier PDF files with the same prefix
     # TODO handle gracefully situation where pdflatex is not available
@@ -329,10 +319,6 @@ class WikiController < ApplicationController
     @revision = @page.revisions[@params['rev'].to_i]
   end
 
-  def in_a_web?
-    not @web_name.nil?
-  end
-
   def parse_category
     @categories = @web.categories
     @category = @params['category']
@@ -359,17 +345,6 @@ class WikiController < ApplicationController
     else
       false
     end
-  end
-
-  def pre_process
-    @action_name = @params['action'] || 'index'
-    @web_name = @params['web']
-    @wiki = wiki
-    @web = @wiki.webs[@web_name] unless @web_name.nil?
-    @page_name = @params['id']
-    @page = @wiki.read_page(@web_name, @page_name) unless @page_name.nil?
-    @author = cookies['author'] || 'AnonymousCoward'
-    check_authorization(@action_name)
   end
 
   def redirect_show(page_name = @page_name, web = @web_name)

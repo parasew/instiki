@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   # implements Instiki's legacy URLs
   require 'url_rewriting_hack'
 
-  before_filter :set_utf8_http_header
+  before_filter :set_utf8_http_header, :connect_to_model
   after_filter :remember_location
 
   # For injecting a different wiki model implementation. Intended for use in tests
@@ -56,6 +56,30 @@ class ApplicationController < ActionController::Base
 
   def set_utf8_http_header
     @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+  end
+
+  def connect_to_model
+    @action_name = @params['action'] || 'index'
+    @web_name = @params['web']
+    @wiki = wiki
+    @web = @wiki.webs[@web_name] unless @web_name.nil?
+    @page_name = @params['id']
+    @page = @wiki.read_page(@web_name, @page_name) unless @page_name.nil?
+    @author = cookies['author'] || 'AnonymousCoward'
+    check_authorization(@action_name)
+  end
+
+  def check_authorization(action_name)
+    if in_a_web? and 
+        not authorized? and 
+        not %w( login authenticate published ).include?(action_name)
+      redirect_to :action => 'login'
+      return false
+    end
+  end
+
+  def in_a_web?
+    not @web_name.nil?
   end
 
 end

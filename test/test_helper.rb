@@ -54,6 +54,10 @@ class WikiServiceWithNoPersistence
   def initialize
     init_wiki_service
   end
+  
+  def storage_path
+    RAILS_ROOT + '/storage/test'
+  end
 end
 
 
