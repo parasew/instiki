@@ -317,7 +317,7 @@ class WikiController < ApplicationController
     end
     FileUtils.rm_rf(Dir[WikiService.storage_path + file_prefix + '*.zip'])
     FileUtils.mv(tmp_path, file_path)
-    send_file(file_path, :type => 'application/zip', :streaming => false)
+    send_file(file_path, :type => 'application/zip')
   end
 
   def export_web_to_tex(file_path)
@@ -399,11 +399,12 @@ class WikiController < ApplicationController
   def render_to_string(template_name)
     add_variables_to_assigns
     render template_name
+    @performed_render = false
     @template.render_file(template_name)
   end
   
   def template_engine(template_name)
-    ERB.new(IO.readlines(RAILS_ROOT + '/app/views/wiki/' + template_name + '.rhtml').join)
+    ERB.new(IO.readlines(RAILS_ROOT + '/app/views/' + template_name + '.rhtml').join)
   end
   
   def truncate(text, length = 30, truncate_string = '...')
