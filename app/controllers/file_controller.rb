@@ -7,10 +7,12 @@ class FileController < ApplicationController
   layout 'default'
 
   def file
+    sanitize_file_name
     if @params['file']
-      # received a file
-      File.open(file_name) { |f| f.write(@params['file'].read }
-      
+      # form supplied
+      upload_file
+      flash[:info] = "File '#{@file_name}' successfully uploaded"
+      return_to_last_remembered
     elsif have_file?
       send_file(file_path)
     else
@@ -23,22 +25,30 @@ class FileController < ApplicationController
     return_to_last_remembered
   end
   
-  def 
-  
   private
 
   def have_file?
-    sanitize_file_name
     File.file?(file_path)
   end
 
-  SANE_FILE_NAME = /[-_A-Za-z0-9]{1,255}/
+  def upload_file
+    if @params['file'].kind_of?(Tempfile)
+      @params['file'].close
+      FileUtils.mv(@params['file'].path, file_path)
+    elsif @params['file'].kind_of?(IO)
+      File.open(file_path, 'wb') { |f| f.write(@params['file'].read) }
+    else
+      raise 'File to be uploaded is not an IO object'
+    end
+  end
+
+  SANE_FILE_NAME = /[-_\.A-Za-z0-9]{1,255}/
 
   def sanitize_file_name
     raise Instiki::ValidationError.new("Invalid path: no file name") unless @file_name
     unless @file_name =~ SANE_FILE_NAME
       raise ValidationError.new("Invalid file name: '#{@file_name}'.\n" +
-            "Only latin characters, digits, underscores and dashes are accepted.")
+            "Only latin characters, digits, dots, underscores and dashes are accepted.")
     end
   end
 
