@@ -8,7 +8,6 @@ ActionController::Routing.draw do |map|
   map.connect ':web/pic/:id', :controller => 'file', :action => 'pic'
   map.connect ':web/import/:id', :controller => 'file', :action => 'import'
 
-  map.connect 'login', :controller => 'wiki', :action => 'login'
   map.connect ':web/login', :controller => 'wiki', :action => 'login'
   map.connect 'web_list', :controller => 'wiki', :action => 'web_list'
   map.connect ':web/web_list', :controller => 'wiki', :action => 'web_list'
