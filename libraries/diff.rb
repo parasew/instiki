@@ -397,8 +397,8 @@ module HTMLDiff
   end
 
   def self.diff(a, b)
-    a, b = a.split(//), b.split(//) if a.kind_of? String and b.kind_of? String
-    a, b = html2list(a), html2list(b)
+    a = html2list(a)
+    b = html2list(b)
 
     out = Builder.new(a, b)
     s = SequenceMatcher.new(a, b)
@@ -410,37 +410,25 @@ module HTMLDiff
     out.result 
   end
   
-  def self.html2list(x, b=false)
-    mode = 'char'
+  def self.html2list(x)
+    mode = :char
     cur = ''
     out = []
     
-    x = x.split(//) if x.kind_of? String
-    
-    x.each do |c|
-      if mode == 'tag'
+    x.split('').each do |c|
+      if mode == :tag
+        cur += c
         if c == '>'
-          if b
-            cur += ']'
-          else
-            cur += c
-          end
           out.push(cur)
           cur = ''
-          mode = 'char'
-        else
-          cur += c
+          mode = :char
         end
-      elsif mode == 'char'
+      elsif mode == :char
         if c == '<'
           out.push cur
-          if b
-            cur = '['
-          else
-            cur = c
-          end
-          mode = 'tag'
-        elsif /\s/.match c
+          cur = c
+          mode = :tag
+        elsif c =~ /\s/
           out.push cur + c
           cur = ''
         else
@@ -448,28 +436,9 @@ module HTMLDiff
         end
       end
     end
-    
+
     out.push cur
-    # TODO: make something better here
-    out.each{|x| x.chomp! unless is_newline(x)}
     out.find_all { |x| x != '' }
   end
   
-  
-end
-
-if __FILE__ == $0
-
-  require 'pp'
-  # a = "<p>this is the original string</p>" # \n<p>but around the world</p>"
-  # b = "<p>this is the original </p><p>other parag</p><p>string</p>"
-  a = "<ul>\n\t<li>one</li>\n\t<li>two</li>\n</ul>"
-  b = "<ul>\n\t<li>one</li>\n\t<li>two\n\t<ul><li>abc</li></ul></li>\n</ul>"
-  puts a
-  pp HTMLDiff.html2list(a)
-  puts
-  puts b
-  pp HTMLDiff.html2list(b)
- puts
-  puts HTMLDiff.diff(a, b)
 end
