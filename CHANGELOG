@@ -1,4 +1,6 @@
 HEAD:
+          Instiki can serve static content (such as HTML or plain-text files) from ./public 
+          directory
           Wiki search handles multibyte (UTF-8) characters correctly
           Ported to ActionPack
           Madeleine will check every hour if there are new commands in the log or 24 hours have 
