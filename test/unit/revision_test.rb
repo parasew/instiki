@@ -50,9 +50,9 @@ class RevisionTest < Test::Unit::TestCase
     @web.markup = :markdown
 
     assert_markup_parsed_as(
-        %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
+        %{<h1>My Headline</h1>\n\n\n\t<p>that <span class="newWikiWord">} +
         %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
-        "My Headline\n===========\n\n that SmartEngineGUI")
+        "My Headline\n===========\n\nthat SmartEngineGUI")
 
 	code_block = [ 
 	    'This is a code block:',
@@ -64,8 +64,8 @@ class RevisionTest < Test::Unit::TestCase
       ].join("\n")
 
 	assert_markup_parsed_as(
-	    %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
-	    %{return ThatWay\n</code></pre>\n\n<p>Nice!</p>}, 
+	    %{<p>This is a code block:</p>\n\n\n\t<pre><code>def a_method(arg)\n} +
+	    %{return ThatWay</code></pre>\n\n\n\t<p>Nice!</p>}, 
 	    code_block)
   end
 
