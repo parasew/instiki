@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'instiki_errors'
 
 class FileYard
@@ -6,6 +7,7 @@ class FileYard
 
   def initialize(files_path)
     @files_path = files_path
+    FileUtils.mkdir_p(files_path) unless File.exist?(files_path)
     @files = Dir["#{files_path}/*"].collect{|path| File.basename(path) if File.file?(path) }.compact
   end
 

@@ -71,7 +71,7 @@ class ApplicationController < ActionController::Base
     not @web_name.nil?
   end
 
-  @@REMEMBER_NOT = ['locked', 'save', 'back', 'file', 'pic']
+  @@REMEMBER_NOT = ['locked', 'save', 'back', 'file', 'pic', 'import']
   def remember_location
     if @response.headers['Status'] == '200 OK'
       unless @@REMEMBER_NOT.include? action_name or @request.method != :get

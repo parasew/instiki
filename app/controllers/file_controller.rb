@@ -45,6 +45,44 @@ class FileController < ApplicationController
     end
   end
 
+  def import
+    check_authorization
+    if @params['file']
+      logger.info 'Importing pages from a file'
+      import_file_name = "#{@web.address}-import-#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.zip"
+      file_yard.upload_file(import_file_name, @params['file'])
+      zip = Zip::ZipInputStream.open(file_yard.file_path(import_file_name))
+      problems = []
+      while (entry = zip.get_next_entry) do
+        ext_length = File.extname(entry.name).length
+        page_name = entry.name[0..-(ext_length + 1)]
+        page_content = entry.get_input_stream.read
+        
+        logger.info "Processing page '#{page_name}'"
+        begin
+          if @wiki.read_page(@web.address, page_name)
+            logger.info "Page '#{page_name}' already exists. Adding a new revision to it."
+            wiki.revise_page(@web.address, page_name, page_content, Time.now, 'Importer')
+          else
+            wiki.write_page(@web.address, page_name, page_content, Time.now, 'Importer')
+          end
+        rescue Instiki::ValidationError => e
+          logger.error(e)
+          problems << e.message
+        end
+      end
+      logger.info 'Import finished'
+      if problems.empty?
+        flash[:info] = 'Import successfully finished'
+      else
+        flash[:info] = "Import finished, but some pages were not imported:<li>" + 
+            problems.join('</li><li>') + '</li>'
+      end
+      return_to_last_remembered
+    else
+      # to template
+    end
+  end
 
   protected
   

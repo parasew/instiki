@@ -63,7 +63,8 @@ class DispatchServlet
 
     @@action_to_controller_map = {
       'file' => 'file',
-      'pic' => 'file'
+      'pic' => 'file',
+      'import' => 'file'
     }
     
     def self.map_to_controller(action)
