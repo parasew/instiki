@@ -40,7 +40,7 @@ class Page
     # the page to re-render itself once again, hopefully _after_ it is inserted in the web
     self.revisions.last.clear_display_cache
     
-    web.refresh_pages_with_references(@name) if @revisions.length == 1
+    @web.refresh_pages_with_references(@name) if @revisions.length == 1
   end
 
   def rollback(revision_number, created_at, author_ip = nil)
@@ -69,20 +69,20 @@ class Page
   end
 
   def references
-    web.select.pages_that_reference(name)
+    @web.select.pages_that_reference(name)
   end
 
   # Returns the original wiki-word name as separate words, so "MyPage" becomes "My Page".
   def plain_name
-    web.brackets_only ? name : WikiWords.separate(name)
+    @web.brackets_only ? name : WikiWords.separate(name)
   end
 
   def link(options = {})
-    web.make_link(name, nil, options)
+    @web.make_link(name, nil, options)
   end
 
   def author_link(options = {})
-    web.make_link(author, nil, options)
+    @web.make_link(author, nil, options)
   end
 
 
