@@ -44,9 +44,6 @@ class AdminController < ApplicationController
       end
     else
       # no form submitted -> render template
-      if @wiki.system[:password].nil?
-        redirect_to :controller => 'wiki', :action => 'index'
-      end
     end
   end
 

@@ -98,12 +98,6 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_success
   end
 
-  def test_create_web_no_form_submitted_and_no_password_set
-    @wiki.system[:password] = nil
-    process 'create_web'
-    assert_redirected_to :action => 'index'
-  end
-
 
   def test_edit_web_no_form
     process 'edit_web', 'web' => 'wiki1'
