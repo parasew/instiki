@@ -19,7 +19,8 @@ HEAD:
           Revisions that do not change anything on the page are rejected
           Automated tests for all controller actions
           category: lines are presented as links to "All Pages" for relevant categories
-          Various usability enhancements
+          Search looks at page titles, as well as content
+          Various other usability enhancements and bug fixes
 
  * 0.9.2:
           Rollback takes the user to an edit form. The form has to be submitted for the change to 
