@@ -9,13 +9,19 @@ class Web
   attr_accessor :additional_style, :published, :brackets_only, :count_pages, :allow_uploads
 
   def initialize(parent_wiki, name, address, password = nil)
-    @name, @address, @password, @safe_mode = name, address, password, false
-    @pages = {}
-    @wiki = parent_wiki
+    @wiki, @name, @address, @password = parent_wiki, name, address, password
 
-    # assign default values
-    @color = '008B26'
+    # default values
     @markup = :textile 
+    @color = '008B26'
+    @safe_mode = false
+    @pages = {}
+    @allow_uploads = true
+    @additional_style = nil
+    @published = false
+    @brackets_only = false
+    @count_pages = false
+    @allow_uploads = true
   end
 
   def add_page(page)
