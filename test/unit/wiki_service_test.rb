@@ -81,7 +81,7 @@ class WikiServiceTest < Test::Unit::TestCase
 
   def _assert_doesnt_change_state(including_log, method, *args)
     WikiService.snapshot
-    last_snapshot_before = File.read(Dir[RAILS_ROOT + 'storage/test/*.snapshot'].last)
+    last_snapshot_before = last_snapshot
 
     if block_given?
       yield @s
@@ -94,9 +94,15 @@ class WikiServiceTest < Test::Unit::TestCase
       assert command_logs.empty?, "Calls to #{method} should not be logged"
     end
 
-    last_snapshot_after = File.read(Dir[RAILS_ROOT + 'storage/test/*.snapshot'].last)
+    last_snapshot_after = last_snapshot
     assert last_snapshot_before == last_snapshot_after,
         'Calls to #{method} should not change the state of any persisted object' 
+  end
+
+  def last_snapshot
+    snapshots = Dir[RAILS_ROOT + '/storage/test/*.snapshot']
+    assert !snapshots.empty?, "No snapshots found at #{RAILS_ROOT}/storage/test/"
+    File.read(snapshots.last)
   end
 
 end
