@@ -7,7 +7,6 @@ require 'fileutils'
 pwd = File.expand_path(File.dirname(__FILE__) + "/..")
 
 OPTIONS = {
-
   # Overridable options
   :port        => 2500,
   :ip          => '0.0.0.0',
@@ -42,6 +41,9 @@ ARGV.options do |opts|
   opts.on('-t', '--storage=storage', String,
           'Makes Instiki use the specified directory for storage.',
           'Default: ./storage/[port]') { |OPTIONS[:storage]| }
+  opts.on('-x', '--notex',
+          'Blocks wiki exports to TeX and PDF, even when pdflatex is available.'
+          ) { |OPTIONS[:notex]| }
   opts.on('-v', '--verbose', 
           'Enables debug-level logging'
           ) { OPTIONS[:verbose] = true }
@@ -65,6 +67,16 @@ ENV['RAILS_ENV'] = OPTIONS[:environment]
 INSTIKI_DEBUG_LOG = OPTIONS[:verbose]
 require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
 WikiService.storage_path = storage_path
+
+if OPTIONS[:notex]
+  OPTIONS[:pdflatex] = false
+else
+  begin
+    OPTIONS[:pdflatex] = system "pdflatex -version"
+  rescue Errno::ENOENT
+    OPTIONS[:pdflatex] = false
+  end
+end
 
 if  defined? INSTIKI_BATCH_JOB
   require 'application'
