@@ -64,7 +64,9 @@ module WikiChunk
   class Link < WikiLink
     def self.pattern() /\[\[([^\]]+)\]\]/ end
     
-    ALIASED_LINK_PATTERN = Regexp.new('^(.*)?\|(.*)$', 0, "utf-8") unless defined? ALIASED_LINK_PATTERN
+    unless defined? ALIASED_LINK_PATTERN
+      ALIASED_LINK_PATTERN = Regexp.new('^(.*)?\|(.*)$', 0, 'utf-8')
+    end
 
     attr_reader :page_name, :link_text
 

@@ -116,7 +116,7 @@ class URIChunk < Chunk::Abstract
   # content.
   def unmask(content)
     return nil if escaped_text
-    return self if content.sub!( Regexp.new(mask(content)), "<a href=\"#{uri}\">#{link_text}</a>" )
+    return self if content.sub!(mask(content), "<a href=\"#{uri}\">#{link_text}</a>")
   end
 
   # If there is no hostname in the URI, do not render it

@@ -27,5 +27,5 @@ class NoWiki < Chunk::Abstract
   # The nowiki content is not unmasked. This means the chunk will be reverted
   # using the plain text.
   def unmask(content) nil end
-  def revert(content) content.sub!( Regexp.new(mask(content)), plain_text ) end
+  def revert(content) content.sub!(mask(content), plain_text) end
 end
