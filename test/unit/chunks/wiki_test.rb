@@ -76,6 +76,6 @@ class WikiTest < Test::Unit::TestCase
     assert_equal expected_link_text, chunk.link_text
     assert_equal expected_link_type, chunk.link_type
   end
-
+  
 end
 

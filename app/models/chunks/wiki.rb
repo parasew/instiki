@@ -11,6 +11,13 @@ module WikiChunk
   # another wiki page.
   class WikiLink < Chunk::Abstract
 
+    attr_reader :page_name, :link_text, :link_type
+
+    def initialize(*args)
+      super
+      @link_type = 'show'
+    end
+
     def self.apply_to(content)
       content.gsub!( self.pattern ) do |matched_text|
         chunk = self.new($~)
@@ -31,21 +38,20 @@ module WikiChunk
     # By default, no escaped text
     def escaped_text() nil end
 
-    # Delimit the link text with markers to replace later unless
-    # the word is escaped. In that case, just return the link text
-    def mask(content) escaped_text || pre_mask + link_text + post_mask end
+    # Replace link with a mask, but if the word is escaped, then don't replace it
+    def mask(content) escaped_text || "#{pre_mask}#{link_text}#{post_mask}" end
 
-    def regexp() /#{pre_mask}(.*)?#{post_mask}/ end
+    def regexp() /#{pre_mask}(.*)#{post_mask}/ end
 
     def revert(content) content.sub!(regexp, text) end
-
+    
     # Do not keep this chunk if it is escaped.
     # Otherwise, pass the link procedure a page_name and link_text and
     # get back a string of HTML to replace the mask with.
     def unmask(content)
       return nil if escaped_text
       return self if content.sub!(regexp) do |match|
-        content.page_link(page_name, $1)
+        content.page_link(page_name, $1, link_type)
       end
     end
 
@@ -63,8 +69,6 @@ module WikiChunk
     def self.pattern
       WIKI_WORD
     end
-
-    attr_reader :page_name
 
     def initialize(match_data)
       super(match_data)
@@ -94,24 +98,16 @@ module WikiChunk
         
     def self.pattern() WIKI_LINK end
 
-
-    attr_reader :page_name, :link_text, :link_type
-
     def initialize(match_data)
       super(match_data)
-
       @textile_link_suffix, @page_name = match_data[1..2]
-
-      # defaults
-      @link_type = 'show'
       @link_text = @page_name
-
       separate_link_type
       separate_alias
     end
 
     private
-    
+
     # if link wihin the brackets has a form of [[filename:file]] or [[filename:pic]], 
     # this means a link to a picture or a file
     def separate_link_type
@@ -121,7 +117,7 @@ module WikiChunk
         @link_type = link_type_match[2..3].compact[0]
       end
     end
-    
+
     # link text may be different from page name. this will look like [[actual page|link text]]
     def separate_alias
       alias_match = ALIAS_SEPARATION.match(@page_name)

@@ -39,9 +39,8 @@ require 'chunks/nowiki'
 # UPDATED: 22nd May 2004
 class WikiContent < String
 
-  PRE_ENGINE_ACTIONS  = [ NoWiki, Category, Include, 
-                          URIChunk, LocalURIChunk,
-                          WikiChunk::Link, WikiChunk::Word ] 
+  PRE_ENGINE_ACTIONS  = [ NoWiki, Category, Include, URIChunk, LocalURIChunk, WikiChunk::Link, 
+                          WikiChunk::Word ] 
   POST_ENGINE_ACTIONS = [ Literal::Pre, Literal::Tags ]
   DEFAULT_OPTS = {
     :pre_engine_actions  => PRE_ENGINE_ACTIONS,
@@ -76,7 +75,8 @@ class WikiContent < String
   end
 
   # Call @web.page_link using current options.
-  def page_link(name, text) 
+  def page_link(name, text, link_type)
+    @options[:link_type] = link_type || :show
     @web.make_link(name, text, @options)
   end
 

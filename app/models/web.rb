@@ -48,18 +48,23 @@ class Web
     page = pages[name]
     text = text || WikiWords.separate(name)
     link = CGI.escape(name)
-    
+    link_type = options[:link_type] || :show
+
     case options[:mode]
-      when :export
-        if page then "<a class=\"existingWikiWord\" href=\"#{link}.html\">#{text}</a>"
-        else "<span class=\"newWikiWord\">#{text}</span>" end
-      when :publish
-        if page then "<a class=\"existingWikiWord\" href=\"../published/#{link}\">#{text}</a>"
-        else "<span class=\"newWikiWord\">#{text}</span>" end
-      else
-        if page then "<a class=\"existingWikiWord\" href=\"../show/#{link}\">#{text}</a>"
-        else "<span class=\"newWikiWord\">#{text}<a href=\"../show/#{link}\">?</a></span>" end
+    when :export
+      if page then "<a class=\"existingWikiWord\" href=\"#{link}.html\">#{text}</a>"
+      else "<span class=\"newWikiWord\">#{text}</span>" end
+    when :publish
+      if page then "<a class=\"existingWikiWord\" href=\"../published/#{link}\">#{text}</a>"
+      else "<span class=\"newWikiWord\">#{text}</span>" end
+    else 
+      if page 
+        "<a class=\"existingWikiWord\" href=\"../#{link_type}/#{link}\">#{text}</a>"
+      else 
+        "<span class=\"newWikiWord\">#{text}<a href=\"../#{link_type}/#{link}\">?</a></span>"
+      end
     end
+
   end
 
 

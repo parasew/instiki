@@ -36,7 +36,7 @@ module Chunk
 	end
 
 	def revert(content) 
-	  content.sub!( Regexp.new(mask(content)), text ) 
+	  content.sub!( Regexp.new(mask(content)), text )
 	end
 
 	def unmask(content) 

@@ -210,6 +210,18 @@ class RevisionTest < Test::Unit::TestCase
         "today</ins></p>", @page.revisions.last.display_diff
   end
 
+  def test_link_to_file
+  	assert_markup_parsed_as( 
+  	    '<p><span class="newWikiWord">doc.pdf<a href="../file/doc.pdf">?</a></span></p>',
+	    '[[doc.pdf:file]]')
+  end
+
+  def test_link_to_pic
+  	assert_markup_parsed_as( 
+  	    '<p><span class="newWikiWord">Square<a href="../pic/square.jpg">?</a></span></p>',
+	    '[[square.jpg|Square:pic]]')
+  end
+
   # TODO Remove the leading underscores from this test when upgrading to RedCloth 3.0.1; 
   # also add a test for the "Unhappy Face" problem (another interesting RedCloth bug)
   def __test_list_with_tildas
