@@ -106,21 +106,31 @@ module WikiChunk
       @link_type = 'show'
       @link_text = @page_name
 
-      # if link wihin the brackets has a form of [[filename:file]] or [[filename:pic]], 
-      # this means a link to a picture or a file
+      separate_link_type
+      separate_alias
+    end
+
+    private
+    
+    # if link wihin the brackets has a form of [[filename:file]] or [[filename:pic]], 
+    # this means a link to a picture or a file
+    def separate_link_type
       link_type_match = LINK_TYPE_SEPARATION.match(@page_name)
       if link_type_match
         @link_text = @page_name = link_type_match[1]
         @link_type = link_type_match[2..3].compact[0]
       end
-
-      # link text may be different from page name. this will look like [[actual page|link text]]
+    end
+    
+    # link text may be different from page name. this will look like [[actual page|link text]]
+    def separate_alias
       alias_match = ALIAS_SEPARATION.match(@page_name)
       if alias_match
         @page_name, @link_text = alias_match[1..2]
       end
       # note that [[filename|link text:file]] is also supported
-    end
+    end  
+  
   end
-
+  
 end
