@@ -47,14 +47,22 @@
     <% end %>
   </h1>
 
-<% if @flash[:error] %> <div id="error" class="error">
+<% if @flash[:error] %> <div id="error">
     <hr/><p><%= @flash[:error].to_s %></p><hr/></div>
 <% end %>
 
 <%= render 'navigation' unless @web.nil? || @hide_navigation %>
 <%= @content_for_layout %>
 
+<div id="footer">
+  <hr/>
+  <p>This site is running on <a href="http://instiki.org/">Instiki</a></p>
+  <br/>
+  <p>Powered by <a href="http://rubyonrails.com/">Ruby on Rails</a></p>
+</div>
+
 </div> <!-- Content -->
 </div> <!-- Container -->
+
 </body>
 </html>

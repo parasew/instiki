@@ -28,9 +28,6 @@ a { color: #000; }
 a:visited { color: #666; }
 a:hover { color: #fff; background-color:#000; }
 
-/* a.edit:link, a.edit:visited { color: #DA0006; } */
-
-
 h1, h2, h3 { color: #333; font-family: georgia, verdana; }
 h1 { font-size: 28px }
 h2 { font-size: 19px }
@@ -137,7 +134,21 @@ ol.setup li {
   background: lightgreen;
 }
 
-.error {
+#footer {
+  height: 14px;
+  padding: .25em 0;
+}
+
+#footer p {
+  font-size: 10px;
+  color: gray;
+  font-style: italic;
+  margin: 0;
+  float: right;
+  text-align: right;
+}
+
+#error {
   color: darkred;
   font-style: italic;
   width: 450px;
