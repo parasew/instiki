@@ -48,7 +48,7 @@
   <% end %>
 
   <small>
-    | Views: <a href="../print/<%= @page.name %>">Print</a>
+    | Views: <a href="../print/<%= @page.name %>" accesskey="p">Print</a>
   <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
     | <a href="../tex/<%= @page.name %>">TeX</a> | <a href="../pdf/<%= @page.name %>">PDF</a>
   <% end %>
