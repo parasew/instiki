@@ -103,8 +103,12 @@ class Web
     when :export
       if has_file?(name) then "<img alt=\"#{text}\" src=\"#{link}\" />"
       else "<img alt=\"#{text}\" src=\"no image\" />" end
-    else
-      "<img alt=\"#{text}\" src=\"../pic/#{link}\" />"
+    when :publish
+      if has_file?(name) then "<img alt=\"#{text}\" src=\"#{link}\" />"
+      else "<span class=\"newWikiWord\">#{text}</span>" end
+    else 
+      if has_file?(name) then "<img alt=\"#{text}\" src=\"../pic/#{link}\" />"
+      else "<span class=\"newWikiWord\">#{text}<a href=\"../pic/#{link}\">?</a></span>" end
     end
   end
 

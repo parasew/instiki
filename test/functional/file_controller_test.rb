@@ -56,5 +56,12 @@ class FileControllerTest < Test::Unit::TestCase
     assert_success
     assert_equal File.size("#{FILE_AREA}/rails.gif"), r.binary_content.size
   end
+  
+  def test_pic_unknown_pic
+    r = process 'pic', 'web' => 'wiki1', 'id' => 'non-existant.gif'
+    
+    assert_success
+    assert_rendered_file 'file/file'
+  end
 
 end

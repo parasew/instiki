@@ -3,6 +3,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'web'
 require 'revision'
+require 'fileutils'
 
 class RevisionTest < Test::Unit::TestCase
 
@@ -210,12 +211,24 @@ class RevisionTest < Test::Unit::TestCase
   end
 
   def test_link_to_pic
+    @wiki.file_yard(@web).upload_file('square.jpg', StringIO.new(''))
   	assert_markup_parsed_as(
   	    '<p><img alt="Square" src="../pic/square.jpg" /></p>',
 	    '[[square.jpg|Square:pic]]')
   	assert_markup_parsed_as( 
   	    '<p><img alt="square.jpg" src="../pic/square.jpg" /></p>',
 	    '[[square.jpg:pic]]')
+  end
+
+  def test_link_to_non_existant_pic
+  	assert_markup_parsed_as(
+  	    '<p><span class="newWikiWord">NonExistant<a href="../pic/NonExistant.jpg">?</a>' +
+  	    '</span></p>',
+        '[[NonExistant.jpg|NonExistant:pic]]')
+  	assert_markup_parsed_as(
+  	    '<p><span class="newWikiWord">NonExistant.jpg<a href="../pic/NonExistant.jpg">?</a>' +
+  	    '</span></p>',
+        '[[NonExistant.jpg:pic]]')
   end
 
   # TODO Remove the leading underscores from this test when upgrading to RedCloth 3.0.1; 

@@ -11,7 +11,7 @@ class FileController < ApplicationController
 
     if @params['file']
       # form supplied
-      file_yard.upload(@file_name, @params['file'])
+      file_yard.upload_file(@file_name, @params['file'])
       flash[:info] = "File '#{@file_name}' successfully uploaded"
       return_to_last_remembered
     elsif file_yard.has_file?(@file_name)
@@ -28,10 +28,16 @@ class FileController < ApplicationController
   
   def pic
     check_path
-    if file_yard.has_file?(@file_name)
+    if @params['file']
+      # form supplied
+      file_yard.upload_file(@file_name, @params['file'])
+      flash[:info] = "Image '#{@file_name}' successfully uploaded"
+      return_to_last_remembered
+    elsif file_yard.has_file?(@file_name)
       send_file(file_yard.file_path(@file_name))
     else
-      render_text "Image not found: #{@file_name}", '404 Not Found'
+      logger.debug("Image not found: #{file_yard.files_path}/#{@file_name}")
+      render_action 'file'
     end
   end
 
