@@ -92,24 +92,23 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_nil @wiki.webs['wiki2']
   end
 
+  def test_create_web_no_form_submitted
+    @wiki.system[:password] = 'pswd'
+    process 'create_web'
+    assert_success
+  end
+
+  def test_create_web_no_form_submitted_and_no_password_set
+    @wiki.system[:password] = nil
+    process 'create_web'
+    assert_redirected_to :action => 'index'
+  end
+
 
   def test_edit_web
     process 'edit_web', 'web' => 'wiki1'
     # this action simply renders a form
     assert_success
-  end
-
-
-  def test_new_web
-    @wiki.system['password'] = 'pswd'
-    process 'new_web'
-    assert_success
-  end
-
-  def test_new_web_no_password_set
-    @wiki.system['password'] = nil
-    process 'new_web'
-    assert_redirected_to :action => 'index'
   end
 
 

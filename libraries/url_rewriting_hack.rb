@@ -67,7 +67,6 @@ class DispatchServlet
       'edit_web' => 'admin',
       'file' => 'file',
       'import' => 'file',
-      'new_web' => 'admin',
       'pic' => 'file',
       'update_web' => 'admin'
     }

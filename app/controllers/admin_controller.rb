@@ -5,7 +5,7 @@ class AdminController < ApplicationController
   layout 'default'
 
   def create_system
-    if wiki.setup?
+    if @wiki.setup?
       flash[:error] = <<-EOL
           Wiki has already been created in '#{@wiki.storage_path}'. Shut down Instiki and delete 
           this directory if you want to recreate it from scratch.<br/><br/>
@@ -27,21 +27,24 @@ class AdminController < ApplicationController
   end
 
   def create_web
-    if @wiki.authenticate(@params['system_password'])
-      @wiki.create_web(@params['name'], @params['address'])
-      redirect_show('HomePage', @params['address'])
-    else 
-      redirect_to :action => 'index'
+    if @params['address']
+      # form submitted
+      if @wiki.authenticate(@params['system_password'])
+        @wiki.create_web(@params['name'], @params['address'])
+        redirect_show('HomePage', @params['address'])
+      else 
+        redirect_to :action => 'index'
+      end
+    else
+      # no form submitted -> render template
+      if @wiki.system[:password].nil?
+        redirect_to :controller => 'wiki', :action => 'index'
+      end
     end
   end
 
   def edit_web
     # to template
-  end
-
-  def new_web
-    redirect_to :action => 'index' if wiki.system['password'].nil?
-    # otherwise, to template
   end
 
   def update_web
