@@ -51,8 +51,9 @@ require 'rubygems' unless File.directory?("#{RAILS_ROOT}/vendor/rails")
 
 require 'active_support'
 require 'action_controller'
-require 'active_record_stub'
-require 'instiki_errors'
+
+require_dependency 'instiki_errors'
+require_dependency 'active_record_stub'
 
 # Environment specific configuration
 require_dependency "environments/#{RAILS_ENV}"
