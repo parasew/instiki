@@ -24,6 +24,7 @@ module ActiveRecord
 
   module ConnectionStub
     def self.reset_runtime
+      0
     end
   end
   
