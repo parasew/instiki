@@ -1,25 +1,30 @@
 <%
-def list_item(title, url, description, accesskey = nil)
-  if @title == title
-    "<b class=\"navOn\" title=\"#{description}\" accesskey=\"#{accesskey}\">#{title}</b>"
-  else
-    "<a href=\"#{url}\" title=\"#{description}\" accesskey=\"#{accesskey}\">#{title}</a>"
-  end
+def list_item(text, link_options, description, accesskey = nil)
+  link_options[:controller] = 'wiki'
+  link_options[:web] = @web.name
+  link_to_unless_current(text, link_options, :title => description, :accesskey => accesskey) {
+    content_tag('b', text, 'title' => description, 'accesskey' => accesskey, 'class' => 'navOn') 
+  }
 end
 %>
 
 <form id="navigationForm" class="navigation" action="../search/" method="get" style="font-size: 10px">  
   
-  <% if @action_name != "published" then %>
-  	<%= list_item "Home Page", "../show/HomePage", "Home, Sweet Home", "H" %> | 
-    <%= list_item "All Pages", "../list/", "Alphabetically sorted list of pages", "A" %> | 
-    <%= list_item "Recently Revised", "../recently_revised/", "Pages sorted by when they were last changed", "U" %> | 
-    <%= list_item "Authors", "../authors/", "Who wrote what" %> | 
-    <%= list_item "Feeds", "../feeds/", "Subscribe to changes by RSS" %> | 
-    <%= list_item "Export", "../export/", "Download a zip with all the pages in this wiki", "X" %> | 
-    <input type="text" id="searchField" name="query" style="font-size: 10px" value="Search" onClick="this.value == 'Search' ? this.value = '' : true" />
+  <% if @action_name != 'published' then %>
+    <%= list_item 'Home Page', {:action => 'show', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
+    <%= list_item 'All Pages', {:action => 'list'}, 'Alphabetically sorted list of pages', 'A' %> | 
+    <%= list_item 'Recently Revised', {:action =>'recently_revised'}, 
+                  'Pages sorted by when they were last changed', 'U' 
+    %> | 
+    <%= list_item 'Authors', {:action => 'authors'}, 'Who wrote what' %> | 
+    <%= list_item 'Feeds', {:action => 'feeds'}, 'Subscribe to changes by RSS' %> | 
+    <%= list_item 'Export', {:action => 'export'}, 
+                  'Download a zip with all the pages in this wiki', 'X' 
+    %> |     
+    <input type="text" id="searchField" name="query" style="font-size: 10px" value="Search" 
+           onClick="this.value == 'Search' ? this.value = '' : true" />
   <% else %>
-  	<%= list_item "Home Page", "../published/HomePage", "Home, Sweet Home", "H" %> | 
+  	<%= list_item 'Home Page', {:action => 'published', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
   <% end%>
 
 </form>
