@@ -37,6 +37,7 @@ class AdminController < ApplicationController
               :id => 'HomePage'
         rescue Instiki::ValidationError => e
           flash[:error] = e.message
+          # and re-render the form again
         end
       else 
         redirect_to :controller => 'wiki', :action => 'index'

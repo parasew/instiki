@@ -68,7 +68,7 @@ class AdminControllerTest < Test::Unit::TestCase
   
     process 'create_web', 'system_password' => 'pswd', 'name' => 'Wiki Two', 'address' => 'wiki2'
     
-    assert_redirected_to :web => 'wiki2', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki2', :action => 'new', :id => 'HomePage'
     wiki2 = @wiki.webs['wiki2']
     assert wiki2
     assert_equal 'Wiki Two', wiki2.name
@@ -80,7 +80,7 @@ class AdminControllerTest < Test::Unit::TestCase
   
     process 'create_web', 'system_password' => 'instiki', 'name' => 'Wiki Two', 'address' => 'wiki2'
     
-    assert_redirected_to :web => 'wiki2', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki2', :action => 'new', :id => 'HomePage'
   end
 
   def test_create_web_failed_authentication
