@@ -17,18 +17,6 @@
   </div>
 
   <h2 style="margin-bottom: 3px">Specialize</h2>
-  <div class="help">
-    Turning safe mode on will strip HTML tags and stylesheet options from the content of all pages.
-    Turning on "brackets only" will require all wiki words to be as [[wiki word]] and WikiWord 
-    won't work.
-    Turning "allow uploads" on will let wiki users to upload pictures and other files to the wiki
-    and include them on wiki pages.
-    Additions to the stylesheet take precedence over the existing styles. 
-    <i>Hint:</i> View source on a page you want to style to find ID names on individual tags. 
-    <a href="#" onClick="document.getElementById('additionalStyle').style.display='block';return false;">
-    See styles &gt;&gt;
-    </a>
-  </div>
   <div class="inputBox, disableAutoComplete">
     Markup:
     <select name="markup">
@@ -43,20 +31,39 @@
       <%= html_options({ "Green" => "008B26", "Purple" => "504685", "Red" => "DA0006", 
                          "Orange" => "FA6F00", "Grey" => "8BA2B0" }, @web.color) %>
     </select>
-    
-    &nbsp;&nbsp;
-    
+    <br/>
+    <p>
     <small>
-      <input type="checkbox" name="safe_mode" <%= 'checked="on"' if @web.safe_mode %> /> Safe mode
-      &nbsp;&nbsp;
+      <input type="checkbox" name="safe_mode" <%= 'checked="on"' if @web.safe_mode %> /> 
+      Safe mode
+      <em>- strip HTML tags and stylesheet options from the content of all pages</em>
+      <br/>
       <input type="checkbox" name="brackets_only" <%= 'checked="on"' if @web.brackets_only %> /> 
       Brackets only 
-      &nbsp;&nbsp;
-      <input type="checkbox" name="count_pages" <%= 'checked="on"' if @web.count_pages %> /> Count pages
-      &nbsp;&nbsp;
-      <input type="checkbox" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads %> /> Allow uploads
+      <em>- require all wiki words to be as [[wiki word]], WikiWord links won't be created</em>
+      <br/>
+      <input type="checkbox" name="count_pages" <%= 'checked="on"' if @web.count_pages %> /> 
+      Count pages
+      <br/>
+      <input type="checkbox" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads %> /> 
+      Allow uploads of no more than 
+      <input type="text" name="max_upload_size" value="<%= @web.max_upload_size %>" 
+             width="20" /> 
+      kbytes
+      <em>- 
+        let wiki users to upload pictures and other files and include or link to them on wiki pages
+      </em>
+      <br/>
     </small>
+    </p>
 
+    <a href="#" onClick="document.getElementById('additionalStyle').style.display='block';return false;">
+    Stylesheet tweaks &gt;&gt;</a>
+    <small><em>
+    - add or change styles used by this web; styles defined here take precedence over 
+    instiki.css. Hint: View HTML source of a page you want to style to find ID names on individual 
+    tags.</em></small>
+    <br/>
     <textarea id="additionalStyle" 
       style="display: none; margin-top: 10px; margin-bottom: 5px; width: 560px; height: 200px" 
       name="additional_style"><%= @web.additional_style %>

@@ -7,6 +7,7 @@ require "zip/zip"
 class Web
   attr_accessor :name, :address, :password, :markup, :color, :safe_mode, :pages
   attr_accessor :additional_style, :published, :brackets_only, :count_pages, :allow_uploads
+  attr_accessor :max_upload_size
 
   def initialize(parent_wiki, name, address, password = nil)
     @wiki, @name, @address, @password = parent_wiki, name, address, password
@@ -22,30 +23,45 @@ class Web
     @brackets_only = false
     @count_pages = false
     @allow_uploads = true
+    @max_upload_size = 100
   end
 
   def add_page(page)
     @pages[page.name] = page
   end
 
-  def remove_pages(pages_to_be_removed)
-    pages.delete_if { |page_name, page| pages_to_be_removed.include?(page) }
-  end
-  
-  def select(&condition)
-    PageSet.new(self, @pages.values, condition)
-  end
-  
-  def revised_on
-    select.most_recent_revision
-  end
-    
   def authors 
     select.authors 
   end
 
   def categories
     select.map { |page| page.categories }.flatten.uniq.sort
+  end
+
+  def has_page?(name)
+    pages[name]
+  end
+
+  def has_file?(name)
+    wiki.file_yard(self).has_file?(name)
+  end
+
+  def make_file_link(mode, name, text)
+    link = CGI.escape(name)
+    case mode
+    when :export
+      if has_file?(name) then "<a class=\"existingWikiWord\" href=\"#{link}.html\">#{text}</a>"
+      else "<span class=\"newWikiWord\">#{text}</span>" end
+    when :publish
+      if has_file?(name) then "<a class=\"existingWikiWord\" href=\"../published/#{link}\">#{text}</a>"
+      else "<span class=\"newWikiWord\">#{text}</span>" end
+    else 
+      if has_file?(name)
+        "<a class=\"existingWikiWord\" href=\"../file/#{link}\">#{text}</a>"
+      else 
+        "<span class=\"newWikiWord\">#{text}<a href=\"../file/#{link}\">?</a></span>"
+      end
+    end
   end
 
   # Create a link for the given page name and link text based
@@ -85,24 +101,6 @@ class Web
     end
   end
 
-  def make_file_link(mode, name, text)
-    link = CGI.escape(name)
-    case mode
-    when :export
-      if has_file?(name) then "<a class=\"existingWikiWord\" href=\"#{link}.html\">#{text}</a>"
-      else "<span class=\"newWikiWord\">#{text}</span>" end
-    when :publish
-      if has_file?(name) then "<a class=\"existingWikiWord\" href=\"../published/#{link}\">#{text}</a>"
-      else "<span class=\"newWikiWord\">#{text}</span>" end
-    else 
-      if has_file?(name)
-        "<a class=\"existingWikiWord\" href=\"../file/#{link}\">#{text}</a>"
-      else 
-        "<span class=\"newWikiWord\">#{text}<a href=\"../file/#{link}\">?</a></span>"
-      end
-    end
-  end
-
   def make_pic_link(mode, name, text)
     link = CGI.escape(name)
     case mode
@@ -118,12 +116,8 @@ class Web
     end
   end
 
-  def has_page?(name)
-    pages[name]
-  end
-
-  def has_file?(name)
-    wiki.file_yard(self).has_file?(name)
+  def max_upload_size
+    @max_upload_size || 100
   end
 
   # Clears the display cache for all the pages with references to 
@@ -137,6 +131,18 @@ class Web
     select.each { |page| page.revisions.each { |revision| revision.clear_display_cache } }
   end
 
+  def remove_pages(pages_to_be_removed)
+    pages.delete_if { |page_name, page| pages_to_be_removed.include?(page) }
+  end
+  
+  def revised_on
+    select.most_recent_revision
+  end
+    
+  def select(&condition)
+    PageSet.new(self, @pages.values, condition)
+  end
+  
   private
     # Returns an array of all the wiki words in any current revision
     def wiki_words
@@ -152,4 +158,5 @@ class Web
     def wiki
       @wiki ||= WikiService.instance
     end
+
 end

@@ -116,6 +116,7 @@ class WebTest < Test::Unit::TestCase
     assert !web.brackets_only
     assert !web.count_pages
     assert web.allow_uploads
+    assert_equal 100, web.max_upload_size
   end
 
 
