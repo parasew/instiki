@@ -1,6 +1,3 @@
 #!/usr/bin/ruby
 
-# Executable file for a gem
-# must be same as ./instiki.rb
-
 load File.dirname(__FILE__) + "/script/server"
