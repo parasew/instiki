@@ -35,6 +35,9 @@ class URIChunk < Chunk::Abstract
     # markup. (Images: !URI!) and other punctuation eg, (http://wiki.com/)
     URI_ENDING = '[)!]'
   
+    # Correct a typo bug in ruby 1.8.x lib/uri/common.rb 
+    PORT = '\\d*'
+
     # The basic URI expression as a string
     URI_PATTERN = 
   	"(?:(#{SCHEME})://)?" +    # Optional scheme://              (\1|\8)

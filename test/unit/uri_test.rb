@@ -89,4 +89,14 @@ class URITest < Test::Unit::TestCase
       :path => '/~mail2minh/SonyEricssonP80xPlatform.sis'
     )
   end
+  
+  def test_uri_with_port
+    match(
+      URIChunk, 
+      "This text contains a URL http://someplace.org:8080/~person/stuff.cgi?arg=val, doesn't it?", 
+      :scheme => 'http', :host => 'someplace.org', :port => '8080', :path => '/~person/stuff.cgi', 
+      :query => 'arg=val'
+    )
+  end
+  
 end
