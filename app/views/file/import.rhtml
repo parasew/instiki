@@ -15,7 +15,7 @@
     <input type="text" name="author" id="authorName" value="<%= @author %>" 
         onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
 	<% if @page %>
-      | <a href="../file/">Cancel</a> <small>(unlocks page)</small>
+      | <%= link_to 'Cancel', :web => @web.address, :action => 'file'%> <small>(unlocks page)</small>
     <% end %>
     
   </p>
