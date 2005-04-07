@@ -1,12 +1,6 @@
 <% @title = "All Pages" %>
 
-<% unless @categories.empty? %>
-<div id="categories">
-  <strong>Categories</strong>: 
-  [<a href=".">Any</a>]
-  <%= @category_links.join(', ') %>
-</div>
-<% end %>
+<%= categories_menu unless @categories.empty? %>
 
 <div id="allPages" style="float: left; width: 280px; margin-right: 30px">
 <% unless @pages_that_are_orphaned.empty? && @page_names_that_are_wanted.empty? %>

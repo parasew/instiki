@@ -120,7 +120,7 @@ class WikiController < ApplicationController
     @page.unlock
     redirect_show
   end
-  
+
   def edit
     if @page.nil?
       redirect_to :action => 'index'
@@ -294,13 +294,6 @@ class WikiController < ApplicationController
       @pages_in_category = PageSet.new(@web).by_name
       @set_name = 'the web'
     end
-    @category_links = @categories.map { |c| 
-      if @category == c
-        %{<span class="selected">#{c}</span>} 
-      else
-        %{<a href="?category=#{c}">#{c}</a>}
-      end
-    }
   end
 
   def parse_rss_params

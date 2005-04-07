@@ -50,4 +50,19 @@ module ApplicationHelper
     web.make_link(page_name, text, options.merge(:base_url => base_url))
   end
 
+  # Creates a menu of categories
+  def categories_menu
+    if @categories.empty?
+      ''
+    else 
+      "<div id=\"categories\">\n" +
+      '<strong>Categories</strong>:' +
+      '[' + link_to_unless_current('Any', :web => @web.address, :action => @action_name) + "]\n" +
+      @categories.map { |c| 
+        link_to_unless_current(c, :web => @web.address, :action => @action_name, :category => c)
+      }.join(', ') + "\n" +
+      '</div>'
+    end
+  end
+
 end

@@ -1,12 +1,6 @@
 <% @title = "Recently Revised" %>
 
-<% unless @categories.empty? %>
-<div id="categories">
-  <strong>Categories</strong>: 
-  [<a href=".">Any</a>]
-  <%= @category_links.join(', ') %>
-</div>
-<% end %>
+<%= categories_menu %>
 
 <% unless @pages_by_revision.empty? %>
   <% revision_date = @pages_by_revision.first.revised_on %>

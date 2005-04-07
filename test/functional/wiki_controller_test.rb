@@ -197,8 +197,6 @@ class WikiControllerTest < Test::Unit::TestCase
 
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     assert_nil r.template_objects['category']
-    assert_equal ['<a href="?category=animals">animals</a>', '<a href="?category=trees">trees</a>'],
-        r.template_objects['category_links']
     assert_equal [@elephant, @home, @oak], r.template_objects['pages_in_category']
   end
 
@@ -281,7 +279,6 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_nil r.template_objects['category']
     assert_equal [@home], r.template_objects['pages_in_category']
     assert_equal 'the web', r.template_objects['set_name']
-    assert_equal [], r.template_objects['category_links']
   end
   
   def test_recently_revised_with_categorized_page
@@ -300,8 +297,6 @@ class WikiControllerTest < Test::Unit::TestCase
         "Pages are not as expected: " +
         r.template_objects['pages_in_category'].map {|p| p.name}.inspect
     assert_equal 'the web', r.template_objects['set_name']
-    assert_equal ['<a href="?category=categorized">categorized</a>'], 
-        r.template_objects['category_links']
   end
 
   def test_recently_revised_with_categorized_page_multiple_categories
@@ -317,9 +312,6 @@ class WikiControllerTest < Test::Unit::TestCase
         "Pages are not as expected: " +
         r.template_objects['pages_in_category'].map {|p| p.name}.inspect
     assert_equal 'the web', r.template_objects['set_name']
-    assert_equal ['<a href="?category=animals">animals</a>', 
-        '<a href="?category=trees">trees</a>'], 
-        r.template_objects['category_links']
   end
 
   def test_recently_revised_with_specified_category
@@ -333,8 +325,6 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal 'animals', r.template_objects['category']
     assert_equal [@elephant], r.template_objects['pages_in_category']
     assert_equal "category 'animals'", r.template_objects['set_name']
-    assert_equal ['<span class="selected">animals</span>', '<a href="?category=trees">trees</a>'], 
-      r.template_objects['category_links']
   end
 
 
