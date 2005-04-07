@@ -68,8 +68,7 @@ class WikiController < ApplicationController
 
   def export_tex
     file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
-    file_path = @wiki.storage_path + file_name
-
+    file_path = File.join(@wiki.storage_path, file_name)
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)
     send_file file_path
   end
@@ -276,7 +275,7 @@ class WikiController < ApplicationController
   end
 
   def export_web_to_tex(file_path)
-    @tex_content = table_of_contents(@web.pages['HomePage'].content.dup, render_tex_web)
+    @tex_content = table_of_contents(@web.pages['HomePage'].content, render_tex_web)
     File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex_web')) }
   end
 

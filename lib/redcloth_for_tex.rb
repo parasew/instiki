@@ -13,7 +13,7 @@ end
 
 
 def table_of_contents(text, pages)
-  text.gsub!( /^([#*]+? .*?)$(?![^#*])/m ) do |match|
+  text.gsub( /^([#*]+? .*?)$(?![^#*])/m ) do |match|
     lines = match.split( /\n/ )
     last_line = -1
     depth = []
