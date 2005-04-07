@@ -59,7 +59,7 @@ class ApplicationController < ActionController::Base
     '.png' => 'image/png',
     '.txt' => 'text/plain',
     '.zip' => 'application/zip'
-  }
+  } unless defined? FILE_TYPES
 
   def send_file(file, options = {})
     options[:type] ||= (FILE_TYPES[File.extname(file)] || 'application/octet-stream')
