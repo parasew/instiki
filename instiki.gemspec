@@ -1,9 +1,12 @@
-$__instiki_source_patterns = ['[A-Z]*', 'instiki', 'app/**/*', 'lib/**/*', 'vendor/**/*']
+$__instiki_source_patterns = [
+  '[A-Z]*', 'instiki', 'instiki.rb', 'app/**/*', 'lib/**/*', 'vendor/**/*',
+  'public/**/*', 'natives/**/*', 'config/**/*', 'script/**/*'
+]
 
 spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.name = 'instiki'
-  s.version = "0.9.2"
+  s.version = "0.10.0"
   s.summary = 'Easy to install WikiClone running on WEBrick and Madeleine'
   s.description = <<-EOF
     Instiki is a Wiki Clone written in Ruby that ships with an embedded 
@@ -19,15 +22,12 @@ spec = Gem::Specification.new do |s|
   s.executables = ['instiki']
   s.default_executable = 'instiki'
 
-  s.has_rdoc = true
-  s.rdoc_options << '--title' << 'Instiki -- The Wiki' << 
-                    '--line-numbers' << '--inline-source'
-  # TODO: specify README as main RDoc file
+  s.has_rdoc = false
   
   s.add_dependency('madeleine', '= 0.7.1')
-  s.add_dependency('BlueCloth', '= 1.0.0')
-  s.add_dependency('RedCloth', '= 2.0.11')
+  s.add_dependency('RedCloth', '= 3.0.3')
   s.add_dependency('rubyzip', '= 0.5.5')
+  s.add_dependency('rails', '= 0.11.1')
   s.requirements << 'none'
   s.require_path = 'lib'
 

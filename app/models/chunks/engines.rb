@@ -27,7 +27,7 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
-      RedCloth.new(@content, @content.options[:engine_opts]).to_html
+      RedCloth.new(@content, @content.options[:engine_opts]).to_html([:textile])
     end
   end
 
