@@ -15,7 +15,8 @@ module AbstractWikiService
   attr_reader :webs, :system
 
   def authenticate(password)
-    password == (@system[:password] || 'instiki')
+    # system['password'] variant is for compatibility with storages from older versions
+    password == (@system[:password] || @system['password'] || 'instiki')
   end
 
   def create_web(name, address, password = nil)
