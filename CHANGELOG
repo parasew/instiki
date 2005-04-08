@@ -1,9 +1,8 @@
  * 0.10.0:
           Ported to ActionPack
           RedCloth 3.0.3
-          BlueCloth is phased out
-          Default markup remains Textile-only, but Markdown wikis now understand Textile 
-          syntax on the same page
+          BlueCloth is phased out, Markdown is rendered by RedCloth
+          Mix markup option understands both Textile and Markdown on the same page
           Instiki can serve static content (such as HTML or plain-text files) from ./public 
           directory
           Much friendlier admin interface

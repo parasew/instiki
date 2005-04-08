@@ -6,7 +6,11 @@
 
 <%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{@params["msg"]}</small></p>" if @params["msg"] %>
 
-<%= render("#{@web.markup}_help") if @web %>
+<div id="MarkupHelp" style="float: right; width: 250px; margin-top: 5px">
+  <%= render("#{@web.markup}_help") %>
+  <%= render 'wiki_words_help' %>
+</div>
+
 
 <%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name},
              {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();'})

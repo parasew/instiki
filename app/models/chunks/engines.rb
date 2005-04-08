@@ -27,11 +27,17 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
-      RedCloth.new(@content, @content.options[:engine_opts]).to_html([:textile])
+      RedCloth.new(@content, @content.options[:engine_opts]).to_html(:textile)
     end
   end
 
   class Markdown < AbstractEngine
+    def mask
+      RedCloth.new(@content, @content.options[:engine_opts]).to_html(:markdown)
+    end
+  end
+
+  class Mixed < AbstractEngine
     def mask
       RedCloth.new(@content, @content.options[:engine_opts]).to_html
     end
@@ -43,6 +49,6 @@ module Engines
     end
   end
 
-  MAP = { :textile => Textile, :markdown => Markdown, :rdoc => RDoc }
+  MAP = { :textile => Textile, :markdown => Markdown, :mixed => Mixed, :rdoc => RDoc,  }
   MAP.default = Textile
 end

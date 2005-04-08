@@ -21,16 +21,16 @@
   <div class="inputBox, disableAutoComplete">
     Markup:
     <select name="markup">
-      <%= html_options({"Textile" => :textile, "Markdown" => :markdown, "RDoc" => :rdoc }, 
-              @web.markup) %>
+      <%= html_options({'Textile' => :textile, 'Markdown' => :markdown, 'Mixed' => :mixed, 
+              'RDoc' => :rdoc }, @web.markup) %>
     </select>
 
     &nbsp;&nbsp;
 
     Color:
     <select name="color">
-      <%= html_options({ "Green" => "008B26", "Purple" => "504685", "Red" => "DA0006", 
-                         "Orange" => "FA6F00", "Grey" => "8BA2B0" }, @web.color) %>
+      <%= html_options({ 'Green' => '008B26', 'Purple' => '504685', 'Red' => 'DA0006', 
+                         'Orange' => 'FA6F00', 'Grey' => '8BA2B0' }, @web.color) %>
     </select>
     <br/>
     <p>
