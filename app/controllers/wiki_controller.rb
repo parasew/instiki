@@ -254,7 +254,7 @@ class WikiController < ApplicationController
 
     Zip::ZipOutputStream.open(tmp_path) do |zip_out|
       @web.select.by_name.each do |page|
-        zip_out.put_next_entry("#{page.name}.#{file_type}")
+        zip_out.put_next_entry("#{CGI.escape(page.name)}.#{file_type}")
         zip_out.puts(block.call(page))
       end
       # add an index file, if exporting to HTML
