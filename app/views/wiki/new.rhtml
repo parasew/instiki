@@ -4,7 +4,10 @@
   @hide_navigation = true
 %>
 
-<%= render("#{@web.markup}_help") if @web %>
+<div id="MarkupHelp" style="float: right; width: 250px; margin-top: 5px">
+  <%= render("#{@web.markup}_help") %>
+  <%= render 'wiki_words_help' %>
+</div>
 
 <%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name},
              {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();'})
