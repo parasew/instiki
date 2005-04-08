@@ -118,7 +118,9 @@ TODO Enable these input elements again after release 0.10
 <br/>
 <h1>Other administrative tasks</h1>
 
-<form action="remove_orphaned_pages" id="remove_orphaned_pages" method="post" 
+<%= form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages'},
+        {:id => 'remove_orphaned_pages'})
+%>
       onSubmit="return checkSystemPassword(document.getElementById('system_password_orphaned').value)">
   <p align="right">
     <small>
@@ -128,7 +130,7 @@ TODO Enable these input elements again after release 0.10
       <input type="submit" value="Delete Orphan Pages" />
     </small>
   </p>
-</form>
+<%= end_form_tag %>
 
 <script type="text/javascript" src="/javascripts/edit_web.js" />
 <script type="text/javascript">overrideAutocomplete()</script>
