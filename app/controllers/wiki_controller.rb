@@ -59,7 +59,7 @@ class WikiController < ApplicationController
 
   def export_pdf
     file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}"
-    file_path = @wiki.storage_path + file_name
+    file_path = File.join(@wiki.storage_path, file_name)
 
     export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
     convert_tex_to_pdf "#{file_path}.tex"
@@ -142,7 +142,7 @@ class WikiController < ApplicationController
     page = wiki.read_page(@web_name, @page_name)
     safe_page_name = @page.name.gsub(/\W/, '')
     file_name = "#{safe_page_name}-#{@web.address}-#{@page.created_at.strftime('%Y-%m-%d-%H-%M-%S')}"
-    file_path = @wiki.storage_path + file_name
+    file_path = File.join(@wiki.storage_path, file_name)
 
     export_page_to_tex("#{file_path}.tex") unless FileTest.exists?("#{file_path}.tex")
     # NB: this is _very_ slow
@@ -249,7 +249,7 @@ class WikiController < ApplicationController
 
     file_prefix = "#{@web.address}-#{file_type}-"
     timestamp = @web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')
-    file_path = @wiki.storage_path + file_prefix + timestamp + '.zip'
+    file_path = File.join(@wiki.storage_path, file_prefix + timestamp + '.zip')
     tmp_path = "#{file_path}.tmp"
 
     Zip::ZipOutputStream.open(tmp_path) do |zip_out|
@@ -269,7 +269,7 @@ class WikiController < ApplicationController
         EOL
       end
     end
-    FileUtils.rm_rf(Dir[@wiki.storage_path + file_prefix + '*.zip'])
+    FileUtils.rm_rf(Dir[File.join(@wiki.storage_path, file_prefix + '*.zip')])
     FileUtils.mv(tmp_path, file_path)
     send_file file_path
   end
