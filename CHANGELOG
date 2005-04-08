@@ -10,7 +10,7 @@
           "textile link":LinkToSomePlace will not look insane.
           RSS feeds accept query parameters, sush as 
           http://localhost:2500/wiki/rss_with_headlines?start=2005-02-18&end=2005-02-19&limit=10
-          RSS feed wiuth page contents for a password-protected web behaves as follows:
+          RSS feed with page contents for a password-protected web behaves as follows:
             if the web is published, RSS feed links to the published version of the web
             otherwise, the feed is not available
           Madeleine will check every hour if there are new commands in the log or 24 hours have 
