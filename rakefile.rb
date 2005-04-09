@@ -100,11 +100,10 @@ task :stats => [ :environment ] do
   CodeStatistics.new(
     ['Helpers', 'app/helpers'], 
     ['Controllers', 'app/controllers'], 
-    ['APIs', 'app/apis'],
-    ['Components', 'components'],
     ['Functionals', 'test/functional'],
     ['Models', 'app/models'],
-    ['Units', 'test/unit']
+    ['Units', 'test/unit'],
+    ['Miscellaneous (lib)', 'lib']
   ).to_s
 end
 
