@@ -27,7 +27,7 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
-      RedCloth.new(@content, @content.options[:engine_opts]).to_html(:textile)
+      RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts]).to_html(:textile)
     end
   end
 
@@ -39,7 +39,7 @@ module Engines
 
   class Mixed < AbstractEngine
     def mask
-      RedCloth.new(@content, @content.options[:engine_opts]).to_html
+      RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts]).to_html
     end
   end
 
