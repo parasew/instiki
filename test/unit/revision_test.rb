@@ -54,7 +54,7 @@ class RevisionTest < Test::Unit::TestCase
     @web.markup = :markdown
 
     assert_markup_parsed_as(
-        %{<h1>My Headline</h1>\n\n\n\t<p>that <span class="newWikiWord">} +
+        %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
         %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
         "My Headline\n===========\n\nthat SmartEngineGUI")
 
@@ -68,8 +68,8 @@ class RevisionTest < Test::Unit::TestCase
       ].join("\n")
 
 	assert_markup_parsed_as(
-	    %{<p>This is a code block:</p>\n\n\n\t<pre><code>def a_method(arg)\n} +
-	    %{return ThatWay</code></pre>\n\n\n\t<p>Nice!</p>}, 
+	    %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
+	    %{return ThatWay\n</code></pre>\n\n<p>Nice!</p>}, 
 	    code_block)
 
     textile_and_markdown = [
@@ -85,10 +85,10 @@ class RevisionTest < Test::Unit::TestCase
     ].join("\n")
     
     assert_markup_parsed_as(
-      "<h1>Markdown heading</h1>\n\n\n\t" +
-      "<p>h2. Textile heading</p>\n\n\n\t" +
-      "<p><strong>some</strong> <b>text</b> <em>with</em> <del>styles</del></p>\n\n\n\t" +
-      "<ul>\n\t<li>list 1</li>\n\t\t<li>list 2</li>\n\t</ul>",
+      "<h1>Markdown heading</h1>\n\n" +
+      "<p>h2. Textile heading</p>\n\n" +
+      "<p><em>some</em> <strong>text</strong> <em>with</em> -styles-</p>\n\n" +
+      "<ul>\n<li>list 1</li>\n<li>list 2</li>\n</ul>",
       textile_and_markdown)
     
   end
