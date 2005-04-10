@@ -1,3 +1,9 @@
+ * TODO:
+          BlueCloth is back (RedCloth didn't do Markdown well enough to replace it).
+
+ * SVN trunk:
+          Handling of line breaks in Textile is as in 0.9 (inserts <br/> tag).
+          Upgraded rubyzip to version 0.5.8
  * 0.10.0:
           Ported to ActionPack
           RedCloth 3.0.3

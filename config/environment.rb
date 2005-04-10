@@ -38,7 +38,7 @@ unless defined? ADDITIONAL_LOAD_PATHS
     vendor/rails/actionwebservice/lib
     vendor/madeleine-0.7.1/lib
     vendor/RedCloth-3.0.3/lib
-    vendor/rubyzip-0.5.6
+    vendor/rubyzip-0.5.8/lib
   ).map { |dir| "#{File.expand_path(File.join(RAILS_ROOT, dir))}"
   }.delete_if { |dir| not File.exist?(dir) }
 
