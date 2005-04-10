@@ -33,7 +33,7 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask
-      RedCloth.new(@content, @content.options[:engine_opts]).to_html(:markdown)
+      RedCloth.new(@content, @content.options[:engine_opts]).to_html(:block_textile_lists, :inline_textile_span, :markdown)
     end
   end
 
