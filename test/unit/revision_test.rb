@@ -104,7 +104,9 @@ class RevisionTest < Test::Unit::TestCase
     
     @web.markup = :mixed
     assert_markup_parsed_as(
-      "<h1>Markdown heading</h1>\n\n\n\t<h2>Textile heading</h2>",
+      "<h1>Markdown heading</h1>\n\n\n\t<h2>Textile heading</h2>\n\n\n\t" +
+      "<p><strong>some</strong> <b>text</b> <em>with</em> <del>styles</del></p>\n\n\n\t" +
+      "<ul>\n\t<li>list 1</li>\n\t\t<li>list 2</li>\n\t</ul>",
       textile_and_markdown)
   end
 
