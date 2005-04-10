@@ -189,7 +189,7 @@ class RevisionTest < Test::Unit::TestCase
     @revision.clear_display_cache
 
     @revision.content = "f\r\nVersionHistory\r\n\r\ncry VersionHistory"
-    assert_equal "<p>f\n<span class=\"newWikiWord\">Version History" +
+    assert_equal "<p>f<br /><span class=\"newWikiWord\">Version History" +
         "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
         "<span class=\"newWikiWord\">Version History<a href=\"../show/VersionHistory\">?</a>" +
         "</span></p>", 
@@ -254,15 +254,14 @@ class RevisionTest < Test::Unit::TestCase
 
   # TODO Remove the leading underscores from this test when upgrading to RedCloth 3.0.1; 
   # also add a test for the "Unhappy Face" problem (another interesting RedCloth bug)
-  def __test_list_with_tildas
+  def test_list_with_tildas
     list_with_tildas = <<-EOL
       * "a":~b
       * c~ d
     EOL
 
     assert_markup_parsed_as(
-        "<li><a href=\"~b\">a</a></li>\n" +
-        "<li>c~ d</li>\n",
+        "<ul>\n\t<li><a href=\"~b\">a</a></li>\n\t\t<li>c~ d</li>\n\t</ul>",
         list_with_tildas)
   end
 
