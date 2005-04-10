@@ -71,6 +71,9 @@ class RevisionTest < Test::Unit::TestCase
 	    %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
 	    %{return ThatWay\n</code></pre>\n\n<p>Nice!</p>}, 
 	    code_block)
+  end
+
+  def test_mixed_formatting
 
     textile_and_markdown = [
       'Markdown heading',
@@ -84,6 +87,7 @@ class RevisionTest < Test::Unit::TestCase
       '* list 2'
     ].join("\n")
     
+    @web.markup = :markdown
     assert_markup_parsed_as(
       "<h1>Markdown heading</h1>\n\n" +
       "<p>h2. Textile heading</p>\n\n" +
@@ -91,6 +95,17 @@ class RevisionTest < Test::Unit::TestCase
       "<ul>\n<li>list 1</li>\n<li>list 2</li>\n</ul>",
       textile_and_markdown)
     
+    @web.markup = :textile
+    assert_markup_parsed_as(
+      "<p>Markdown heading<br />================</p>\n\n\n\t<h2>Textile heading</h2>" +
+      "\n\n\n\t<p><strong>some</strong> <b>text</b> <em>with</em> <del>styles</del></p>" +
+      "\n\n\n\t<ul>\n\t<li>list 1</li>\n\t\t<li>list 2</li>\n\t</ul>",
+      textile_and_markdown)
+    
+    @web.markup = :mixed
+    assert_markup_parsed_as(
+      "<h1>Markdown heading</h1>\n\n\n\t<h2>Textile heading</h2>",
+      textile_and_markdown)
   end
 
   def test_rdoc

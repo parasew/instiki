@@ -1,6 +1,7 @@
 $: << File.dirname(__FILE__) + "../../lib"
 
 require 'redcloth'
+require 'bluecloth_tweaked'
 require 'rdocsupport'
 require 'chunks/chunk'
 
@@ -27,7 +28,10 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
-      RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts]).to_html(:textile)
+      redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
+      redcloth.filter_html = false
+      redcloth.no_span_caps = false  
+      redcloth.to_html(:textile)
     end
   end
 
@@ -39,7 +43,8 @@ module Engines
 
   class Mixed < AbstractEngine
     def mask
-      RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts]).to_html
+      RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts]).to_html(
+          :textile, :markdown)
     end
   end
 
