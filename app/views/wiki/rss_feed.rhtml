@@ -12,7 +12,7 @@
     <% unless @hide_description %>
       <description><%= h page.display_content %></description>
     <% end %>
-      <pubDate><%= page.created_at.getgm.strftime "%a, %e %b %Y %H:%M:%S Z" %></pubDate>
+      <pubDate><%= page.created_at.getgm.strftime "%a, %d %b %Y %H:%M:%S Z" %></pubDate>
       <guid><%= url_for :only_path => false, :web => @web_name, :action => @link_action, :id => page.name %></guid>
       <link><%= url_for :only_path => false, :web => @web_name, :action => @link_action, :id => page.name %></link>
       <dc:creator><%= WikiWords.separate(page.author) %></dc:creator>

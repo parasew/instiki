@@ -475,6 +475,17 @@ class WikiControllerTest < Test::Unit::TestCase
     assert r.body.include?('<title>Home Page</title>')
     assert r.body.include?('<title>Title&amp;With&amp;Ampersands</title>')
   end
+
+  def test_rss_timestamp
+    setup_wiki_with_three_pages
+    
+    new_page = @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime', 
+      'Created on 1 Jan 1970 at 0:00:00 Z', Time.at(0), Author.new('NitPicker', '127.0.0.3'))
+
+    r = process 'rss_with_headlines', 'web' => 'wiki1'
+    
+    assert_template_xpath_match '/rss/channel/item/pubDate[4]', "Thu, 01 Jan 1970 00:00:00 Z"
+  end
   
   def test_save
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
