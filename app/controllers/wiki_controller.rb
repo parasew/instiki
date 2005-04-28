@@ -9,11 +9,11 @@ class WikiController < ApplicationController
 
   def index
     if @web_name
-      redirect_show 'HomePage'
+      redirect_home
     elsif not @wiki.setup?
       redirect_to :controller => 'admin', :action => 'create_system'
     elsif @wiki.webs.length == 1
-      redirect_show 'HomePage', @wiki.webs.values.first.address
+      redirect_home @wiki.webs.values.first.address
     else
       redirect_to :action => 'web_list'
     end
@@ -23,7 +23,7 @@ class WikiController < ApplicationController
 
   def authenticate
     if password_check(@params['password'])
-      redirect_show('HomePage')
+      redirect_home
     else 
       flash[:info] = password_error(@params['password'])
       redirect_to :action => 'login', :web => @web_name
@@ -109,7 +109,7 @@ class WikiController < ApplicationController
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     all_pages_found = (@results + @title_results).uniq
     if all_pages_found.size == 1
-      redirect_show(all_pages_found.first.name)
+      redirect_to_page(all_pages_found.first.name)
     end
   end
 
@@ -117,7 +117,7 @@ class WikiController < ApplicationController
   
   def cancel_edit
     @page.unlock
-    redirect_show
+    redirect_to_page(@page_name)
   end
 
   def edit
@@ -159,7 +159,7 @@ class WikiController < ApplicationController
     if @web.published
       @page = wiki.read_page(@web_name, @page_name || 'HomePage') 
     else 
-      redirect_show('HomePage') 
+      redirect_home
     end
   end
   
@@ -189,7 +189,7 @@ class WikiController < ApplicationController
             Author.new(@params['author'], remote_ip)
         )
       end
-      redirect_show(@page_name)
+      redirect_to_page @page_name
     rescue Instiki::ValidationError => e
       page.unlock if defined? page
       flash[:error] = e

@@ -11,7 +11,7 @@ class AdminController < ApplicationController
           this directory if you want to recreate it from scratch.<br/><br/>
           (WARNING: this will destroy content of your current wiki).
       EOL
-      redirect_show('HomePage', @wiki.webs.keys.first)
+      redirect_home(@wiki.webs.keys.first)
     elsif @params['web_name']
       # form submitted -> create a wiki
       @wiki.setup(@params['password'], @params['web_name'], @params['web_address']) 
@@ -66,7 +66,7 @@ class AdminController < ApplicationController
             @params['max_upload_size']
           )
           flash[:info] = "Web '#{@params['address']}' was successfully updated"
-          redirect_show('HomePage', @params['address'])
+          redirect_home(@params['address'])
         rescue Instiki::ValidationError => e
           flash[:error] = e.message
           # and re-render the same template again

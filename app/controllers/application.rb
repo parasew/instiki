@@ -87,7 +87,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def redirect_show(page_name = @page_name, web = @web_name)
+  def redirect_home(web = @web_name)
+    redirect_to_page('HomePage', web)
+  end
+
+  def redirect_to_page(page_name = @page_name, web = @web_name)
     redirect_to :web => web, :controller => 'wiki', :action => 'show', 
         :id => (page_name || 'HomePage')
   end
