@@ -503,22 +503,6 @@ class WikiControllerTest < Test::Unit::TestCase
     assert !home_page.locked?(Time.now)
   end
 
-  def test_save_new_revision_of_existing_page
-    @home.lock(Time.now, 'Batman')
-
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Revised HomePage', 
-      'author' => 'Batman'
-
-    assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
-    assert_equal ['Batman'], r.cookies['author'].value
-    home_page = @wiki.read_page('wiki1', 'HomePage')
-    assert_equal [home_page], @web.pages.values
-    assert_equal 2, home_page.revisions.size
-    assert_equal 'Revised HomePage', home_page.content
-    assert_equal 'Batman', home_page.author
-    assert !home_page.locked?(Time.now)
-  end
-
   def test_save_new_revision_identical_to_last
     revisions_before = @home.revisions.size
     @home.lock(Time.now, 'AnAuthor')
