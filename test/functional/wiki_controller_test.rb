@@ -462,6 +462,19 @@ class WikiControllerTest < Test::Unit::TestCase
     pages = r.template_objects['pages_by_revision']
     assert_equal 5, pages.size
   end
+
+  def test_rss_title_with_ampersand
+    # was ticket:143
+    setup_wiki_with_three_pages
+    
+    @wiki.write_page('wiki1', 'Title&With&Ampersands', 
+      'About spaces', 1.hour.ago, Author.new('NitPicker', '127.0.0.3'))
+
+    r = process 'rss_with_headlines', 'web' => 'wiki1'
+
+    assert r.body.include?('<title>Home Page</title>')
+    assert r.body.include?('<title>Title&amp;With&amp;Ampersands</title>')
+  end
   
   def test_save
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 

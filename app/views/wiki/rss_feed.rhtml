@@ -8,7 +8,7 @@
 		<ttl>40</ttl>
   <% for page in @pages_by_revision %>
 		<item>
-      <title><%= page.plain_name %></title>
+      <title><%= h page.plain_name %></title>
     <% unless @hide_description %>
       <description><%= h page.display_content %></description>
     <% end %>
