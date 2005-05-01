@@ -43,8 +43,10 @@ module Engines
 
   class Mixed < AbstractEngine
     def mask
-      RedCloth.new(@content, @content.options[:engine_opts]).to_html(
-          :textile, :markdown)
+      redcloth = RedCloth.new(@content, @content.options[:engine_opts])
+      redcloth.filter_html = false
+      redcloth.no_span_caps = false
+      redcloth.to_html
     end
   end
 

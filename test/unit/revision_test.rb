@@ -302,6 +302,12 @@ class RevisionTest < Test::Unit::TestCase
         list_with_tildas)
   end
 
+  def test_textile_image_in_mixed_wiki
+    @web.markup = :mixed
+    assert_markup_parsed_as(
+      "<p><img src=\"http://google.com\" alt=\"\" />\nss</p>",
+      "!http://google.com!\r\nss")
+  end
 
 
   def assert_markup_parsed_as(expected_output, input)
