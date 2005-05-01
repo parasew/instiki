@@ -128,7 +128,7 @@ class WikiService
   include Madeleine::Automatic::Interceptor
   
   # These methods do not change the state of persistent objects, and 
-  # should not be ogged by Madeleine
+  # should not be logged by Madeleine
   automatic_read_only :authenticate, :read_page, :setup?, :webs, :storage_path, :file_yard
 
   @@storage_path = './storage/'
