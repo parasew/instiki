@@ -6,7 +6,7 @@ $__instiki_source_patterns = [
 spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.name = 'instiki'
-  s.version = "0.10.0"
+  s.version = "0.10.1"
   s.summary = 'Easy to install WikiClone running on WEBrick and Madeleine'
   s.description = <<-EOF
     Instiki is a Wiki Clone written in Ruby that ships with an embedded 

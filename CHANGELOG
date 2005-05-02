@@ -4,6 +4,7 @@
           BlueCloth is back (RedCloth didn't do pure Markdown well enough)
           Handling of line breaks in Textile is as in 0.9 (inserts <br/> tag)
           Fixed HTML export (to enclose the output in <html> tags, include the stylesheet etc)
+          Corrected some compatibility issues with storages from earlier Instiki versions
           Some other bug fixes
 
  * 0.10.0:
