@@ -49,7 +49,7 @@ class WikiController < ApplicationController
     export_pages_as_zip('html') do |page| 
       @page = page
       @link_mode = :export
-      render_to_string 'wiki/print'
+      render_to_string('wiki/print', use_layout = true)
     end
   end
 
@@ -336,11 +336,11 @@ class WikiController < ApplicationController
     end
   end
 
-  def render_to_string(template_name)
+  def render_to_string(template_name, with_layout = false)
     add_variables_to_assigns
-    render template_name
-    @performed_render = false
-    @template.render_file(template_name)
+    @content_for_layout = @template.render_file(template_name)
+    if with_layout then @template.render_file('layouts/default');
+    else @content_for_layout; end
   end
   
   def rss_with_content_allowed?
