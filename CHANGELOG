@@ -1,10 +1,9 @@
  * 0.10.1:
           Upgraded Rails to 0.12.0
           Upgraded rubyzip to version 0.5.8
-          BlueCloth is back (RedCloth didn't do pure Markdown well enough to replace it yet)
+          BlueCloth is back (RedCloth didn't do pure Markdown well enough)
           Handling of line breaks in Textile is as in 0.9 (inserts <br/> tag)
           Fixed HTML export (to enclose the output in <html> tags, include the stylesheet etc)
-          
           Some other bug fixes
 
  * 0.10.0:

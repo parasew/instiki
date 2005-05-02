@@ -5,29 +5,44 @@ require 'wiki_words'
 require 'zip/zip'
 
 class Web
-  attr_accessor :name, :password, :markup, :color, :safe_mode, :pages
-  attr_accessor :additional_style, :published, :brackets_only, :count_pages, :allow_uploads
-  attr_accessor :max_upload_size
-  
+  attr_accessor :name, :password, :safe_mode, :pages
+  attr_accessor :additional_style, :allow_uploads, :published
   attr_reader :address
+
+  # there are getters for all these attributes, too
+  attr_writer :markup, :color, :brackets_only, :count_pages, :max_upload_size
 
   def initialize(parent_wiki, name, address, password = nil)
     self.address = address
     @wiki, @name, @password = parent_wiki, name, password
 
-    # default values
-    @markup = :textile 
-    @color = '008B26'
-    @safe_mode = false
+    set_compatible_defaults
+
     @pages = {}
     @allow_uploads = true
     @additional_style = nil
     @published = false
-    @brackets_only = false
     @count_pages = false
     @allow_uploads = true
-    @max_upload_size = 100
   end
+
+  # Explicitly sets value of some web attributes to defaults, unless they are already set
+  def set_compatible_defaults
+    @markup = markup()
+    @color = color()
+    @safe_mode = safe_mode()
+    @brackets_only = brackets_only()
+    @max_upload_size = max_upload_size()
+    @wiki = wiki
+  end
+  # All below getters know their default values. This is necessary to ensure compatibility with 
+  # 0.9 storages, where they were not defined.
+  def brackets_only() @brackets_only || false end
+  def color() @color ||= '008B26' end
+  def count_pages()   @count_pages || false end
+  def markup() @markup ||= :textile end
+  def max_upload_size() @max_upload_size || 100; end
+  def wiki() @wiki ||= WikiService.instance; end
 
   def add_page(page)
     @pages[page.name] = page
@@ -40,7 +55,7 @@ class Web
     @address = the_address
   end
 
-  def authors 
+  def authors
     select.authors 
   end
 
@@ -129,10 +144,6 @@ class Web
     end
   end
 
-  def max_upload_size
-    @max_upload_size || 100
-  end
-
   # Clears the display cache for all the pages with references to 
   def refresh_pages_with_references(page_name)
     select.pages_that_reference(page_name).each { |page| 
@@ -156,11 +167,6 @@ class Web
     PageSet.new(self, @pages.values, condition)
   end
   
-  # This ensures compatibility with 0.9 storages
-  def wiki
-    @wiki ||= WikiService.instance
-  end
-
   private
 
     # Returns an array of all the wiki words in any current revision
