@@ -49,7 +49,7 @@ class WikiController < ApplicationController
     export_pages_as_zip('html') do |page| 
       @page = page
       @link_mode = :export
-      render_to_string('wiki/print', use_layout = true)
+      render_to_string('wiki/print', use_layout = (@params['layout'] != 'no'))
     end
   end
 

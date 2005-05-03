@@ -117,6 +117,20 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal :export, r.template_objects['link_mode']
   end
 
+  def test_export_html_no_layout
+    setup_wiki_with_three_pages
+    
+    r = process 'export_html', 'web' => 'wiki1', 'layout' => 'no'
+    
+    assert_success
+    assert_equal 'application/zip', r.headers['Content-Type']
+    assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
+        r.headers['Content-Disposition']
+    content = r.binary_content
+    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal :export, r.template_objects['link_mode']
+  end
+
   def test_export_markup
     r = process 'export_markup', 'web' => 'wiki1'
 
