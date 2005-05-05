@@ -11,6 +11,8 @@ class Page
   attr_accessor :revisions
   
   def initialize(web, name, content, created_at, author)
+    raise 'nil web' if web.nil?
+    raise 'nil name' if name.nil?
     @web, @name, @revisions = web, name, []
     revise(content, created_at, author)
   end
