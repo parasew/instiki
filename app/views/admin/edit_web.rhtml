@@ -1,7 +1,9 @@
 <% @title = "Edit Web" %>
 
-<form action="edit_web" id="setup" method="post" 
-      onSubmit="cleanAddress(); return validateEditWebForm()">
+<%= form_tag({ :controller => 'admin', :action => 'edit_web', :web => @web.address },
+             {'id' => 'setup', 'method' => 'post', 'onSubmit' => 'cleanAddress(); return validateSetup()'})
+%>
+
   <h2 style="margin-bottom: 3px">Name and address</h2>
   <div class="help">
     The name of the web is included in the title on all pages. 
@@ -113,7 +115,7 @@ TODO Enable these input elements again after release 0.10
   </small>
 </p>
 
-</form>
+<%= end_form_tag %>
 
 <br/>
 <h1>Other administrative tasks</h1>

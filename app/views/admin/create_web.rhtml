@@ -5,8 +5,9 @@
   so different subjects or projects can write about different <i>MuppetShows</i>.
 </p>
 
-<form action="../create_web" id="setup" method="post" onSubmit="cleanAddress(); 
-      return validateSetup()">
+<%= form_tag({ :controller => 'admin', :action => 'create_web'},
+             {'id' => 'setup', 'method' => 'post', 'onSubmit' => 'cleanAddress(); return validateSetup()'})
+%>
 
 <ol class="setup">
   <li>
@@ -35,7 +36,7 @@
   </small>
 </p>
 
-</form>
+<%= end_form_tag %>
 
 <script>
 function proposeAddress() {

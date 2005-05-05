@@ -12,7 +12,7 @@
 </div>
 
 <%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name},
-             {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();'})
+             {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName()'})
 %>
 
 <p>
