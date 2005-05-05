@@ -21,12 +21,11 @@ body, p, ol, ul, td {
 }
 
 a { color: #000; }
+a:visited { color: #666; }
+a:hover { color: #fff; background-color:#000; }
 
 .newWikiWord { background-color: #eee; }
 .newWikiWord a:hover { background-color: white; }
-
-a:visited { color: #666; }
-a:hover { color: #fff; background-color:#000; }
 
 h1, h2, h3 { color: #333; font-family: georgia, verdana, sans-serif; }
 h1 { font-size: 28px }
