@@ -8,8 +8,10 @@ def list_item(text, link_options, description, accesskey = nil)
 end
 %>
 
-<form id="navigationForm" class="navigation" action="../search/" method="get" style="font-size: 10px">  
-  
+<%= form_tag({ :controller => 'wiki', :action => 'search', :web => @web.address},
+             {'id' => 'navigationForm', 'class' => 'navigation', 'method' => 'get'})
+%>
+
   <% if @action_name != 'published' then %>
     <%= list_item 'Home Page', {:action => 'show', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
     <%= list_item 'All Pages', {:action => 'list'}, 'Alphabetically sorted list of pages', 'A' %> | 
@@ -27,4 +29,4 @@ end
   	<%= list_item 'Home Page', {:action => 'published', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
   <% end%>
 
-</form>
+<%= end_form_tag %>
