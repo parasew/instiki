@@ -1,3 +1,9 @@
+ * trunk:
+          Fixed HTML export
+          Added layout=no option to the export_html action (it exports page contents processed 
+          by the markup engine, but without the default layout - so that they can be wrapper in 
+          some other layout)
+
  * 0.10.1:
           Upgraded Rails to 0.12.0
           Upgraded rubyzip to version 0.5.8
