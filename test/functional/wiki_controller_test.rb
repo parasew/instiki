@@ -7,6 +7,8 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_controller'
 require 'rexml/document'
+require 'tempfile'
+require 'zip/zipfilesystem'
 
 # Raise errors beyond the default web-based presentation
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
@@ -115,6 +117,24 @@ class WikiControllerTest < Test::Unit::TestCase
     content = r.binary_content
     assert_equal 'PK', content[0..1], 'Content is not a zip file'
     assert_equal :export, r.template_objects['link_mode']
+    
+    # Tempfile doesn't know how to open files with binary flag, hence the two-step process
+    Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
+    begin 
+      File.open(@tempfile_path, 'wb') { |f| f.write(content); @exported_file = f.path }
+      Zip::ZipFile.open(@exported_file) do |zip| 
+        assert_equal %w(Elephant.html HomePage.html Oak.html index.html), zip.dir.entries('.').sort
+        assert_match /.*<html .*All about elephants.*<\/html>/, 
+            zip.file.read('Elephant.html').gsub(/\s+/, ' ')
+        assert_match /.*<html .*All about oak.*<\/html>/, 
+            zip.file.read('Oak.html').gsub(/\s+/, ' ')
+        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
+            zip.file.read('HomePage.html').gsub(/\s+/, ' ')
+        assert_equal '<html><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.html"></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
+      end
+    ensure
+      File.delete(@tempfile_path) if File.exist?(@tempfile_path)
+    end
   end
 
   def test_export_html_no_layout

@@ -260,13 +260,8 @@ class WikiController < ApplicationController
       # add an index file, if exporting to HTML
       if file_type.to_s.downcase == 'html'
         zip_out.put_next_entry 'index.html'
-        zip_out.puts <<-EOL
-          <html>
-            <head>
-              <META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.#{file_type}">
-            </head>
-          </html>
-        EOL
+        zip_out.puts "<html><head>" +
+            "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL=HomePage.#{file_type}\"></head></html>"
       end
     end
     FileUtils.rm_rf(Dir[File.join(@wiki.storage_path, file_prefix + '*.zip')])
@@ -338,9 +333,12 @@ class WikiController < ApplicationController
 
   def render_to_string(template_name, with_layout = false)
     add_variables_to_assigns
-    @content_for_layout = @template.render_file(template_name)
-    if with_layout then @template.render_file('layouts/default');
-    else @content_for_layout; end
+    self.assigns['content_for_layout'] = @template.render_file(template_name)
+    if with_layout 
+      @template.render_file('layouts/default')
+    else 
+      self.assigns['content_for_layout']
+    end
   end
   
   def rss_with_content_allowed?
