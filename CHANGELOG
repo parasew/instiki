@@ -3,6 +3,8 @@
           Added layout=no option to the export_html action (it exports page contents processed 
           by the markup engine, but without the default layout - so that they can be wrapper in 
           some other layout)
+          <nowiki> tag can span several lines (before it was applied when both opening and closing 
+          tags were on the same line only)
 
  * 0.10.1:
           Upgraded Rails to 0.12.0

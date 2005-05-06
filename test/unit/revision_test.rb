@@ -189,11 +189,19 @@ class RevisionTest < Test::Unit::TestCase
 	    'This <IMG SRC="http://hobix.com/sample.jpg" alt=""> is an inline image link.')
   end
 
-  def test_content_with_nowiki_text
+  def test_nowiki_tag
 	assert_markup_parsed_as( 
 	    '<p>Do not mark up [[this text]] or http://www.thislink.com.</p>', 
 	    'Do not mark up <nowiki>[[this text]]</nowiki> ' +
 	    'or <nowiki>http://www.thislink.com</nowiki>.')
+  end
+
+  def test_multiline_nowiki_tag
+	assert_markup_parsed_as( 
+        "<p>Do not mark \n up [[this text]] \nand http://this.url.com  but markup " +
+        '<span class="newWikiWord">this<a href="../show/this">?</a></span></p>',
+        "Do not <nowiki>mark \n up [[this text]] \n" +
+	    "and http://this.url.com </nowiki> but markup [[this]]")
   end
 
   def test_content_with_bracketted_wiki_word
