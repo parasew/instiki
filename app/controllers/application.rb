@@ -117,10 +117,6 @@ class ApplicationController < ActionController::Base
     EOL
   end
   
-  def local_request?
-    false
-  end
-
   def return_to_last_remembered
     # Forget the redirect location
     redirect_target, @session[:return_to] = @session[:return_to], nil
