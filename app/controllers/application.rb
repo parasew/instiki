@@ -107,16 +107,16 @@ class ApplicationController < ActionController::Base
   end
 
   def rescue_action_in_public(exception)
-    render_text <<-EOL
-      <html>
-        <body>
-          <p>There was a controller specific error processing your request.</p>
-          <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n  -->
-        </body>
-      </html>
+    message = <<-EOL
+      <html><body>
+        <h2>Internal Error 500</h2>
+        <p>An application error occurred while processing your request.</p>
+        <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n  -->
+      </body></html>
     EOL
+    render_text message, 'Internal Error 500'
   end
-  
+
   def return_to_last_remembered
     # Forget the redirect location
     redirect_target, @session[:return_to] = @session[:return_to], nil

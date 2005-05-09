@@ -556,7 +556,7 @@ class WikiControllerTest < Test::Unit::TestCase
         'content' => @home.revisions.last.content.dup, 
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/HomePage'}
 
-    assert_redirect_url '/wiki1/show/HomePage'
+    assert_redirected_to :action => 'edit', :web => 'wiki1', :id => 'HomePage'
     assert_flash_has :error
     assert r.flash[:error].kind_of?(Instiki::ValidationError)
 

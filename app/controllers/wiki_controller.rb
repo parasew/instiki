@@ -190,10 +190,10 @@ class WikiController < ApplicationController
         )
       end
       redirect_to_page @page_name
-    rescue Instiki::ValidationError => e
+    rescue => e
       page.unlock if defined? page
       flash[:error] = e
-      return_to_last_remembered
+      redirect_to :action => 'edit', :web => @web_name, :id => @page_name
     end
   end
 
@@ -207,7 +207,7 @@ class WikiController < ApplicationController
         logger.error e
         flash[:error] = e.message
         if in_a_web?
-          redirect_to :web => @web_name, :action => 'edit', :id => @page_name
+          redirect_to :action => 'edit', :web => @web_name, :id => @page_name
         else
           raise e
         end
