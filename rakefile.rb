@@ -86,7 +86,7 @@ end
 
 # Additional tasks (not standard Rails)
 
-CLEAN << 'pkg' << 'storage/2500' << 'doc' << 'html'
+CLEAN << 'pkg' << 'storage' << 'doc' << 'html'
 
 begin
   require 'rubygems'
@@ -103,7 +103,6 @@ if defined? Rake::GemPackageTask
     p.need_zip = true
   end
 
-  # PKG_VERSION is defined in instiki.gemspec
   Rake::PackageTask.new('instiki', gemspec.version) do |p|
     p.need_tar = true
     p.need_zip = true
