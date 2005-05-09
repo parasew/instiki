@@ -11,7 +11,7 @@ unless defined? TEST_LOGGER
   $stderr.puts "To see the Rails log:\n    less #{log_name}"
   
   TEST_LOGGER = ActionController::Base.logger = Logger.new(log_name)
-  INSTIKI_DEBUG_LOG = true unless defined? INSTIKI_DEBUG_LOG
+  $instiki_debug_logging = true
   
   WikiService.storage_path = RAILS_ROOT + '/storage/test/'
 end

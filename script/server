@@ -64,7 +64,7 @@ end
 FileUtils.mkdir_p(storage_path)
 
 ENV['RAILS_ENV'] = OPTIONS[:environment]
-INSTIKI_DEBUG_LOG = OPTIONS[:verbose]
+$instiki_debug_logging = OPTIONS[:verbose]
 require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
 WikiService.storage_path = storage_path
 

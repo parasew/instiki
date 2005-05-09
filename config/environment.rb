@@ -62,7 +62,7 @@ require_dependency "environments/#{RAILS_ENV}"
 unless defined? RAILS_DEFAULT_LOGGER
   RAILS_DEFAULT_LOGGER = Logger.new(STDERR)
   ActionController::Base.logger ||= RAILS_DEFAULT_LOGGER
-  if defined? INSTIKI_DEBUG_LOG and INSTIKI_DEBUG_LOG
+  if $instiki_debug_logging
     RAILS_DEFAULT_LOGGER.level = Logger::DEBUG
     ActionController::Base.logger.level = Logger::DEBUG
   else
