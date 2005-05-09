@@ -104,7 +104,7 @@ class FileControllerTest < Test::Unit::TestCase
     # User uploads the picture
     file = "abcdefgh\n123"
     r = process 'file', 'web' => 'wiki1', 'id' => 'instiki-e2e.txt', 'file' => StringIO.new(file)
-    assert_redirect_url '/'
+    assert_redirected_to :controller => 'wiki', :action => 'show', :web => 'wiki1', :id => 'HomePage'
     assert @wiki.file_yard(@web).has_file?('instiki-e2e.txt')
     assert_equal(file, File.read("#{RAILS_ROOT}/storage/test/wiki1/instiki-e2e.txt"))
     

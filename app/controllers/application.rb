@@ -88,7 +88,11 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_home(web = @web_name)
-    redirect_to_page('HomePage', web)
+    if web
+      redirect_to_page('HomePage', web)
+    else
+      redirect_to_url '/'
+    end
   end
 
   def redirect_to_page(page_name = @page_name, web = @web_name)
@@ -120,10 +124,16 @@ class ApplicationController < ActionController::Base
   def return_to_last_remembered
     # Forget the redirect location
     redirect_target, @session[:return_to] = @session[:return_to], nil
+    tried_home, @session[:tried_home] = @session[:tried_home], false
+
     # then try to redirect to it
     if redirect_target.nil?
-      logger.debug("Session ##{session.object_id}: no remembered redirect location, trying /")
-      redirect_to_url '/'
+      if tried_home
+        raise 'Application could not render the index page'
+      else
+        logger.debug("Session ##{session.object_id}: no remembered redirect location, trying home")
+        redirect_home
+      end
     else
       logger.debug("Session ##{session.object_id}: " +
           "redirect to the last remembered URL #{redirect_target}")
