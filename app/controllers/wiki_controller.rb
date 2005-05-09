@@ -205,9 +205,9 @@ class WikiController < ApplicationController
       # the application itself (for application errors, it's better not to rescue the error at all)
       rescue => e
         logger.error e
+        flash[:error] = e.message
         if in_a_web?
-          redirect_to :web => @web_name, :action => 'edit',
-              :action_suffix => "#{@page_name}?msg=#{e.message}"
+          redirect_to :web => @web_name, :action => 'edit', :id => @page_name
         else
           raise e
         end

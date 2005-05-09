@@ -106,6 +106,21 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def rescue_action_in_public(exception)
+    render_text <<-EOL
+      <html>
+        <body>
+          <p>There was a controller specific error processing your request.</p>
+          <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n  -->
+        </body>
+      </html>
+    EOL
+  end
+  
+  def local_request?
+    false
+  end
+
   def return_to_last_remembered
     # Forget the redirect location
     redirect_target, @session[:return_to] = @session[:return_to], nil
