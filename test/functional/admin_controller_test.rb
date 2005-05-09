@@ -212,4 +212,17 @@ class AdminControllerTest < Test::Unit::TestCase
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
   end
 
+  def test_remove_orphaned_pages_empty_or_wrong_password
+    setup_wiki_with_three_pages
+    @wiki.system[:password] = 'pswd'
+    
+    process('remove_orphaned_pages', 'web' => 'wiki1')
+    assert_redirected_to(:controller => 'admin', :action => 'edit_web', :web => 'wiki1')
+    assert @response.flash[:error]
+
+    process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'wrong')
+    assert_redirected_to(:controller => 'admin', :action => 'edit_web', :web => 'wiki1')
+    assert @response.flash[:error]
+  end
+
 end

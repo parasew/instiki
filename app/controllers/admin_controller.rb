@@ -87,8 +87,8 @@ class AdminController < ApplicationController
       flash[:info] = 'Orphaned pages removed'
       redirect_to :controller => 'wiki', :web => @web_name, :action => 'list'
     else
-      flash[:error] = password_error(@params['system_password'])
-      return_to_last_remembered
+      flash[:error] = password_error(@params['system_password_orphaned'])
+      redirect_to :controller => 'admin', :web => @web_name, :action => 'edit_web'
     end
   end
 
