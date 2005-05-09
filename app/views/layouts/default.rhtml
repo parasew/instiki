@@ -46,6 +46,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 </head>
 
 <body>
+
 <div id="Container">
 <div id="Content">
   <h1 id="pageName">
@@ -59,8 +60,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <% end %>
   </h1>
 
-<% if @flash[:error] %> <div id="error">
-    <hr/><p><%= @flash[:error].to_s %></p><hr/></div>
+<% if @error or @flash[:error] %> <div id="error">
+    <hr/><p><%= (@error || @flash[:error]) %></p><hr/></div>
 <% end %>
 
 <% if @flash[:info] %> <div id="info">

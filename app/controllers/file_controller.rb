@@ -36,8 +36,8 @@ class FileController < ApplicationController
     if @params['file']
       # form supplied
       file_yard.upload_file(@file_name, @params['file'])
-      flash[:info] = "Image '#{@file_name}' successfully uploaded"
       @web.refresh_pages_with_references(@file_name)
+      flash[:info] = "Image '#{@file_name}' successfully uploaded"
       return_to_last_remembered
     elsif file_yard.has_file?(@file_name)
       send_file(file_yard.file_path(@file_name))
@@ -59,7 +59,7 @@ class FileController < ApplicationController
       if @problems.empty?
         flash[:info] = 'Import successfully finished'
       else
-        flash[:info] = "Import finished, but some pages were not imported:<li>" + 
+        flash[:error] = "Import finished, but some pages were not imported:<li>" + 
             @problems.join('</li><li>') + '</li>'
       end
       return_to_last_remembered
