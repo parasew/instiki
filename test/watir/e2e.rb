@@ -8,28 +8,10 @@ require(File.expand_path(File.dirname(__FILE__) + "/../../config/environment"))
 INSTIKI_PORT = 2501
 HOME = "http://localhost:#{INSTIKI_PORT}"
 
-class Win32API
-# FIXME this should raise an error whenever an API call returns an error
-#  alias __original_call call
-#  def call(*args)
-#    __original_call(*args)
-#    last_error = Win32API.new('kernel32.dll', 'GetLastError', '', 'L').__original_call()
-#    raise "Win32API call to #{args.inspect} has failed with error code #{last_error}" if last_error
-#  end
-end
-
 class E2EInstikiTest < Test::Unit::TestCase
 
   def startup
-    
-    createProcess = 
-    startup_info = [68].pack('lx64')
-    @@instiki = [0, 0, 0, 0].pack('llll')
-    Win32API.new('kernel32.dll', 'CreateProcess', 'pplllllppp', 'L').call(
-        nil, 
-        "ruby #{RAILS_ROOT}/instiki.rb --storage #{prepare_storage} " +
-        "    --port #{INSTIKI_PORT} --environment development", 
-        0, 0, 1, 0, 0, '.', startup_info, @@instiki)
+    @@instiki = InstikiController.start
 
     sleep 5
     @@ie = Watir::IE.start(HOME)
@@ -41,13 +23,8 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
   
   def self.shutdown  
-    process_id = @@instiki.unpack('llll')[2]
-    right_to_terminate_process = 1
-    handle = Win32API.new('kernel32.dll', 'OpenProcess', 'lil', 'l').call(
-        right_to_terminate_process, 0, process_id)
-    Win32API.new('kernel32.dll', 'TerminateProcess', 'll', 'L').call(handle, 0)
-
     @@ie.close if defined? @@ie
+    @@instiki.stop
   end
   
   def ie
@@ -69,13 +46,6 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
 
   private
-  
-  def prepare_storage
-    storage_path = INSTIKI_ROOT + '/storage/e2e'
-    FileUtils.rm_rf(storage_path) if File.exists? storage_path
-    FileUtils.mkdir_p(storage_path)
-    storage_path
-  end
   
   def setup_web
     assert_equal 'Wiki', ie.textField(:name, 'web_name').value
@@ -100,6 +70,50 @@ class E2EInstikiTest < Test::Unit::TestCase
     breakpoint
   end
 
+end
+
+class InstikiController
+
+  attr_reader :process_id
+
+  def self.start
+    startup_info = [68].pack('lx64')
+    process_info = [0, 0, 0, 0].pack('llll')
+    
+    startup_command =
+        "ruby #{RAILS_ROOT}/instiki.rb --storage #{prepare_storage} " +
+        "     --port #{INSTIKI_PORT} --environment development"
+    
+    result = Win32API.new('kernel32.dll', 'CreateProcess', 'pplllllppp', 'L').call(
+        nil, 
+        startup_command, 
+        0, 0, 1, 0, 0, '.', startup_info, process_info)
+        
+    # TODO print the error code, or better yet a text message
+    raise "Failed to start Instiki." if result == 0
+
+    process_id = process_info.unpack('llll')[2]
+    return self.new(process_id)
+  end
+  
+  def self.prepare_storage
+    storage_path = INSTIKI_ROOT + '/storage/e2e'
+    FileUtils.rm_rf(storage_path) if File.exists? storage_path
+    FileUtils.mkdir_p(storage_path)
+    storage_path
+  end
+  
+  def initialize(pid)
+    @process_id = pid
+  end
+
+  def stop
+    right_to_terminate_process = 1
+    handle = Win32API.new('kernel32.dll', 'OpenProcess', 'lil', 'l').call(
+        right_to_terminate_process, 0, @process_id)
+    Win32API.new('kernel32.dll', 'TerminateProcess', 'll', 'L').call(handle, 0)
+  end
+  
 end
 
 begin
