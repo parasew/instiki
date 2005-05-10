@@ -102,6 +102,7 @@ pre {
   background-color: #eee;
   padding: 10px;
   font-size: 11px;
+  overflow: auto;
 }
 
 ol.setup {
