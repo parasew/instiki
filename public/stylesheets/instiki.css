@@ -22,7 +22,10 @@ body, p, ol, ul, td {
 
 a { color: #000; }
 a:visited { color: #666; }
-a:hover { color: #fff; background-color:#000; }
+a:hover { 
+  color: #fff; 
+  background-color:#000; 
+}
 
 .newWikiWord { background-color: #eee; }
 .newWikiWord a:hover { background-color: white; }
@@ -219,4 +222,20 @@ ol.setup li {
 
 .newsList p {
   margin-bottom:30px
+}
+
+td {border:thin solid grey;}
+table {
+   border:  double black;
+   border-collapse: collapse;
+}
+
+.byline {
+  padding-top: 15px;
+}
+
+/* Affects the display of "category: ..." */
+.property {
+  color: grey;
+  font-size: 10px;
 }
