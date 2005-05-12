@@ -10,11 +10,10 @@ class Page
   attr_reader :name, :web
   attr_accessor :revisions
   
-  def initialize(web, name, content, created_at, author)
+  def initialize(web, name)
     raise 'nil web' if web.nil?
     raise 'nil name' if name.nil?
     @web, @name, @revisions = web, name, []
-    revise(content, created_at, author)
   end
 
   def revise(content, created_at, author)
@@ -43,6 +42,9 @@ class Page
     self.revisions.last.clear_display_cache
     
     @web.refresh_pages_with_references(@name) if @revisions.length == 1
+    
+    self
+    
   end
 
   def rollback(revision_number, created_at, author_ip = nil)

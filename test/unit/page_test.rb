@@ -13,10 +13,8 @@ class PageTest < Test::Unit::TestCase
   end
 
   def setup
-    @page = Page.new(
-      MockWeb.new,
-      "FirstPage", 
-      "HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- see SmartEngine in that SmartEngineGUI", 
+    @page = Page.new(MockWeb.new, "FirstPage")
+    @page.revise("HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- see SmartEngine in that SmartEngineGUI", 
       Time.local(2004, 4, 4, 16, 50),
       "DavidHeinemeierHansson")
   end

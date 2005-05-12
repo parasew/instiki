@@ -58,13 +58,11 @@ module AbstractWikiService
   def revise_page(web_address, page_name, content, revised_on, author)
     page = read_page(web_address, page_name)
     page.revise(content, revised_on, author)
-    page
   end
 
   def rollback_page(web_address, page_name, revision_number, created_at, author_id = nil)
     page = read_page(web_address, page_name)
     page.rollback(revision_number, created_at, author_id)
-    page
   end
   
   def setup(password, web_name, web_address)
@@ -105,9 +103,7 @@ module AbstractWikiService
   end
 
   def write_page(web_address, page_name, content, written_on, author)
-    page = Page.new(@webs[web_address], page_name, content, written_on, author)
-    @webs[web_address].add_page(page)
-    page
+    @webs[web_address].add_page(page_name, content, written_on, author)
   end
 
   def storage_path

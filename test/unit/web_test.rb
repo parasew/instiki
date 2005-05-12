@@ -9,15 +9,15 @@ class WebTest < Test::Unit::TestCase
   end
   
   def test_wiki_word_linking
-    @web.add_page(Page.new(@web, 'SecondPage', 'Yo, yo. Have you EverBeenHated', Time.now, 
-        'DavidHeinemeierHansson'))
+    @web.add_page('SecondPage', 'Yo, yo. Have you EverBeenHated', 
+                   Time.now, 'DavidHeinemeierHansson')
     
     assert_equal('<p>Yo, yo. Have you <span class="newWikiWord">Ever Been Hated' + 
         '<a href="../show/EverBeenHated">?</a></span></p>', 
     @web.pages["SecondPage"].display_content)
     
-    @web.add_page(Page.new(@web, 'EverBeenHated', 'Yo, yo. Have you EverBeenHated', Time.now, 
-        'DavidHeinemeierHansson'))
+    @web.add_page('EverBeenHated', 'Yo, yo. Have you EverBeenHated', Time.now, 
+                  'DavidHeinemeierHansson')
     assert_equal('<p>Yo, yo. Have you <a class="existingWikiWord" ' +
         'href="../show/EverBeenHated">Ever Been Hated</a></p>', 
     @web.pages['SecondPage'].display_content)
@@ -128,28 +128,25 @@ class WebTest < Test::Unit::TestCase
 
   def test_new_page_linked_from_mother_page
     # this was a bug in revision 204
-    home = Page.new(@web, 'HomePage', 'This page refers to AnotherPage', 
+    home = @web.add_page('HomePage', 'This page refers to AnotherPage', 
         Time.local(2004, 4, 4, 16, 50), 'Alexey Verkhovsky')
-    another_page = Page.new(@web, 'AnotherPage', 'This is \AnotherPage', 
+    @web.add_page('AnotherPage', 'This is \AnotherPage', 
         Time.local(2004, 4, 4, 16, 51), 'Alexey Verkhovsky')
-
-    @web.add_page(home)
-    @web.add_page(another_page)
     
     assert_equal [home], @web.select.pages_that_link_to('AnotherPage')
   end
 
   def test_orphaned_pages
     add_sample_pages
-    home = @web.add_page(Page.new(@web, 'HomePage', 
+    home = @web.add_page('HomePage', 
         'This is a home page, it should not be an orphan',
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky'))
-    author = @web.add_page(Page.new(@web, 'AlexeyVerkhovsky', 
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky')
+    author = @web.add_page('AlexeyVerkhovsky', 
         'This is an author page, it should not be an orphan',
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky'))
-    self_linked = @web.add_page(Page.new(@web, 'SelfLinked', 
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky')
+    self_linked = @web.add_page('SelfLinked', 
         'I am me SelfLinked and link to EverBeenInLove',
-        Time.local(2004, 4, 4, 16, 50), 'AnonymousCoward'))
+        Time.local(2004, 4, 4, 16, 50), 'AnonymousCoward')
         
     # page that links to itself, and nobody else links to it must be an orphan
     assert_equal ['EverBeenHated', 'SelfLinked'], 
@@ -160,9 +157,9 @@ class WebTest < Test::Unit::TestCase
   private
 
   def add_sample_pages
-    @in_love = @web.add_page(Page.new(@web, 'EverBeenInLove', 'Who am I me', 
-        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson'))
-    @hated = @web.add_page(Page.new(@web, 'EverBeenHated', 'I am me EverBeenHated', 
-        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson'))
+    @in_love = @web.add_page('EverBeenInLove', 'Who am I me', 
+        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
+    @hated = @web.add_page('EverBeenHated', 'I am me EverBeenHated', 
+        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson')
   end
 end

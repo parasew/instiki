@@ -44,10 +44,12 @@ class Web
   def max_upload_size() @max_upload_size || 100; end
   def wiki() @wiki ||= WikiService.instance; end
 
-  def add_page(page)
-    @pages[page.name] = page
-  end
-
+   def add_page(name, content, created_at, author)
+     page = Page.new(self, name)
+     @pages[page.name] = page
+     page.revise(content, created_at, author)
+   end
+  
   def address=(the_address)
     if the_address != CGI.escape(the_address)
       raise Instiki::ValidationError.new('Web name should contain only valid URI characters') 
