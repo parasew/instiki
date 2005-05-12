@@ -102,6 +102,13 @@ module ChunkMatch
           "Wrong #{a_method} value")
     end
   end
+
+  # Asserts that test_text doesn't match the chunk_type
+  def no_match(chunk_type, test_text)
+    if chunk_type.respond_to? :pattern
+      assert_no_match(chunk_type.pattern, test_text)
+    end
+  end
 end
 
 if defined? $validate_xml_in_assert_success and $validate_xml_in_assert_success == true

@@ -19,12 +19,38 @@ class WikiTest < Test::Unit::TestCase
   end
 
   def test_simple_brackets
-	match(WikiChunk::Link, 'This is a [[bracketted link]]', :page_name => 'bracketted link')
+    match(WikiChunk::Link, 'This is a [[bracketted link]]', :page_name => 'bracketted link')
+  end
+
+  def test_void_brackets
+    # double brackets woith only spaces inside are not a WikiLink
+    no_match(WikiChunk::Link, "This [[ ]] are [[]] no [[ \t ]] links")
+  end
+
+  def test_brackets_strip_spaces
+    match(WikiChunk::Link, 
+        "This is a [[Sperberg-McQueen \t ]] link with trailing spaces to strip", 
+        :page_name => 'Sperberg-McQueen')
+    match(WikiChunk::Link, 
+        "This is a [[ \t Sperberg-McQueen]] link with leading spaces to strip", 
+        :page_name => 'Sperberg-McQueen')
+    match(WikiChunk::Link, 
+        'This is a [[ Sperberg-McQueen  ]] link with spaces around it to strip', 
+        :page_name => 'Sperberg-McQueen')
+    match(WikiChunk::Link, 
+        'This is a [[  Sperberg  McQueen ]] link with spaces inside and around it', 
+        :page_name => 'Sperberg  McQueen')
   end
 
   def test_complex_brackets
 	match(WikiChunk::Link, 'This is a tricky link [[Sperberg-McQueen]]', 
 	      :page_name => 'Sperberg-McQueen')
+  end
+  
+  def test_include_chunk_pattern
+    content = 'This is a [[!include pagename]] and [[!include WikiWord]] but [[blah]]'
+    recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
+    assert_equal %w(pagename WikiWord), recognized_includes
   end
 
   def test_textile_link

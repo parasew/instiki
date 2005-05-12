@@ -9,7 +9,7 @@ require 'chunks/wiki'
 
 class Include < WikiChunk::WikiReference
 
-  INCLUDE_PATTERN = /\[\[!include(.*)\]\]\s*/i
+  INCLUDE_PATTERN = /\[\[!include\s+(.*?)\]\]\s*/i
   def self.pattern() INCLUDE_PATTERN end
 
 
