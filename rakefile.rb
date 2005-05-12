@@ -123,8 +123,12 @@ else
 end
 
 # Shorthand aliases
-desc 'Shorthand for test_unit'
-task :tu => :test_unit
+desc 'Shorthand for test_units'
+task :tu => :test_units
+desc 'Shorthand for test_units'
+task :ut => :test_units
 
 desc 'Shorthand for test_functional'
 task :tf => :test_functional
+desc 'Shorthand for test_functional'
+task :ft => :test_functional
