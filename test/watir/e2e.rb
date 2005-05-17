@@ -1,9 +1,13 @@
-require 'watir'
 require 'fileutils'
 require 'test/unit'
 
 INSTIKI_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
 require(File.expand_path(File.dirname(__FILE__) + "/../../config/environment"))
+
+# Use instiki/../watir, if such a directory exists; This can be a CVS HEAD. 
+# Otherwise Watir has to be installed in ruby/lib.
+$:.unshift INSTIKI_ROOT + '/../watir' if File.exists?(INSTIKI_ROOT + '/../watir/watir.rb')
+require 'watir'
 
 INSTIKI_PORT = 2501
 HOME = "http://localhost:#{INSTIKI_PORT}"
@@ -36,16 +40,72 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
 
   def setup
-    ie.goto(HOME)
+    ie.goto HOME
     ie
   end
 
-  def test_home_page_contents
-    assert_equal HOME + '/wiki/list', ie.link(:text, 'All Pages').href
-    assert_equal HOME + '/wiki/recently_revised', ie.link(:text, 'Recently Revised').href
+  # Numbers like _00010_ determine the sequence in which the test cases are executed by Test::Unit
+  # Unfortunately, this sequence is important.
+
+  def test_00010_home_page_contents
+    check_main_menu
+    check_bottom_menu
+    check_footnote
+  end
+  
+  def test_00020_add_a_page
+    ie.link(:text, 'Edit Page').click
+    assert_equal url(:edit, 'HomePage'), ie.url
+    
+    # Add reference to a non-existant wiki page
+    ie.text_field(:name, 'content').set('[[Another Wiki Page]]')
+    ie.button(:value, 'Submit').click
+    assert_equal url(:show, 'HomePage'), ie.url
+    assert_equal '?', ie.link(:url, url(:show, 'Another+Wiki+Page')).text
+    
+    # Edit the first revision of a page
+    ie.link(:url, url(:show, 'Another+Wiki+Page')).click
+    # this c lick must be redirected to 'new' page
+    assert_equal url(:new, 'Another+Wiki+Page'), ie.url
+    ie.text_field(:name, 'content').set('First revision of Another Wiki Page, linked from HomePage')
+    ie.button(:value, 'Submit').click
+
+    # Check contents of the new page
+    assert_equal url(:show, 'Another+Wiki+Page'), ie.url
+    assert_match /First revision of Another Wiki Page, linked from Home Page/, ie.text
+    assert_match /Linked from: HomePage/, ie.text
+
+    # There must be three links to HomePage - main menu, contents of the page and navigation bar
+    links_to_homepage = ie.links.to_a.select { |link| link.text == 'Home Page' }
+    assert_equal 3, links_to_homepage.size
+    links_to_homepage.each { |link| assert_equal url(:show, 'HomePage'), link.href }
   end
 
   private
+  
+  def bp
+    require 'breakpoint'
+    breakpoint
+  end
+  
+  def check_main_menu
+    assert_equal HOME + '/wiki/list', ie.link(:text, 'All Pages').href
+    assert_equal HOME + '/wiki/recently_revised', ie.link(:text, 'Recently Revised').href
+    assert_equal HOME + '/wiki/authors', ie.link(:text, 'Authors').href
+    assert_equal HOME + '/wiki/feeds', ie.link(:text, 'Feeds').href
+    assert_equal HOME + '/wiki/export', ie.link(:text, 'Export').href
+  end
+  
+  def check_bottom_menu
+    assert_equal url(:edit, 'HomePage'), ie.link(:text, 'Edit Page').href
+    assert_equal HOME + '/wiki/edit_web', ie.link(:text, 'Edit Web').href
+    assert_equal HOME + '/wiki/print/HomePage', ie.link(:text, 'Print').href
+  end
+  
+  def check_footnote
+    assert_equal 'http://instiki.org/', ie.link(:text, 'Instiki').href
+    assert_equal 'http://rubyonrails.com/', ie.link(:text, 'Ruby on Rails').href
+  end
   
   def setup_web
     assert_equal 'Wiki', ie.textField(:name, 'web_name').value
@@ -56,18 +116,22 @@ class E2EInstikiTest < Test::Unit::TestCase
     ie.textField(:name, 'password').set('123')
     ie.textField(:name, 'password_check').set('123')
     ie.button(:value, 'Setup').click
-    assert_equal HOME + '/wiki/new/HomePage', ie.url
+    assert_equal url(:new, 'HomePage'), ie.url
   end
 
   def setup_home_page
     ie.textField(:name, 'content').set('Homepage of a test wiki')
     ie.button(:value, 'Submit').click
-    assert_equal HOME + '/wiki/show/HomePage', ie.url
+    assert_equal url(:show, 'HomePage'), ie.url
   end
 
-  def bp
-    require 'breakpoint'
-    breakpoint
+  def url(operation, page_name)
+    case operation
+    when :edit, :new, :show
+      "#{HOME}/wiki/#{operation}/#{page_name}"
+    else
+      raise "Unsupported operation: '#{operation}"
+    end
   end
 
 end
