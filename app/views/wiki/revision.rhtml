@@ -36,7 +36,7 @@
               {:class => 'navlink'})
       %>
     <% end %>
-    (<%= @revision.page.revisions.length - @revision.next_revision.number %> more)
+    <small>(<%= @revision.page.revisions.length - @revision.next_revision.number %> more)</small>
   <% end %>
 
   <% if @revision.next_revision && @revision.previous_revision %>
@@ -49,7 +49,7 @@
            :rev => @revision.previous_revision.number},
           {:class => 'navlink'})
     %>
-    (<%= @revision.previous_revision.number + 1 %> more)
+    <small>(<%= @revision.previous_revision.number + 1 %> more)</small>
   <% end %>
 
   | 
