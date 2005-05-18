@@ -32,17 +32,17 @@
   <% if @page.name == "HomePage" %>
     <%= link_to('Edit Page', 
           {:web => @web.address, :action => 'edit', :id => @page.name}, 
-          {:class => 'navlink', :accesskey => 'E'})
+          {:class => 'navlink', :accesskey => 'E', :name => 'edit'})
     %>
     | 
     <%= link_to('Edit Web', 
             {:web => @web.address, :action => 'edit_web'}, 
-            {:class => 'navlink'})
+            {:class => 'navlink', :name => 'edit_web'})
     %>
   <% else %>
     <%= link_to('Edit', 
           {:web => @web.address, :action => 'edit', :id => @page.name}, 
-          {:class => 'navlink', :accesskey => 'E'})
+          {:class => 'navlink', :accesskey => 'E', :name => 'edit'})
     %>
   <% end %>
 
@@ -51,16 +51,16 @@
     <%= link_to('Back in time', 
           {:web => @web.address, :action => 'revision', :id => @page.name, 
            :rev => @page.revisions.length - 2},
-          {:class => 'navlink', :accesskey => 'R'})
+          {:class => 'navlink', :accesskey => 'R', :name => 'to_previous_revision'})
     %>
     <small>(<%= @page.revisions.length - 1 %> revisions)</small>
   <% end %>
 
   <% if @page.revisions.length > 1 %>
     <span id="show_changes">
-      | <a href="#" onClick="toggleChanges(); return false;">See changes</a>
+      | <a href="#" name="see_changes" onClick="toggleChanges(); return false;">See changes</a>
     </span>
-    <span id="hide_changes" style="display: none">
+    <span id="hide_changes" name="hide_changes" style="display: none">
       | <a href="#" onClick="toggleChanges(); return false;">Hide changes</a>
     </span>
   <% end %>
@@ -69,12 +69,14 @@
     | Views: 
     <%= link_to('Print',
           {:web => @web.address, :action => 'print', :id => @page.name},
-          {:accesskey => 'p'}) %>
+          {:accesskey => 'p', :name => 'view_print'}) %>
   <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
     | 
-    <%= link_to 'TeX', :web => @web.address, :action => 'tex', :id => @page.name %>
+    <%= link_to 'TeX', {:web => @web.address, :action => 'tex', :id => @page.name}, 
+            {:name => 'view_tex'} %>
     | 
-    <%= link_to 'PDF', :web => @web.address, :action => 'pdf', :id => @page.name %>
+    <%= link_to 'PDF', {:web => @web.address, :action => 'pdf', :id => @page.name},
+            {:name => 'view_pdf'} %>
   <% end %>
   </small>
 
