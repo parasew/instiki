@@ -79,6 +79,10 @@ class E2EInstikiTest < Test::Unit::TestCase
     links_to_homepage = ie.links.to_a.select { |link| link.text == 'Home Page' }
     assert_equal 3, links_to_homepage.size
     links_to_homepage.each { |link| assert_equal url(:show, 'HomePage'), link.href }
+
+    # Check also the "created on ... by ..." footnote
+    date_pattern = '(January|February|March|April|May|June|July|August|September|October|November|December) \d\d?, \d\d\d\d \d\d:\d\d'
+    assert_match Regexp.new('Created on ' + date_pattern + ' by Anonymous Coward\?'), ie.text
   end
 
   private
@@ -103,7 +107,9 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
   
   def check_footnote
+    assert_match /This site is running on Instiki/, ie.text
     assert_equal 'http://instiki.org/', ie.link(:text, 'Instiki').href
+    assert_match /Powered by Ruby on Rails/, ie.text
     assert_equal 'http://rubyonrails.com/', ie.link(:text, 'Ruby on Rails').href
   end
   
