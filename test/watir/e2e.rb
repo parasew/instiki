@@ -54,21 +54,12 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
   
   def test_00020_add_a_page
-    ie.link(:text, 'Edit Page').click
-    assert_equal url(:edit, 'HomePage'), ie.url
-    
     # Add reference to a non-existant wiki page
-    ie.text_field(:name, 'content').set('[[Another Wiki Page]]')
-    ie.button(:value, 'Submit').click
-    assert_equal url(:show, 'HomePage'), ie.url
+    enter_markup('HomePage', '[[Another Wiki Page]]')
     assert_equal '?', ie.link(:url, url(:show, 'Another+Wiki+Page')).text
     
     # Edit the first revision of a page
-    ie.link(:url, url(:show, 'Another+Wiki+Page')).click
-    # this c lick must be redirected to 'new' page
-    assert_equal url(:new, 'Another+Wiki+Page'), ie.url
-    ie.text_field(:name, 'content').set('First revision of Another Wiki Page, linked from HomePage')
-    ie.button(:value, 'Submit').click
+    enter_markup('Another+Wiki+Page', 'First revision of Another Wiki Page, linked from HomePage')
 
     # Check contents of the new page
     assert_equal url(:show, 'Another+Wiki+Page'), ie.url
@@ -81,8 +72,27 @@ class E2EInstikiTest < Test::Unit::TestCase
     links_to_homepage.each { |link| assert_equal url(:show, 'HomePage'), link.href }
 
     # Check also the "created on ... by ..." footnote
-    date_pattern = '(January|February|March|April|May|June|July|August|September|October|November|December) \d\d?, \d\d\d\d \d\d:\d\d'
     assert_match Regexp.new('Created on ' + date_pattern + ' by Anonymous Coward\?'), ie.text
+  end
+  
+  def test_00030_edit_page
+    enter_markup('TestEditPage', 'Test Edit Page, revision 1')
+    assert_match /Test Edit Page, revision 1/, ie.text
+    
+    # subsequent revision by the anonymous author
+    enter_markup('TestEditPage', 'Test Edit Page, revision 2')
+    assert_match /Test Edit Page, revision 2/, ie.text
+    assert_match Regexp.new('Created on ' + date_pattern + ' by Anonymous Coward\?'), ie.text
+    
+    # revision by a named author
+    enter_markup('TestEditPage', 'Test Edit Page, revision 3', 'Author')
+    assert_match /Test Edit Page, revision 3/, ie.text
+    assert_match Regexp.new('Revised on ' + date_pattern + ' by Author\?'), ie.text
+
+    link_to_previous_revision = ie.link(:name, 'to_previous_revision')
+    assert_equal url(:revision, 'TestEditPage') + '?rev=0', link_to_previous_revision.href
+    assert_equal 'Back in time', link_to_previous_revision.text
+    assert_match /Edit \| Back in time \(1 revisions\) \| See changes/, ie.text
   end
 
   private
@@ -103,7 +113,7 @@ class E2EInstikiTest < Test::Unit::TestCase
   def check_bottom_menu
     assert_equal url(:edit, 'HomePage'), ie.link(:text, 'Edit Page').href
     assert_equal HOME + '/wiki/edit_web', ie.link(:text, 'Edit Web').href
-    assert_equal HOME + '/wiki/print/HomePage', ie.link(:text, 'Print').href
+    assert_equal url(:print, 'HomePage'), ie.link(:text, 'Print').href
   end
   
   def check_footnote
@@ -111,6 +121,27 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_equal 'http://instiki.org/', ie.link(:text, 'Instiki').href
     assert_match /Powered by Ruby on Rails/, ie.text
     assert_equal 'http://rubyonrails.com/', ie.link(:text, 'Ruby on Rails').href
+  end
+
+  def date_pattern
+    '(January|February|March|April|May|June|July|August|September|October|November|December) ' + 
+        '\d\d?, \d\d\d\d \d\d:\d\d'
+  end
+  
+  def enter_markup(page, content, author = nil)
+    ie.goto url(:show, page)
+    if ie.url == url(:show, page)
+      ie.link(:name, 'edit').click
+      assert_equal url(:edit, page), ie.url
+    else
+      assert_equal url(:new, page), ie.url
+    end
+
+    ie.text_field(:name, 'content').set(content)
+    ie.text_field(:name, 'author').set(author || '')
+    ie.button(:value, 'Submit').click
+
+    assert_equal url(:show, page), ie.url
   end
   
   def setup_web
@@ -131,9 +162,9 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_equal url(:show, 'HomePage'), ie.url
   end
 
-  def url(operation, page_name)
+  def url(operation, page_name = nil)
     case operation
-    when :edit, :new, :show
+    when :edit, :new, :show, :print, :revision
       "#{HOME}/wiki/#{operation}/#{page_name}"
     else
       raise "Unsupported operation: '#{operation}"
