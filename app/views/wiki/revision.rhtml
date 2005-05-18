@@ -28,12 +28,12 @@
       <%= link_to('Forward in time',
               {:web => @web.address, :action => 'revision', :id => @page.name, 
                :rev => @revision.next_revision.number},
-              {:class => 'navlink'})
+              {:class => 'navlink', :name => 'to_next_revision'})
       %>
     <% else %>
       <%= link_to('Forward in time',
               {:web => @web.address, :action => 'show', :id => @page.name},
-              {:class => 'navlink'})
+              {:class => 'navlink', :name => 'to_next_revision'})
       %>
     <% end %>
     <small>(<%= @revision.page.revisions.length - @revision.next_revision.number %> more)</small>
@@ -47,14 +47,14 @@
     <%= link_to('Back in time',
           {:web => @web.address, :action => 'revision', :id => @page.name, 
            :rev => @revision.previous_revision.number},
-          {:class => 'navlink'})
+          {:class => 'navlink', :name => 'to_previous_revision'})
     %>
     <small>(<%= @revision.previous_revision.number + 1 %> more)</small>
   <% end %>
 
   | 
   <%= link_to('See current', {:web => @web.address, :action => 'show', :id => @page.name},
-          {:class => 'navlink'})
+          {:class => 'navlink', :name => 'to_current_revision'})
   %>
 
   <% if @revision.previous_revision %>
@@ -70,7 +70,7 @@
   
   <%= link_to('Rollback', 
         {:web => @web.address, :action => 'rollback', :id => @page.name, :rev => @revision.number},
-        {:class => 'navlink'})
+        {:class => 'navlink', :name => 'rollback'})
   %>
   
   <% if @page.references.length > 0 %>
