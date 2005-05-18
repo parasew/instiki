@@ -22,10 +22,10 @@ class E2EInstikiTest < Test::Unit::TestCase
 
     setup_web
     setup_home_page
-    
+
     @@ie
   end
-  
+
   def self.shutdown  
     @@ie.close if defined? @@ie
     @@instiki.stop
@@ -80,28 +80,66 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_match /Test Edit Page, revision 1/, ie.text
     
     # subsequent revision by the anonymous author
-    enter_markup('TestEditPage', 'Test Edit Page, revision 2')
-    assert_match /Test Edit Page, revision 2/, ie.text
+    enter_markup('TestEditPage', 'Test Edit Page, revision 1, altered')
+    assert_match /Test Edit Page, revision 1, altered/, ie.text
     assert_match Regexp.new('Created on ' + date_pattern + ' by Anonymous Coward\?'), ie.text
     
     # revision by a named author
-    enter_markup('TestEditPage', 'Test Edit Page, revision 3', 'Author')
-    assert_match /Test Edit Page, revision 3/, ie.text
+    enter_markup('TestEditPage', 'Test Edit Page, revision 2', 'Author')
+    assert_match /Test Edit Page, revision 2/, ie.text
     assert_match Regexp.new('Revised on ' + date_pattern + ' by Author\?'), ie.text
 
     link_to_previous_revision = ie.link(:name, 'to_previous_revision')
-    assert_equal url(:revision, 'TestEditPage') + '?rev=0', link_to_previous_revision.href
+    assert_equal url(:revision, 'TestEditPage', 0), link_to_previous_revision.href
     assert_equal 'Back in time', link_to_previous_revision.text
     assert_match /Edit \| Back in time \(1 revisions\) \| See changes/, ie.text
+    
+    # another anonymous revision
+    enter_markup('TestEditPage', 'Test Edit Page, revision 3')
+    assert_match /Test Edit Page, revision 3/, ie.text
+    assert_match /Edit \| Back in time \(2 revisions\) \| See changes \| Hide changes /, ie.text
+  end
+
+  def test_00040_traversing_revisions
+    ie.goto url(:revision, 'TestEditPage', 1)
+    assert_match /Test Edit Page, revision 2/, ie.text
+    assert_match(Regexp.new(
+        'Forward in time \(1 more\) \| Back in time \(1 more\) \| ' +
+        'See current \| See changes \| Hide changes \| Rollback'),
+        ie.text)
+
+    ie.link(:name, 'to_previous_revision').click
+    assert_match /Test Edit Page, revision 1, altered/, ie.text
+    assert_match /Forward in time \(2 more\) \| See current \| Rollback/, ie.text
+
+    ie.link(:name, 'to_next_revision').click
+    assert_match /Test Edit Page, revision 2/, ie.text
+
+    ie.link(:name, 'to_next_revision').click
+    assert_match /Test Edit Page, revision 3/, ie.text
+  end
+
+  def test_00050_rollback
+    ie.goto url(:revision, 'TestEditPage', 1)
+    assert_match /Test Edit Page, revision 2/, ie.text
+    ie.link(:name, 'rollback').click
+    assert_equal url(:rollback, 'TestEditPage', 1), ie.url
+    assert_equal 'Test Edit Page, revision 2', ie.text_field(:name, 'content').value
+    
+    ie.text_field(:name, 'content').set('Test Edit Page, revision 2, rolled back')
+    ie.button(:value, 'Update').click
+    
+    assert_equal url(:show, 'TestEditPage'), ie.url
+    assert_match /Test Edit Page, revision 2, rolled back/, ie.text
   end
 
   private
-  
+
   def bp
     require 'breakpoint'
     breakpoint
   end
-  
+
   def check_main_menu
     assert_equal HOME + '/wiki/list', ie.link(:text, 'All Pages').href
     assert_equal HOME + '/wiki/recently_revised', ie.link(:text, 'Recently Revised').href
@@ -109,13 +147,13 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_equal HOME + '/wiki/feeds', ie.link(:text, 'Feeds').href
     assert_equal HOME + '/wiki/export', ie.link(:text, 'Export').href
   end
-  
+
   def check_bottom_menu
     assert_equal url(:edit, 'HomePage'), ie.link(:text, 'Edit Page').href
     assert_equal HOME + '/wiki/edit_web', ie.link(:text, 'Edit Web').href
     assert_equal url(:print, 'HomePage'), ie.link(:text, 'Print').href
   end
-  
+
   def check_footnote
     assert_match /This site is running on Instiki/, ie.text
     assert_equal 'http://instiki.org/', ie.link(:text, 'Instiki').href
@@ -127,7 +165,7 @@ class E2EInstikiTest < Test::Unit::TestCase
     '(January|February|March|April|May|June|July|August|September|October|November|December) ' + 
         '\d\d?, \d\d\d\d \d\d:\d\d'
   end
-  
+
   def enter_markup(page, content, author = nil)
     ie.goto url(:show, page)
     if ie.url == url(:show, page)
@@ -143,7 +181,7 @@ class E2EInstikiTest < Test::Unit::TestCase
 
     assert_equal url(:show, page), ie.url
   end
-  
+
   def setup_web
     assert_equal 'Wiki', ie.textField(:name, 'web_name').value
     assert_equal 'wiki', ie.textField(:name, 'web_address').value
@@ -162,10 +200,10 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_equal url(:show, 'HomePage'), ie.url
   end
 
-  def url(operation, page_name = nil)
+  def url(operation, page_name = nil, revision = nil)
     case operation
-    when :edit, :new, :show, :print, :revision
-      "#{HOME}/wiki/#{operation}/#{page_name}"
+    when :edit, :new, :show, :print, :revision, :rollback
+      "#{HOME}/wiki/#{operation}/#{page_name}" + (revision ? "?rev=#{revision}" : '')
     else
       raise "Unsupported operation: '#{operation}"
     end
@@ -180,30 +218,30 @@ class InstikiController
   def self.start
     startup_info = [68].pack('lx64')
     process_info = [0, 0, 0, 0].pack('llll')
-    
+
     startup_command =
         "ruby #{RAILS_ROOT}/instiki.rb --storage #{prepare_storage} " +
         "     --port #{INSTIKI_PORT} --environment development"
-    
+
     result = Win32API.new('kernel32.dll', 'CreateProcess', 'pplllllppp', 'L').call(
         nil, 
         startup_command, 
         0, 0, 1, 0, 0, '.', startup_info, process_info)
-        
+
     # TODO print the error code, or better yet a text message
     raise "Failed to start Instiki." if result == 0
 
     process_id = process_info.unpack('llll')[2]
     return self.new(process_id)
   end
-  
+
   def self.prepare_storage
     storage_path = INSTIKI_ROOT + '/storage/e2e'
     FileUtils.rm_rf(storage_path) if File.exists? storage_path
     FileUtils.mkdir_p(storage_path)
     storage_path
   end
-  
+
   def initialize(pid)
     @process_id = pid
   end
@@ -214,7 +252,7 @@ class InstikiController
         right_to_terminate_process, 0, @process_id)
     Win32API.new('kernel32.dll', 'TerminateProcess', 'll', 'L').call(handle, 0)
   end
-  
+
 end
 
 begin
