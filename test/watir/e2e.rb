@@ -155,16 +155,12 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_equal expected_page_links, page_links[-4..-1]
     # and before that, we have the tail of the main menu
     assert_equal 'Export', page_links[-5]
+    
+    # Test Edit Page link is repeated twice, because it is an orphan
+    assert_match Regexp.new('Test Edit Page.*Orphaned Pages.*Test Edit Page', Regexp::MULTILINE),
+        ie.text
   end
-
-  def test_0070_all_pages
-    ie.link(:text, 'All Pages').click
-    page_links = ie.links.map { |l| l.text }
-    expected_page_links = ['Another Wiki Page', 'Home Page', 'Test Edit Page', 'Test Edit Page'] 
-    assert_equal expected_page_links, page_links[-4..-1]
-    assert_equal 'Export', page_links[-5]
-  end
-
+  
   private
 
   def bp
