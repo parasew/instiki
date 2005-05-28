@@ -36,7 +36,7 @@ module ApplicationHelper
   # Creates a hyperlink to a Wiki page, without checking if the page exists or not
   def link_to_existing_page(page, text = nil, html_options = {})
     link_to(
-        text || page.name, 
+        text || page.plain_name, 
         {:web => @web.address, :action => 'show', :id => page.name, :only_path => true},
         html_options)
   end

@@ -56,7 +56,7 @@
   <ul style="margin-bottom: 35px">
     <% @pages_that_are_orphaned.each do |orphan_page| %>
       <li>
-        <%= link_to_existing_page orphan_page %>
+        <%= link_to_existing_page orphan_page, truncate(orphan_page.plain_name, 35) %>
       </li>
     <% end %>
   </ul>
