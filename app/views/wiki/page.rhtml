@@ -7,16 +7,19 @@
   <%= @page.display_content %>
 </div>
 
-<div id="changes" style="display: none">
-  <p style="background: #eee; padding: 3px; border: 1px solid silver">
-    <small>
-      Showing changes from revision #<%= @page.number - 1 %> to #<%= @page.number %>:
-      <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>
-    </small>
-  </p>
 
-  <%= @page.display_diff %>
-</div>
+<% if @page.revisions.length > 1 %>
+  <div id="changes" style="display: none">
+    <p style="background: #eee; padding: 3px; border: 1px solid silver">
+      <small>
+        Showing changes from revision #<%= @page.number - 1 %> to #<%= @page.number %>:
+        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>
+      </small>
+    </p>
+
+    <%= @page.display_diff %>
+  </div>
+<% end %>
 
 <div class="byline">
   <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_at %> 
