@@ -133,6 +133,17 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_match /Test Edit Page, revision 2, rolled back/, ie.text
   end
 
+  def test_0060_see_changes
+    ie.goto url(:show, 'TestEditPage')
+    assert ie.html.include?('<P>Test Edit Page, revision <DEL class=diffmod>2</DEL><INS class=diffmod>2, rolled back</INS></P>')
+    assert_match /Test Edit Page, revision 2, rolled back/, ie.text
+
+    ie.link(:text, 'See changes').click
+
+    assert_match /Showing changes from revision #1 to #2: Added \| Removed/, ie.text
+    assert_match /Test Edit Page, revision 22, rolled back/, ie.text
+  end
+
   private
 
   def bp
