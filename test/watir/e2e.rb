@@ -64,7 +64,7 @@ class E2EInstikiTest < Test::Unit::TestCase
     # Check contents of the new page
     assert_equal url(:show, 'Another+Wiki+Page'), ie.url
     assert_match /First revision of Another Wiki Page, linked from Home Page/, ie.text
-    assert_match /Linked from: HomePage/, ie.text
+    assert_match /Linked from: Home Page/, ie.text
 
     # There must be three links to HomePage - main menu, contents of the page and navigation bar
     links_to_homepage = ie.links.to_a.select { |link| link.text == 'Home Page' }
@@ -142,6 +142,27 @@ class E2EInstikiTest < Test::Unit::TestCase
 
     assert_match /Showing changes from revision #1 to #2: Added \| Removed/, ie.text
     assert_match /Test Edit Page, revision 22, rolled back/, ie.text
+    
+    ie.link(:text, 'Hide changes').click
+    
+    assert_match /Test Edit Page, revision 2, rolled back/, ie.text
+  end
+
+  def test_0070_all_pages
+    ie.link(:text, 'All Pages').click
+    page_links = ie.links.map { |l| l.text }
+    expected_page_links = ['Another Wiki Page', 'Home Page', 'Test Edit Page', 'Test Edit Page'] 
+    assert_equal expected_page_links, page_links[-4..-1]
+    # and before that, we have the tail of the main menu
+    assert_equal 'Export', page_links[-5]
+  end
+
+  def test_0070_all_pages
+    ie.link(:text, 'All Pages').click
+    page_links = ie.links.map { |l| l.text }
+    expected_page_links = ['Another Wiki Page', 'Home Page', 'Test Edit Page', 'Test Edit Page'] 
+    assert_equal expected_page_links, page_links[-4..-1]
+    assert_equal 'Export', page_links[-5]
   end
 
   private
