@@ -168,7 +168,20 @@ class E2EInstikiTest < Test::Unit::TestCase
     # and before that, we have the tail of the main menu
     assert_equal 'Export', page_links[-7]
   end
+
+  def test_0080_recently_revised
+    ie.link(:text, 'Recently Revised').click
   
+    links = ie.links.map { |l| l.text }
+    assert_equal ['Another Wiki Page', '?', 'Test Edit Page', '?', 'Home Page', '?'], links[-6..-1]  
+    
+    expected_text = 
+        'Another Wiki Page.*by Anonymous Coward\?.*' +
+        'Test Edit Page.*by Anonymous Coward\?.*' +
+        'Home Page.*by Anonymous Coward\?.*'
+    assert_match Regexp.new(expected_text, Regexp::MULTILINE), ie.text
+  end
+
   private
 
   def bp
