@@ -6,19 +6,17 @@ class AdminController < ApplicationController
 
   def create_system
     if @wiki.setup?
-      flash[:error] = <<-EOL
-          Wiki has already been created in '#{@wiki.storage_path}'. Shut down Instiki and delete 
-          this directory if you want to recreate it from scratch.<br/><br/>
-          (WARNING: this will destroy content of your current wiki).
-      EOL
+      flash[:error] = 
+          "Wiki has already been created in '#{@wiki.storage_path}'. " +
+          "Shut down Instiki and delete this directory if you want to recreate it from scratch." +
+          "\n\n" +
+          "(WARNING: this will destroy content of your current wiki)."
       redirect_home(@wiki.webs.keys.first)
     elsif @params['web_name']
       # form submitted -> create a wiki
       @wiki.setup(@params['password'], @params['web_name'], @params['web_address']) 
-      flash[:info] = <<-EOL
-          Your new wiki '#{@params['web_name']}' is created!<br/>
-          Please edit its home page and press Submit when finished.
-      EOL
+      flash[:info] = "Your new wiki '#{@params['web_name']}' is created!\n" + 
+          "Please edit its home page and press Submit when finished."
       redirect_to :web => @params['web_address'], :controller => 'wiki', :action => 'new', 
           :id => 'HomePage'
     else

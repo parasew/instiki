@@ -4,8 +4,6 @@
   @hide_navigation = true
 %>
 
-<%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{@params["msg"]}</small></p>" if @params["msg"] %>
-
 <div id="MarkupHelp" style="float: right; width: 250px; margin-top: 5px">
   <%= render("#{@web.markup}_help") %>
   <%= render 'wiki_words_help' %>
@@ -16,7 +14,7 @@
 %>
 
 <p>
-    <textarea name="content" style="width: 450px; height: 500px"><%= h @page.content %></textarea>
+    <textarea name="content" style="width: 450px; height: 500px"><%= h(@flash[:content] || @page.content) %></textarea>
 </p>
 <p>
     <input type="submit" value="Submit" accesskey="s"/> as 

@@ -61,11 +61,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   </h1>
 
 <% if @error or @flash[:error] %> <div id="error">
-    <hr/><p><%= h(@error || @flash[:error]) %></p><hr/></div>
+    <hr/><p><%= escape_preserving_linefeeds(@error || @flash[:error]) %></p><hr/></div>
 <% end %>
 
 <% if @flash[:info] %> <div id="info">
-    <hr/><p><%= h @flash[:info] %></p><hr/></div>
+    <hr/><p><%= escape_preserving_linefeeds @flash[:info] %></p><hr/></div>
 <% end %>
 
 <%= render 'navigation' unless @web.nil? || @hide_navigation %>

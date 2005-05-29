@@ -14,7 +14,7 @@
 %>
 
 <p>
-    <textarea name="content" style="width: 450px; height: 500px"></textarea>
+    <textarea name="content" style="width: 450px; height: 500px"><%= h(@flash[:content] || '') %></textarea>
 </p>
 <p>
     <input type="submit" value="Submit" accesskey="s"/> as 

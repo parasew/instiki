@@ -26,6 +26,8 @@ class Revision
     ).strftime "%B %e, %Y %H:%M" 
   end
 
+
+# todo: drop next_revision, previuous_revision and number from here - unused code
   def next_revision
     page.revisions[number + 1]
   end
@@ -107,15 +109,17 @@ class Revision
   def force_rendering
     begin
       display_content.render!
-    rescue Exception => e
+    rescue => e
       ApplicationController.logger.error "Failed rendering page #{@name}"
       ApplicationController.logger.error e
-      message = e.message.gsub(/\n/, '<br/>')
+      message = e.message
       # substitute content with an error message
-      content = <<-EOL
+      self.content = <<-EOL
           <p>Markup engine has failed to render this page, raising the following error:</p>
           <p>#{message}</p>
+          <pre>#{self.content}</pre>
       EOL
+      clear_display_cache
       raise e
     end
   end

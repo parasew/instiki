@@ -38,6 +38,34 @@ module AbstractWikiService
     @system = {}
   end
   
+  def edit_web(old_address, new_address, name, markup, color, additional_style, safe_mode = false, 
+      password = nil, published = false, brackets_only = false, count_pages = false, 
+      allow_uploads = true, max_upload_size = nil)
+
+    if not @webs.key? old_address
+      raise Instiki::ValidationError.new("Web with address '#{old_address}' does not exist")
+    end
+
+    if old_address != new_address
+      if @webs.key? new_address
+        raise Instiki::ValidationError.new("There is already a web with address '#{new_address}'")
+      end
+      @webs[new_address] = @webs[old_address]
+      @webs.delete(old_address)
+      @webs[new_address].address = new_address
+    end
+
+    web = @webs[new_address]
+    web.refresh_revisions if settings_changed?(web, markup, safe_mode, brackets_only)
+
+    web.name, web.markup, web.color, web.additional_style, web.safe_mode = 
+      name, markup, color, additional_style, safe_mode
+
+    web.password, web.published, web.brackets_only, web.count_pages =
+      password, published, brackets_only, count_pages, allow_uploads
+    web.allow_uploads, web.max_upload_size = allow_uploads, max_upload_size.to_i
+  end
+
   def read_page(web_address, page_name)
     ApplicationController.logger.debug "Reading page '#{page_name}' from web '#{web_address}'"
     web = @webs[web_address]
@@ -74,42 +102,14 @@ module AbstractWikiService
     not (@webs.empty?)
   end
 
-  def edit_web(old_address, new_address, name, markup, color, additional_style, safe_mode = false, 
-      password = nil, published = false, brackets_only = false, count_pages = false, 
-      allow_uploads = true, max_upload_size = nil)
-
-    if not @webs.key? old_address
-      raise Instiki::ValidationError.new("Web with address '#{old_address}' does not exist")
-    end
-
-    if old_address != new_address
-      if @webs.key? new_address
-        raise Instiki::ValidationError.new("There is already a web with address '#{new_address}'")
-      end
-      @webs[new_address] = @webs[old_address]
-      @webs.delete(old_address)
-      @webs[new_address].address = new_address
-    end
-
-    web = @webs[new_address]
-    web.refresh_revisions if settings_changed?(web, markup, safe_mode, brackets_only)
-
-    web.name, web.markup, web.color, web.additional_style, web.safe_mode = 
-      name, markup, color, additional_style, safe_mode
-
-    web.password, web.published, web.brackets_only, web.count_pages =
-      password, published, brackets_only, count_pages, allow_uploads
-    web.allow_uploads, web.max_upload_size = allow_uploads, max_upload_size.to_i
-  end
-
-  def write_page(web_address, page_name, content, written_on, author)
-    @webs[web_address].add_page(page_name, content, written_on, author)
-  end
-
   def storage_path
     self.class.storage_path
   end
   
+  def write_page(web_address, page_name, content, written_on, author)
+    @webs[web_address].add_page(page_name, content, written_on, author)
+  end
+
   private
     def settings_changed?(web, markup, safe_mode, brackets_only)
       web.markup != markup || 

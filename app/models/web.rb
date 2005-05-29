@@ -46,8 +46,8 @@ class Web
 
    def add_page(name, content, created_at, author)
      page = Page.new(self, name)
-     @pages[page.name] = page
      page.revise(content, created_at, author)
+     @pages[page.name] = page
    end
   
   def address=(the_address)

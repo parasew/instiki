@@ -41,7 +41,6 @@ module ApplicationHelper
         html_options)
   end
   
-  
   # Creates a hyperlink to a Wiki page, or to a "new page" form if the page doesn't exist yet
   def link_to_page(page_name, web = @web, text = nil, options = {})
     raise 'Web not defined' if web.nil?
@@ -63,6 +62,11 @@ module ApplicationHelper
       }.join(', ') + "\n" +
       '</div>'
     end
+  end
+
+  # Performs HTML escaping on text, but keeps linefeeds intact (by replacing them with <br/>)
+  def escape_preserving_linefeeds(text)
+    h(text).gsub(/\n/, '<br/>')
   end
 
 end

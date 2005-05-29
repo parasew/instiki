@@ -89,7 +89,8 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_edit_unknown_page
     process 'edit', 'web' => 'wiki1', 'id' => 'UnknownPage', 'break_lock' => 'y'
-    assert_redirected_to :action => 'index'
+    assert_redirected_to :controller => 'wiki', :action => 'show', :web => 'wiki1', 
+        :id => 'HomePage'
   end
   
   def test_edit_page_with_special_symbols

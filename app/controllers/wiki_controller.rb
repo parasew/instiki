@@ -122,7 +122,7 @@ class WikiController < ApplicationController
 
   def edit
     if @page.nil?
-      redirect_to :action => 'index'
+      redirect_home
     elsif @page.locked?(Time.now) and not @params['break_lock']
       redirect_to :web => @web_name, :action => 'locked', :id => @page_name
     else
@@ -172,28 +172,28 @@ class WikiController < ApplicationController
   end
 
   def save
-    redirect_to :action => 'index' if @page_name.nil?
+    redirect_home if @page_name.nil?
     cookies['author'] = @params['author']
 
     begin
-      page = @web.pages[@page_name]
-      if @web.pages[@page_name]
-        wiki.revise_page(
-            @web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip)
-        )
-        page.unlock
+      if @page
+        wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
+            Author.new(@params['author'], remote_ip))
+        @page.unlock
       else
-        wiki.write_page(
-            @web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip)
-        )
+        wiki.write_page(@web_name, @page_name, @params['content'], Time.now, 
+            Author.new(@params['author'], remote_ip))
       end
       redirect_to_page @page_name
     rescue => e
-      page.unlock if defined? page
       flash[:error] = e
-      redirect_to :action => 'edit', :web => @web_name, :id => @page_name
+      flash[:content] = @params['content']
+      if @page
+        @page.unlock
+        redirect_to :action => 'edit', :web => @web_name, :id => @page_name
+      else
+        redirect_to :action => 'new', :web => @web_name, :id => @page_name
+      end
     end
   end
 

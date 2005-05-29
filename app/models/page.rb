@@ -23,6 +23,10 @@ class Page
           "You have tried to save page '#{name}' without changing its content")
     end
 
+    # Try to render content to make sure that markup engine can take it,
+    # before addin a revision to the page
+    Revision.new(self, @revisions.length, content, created_at, author).force_rendering
+
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 
     # by the same author, not more than 30 minutes ago, then update the last revision instead of
