@@ -181,6 +181,25 @@ class E2EInstikiTest < Test::Unit::TestCase
         'Home Page.*by Anonymous Coward\?.*'
     assert_match Regexp.new(expected_text, Regexp::MULTILINE), ie.text
   end
+  
+  def test_0090_authors
+    # create a revision of TestEditPage, and a corresponding author page
+    enter_markup('TestEditPage', '3rd revision of this page', 'Another Author')
+    ie.link(:afterText, 'Another Author').click
+    assert_equal url(:new, 'Another Author'), ie.url
+    enter_markup('Another Author',  'Email me at another_author@foo.bar.com', 'Another Author')
+
+    ie.link(:text, 'Authors').click
+
+    expected_authors = 
+        'Anonymous Coward\? co- or authored: Test Edit Page, Another Wiki Page, Home Page.*' +
+        'Another Author co- or authored: Test Edit Page, Another Author.*' +
+        'Author\? co- or authored: Test Edit Page'
+    assert_match Regexp.new(expected_authors, Regexp::MULTILINE), ie.text
+
+    ie.link(:text, 'Another Author').click
+    assert_equal url(:show, 'Another Author'), ie.url
+  end
 
   private
 
