@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'cgi'
 require 'test/unit'
-require 'rexml/doc'
+require 'rexml/document'
 
 INSTIKI_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
 require(File.expand_path(File.dirname(__FILE__) + "/../../config/environment"))
