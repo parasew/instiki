@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'cgi'
 require 'test/unit'
 
 INSTIKI_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
@@ -56,13 +57,13 @@ class E2EInstikiTest < Test::Unit::TestCase
   def test_00020_add_a_page
     # Add reference to a non-existant wiki page
     enter_markup('HomePage', '[[Another Wiki Page]]')
-    assert_equal '?', ie.link(:url, url(:show, 'Another+Wiki+Page')).text
+    assert_equal '?', ie.link(:url, url(:show, 'Another Wiki Page')).text
     
     # Edit the first revision of a page
-    enter_markup('Another+Wiki+Page', 'First revision of Another Wiki Page, linked from HomePage')
+    enter_markup('Another Wiki Page', 'First revision of Another Wiki Page, linked from HomePage')
 
     # Check contents of the new page
-    assert_equal url(:show, 'Another+Wiki+Page'), ie.url
+    assert_equal url(:show, 'Another Wiki Page'), ie.url
     assert_match /First revision of Another Wiki Page, linked from Home Page/, ie.text
     assert_match /Linked from: Home Page/, ie.text
 
@@ -135,7 +136,8 @@ class E2EInstikiTest < Test::Unit::TestCase
 
   def test_0060_see_changes
     ie.goto url(:show, 'TestEditPage')
-    assert ie.html.include?('<P>Test Edit Page, revision <DEL class=diffmod>2</DEL><INS class=diffmod>2, rolled back</INS></P>')
+    assert ie.html.include?('<P>Test Edit Page, revision <DEL class=diffmod>2</DEL>' + 
+        '<INS class=diffmod>2, rolled back</INS></P>')
     assert_match /Test Edit Page, revision 2, rolled back/, ie.text
 
     ie.link(:text, 'See changes').click
@@ -149,16 +151,22 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
 
   def test_0070_all_pages
+    # create a wanted page, and unlink Another Wiki Page from Home Page 
+    # (to see that it doesn't show up in the orphans, regardless)
+    enter_markup('Another Wiki Page', 'Reference to a NonExistantPage')
+  
     ie.link(:text, 'All Pages').click
+
     page_links = ie.links.map { |l| l.text }
-    expected_page_links = ['Another Wiki Page', 'Home Page', 'Test Edit Page', 'Test Edit Page'] 
-    assert_equal expected_page_links, page_links[-4..-1]
+    expected_page_links = ['Another Wiki Page', 'Home Page', 'Test Edit Page', '?', 
+        'Another Wiki Page', 'Test Edit Page'] 
+    assert_equal expected_page_links, page_links[-6..-1]
+    links_sequence = 'All Pages.*Another Wiki Page.*Home Page.*Test Edit Page.*' + 
+        'Wanted Pages.*Non Existant Page\? wanted by Another Wiki Page.*'+
+        'Orphaned Pages.*Test Edit Page.*'
+    assert_match Regexp.new(links_sequence, Regexp::MULTILINE), ie.text
     # and before that, we have the tail of the main menu
-    assert_equal 'Export', page_links[-5]
-    
-    # Test Edit Page link is repeated twice, because it is an orphan
-    assert_match Regexp.new('Test Edit Page.*Orphaned Pages.*Test Edit Page', Regexp::MULTILINE),
-        ie.text
+    assert_equal 'Export', page_links[-7]
   end
   
   private
@@ -229,6 +237,7 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
 
   def url(operation, page_name = nil, revision = nil)
+    page_name = CGI.escape(page_name)
     case operation
     when :edit, :new, :show, :print, :revision, :rollback
       "#{HOME}/wiki/#{operation}/#{page_name}" + (revision ? "?rev=#{revision}" : '')
