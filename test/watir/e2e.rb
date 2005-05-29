@@ -1,11 +1,12 @@
 require 'fileutils'
 require 'cgi'
 require 'test/unit'
+require 'rexml/doc'
 
 INSTIKI_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
 require(File.expand_path(File.dirname(__FILE__) + "/../../config/environment"))
 
-# Use instiki/../watir, if such a directory exists; This can be a CVS HEAD. 
+# Use instiki/../watir, if such a directory exists; This can be a CVS HEAD version of Watir. 
 # Otherwise Watir has to be installed in ruby/lib.
 $:.unshift INSTIKI_ROOT + '/../watir' if File.exists?(INSTIKI_ROOT + '/../watir/watir.rb')
 require 'watir'
@@ -204,6 +205,19 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_equal url(:show, 'TestEditPage'), ie.url
   end
 
+  def test_0100_feeds
+    ie.link(:text, 'Feeds').click
+    assert_equal url(:rss_with_content), ie.link(:text, 'Full content (RSS 2.0)').href
+    assert_equal url(:rss_with_headlines), ie.link(:text, 'Headlines (RSS 2.0)').href
+    
+    ie.link(:text, 'Full content (RSS 2.0)').click
+    assert_nothing_raised { REXML::Document.new ie.text }
+
+    ie.back
+    ie.link(:text, 'Headlines (RSS 2.0)').click
+    assert_nothing_raised { REXML::Document.new ie.text }
+  end
+
   private
 
   def bp
@@ -272,10 +286,12 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
 
   def url(operation, page_name = nil, revision = nil)
-    page_name = CGI.escape(page_name)
+    page_name = CGI.escape(page_name) if page_name
     case operation
     when :edit, :new, :show, :print, :revision, :rollback
       "#{HOME}/wiki/#{operation}/#{page_name}" + (revision ? "?rev=#{revision}" : '')
+    when :rss_with_content, :rss_with_headlines
+      "#{HOME}/wiki/#{operation}"
     else
       raise "Unsupported operation: '#{operation}"
     end
