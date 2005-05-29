@@ -42,7 +42,7 @@ class WikiController < ApplicationController
   # Within a single web ---------------------------------------------------------
 
   def authors
-    @authors = @web.select.authors
+    @authors = @web.select.authors.sort
   end
   
   def export_html

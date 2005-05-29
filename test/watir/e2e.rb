@@ -192,13 +192,16 @@ class E2EInstikiTest < Test::Unit::TestCase
     ie.link(:text, 'Authors').click
 
     expected_authors = 
-        'Anonymous Coward\? co- or authored: Test Edit Page, Another Wiki Page, Home Page.*' +
-        'Another Author co- or authored: Test Edit Page, Another Author.*' +
+        'Anonymous Coward\? co- or authored: Another Wiki Page, Home Page, Test Edit Page.*' +
+        'Another Author co- or authored: Another Author, Test Edit Page.*' +
         'Author\? co- or authored: Test Edit Page'
     assert_match Regexp.new(expected_authors, Regexp::MULTILINE), ie.text
 
     ie.link(:text, 'Another Author').click
     assert_equal url(:show, 'Another Author'), ie.url
+    ie.back
+    ie.link(:text, 'Test Edit Page').click
+    assert_equal url(:show, 'TestEditPage'), ie.url
   end
 
   private
