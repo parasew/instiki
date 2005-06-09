@@ -35,28 +35,28 @@ class FileYardTest < Test::Unit::TestCase
 
   def test_size_limit
     @yard = FileYard.new(file_path, 1)
-    one_kylobyte_string = "a" * 1024
+    one_kilobyte_string = "a" * 1.kilobyte
 
     # as StringIO
     assert_nothing_raised { 
-      @yard.upload_file('acceptable_file', StringIO.new(one_kylobyte_string)) 
+      @yard.upload_file('acceptable_file', StringIO.new(one_kilobyte_string)) 
     }
     assert_raises(Instiki::ValidationError) { 
-      @yard.upload_file('one_byte_too_long', StringIO.new(one_kylobyte_string + 'a')) 
+      @yard.upload_file('one_byte_too_long', StringIO.new(one_kilobyte_string + 'a')) 
     }
 
     # as Tempfile
     require 'tempfile'
 
     Tempfile.open('acceptable_file') do |f| 
-      f.write(one_kylobyte_string)
+      f.write(one_kilobyte_string)
       assert_nothing_raised { 
         @yard.upload_file('acceptable_file', f) 
       }
     end
 
     Tempfile.open('one_byte_too_long') do |f|
-      f.write(one_kylobyte_string + 'a')
+      f.write(one_kilobyte_string + 'a')
       assert_nothing_raised { 
         @yard.upload_file('one_byte_too_long_2', f)
       }

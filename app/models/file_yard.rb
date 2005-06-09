@@ -6,10 +6,9 @@ class FileYard
   attr_reader :files_path
 
   def initialize(files_path, max_upload_size)
-    @files_path = files_path
-    @max_upload_size = max_upload_size
-    FileUtils.mkdir_p(files_path) unless File.exist?(files_path)
-    @files = Dir["#{files_path}/*"].collect{|path| File.basename(path) if File.file?(path) }.compact
+    @files_path, @max_upload_size = files_path, max_upload_size
+    FileUtils.mkdir_p(@files_path) unless File.exist?(@files_path)
+    @files = Dir["#{@files_path}/*"].collect{|path| File.basename(path) if File.file?(path) }.compact
   end
 
   def upload_file(name, io)
@@ -17,6 +16,7 @@ class FileYard
     if io.kind_of?(Tempfile)
       io.close
       check_upload_size(io.size)
+      File.chmod(600, file_path(name)) if File.exists? file_path(name)
       FileUtils.mv(io.path, file_path(name))
     else
       content = io.read
@@ -39,12 +39,12 @@ class FileYard
     "#{files_path}/#{name}"
   end
 
-  SANE_FILE_NAME = /[-_\.A-Za-z0-9]{1,255}/
+  SANE_FILE_NAME = /[a-zA-Z0-9\-_\. ]{1,255}/
 
   def sanitize_file_name(name)
-    unless name =~ SANE_FILE_NAME
+    unless name =~ SANE_FILE_NAME or name == '.' or name == '..'
       raise Instiki::ValidationError.new("Invalid file name: '#{name}'.\n" +
-            "Only latin characters, digits, dots, underscores and dashes are accepted.")
+            "Only latin characters, digits, dots, underscores, dashes and spaces are accepted.")
     end
   end
   

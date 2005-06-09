@@ -5,6 +5,8 @@
           some other layout)
           <nowiki> tag can span several lines (before it was applied when both opening and closing 
           tags were on the same line only)
+          Resolved the "endless redirection loop" condition and otherwise improved handling of 
+          errors in the rendering engines
 
  * 0.10.1:
           Upgraded Rails to 0.12.0
