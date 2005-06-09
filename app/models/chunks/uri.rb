@@ -71,7 +71,7 @@ class URIChunk < Chunk::Abstract
         '(?=\.?(?:\s|\)|\z))'         # ends only with optional dot + space or ")" 
                                       # or end of the string
 
-    SUSPICIOUS_PRECEDING_CHARACTER = '(!|\"\:|\"|\\\')?'  # any of !, ":, ", '
+    SUSPICIOUS_PRECEDING_CHARACTER = '(!|\"\:|\"|\\\'|\]\()?'  # any of !, ":, ", ', ](
   
     INTERNET_URI_REGEXP = 
         Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + INTERNET_URI, Regexp::EXTENDED, 'N')

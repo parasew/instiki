@@ -141,7 +141,9 @@ class WikiContent < String
     @options[:engine] = Engines::MAP[@web.markup] 
     @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode
     @options[:active_chunks] = (ACTIVE_CHUNKS - [WikiChunk::Word] ) if @web.brackets_only
-
+    
+    @not_rendered = @pre_rendered = nil
+    
     super(@revision.content)
     init_chunk_manager
     build_chunks

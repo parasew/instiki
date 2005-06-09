@@ -72,6 +72,15 @@ class RevisionTest < Test::Unit::TestCase
 	    %{return ThatWay\n</code></pre>\n\n<p>Nice!</p>}, 
 	    code_block)
   end
+  
+  def test_markdown_hyperlink_with_slash
+    # in response to a bug, see http://dev.instiki.org/attachment/ticket/177
+    @web.markup = :markdown
+
+    assert_markup_parsed_as(
+        '<p><a href="http://example/with/slash">text</a></p>', 
+        '[text](http://example/with/slash)')
+  end
 
   def test_mixed_formatting
 
