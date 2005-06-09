@@ -7,6 +7,7 @@
           tags were on the same line only)
           Resolved the "endless redirection loop" condition and otherwise improved handling of 
           errors in the rendering engines
+          Fixed rendering of Markdown hyperlinks such as [Text](http://something.com/foo)
 
  * 0.10.1:
           Upgraded Rails to 0.12.0
