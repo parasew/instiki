@@ -26,22 +26,16 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <%= File.read(RAILS_ROOT + '/public/stylesheets/instiki.css') if @inline_style %>
   </style>
 
-  <link rel="Stylesheet" href="/stylesheets/instiki.css" type="text/css" media="screen" />
+  <%= stylesheet_link_tag 'instiki' unless @inline_style %>
 
   <style type="text/css">
     <%= @style_additions %>
     <%= @web ? @web.additional_style : '' %>
   </style>
-  
+
   <% if @web %>
-    <link rel="alternate" type="application/rss+xml" title="<%= h @web.name %> - Headlines RSS" 
-          href="<%= url_for :controller => 'wiki', :web => @web.address, 
-                      :action => 'rss_with_headlines' %>"
-    />
-    <link rel="alternate" type="application/rss+xml" title="<%= h @web.name %> - Full Pages RSS" 
-          href="<%= url_for :controller => 'wiki', :web => @web.address, 
-                      :action => 'rss_with_content' %>"
-    />
+  	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_headlines') %>
+  	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_content') %>
   <% end %>
 </head>
 

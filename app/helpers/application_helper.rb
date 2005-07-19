@@ -44,9 +44,12 @@ module ApplicationHelper
   # Creates a hyperlink to a Wiki page, or to a "new page" form if the page doesn't exist yet
   def link_to_page(page_name, web = @web, text = nil, options = {})
     raise 'Web not defined' if web.nil?
-    home_page_url = url_for :web => web.address, :action => 'show', :id => 'HomePage', :only_path => true
-    base_url = home_page_url.sub(%r-/show/HomePage/?$-, '')
-    web.make_link(page_name, text, options.merge(:base_url => base_url))
+    web.make_link(page_name, text, options.merge(:base_url => "#{base_url}/#{web.address}"))
+  end
+
+  def base_url
+    home_page_url = url_for :controller => 'admin', :action => 'create_system', :only_path => true
+    home_page_url.sub(%r-/create_system/?$-, '')
   end
 
   # Creates a menu of categories

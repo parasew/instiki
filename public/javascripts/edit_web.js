@@ -50,3 +50,6 @@ function overrideAutocomplete() {
     }//loop thru input elements
   }
 }
+
+// This line is executed when the script is loaded
+overrideAutocomplete();
