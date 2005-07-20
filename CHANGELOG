@@ -1,4 +1,5 @@
  * trunk:
+          Upgraded to Rails 0.13.1
           Fixed HTML export
           Added layout=no option to the export_html action (it exports page contents processed 
           by the markup engine, but without the default layout - so that they can be wrapper in 

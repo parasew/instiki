@@ -1,4 +1,4 @@
-ActionController::Routing.draw do |map|
+ActionController::Routing::Routes.draw do |map|
   map.connect 'create_system', :controller => 'admin', :action => 'create_system'
   map.connect 'create_web', :controller => 'admin', :action => 'create_web'
   map.connect ':web/edit_web', :controller => 'admin', :action => 'edit_web'
