@@ -155,7 +155,7 @@ class AdminControllerTest < Test::Unit::TestCase
       
     #returns to the same form
     assert_success
-    assert @response.has_template_object?(:error)
+    assert @response.has_template_object?('error')
   end
 
   def test_edit_web_rename_to_already_existing_web_name
@@ -169,7 +169,7 @@ class AdminControllerTest < Test::Unit::TestCase
       
     #returns to the same form
     assert_success
-    assert @response.has_template_object?(:error)
+    assert @response.has_template_object?('error')
   end
 
   def test_edit_web_empty_password
@@ -180,7 +180,7 @@ class AdminControllerTest < Test::Unit::TestCase
       
     #returns to the same form
     assert_success
-    assert @response.has_template_object?(:error)
+    assert @response.has_template_object?('error')
   end
 
 
