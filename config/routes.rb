@@ -1,7 +1,7 @@
 # Create a route to DEFAULT_WEB, if such is specified; also register a generic route
 def connect_to_web(map, generic_path, generic_routing_options)
   if defined? DEFAULT_WEB
-    explicit_path = generic_path.gsub(':web', DEFAULT_WEB)
+    explicit_path = generic_path.gsub(/:web\/?/, '')
     explicit_routing_options = generic_routing_options.merge(:web => DEFAULT_WEB)
     map.connect(explicit_path, explicit_routing_options)
   end
