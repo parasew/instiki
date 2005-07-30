@@ -33,10 +33,6 @@ require 'chunks/nowiki'
 #  * :mode
 #    => How should the content be rendered? For normal display (show), 
 #       publishing (:publish) or export (:export)?
-#
-# AUTHOR: Mark Reid <mark @ threewordslong . com>
-# CREATED: 15th May 2004
-# UPDATED: 22nd May 2004
 
 module ChunkManager
   attr_reader :chunks_by_type, :chunks_by_id, :chunks, :chunk_id

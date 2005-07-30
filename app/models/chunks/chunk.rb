@@ -58,7 +58,7 @@ module Chunk
 
     # We should not use object_id because object_id is not guarantied 
     # to be unique when we restart the wiki (new object ids can equal old ones
-    # that were restored form madeleine storage)  
+    # that were restored from madeleine storage)  
     def id
       @id ||= "#{@content.page_id}n#{@content.chunk_id}"
     end

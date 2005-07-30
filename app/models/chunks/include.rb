@@ -23,10 +23,10 @@ class Include < WikiChunk::WikiReference
   
   def get_unmask_text_avoiding_recursion_loops
     if refpage then
+      refpage.clear_display_cache
       if refpage.wiki_includes.include?(@content.page_name)
         # this will break the recursion
         @content.delete_chunk(self)
-        refpage.clear_display_cache
         return "<em>Recursive include detected; #{@page_name} --> #{@content.page_name} " + 
                "--> #{@page_name}</em>\n"
       else
