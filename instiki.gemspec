@@ -27,7 +27,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('madeleine', '= 0.7.1')
   s.add_dependency('RedCloth', '= 3.0.3')
   s.add_dependency('rubyzip', '= 0.5.8')
-  s.add_dependency('rails', '= 0.11.1')
+  s.add_dependency('rails', '= 0.13.1')
   s.requirements << 'none'
   s.require_path = 'lib'
 
