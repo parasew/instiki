@@ -23,7 +23,6 @@ class Web
     @additional_style = nil
     @published = false
     @count_pages = false
-    @allow_uploads = true
   end
 
   # Explicitly sets value of some web attributes to defaults, unless they are already set
@@ -35,6 +34,7 @@ class Web
     @max_upload_size = max_upload_size()
     @wiki = wiki
   end
+  
   # All below getters know their default values. This is necessary to ensure compatibility with 
   # 0.9 storages, where they were not defined.
   def brackets_only() @brackets_only || false end
