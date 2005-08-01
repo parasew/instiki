@@ -1,3 +1,6 @@
+ * trunk:
+         Fixed --daemon option.
+         
  * 0.10.2:
           Upgraded to Rails 0.13.1
           Fixed HTML export
