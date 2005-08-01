@@ -2,7 +2,7 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
-  before_filter :set_utf8_http_header, :connect_to_model
+  before_filter :set_utf8_http_header, :connect_to_model, :check_snapshot_thread
   after_filter :remember_location
 
   # For injecting a different wiki model implementation. Intended for use in tests
@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   
   def authorized?
     @web.nil? ||
-    @web.password.nil? || 
+    @web.password.nil? ||
     cookies['web_address'] == @web.password || 
     password_check(@params['password'])
   end
@@ -32,6 +32,10 @@ class ApplicationController < ActionController::Base
       redirect_to :controller => 'wiki', :action => 'login', :web => @web_name
       return false
     end
+  end
+
+  def check_snapshot_thread
+    WikiService.check_snapshot_thread
   end
 
   def connect_to_model

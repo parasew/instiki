@@ -152,6 +152,11 @@ class WikiService
     def snapshot
       @madeleine.snapshot
     end
+    
+    def check_snapshot_thread
+      # @madeleine may not be initialised in unit tests, and in such case there is no need to do anything
+      @madeleine.check_snapshot_thread unless @madeleine.nil?
+    end
   
   end
 
@@ -185,7 +190,7 @@ class MadeleineServer
       Madeleine::ZMarshal.new) {
       service.new
     }
-    start_snapshot_thread
+    @snapshoot_thread_running = false
   end
 
   def command_log_present?
@@ -196,7 +201,12 @@ class MadeleineServer
     @server.take_snapshot
   end
   
+  def check_snapshot_thread
+    start_snapshot_thread unless @snapshoot_thread_running
+  end
+  
   def start_snapshot_thread
+    @snapshoot_thread_running = true
     Thread.new(@server) {
       hours_since_last_snapshot = 0
       while true
