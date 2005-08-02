@@ -103,14 +103,16 @@ class WikiContentStub < String
   # Detects the mask strings contained in the text of chunks of type chunk_types
   # and yields the corresponding chunk ids
   # example: content = "chunk123categorychunk <pre>chunk456categorychunk</pre>" 
-  # inside_chunks(Literal::Pre) ==> yield 456
+  # inside_chunks([Literal::Pre]) ==> yield 456
   def inside_chunks(chunk_types)
-    chunk_types.each{|chunk_type|  chunk_type.apply_to(self) }
+    chunk_types.each { |chunk_type| chunk_type.apply_to(self) }
     
-    chunk_types.each{|chunk_type| @chunks_by_type[chunk_type].each{|hide_chunk|
-        scan_chunkid(hide_chunk.text){|id| yield id }
+    chunk_types.each { |chunk_type| @chunks_by_type[chunk_type].each { |chunk|
+        scan_chunkid(chunk.text) { |id| 
+          yield id 
+        }
       }
-    } 
+    }
   end
 end
 
@@ -136,7 +138,7 @@ class WikiContent < String
     @options = DEFAULT_OPTS.dup.merge(options)
     @options[:engine] = Engines::MAP[@web.markup] 
     @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode
-    @options[:active_chunks] = (ACTIVE_CHUNKS - [WikiChunk::Word] ) if @web.brackets_only
+    @options[:active_chunks] -= [WikiChunk::Word] if @web.brackets_only
     
     @not_rendered = @pre_rendered = nil
     
@@ -167,7 +169,9 @@ class WikiContent < String
     @options[:engine].apply_to(copy)
 
     copy.inside_chunks(HIDE_CHUNKS) do |id|
-      @chunks_by_id[id].revert
+      # Some markup engines can replicate parts of content while converting to HTML 
+      # Hence the if in the below line
+      @chunks_by_id[id].revert if @chunks_by_id.key?(id)
     end
   end
 
