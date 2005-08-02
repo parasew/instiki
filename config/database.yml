@@ -1,0 +1,30 @@
+# SQLite is enabled by default. Remember to change the dbfile path.
+production:
+  adapter: sqlite
+  dbfile: /tmp/instiki_prod.db
+
+# Uncomment this section for MySQL:
+# production:
+#   adapter: mysql
+#   host: localhost
+#   database: instiki
+#   username: instiki
+#   password: pass
+
+# Uncomment this section for PostgreSQL:
+# production:
+#   adapter: postgresql
+#   host: localhost
+#   database: instiki
+#   username: instiki
+#   password: pass
+
+# The following settings are only used for testing and development.
+development:
+  adapter: sqlite
+  dbfile: /tmp/instiki_dev.db
+
+test:
+  adapter: sqlite
+  dbfile: /tmp/instiki_test.db
+

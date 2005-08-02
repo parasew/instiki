@@ -1,0 +1,6 @@
+CREATE TABLE pages (
+  id <%= @pk %>,
+  created_at <%= @datetime %> NOT NULL,
+  updated_at <%= @datetime %> NOT NULL,
+  web_id INTEGER NOT NULL
+) <%= create_options %>;
