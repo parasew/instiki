@@ -9,12 +9,12 @@ require 'chunks/chunk'
 # or RDoc to convert text. This markup occurs when the chunk is required
 # to mask itself.
 module Engines
-  class AbstractEngine < Chunk::Abstract
+  class AbstractEngine
 
-    # Create a new chunk for the whole content and replace it with its mask.
+    # Convert content to HTML
     def self.apply_to(content)
-      new_chunk = self.new(content)
-      content.replace(new_chunk.mask)
+      engine = self.new(content)
+      content.replace(engine.to_html)
     end
 
     private 
@@ -27,7 +27,7 @@ module Engines
   end
 
   class Textile < AbstractEngine
-    def mask
+    def to_html
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
@@ -36,13 +36,13 @@ module Engines
   end
 
   class Markdown < AbstractEngine
-    def mask
+    def to_html
       BlueCloth.new(@content, @content.options[:engine_opts]).to_html
     end
   end
 
   class Mixed < AbstractEngine
-    def mask
+    def to_html
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
@@ -51,7 +51,7 @@ module Engines
   end
 
   class RDoc < AbstractEngine
-    def mask
+    def to_html
       RDocSupport::RDocFormatter.new(@content).to_html
     end
   end
