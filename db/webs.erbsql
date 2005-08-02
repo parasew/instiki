@@ -1,4 +1,4 @@
-CREATE TABLE pages (
+CREATE TABLE webs (
   id <%= @pk %>,
   created_at <%= @datetime %> NOT NULL,
   updated_at <%= @datetime %> NOT NULL,

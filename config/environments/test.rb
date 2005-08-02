@@ -12,6 +12,4 @@ unless defined? TEST_LOGGER
   
   TEST_LOGGER = ActionController::Base.logger = Logger.new(log_name)
   $instiki_debug_logging = true
-  
-  WikiService.storage_path = RAILS_ROOT + '/storage/test/'
 end

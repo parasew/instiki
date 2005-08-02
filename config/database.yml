@@ -1,6 +1,6 @@
 # SQLite is enabled by default. Remember to change the dbfile path.
 production:
-  adapter: sqlite
+  adapter: sqlite3
   dbfile: /tmp/instiki_prod.db
 
 # Uncomment this section for MySQL:
@@ -21,10 +21,10 @@ production:
 
 # The following settings are only used for testing and development.
 development:
-  adapter: sqlite
+  adapter: sqlite3
   dbfile: /tmp/instiki_dev.db
 
 test:
-  adapter: sqlite
+  adapter: sqlite3
   dbfile: /tmp/instiki_test.db
 

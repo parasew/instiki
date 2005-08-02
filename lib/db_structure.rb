@@ -25,7 +25,7 @@ def db_structure(db)
   end
 
   s = ''
-  Dir['db/*.erbsql'].each do |filename|
+  Dir[RAILS_ROOT + '/db/*.erbsql'].each do |filename|
     s += ERB.new(File.read(filename)).result
   end
   s
