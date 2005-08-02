@@ -131,21 +131,38 @@ class WikiService
 
   class << self
 
-    def storage_path=(storage_path)
-      @@storage_path = storage_path
-    end
-
-    def storage_path
-      @@storage_path
+    def check_snapshot_thread
+      # @madeleine may not be initialised in unit tests, and in such case there is no need to do anything
+      @madeleine.check_snapshot_thread unless @madeleine.nil?
     end
   
     def clean_storage
       MadeleineServer.clean_storage(self)
     end
 
+    # One interesting property of Madeleine as persistence mechanism is that it saves 
+    # (and restores) the whole ObjectSpace. And in there, storage from older version may contain 
+    # who knows what in temporary variables, such as caches of various kinds.
+    # The reason why it is nearly impossible to control is that there may be bugs, people may 
+    # use modified versions of things, etc etc etc
+    # Therefore, upon loading the storage from a file, it is a good idea to clear all such 
+    # variables. It would be better yet if Madeleine could be somehow instructed not to save that 
+    # data in a snapshot at all. Alas, such a feature is not presently available.
+    def clear_all_caches
+      return if @system.webs.nil?
+      @system.webs.each_value do |web|
+        next if web.nil? or web.pages.nil?
+        web.pages.each_value do |page|
+          next if page.nil? or page.revisions.nil?
+          page.revisions.each { |revision| revision.clear_display_cache }
+        end
+      end
+    end
+
     def instance
       @madeleine ||= MadeleineServer.new(self)
       @system = @madeleine.system
+      clear_all_caches
       return @system
     end
 
@@ -153,9 +170,12 @@ class WikiService
       @madeleine.snapshot
     end
     
-    def check_snapshot_thread
-      # @madeleine may not be initialised in unit tests, and in such case there is no need to do anything
-      @madeleine.check_snapshot_thread unless @madeleine.nil?
+    def storage_path=(storage_path)
+      @@storage_path = storage_path
+    end
+
+    def storage_path
+      @@storage_path
     end
   
   end
