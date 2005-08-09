@@ -14,6 +14,3 @@ if File.exists? blocked_ips_filename
   BLOCKED_IPS = File.readlines(blocked_ips_filename).delete_if { |line| line.strip.empty? }.map { 
       |line| line.strip }
 end
-
-require 'breakpoint'
-breakpoint
