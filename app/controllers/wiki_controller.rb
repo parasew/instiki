@@ -1,4 +1,3 @@
-require 'application'
 require 'fileutils'
 require 'redcloth_for_tex'
 require 'parsedate'
@@ -156,7 +155,7 @@ class WikiController < ApplicationController
   end
 
   def published
-    if @web.published
+    if @web.published?
       @page = wiki.read_page(@web_name, @page_name || 'HomePage') 
     else 
       redirect_home
@@ -270,7 +269,7 @@ class WikiController < ApplicationController
   end
 
   def export_web_to_tex(file_path)
-    @tex_content = table_of_contents(@web.pages['HomePage'].content, render_tex_web)
+    @tex_content = table_of_contents(@web.page('HomePage').content, render_tex_web)
     File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex_web')) }
   end
 
@@ -342,7 +341,7 @@ class WikiController < ApplicationController
   end
   
   def rss_with_content_allowed?
-    @web.password.nil? or @web.published
+    @web.password.nil? or @web.published?
   end
   
   def truncate(text, length = 30, truncate_string = '...')

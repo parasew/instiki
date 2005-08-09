@@ -1,0 +1,4 @@
+CREATE TABLE system (
+    id <%= @pk %>,
+    <%= db_quote('password') %> VARCHAR(60)
+) <%= create_options %>;

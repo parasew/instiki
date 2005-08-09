@@ -60,6 +60,8 @@ require 'rubygems' unless File.directory?("#{RAILS_ROOT}/vendor/rails")
 require 'active_support'
 require 'active_record'
 require 'action_controller'
+require 'action_mailer'
+require 'action_web_service'
 
 # Environment-specific configuration.
 require_dependency "environments/#{RAILS_ENV}"

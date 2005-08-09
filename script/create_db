@@ -12,7 +12,7 @@ config = ActiveRecord::Base.configurations
     ENV['RAILS_ENV'] = target
     load APP_ROOT + 'config/environment.rb'
     puts "Creating tables for #{target}..."
-
+    
     db_structure(config[target]['adapter']).split(/\s*;\s*/).each do |sql|
       ActiveRecord::Base.connection.execute(sql)
     end

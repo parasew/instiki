@@ -1,30 +1,65 @@
-# SQLite is enabled by default. Remember to change the dbfile path.
 production:
   adapter: sqlite3
-  dbfile: /tmp/instiki_prod.db
-
-# Uncomment this section for MySQL:
-# production:
-#   adapter: mysql
-#   host: localhost
-#   database: instiki
-#   username: instiki
-#   password: pass
-
-# Uncomment this section for PostgreSQL:
-# production:
-#   adapter: postgresql
-#   host: localhost
-#   database: instiki
-#   username: instiki
-#   password: pass
-
-# The following settings are only used for testing and development.
+  dbfile: db/prod.db
 development:
   adapter: sqlite3
-  dbfile: /tmp/instiki_dev.db
-
+  dbfile: db/dev.db
 test:
   adapter: sqlite3
-  dbfile: /tmp/instiki_test.db
+  dbfile: db/test.db
+
+# Sample Sqlite 2 Config
+#production:
+#  adapter: sqlite
+#  dbfile: db/prod.db
+#development:
+#  adapter: sqlite
+#  dbfile: db/dev.db
+#test:
+#  adapter: sqlite
+#  dbfile: db/test.db
+
+# Sample Postgresql Config
+#production:
+#  adapter: postgresql
+#  host: localhost
+#  database: instiki_prod
+#  username: user
+#  password: pass
+#
+#development:
+#  adapter: postgresql
+#  host: localhost
+#  database: instiki_dev
+#  username: user
+#  password: pass
+#
+#test:
+#  adapter: postgresql
+#  host: localhost
+#  database: instiki_test
+#  username: user
+#  password: pass
+
+# Sample MySQL Config
+#production:
+#  adapter: mysql
+#  host: localhost
+#  database: instiki_prod
+#  username: user
+#  password: pass
+#
+#development:
+#  adapter: mysql
+#  host: localhost
+#  database: instiki_dev
+#  username: user
+#  password: pass
+#
+#test:
+#  adapter: mysql
+#  host: localhost
+#  database: instiki_test
+#  username: user
+#  password: pass
 

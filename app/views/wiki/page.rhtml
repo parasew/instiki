@@ -25,7 +25,7 @@
   <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_at %> 
   by <%= @page.author_link %>
   <%= "(#{@page.author.ip})" if @page.author.respond_to?(:ip) %>
-  <% if @web.count_pages %>
+  <% if @web.count_pages? %>
     <% total_chars = @page.content.length %>
     (<%= total_chars %> characters / <%= sprintf("%-.1f", (total_chars / 2275 rescue 0)) %> pages)
   <% end %>

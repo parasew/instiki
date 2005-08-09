@@ -1,7 +1,10 @@
 CREATE TABLE revisions (
-  id <%= @pk %>,
-  created_at <%= @datetime %> NOT NULL,
-  updated_at <%= @datetime %> NOT NULL,
-  page_id INTEGER NOT NULL,
-  content TEXT NOT NULL
+    id <%= @pk %>,
+    created_at <%= @datetime %> NOT NULL,
+    updated_at <%= @datetime %> NOT NULL,
+    page_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(60),
+    ip VARCHAR(60),
+    number INTEGER
 ) <%= create_options %>;

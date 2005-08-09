@@ -1,4 +1,4 @@
-#!/bin/env ruby -w 
+#!/bin/env ruby 
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'file_controller'
@@ -8,24 +8,26 @@ require 'fileutils'
 class FileController; def rescue_action(e) logger.error(e); raise e end; end
 
 class FileControllerTest < Test::Unit::TestCase
+  fixtures :webs, :pages, :revisions, :system
 
-  FILE_AREA = RAILS_ROOT + '/storage/test/wiki1'
+  Wiki.storage_path += "test/"
+  FILE_AREA = Wiki.storage_path + 'wiki1'
   FileUtils.mkdir_p(FILE_AREA) unless File.directory?(FILE_AREA)
   FileUtils.rm(Dir["#{FILE_AREA}/*"])
 
   def setup
-    setup_test_wiki
-    setup_controller_test
-  end
-
-  def tear_down
-    tear_down_wiki
+    @controller = FileController.new
+    @request    = ActionController::TestRequest.new
+    @response   = ActionController::TestResponse.new
+    @wiki = Wiki.new
+    @web = webs(:test_wiki)
+    @home = @page = pages(:home_page)
   end
 
   def test_file
     process 'file', 'web' => 'wiki1', 'id' => 'foo.tgz'
     
-    assert_success
+    assert_response :success
     assert_rendered_file 'file/file'
   end
 
@@ -34,7 +36,7 @@ class FileControllerTest < Test::Unit::TestCase
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.txt'
     
-    assert_success
+    assert_response :success
     assert_equal "aaa\nbbb\n", r.binary_content
     assert_equal 'text/plain', r.headers['Content-Type']
   end
@@ -44,7 +46,7 @@ class FileControllerTest < Test::Unit::TestCase
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.pdf'
     
-    assert_success
+    assert_response :success
     assert_equal "aaa\nbbb\n", r.binary_content
     assert_equal 'application/pdf', r.headers['Content-Type']
   end
@@ -54,14 +56,14 @@ class FileControllerTest < Test::Unit::TestCase
     
     r = process 'pic', 'web' => 'wiki1', 'id' => 'rails.gif'
     
-    assert_success
+    assert_response :success
     assert_equal File.size("#{FILE_AREA}/rails.gif"), r.binary_content.size
   end
   
   def test_pic_unknown_pic
     r = process 'pic', 'web' => 'wiki1', 'id' => 'non-existant.gif'
     
-    assert_success
+    assert_response :success
     assert_rendered_file 'file/file'
   end
 
@@ -74,7 +76,7 @@ class FileControllerTest < Test::Unit::TestCase
   
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
     r = process 'pic', 'web' => 'wiki1', 'id' => 'rails-e2e.gif'
-    assert_success
+    assert_response :success
     assert_rendered_file 'file/file'
 
     # User uploads the picture
@@ -98,7 +100,7 @@ class FileControllerTest < Test::Unit::TestCase
         
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
     r = process 'file', 'web' => 'wiki1', 'id' => 'instiki-e2e.txt'
-    assert_success
+    assert_response :success
     assert_rendered_file 'file/file'
 
     # User uploads the picture
@@ -109,17 +111,18 @@ class FileControllerTest < Test::Unit::TestCase
     assert_equal(file, File.read("#{RAILS_ROOT}/storage/test/wiki1/instiki-e2e.txt"))
     
     # this should refresh the page display content (cached)
+    @home = Page.find(@home.id)
     assert_equal "<p><a class=\"existingWikiWord\" href=\"../file/instiki-e2e.txt\">" +
         "instiki-e2e.txt</a></p>", 
         @home.display_content
   end
 
   def test_uploads_blocking
-    @web.allow_uploads = true
+    set_web_property :allow_uploads, true
     r = process 'file', 'web' => 'wiki1', 'id' => 'filename'
-    assert_success
+    assert_response :success
 
-    @web.allow_uploads = false
+    set_web_property :allow_uploads, false
     r = process 'file', 'web' => 'wiki1', 'id' => 'filename'
     assert_equal '403 Forbidden', r.headers['Status']
   end

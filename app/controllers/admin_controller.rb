@@ -46,7 +46,6 @@ class AdminController < ApplicationController
   end
 
   def edit_web
-
     system_password = @params['system_password']
     if system_password
       # form submitted
@@ -67,6 +66,7 @@ class AdminController < ApplicationController
           flash[:info] = "Web '#{@params['address']}' was successfully updated"
           redirect_home(@params['address'])
         rescue Instiki::ValidationError => e
+          logger.warn e.message
           @error = e.message
           # and re-render the same template again
         end

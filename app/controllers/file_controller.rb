@@ -78,7 +78,7 @@ class FileController < ApplicationController
       return false
     end
 
-    unless @web.allow_uploads
+    unless @web.allow_uploads?
       render_text 'File uploads are blocked by the webmaster', '403 Forbidden'
       return false
     end

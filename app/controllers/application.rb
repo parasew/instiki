@@ -10,12 +10,12 @@ class ApplicationController < ActionController::Base
     # a global variable is used here because Rails reloads controller and model classes in the 
     # development environment; therefore, storing it as a class variable does not work
     # class variable is, anyway, not much different from a global variable
-    $instiki_wiki_service = the_wiki
+    #$instiki_wiki_service = the_wiki
     logger.debug("Wiki service: #{the_wiki.to_s}")
   end
 
   def self.wiki
-    $instiki_wiki_service
+    Wiki.new
   end
 
   protected
@@ -146,7 +146,7 @@ class ApplicationController < ActionController::Base
   end
 
   def wiki
-    $instiki_wiki_service
+    self.class.wiki
   end
 
   def needs_authorization?(action)

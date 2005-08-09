@@ -1,4 +1,4 @@
-#!/bin/env ruby -w
+#!/bin/env ruby
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'chunks/uri'
