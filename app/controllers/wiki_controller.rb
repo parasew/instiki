@@ -176,6 +176,9 @@ class WikiController < ApplicationController
     cookies['author'] = @params['author']
 
     begin
+      check_for_spam(@params['content'], remote_ip)
+      check_blocked_ips(remote_ip)
+
       if @page
         wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
             Author.new(@params['author'], remote_ip))
@@ -227,7 +230,26 @@ class WikiController < ApplicationController
 
 
   private
-    
+
+  def check_blocked_ips(ip)
+    if defined? BLOCKED_IPS and not BLOCKED_IPS.nil?
+      BLOCKED_IPS.each do |blocked_ip|
+        raise Instiki::ValidationError.new('Revision rejected by spam filter') if ip == blocked_ip
+      end
+    end
+  end
+
+  def check_for_spam(new_content, ip)
+    if defined? SPAM_PATTERNS and not SPAM_PATTERNS.nil?
+      SPAM_PATTERNS.each do |pattern|
+        if new_content =~ pattern
+          logger.info "Spam attempt from IP address #{ip}"
+          raise Instiki::ValidationError.new('Revision rejected by spam filter')
+        end
+      end
+    end
+  end
+
   def convert_tex_to_pdf(tex_path)
     # TODO remove earlier PDF files with the same prefix
     # TODO handle gracefully situation where pdflatex is not available
