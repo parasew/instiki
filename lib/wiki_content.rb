@@ -59,14 +59,14 @@ module ChunkManager
 
   def add_chunk(c)
       @chunks_by_type[c.class] << c
-      @chunks_by_id[c.id] = c
+      @chunks_by_id[c.object_id] = c
       @chunks << c
       @chunk_id += 1
   end
 
   def delete_chunk(c)
     @chunks_by_type[c.class].delete(c)
-    @chunks_by_id.delete(c.id)
+    @chunks_by_id.delete(c.object_id)
     @chunks.delete(c)
   end
 
@@ -82,18 +82,15 @@ module ChunkManager
     @chunks.select { |chunk| chunk.kind_of?(chunk_type) and chunk.rendered? }
   end
 
-  # for testing and WikiContentStub; we need a page_id even if we have no page
-  def page_id
-    0
-  end
-
 end
 
 # A simplified version of WikiContent. Useful to avoid recursion problems in 
 # WikiContent.new
 class WikiContentStub < String
+  
   attr_reader :options
   include ChunkManager
+  
   def initialize(content, options)
     super(content)
     @options = options
@@ -167,7 +164,7 @@ class WikiContent < String
     @options[:engine].apply_to(copy)
 
     copy.inside_chunks(HIDE_CHUNKS) do |id|
-      @chunks_by_id[id].revert
+      @chunks_by_id[id.to_i].revert
     end
   end
 
@@ -183,23 +180,21 @@ class WikiContent < String
     pre_render!
     @options[:engine].apply_to(self)
     # unmask in one go. $~[1] is the chunk id
-    gsub!(MASK_RE[ACTIVE_CHUNKS]){ 
-      if chunk = @chunks_by_id[$~[1]]
-        chunk.unmask_text 
+    gsub!(MASK_RE[ACTIVE_CHUNKS]) do 
+      chunk = @chunks_by_id[$~[1].to_i]
+      if chunk.nil? 
         # if we match a chunkmask that existed in the original content string
         # just keep it as it is
-      else 
         $~[0]
-      end}
+      else 
+        chunk.unmask_text 
+      end
+    end
     self
   end
 
   def page_name
     @revision.page.name
-  end
-
-  def page_id
-    @revision.page.id
   end
 
 end

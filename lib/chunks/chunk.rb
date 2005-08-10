@@ -27,8 +27,8 @@ module Chunk
 
     # a regexp that matches all chunk_types masks
     def Abstract::mask_re(chunk_types)
-      tmp = chunk_types.map{|klass| klass.mask_string}.join("|")
-      Regexp.new("chunk([0-9a-f]+n\\d+)(#{tmp})chunk")
+      chunk_classes = chunk_types.map{|klass| klass.mask_string}.join("|")
+      /chunk(\d+)(#{chunk_classes})chunk/
     end
     
     attr_reader :text, :unmask_text, :unmask_mode
@@ -53,14 +53,7 @@ module Chunk
 
     # should contain only [a-z0-9]
     def mask
-      @mask ||="chunk#{@id}#{self.class.mask_string}chunk"
-    end
-
-    # We should not use object_id because object_id is not guarantied 
-    # to be unique when we restart the wiki (new object ids can equal old ones
-    # that were restored from madeleine storage)  
-    def id
-      @id ||= "#{@content.page_id}n#{@content.chunk_id}"
+      @mask ||= "chunk#{self.object_id}#{self.class.mask_string}chunk"
     end
 
     def unmask
