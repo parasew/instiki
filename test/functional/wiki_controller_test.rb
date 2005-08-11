@@ -1,4 +1,4 @@
-#!/bin/env ruby
+#!/usr/bin/env ruby
 
 # Uncomment the line below to enable pdflatex tests; don't forget to comment them again 
 # commiting to SVN

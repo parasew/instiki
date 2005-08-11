@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 # 
 # Bluecloth is a Ruby implementation of Markdown, a text-to-HTML conversion
 # tool.
