@@ -371,6 +371,11 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal @home.revisions[0], r.template_objects['revision']
   end
   
+  def test_non_existant_revision_of_existing_page
+    r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '5'
+    assert_response :missing
+  end
+  
 
   def test_rollback
     # rollback shows a form where a revision can be edited.

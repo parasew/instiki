@@ -298,6 +298,9 @@ class WikiController < ApplicationController
 
   def get_page_and_revision
     @revision = @page.revisions[@params['rev'].to_i]
+    if @revision.nil?
+      render_text 'Page name is not specified', '404 Not Found'
+    end
   end
 
   def parse_category
