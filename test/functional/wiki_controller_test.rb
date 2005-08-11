@@ -375,6 +375,11 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '5'
     assert_response :missing
   end
+
+  def test_revision_of_nonexistant_page
+    r = process 'revision', 'web' => 'wiki1', 'id' => 'NonExistantPage', 'rev' => '0'
+    assert_response :missing
+  end
   
 
   def test_rollback
