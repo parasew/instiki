@@ -9,7 +9,10 @@ class Revision < ActiveRecord::Base
 
   # TODO this method belongs in the view helpers (only views use it)
   def pretty_created_on
-    revised_on.to_date.strftime "%B %e, %Y %H:%M:%S" 
+    # Must use DateTime because Time doesn't support %e on at least some platforms
+    DateTime.new(
+      revised_at.year, revised_at.mon, revised_at.day, revised_at.hour, revised_at.min, revised_at.sec
+    ).strftime "%B %e, %Y %H:%M:%S"  
   end
 
   # Returns an array of all the WikiIncludes present in the content of this revision.

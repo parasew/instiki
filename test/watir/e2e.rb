@@ -80,7 +80,7 @@ class E2EInstikiTest < Test::Unit::TestCase
   def test_00030_edit_page
     enter_markup('TestEditPage', 'Test Edit Page, revision 1')
     assert_match /Test Edit Page, revision 1/, ie.text
-    
+
     # subsequent revision by the anonymous author
     enter_markup('TestEditPage', 'Test Edit Page, revision 1, altered')
     assert_match /Test Edit Page, revision 1, altered/, ie.text

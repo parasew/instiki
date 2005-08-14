@@ -19,7 +19,7 @@ class Page < ActiveRecord::Base
     # Not to record every such iteration as a new revision, if the previous revision was done 
     # by the same author, not more than 30 minutes ago, then update the last revision instead of
     # creating a new one
-    if (revisions_size > 1) && continous_revision?(time, author)
+    if (revisions_size > 0) && continous_revision?(time, author)
       current_revision.update_attributes(:content => content, :revised_at => time)
     else
       Revision.create(:page => self, :content => content, :author => author, :revised_at => time)
