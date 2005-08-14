@@ -50,7 +50,7 @@ class PageTest < Test::Unit::TestCase
     @page.reload
     assert_equal 2, @page.revisions.length
     assert_equal 'HisWay would be MyWay in kinda update', @page.content
-    assert_equal Time.local(2004, 4, 4, 16, 57), @page.revised_on
+    assert_equal Time.local(2004, 4, 4, 16, 57), @page.revised_at
 
     # but consecutive revision by another author results in a new revision
     @page.revise('HisWay would be MyWay in the house', Time.local(2004, 4, 4, 16, 58), 'DavidHeinemeierHansson')

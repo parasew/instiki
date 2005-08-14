@@ -57,7 +57,7 @@ class WikiController < ApplicationController
   end
 
   def export_pdf
-    file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}"
+    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
     file_path = File.join(@wiki.storage_path, file_name)
 
     export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
@@ -66,7 +66,7 @@ class WikiController < ApplicationController
   end
 
   def export_tex
-    file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
+    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
     file_path = File.join(@wiki.storage_path, file_name)
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)
     send_file file_path
@@ -140,7 +140,7 @@ class WikiController < ApplicationController
   def pdf
     page = wiki.read_page(@web_name, @page_name)
     safe_page_name = @page.name.gsub(/\W/, '')
-    file_name = "#{safe_page_name}-#{@web.address}-#{@page.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}"
+    file_name = "#{safe_page_name}-#{@web.address}-#{@page.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
     file_path = File.join(@wiki.storage_path, file_name)
 
     export_page_to_tex("#{file_path}.tex") unless FileTest.exists?("#{file_path}.tex")
@@ -247,7 +247,7 @@ class WikiController < ApplicationController
   def export_pages_as_zip(file_type, &block)
 
     file_prefix = "#{@web.address}-#{file_type}-"
-    timestamp = @web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')
+    timestamp = @web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')
     file_path = File.join(@wiki.storage_path, file_prefix + timestamp + '.zip')
     tmp_path = "#{file_path}.tmp"
 
@@ -313,8 +313,8 @@ class WikiController < ApplicationController
       @pages_by_revision = @web.select.by_revision.first(limit)
     else
       @pages_by_revision = @web.select.by_revision
-      @pages_by_revision.reject! { |page| page.revised_on < start_date } if start_date
-      @pages_by_revision.reject! { |page| page.revised_on > end_date } if end_date
+      @pages_by_revision.reject! { |page| page.revised_at < start_date } if start_date
+      @pages_by_revision.reject! { |page| page.revised_at > end_date } if end_date
     end
     
     @hide_description = hide_description

@@ -17,7 +17,7 @@ class PageSet < Array
   end
 
   def most_recent_revision
-    self.map { |page| page.revised_on }.max || Time.at(0)
+    self.map { |page| page.revised_at }.max || Time.at(0)
   end
 
   def by_name
@@ -27,7 +27,7 @@ class PageSet < Array
   alias :sort :by_name
 
   def by_revision
-    PageSet.new(@web, sort_by { |page| page.revised_on }).reverse 
+    PageSet.new(@web, sort_by { |page| page.revised_at }).reverse 
   end
   
   def pages_that_reference(page_name)

@@ -3,12 +3,12 @@
 <%= categories_menu %>
 
 <% unless @pages_by_revision.empty? %>
-  <% revision_date = @pages_by_revision.first.revised_on %>
+  <% revision_date = @pages_by_revision.first.revised_at %>
   <h3><%= revision_date.strftime('%B %e, %Y') %></h3>
   <ul>
   <% for page in @pages_by_revision %>
-    <% if page.revised_on < revision_date %>
-      <% revision_date = page.revised_on %>
+    <% if page.revised_at < revision_date %>
+      <% revision_date = page.revised_at %>
       </ul>
       <h3><%= revision_date.strftime('%B %e, %Y') %></h3>
       <ul>

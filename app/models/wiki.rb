@@ -59,9 +59,9 @@ class Wiki
     web.remove_pages(web.select.orphaned_pages)
   end
   
-  def revise_page(web_address, page_name, content, revised_on, author)
+  def revise_page(web_address, page_name, content, revised_at, author)
     page = read_page(web_address, page_name)
-    page.revise(content, revised_on, author)
+    page.revise(content, revised_at, author)
   end
 
   def rollback_page(web_address, page_name, revision_number, time, author_id = nil)

@@ -3,10 +3,6 @@ class Revision < ActiveRecord::Base
   belongs_to :page
   composed_of :author, :mapping => [ %w(author name), %w(ip ip) ]
 
-  def revised_on
-    revised_at
-  end
-
   # TODO this method belongs in the view helpers (only views use it)
   def pretty_created_on
     # Must use DateTime because Time doesn't support %e on at least some platforms

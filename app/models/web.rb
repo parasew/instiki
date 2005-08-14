@@ -134,7 +134,7 @@ class Web < ActiveRecord::Base
     pages_to_be_removed.each { |p| p.destroy }
   end
   
-  def revised_on
+  def revised_at
     select.most_recent_revision
   end
     
