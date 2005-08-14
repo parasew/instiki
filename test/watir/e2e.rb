@@ -248,7 +248,7 @@ class E2EInstikiTest < Test::Unit::TestCase
 
   def date_pattern
     '(January|February|March|April|May|June|July|August|September|October|November|December) ' + 
-        '\d\d?, \d\d\d\d \d\d:\d\d'
+        '\d\d?, \d\d\d\d \d\d:\d\d:\d\d'
   end
 
   def enter_markup(page, content, author = nil)

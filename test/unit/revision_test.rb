@@ -245,8 +245,10 @@ class RevisionTest < Test::Unit::TestCase
   end
   
   def test_revisions_diff
-    Revision.create(:page => @page, :content => 'What a blue and lovely morning', :author => Author.new('DavidHeinemeierHansson'))
-    Revision.create(:page => @page, :content => 'What a red and lovely morning today', :author => Author.new('DavidHeinemeierHansson'))
+    Revision.create(:page => @page, :content => 'What a blue and lovely morning', 
+        :author => Author.new('DavidHeinemeierHansson'), :revised_at => Time.now)
+    Revision.create(:page => @page, :content => 'What a red and lovely morning today', 
+        :author => Author.new('DavidHeinemeierHansson'), :revised_at => Time.now)
 
     assert_equal "<p>What a <del class=\"diffmod\">blue </del><ins class=\"diffmod\">red " +
         "</ins>and lovely <del class=\"diffmod\">morning</del><ins class=\"diffmod\">morning " +

@@ -32,27 +32,37 @@ class PageTest < Test::Unit::TestCase
 
   def test_revise
     @page.revise('HisWay would be MyWay in kinda lame', Time.local(2004, 4, 4, 16, 55), 'MarianneSyhler')
-    assert_equal 2, @page.revisions(true).length, 'Should have two revisions'
-    assert_equal 'MarianneSyhler', @page.current_revision(true).author.to_s, 'Mary should be the author now'
+    @page.reload
+
+    assert_equal 2, @page.revisions.length, 'Should have two revisions'
+    assert_equal 'MarianneSyhler', @page.current_revision.author.to_s, 'Mary should be the author now'
     assert_equal 'DavidHeinemeierHansson', @page.revisions.first.author.to_s, 'David was the first author'
   end
   
   def test_revise_continous_revision
     @page.revise('HisWay would be MyWay in kinda lame', Time.local(2004, 4, 4, 16, 55), 'MarianneSyhler')
-    assert_equal 2, @page.revisions(true).length
+    @page.reload
+    assert_equal 2, @page.revisions.length
+    assert_equal 'HisWay would be MyWay in kinda lame', @page.content
 
-    @page.current_revision(true)
+    # consecutive revision by the same author within 30 minutes doesn't create a new revision
     @page.revise('HisWay would be MyWay in kinda update', Time.local(2004, 4, 4, 16, 57), 'MarianneSyhler')
-    assert_equal 2, @page.revisions(true).length
-    assert_equal 'HisWay would be MyWay in kinda update', @page.revisions.last.content
-    assert_equal Time.local(2004, 4, 4, 16, 57), @page.revisions.last.created_at
+    @page.reload
+    assert_equal 2, @page.revisions.length
+    assert_equal 'HisWay would be MyWay in kinda update', @page.content
+    assert_equal Time.local(2004, 4, 4, 16, 57), @page.revised_on
 
+    # but consecutive revision by another author results in a new revision
     @page.revise('HisWay would be MyWay in the house', Time.local(2004, 4, 4, 16, 58), 'DavidHeinemeierHansson')
-    assert_equal 3, @page.revisions(true).length
-    assert_equal 'HisWay would be MyWay in the house', @page.revisions.last.content
+    @page.reload
+    assert_equal 3, @page.revisions.length
+    assert_equal 'HisWay would be MyWay in the house', @page.content
 
+    # consecutive update after 30 minutes since the last one also creates a new revision, 
+    # even when it is by the same author
     @page.revise('HisWay would be MyWay in my way', Time.local(2004, 4, 4, 17, 30), 'DavidHeinemeierHansson')
-    assert_equal 4, @page.revisions(true).length
+    @page.reload
+    assert_equal 4, @page.revisions.length
   end
 
   def test_revise_content_unchanged
@@ -72,7 +82,7 @@ class PageTest < Test::Unit::TestCase
     @page.revise("spot three", Time.now + 2000, "David")
     assert_equal 3, @page.revisions(true).length, "Should have three revisions"
     @page.current_revision(true)
-    @page.rollback(1, Time.now)
+    @page.rollback(0, Time.now)
     assert_equal "HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\\\OverThere -- see SmartEngine in that SmartEngineGUI", @page.current_revision(true).content
   end
 end

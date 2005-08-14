@@ -3,24 +3,13 @@ class Revision < ActiveRecord::Base
   belongs_to :page
   composed_of :author, :mapping => [ %w(author name), %w(ip ip) ]
 
-  def created_on
-    created_at.to_date
+  def revised_on
+    revised_at
   end
 
-  def pretty_created_at
-    # Must use DateTime because Time doesn't support %e on at least some platforms
-    DateTime.new(
-      created_at.year, created_at.mon, created_at.day, created_at.hour, created_at.min
-    ).strftime "%B %e, %Y %H:%M" 
-  end
-
-  # todo: drop next_revision, previuous_revision and number from here - unused code
-  def next_revision
-    Revision.find_by_number_and_page_id(number+1, page_id)
-  end
-
-  def previous_revision
-    @previous_revions ||= number > 0 ? Revision.find_by_number_and_page_id(number-1, page_id) : nil
+  # TODO this method belongs in the view helpers (only views use it)
+  def pretty_created_on
+    revised_on.to_date.strftime "%B %e, %Y %H:%M:%S" 
   end
 
   # Returns an array of all the WikiIncludes present in the content of this revision.
@@ -30,7 +19,7 @@ class Revision < ActiveRecord::Base
       @wiki_includes_cache = chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     end
     @wiki_includes_cache
-  end  
+  end
 
   # Returns an array of all the WikiReferences present in the content of this revision.
   def wiki_references
@@ -72,8 +61,14 @@ class Revision < ActiveRecord::Base
     @display_cache
   end
 
+  # TODO this probably doesn't belong in revision (because it has to call back the page)
   def display_diff
-    previous_revision ? HTMLDiff.diff(previous_revision.display_content, display_content) : display_content
+    previous_revision = page.previous_revision(self)
+    if previous_revision 
+      HTMLDiff.diff(previous_revision.display_content, display_content) 
+    else 
+      display_content
+    end
   end
 
   def clear_display_cache
@@ -112,18 +107,8 @@ class Revision < ActiveRecord::Base
   end
 
   protected
-  before_create :set_revision_number, :set_timestamp
+
   after_create :force_rendering
   after_save :clear_display_cache
-  
-  # TODO Refactor this away. Revisions collection should not rely on the revision number for 
-  # sorting etc - revisions must be easy to delete (this helps fighting wiki spam)
-  def set_revision_number
-    self.number = self.class.count(['page_id = ?', page_id]) + 1
-  end
-  
-  def set_timestamp
-    self.timestamp = (Time.now.to_f * 1000).to_i.to_s
-  end
 
 end

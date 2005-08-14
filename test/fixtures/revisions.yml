@@ -2,9 +2,8 @@ home_page_first_revision:
   id: 1
   created_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
   updated_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
-  timestamp: <%= (Time.local(2004, 4, 4, 15, 50).to_f * 1000).to_i %>
+  revised_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
   page_id: 1
-  number: 1
   content: First revision of the HomePage end
   author: AnAuthor
   ip: 127.0.0.1
@@ -13,9 +12,8 @@ my_way_first_revision:
   id: 2
   created_at: <%= 9.days.ago.to_formatted_s(:db) %>
   updated_at: <%= 9.days.ago.to_formatted_s(:db) %>
-  timestamp: <%= (9.days.ago.to_f * 1000).to_i %>
+  revised_at: <%= 9.days.ago.to_formatted_s(:db) %>
   page_id: 2
-  number: 1
   content: MyWay
   author: Me
 
@@ -23,9 +21,8 @@ smart_engine_first_revision:
   id: 3
   created_at: <%= 8.days.ago.to_formatted_s(:db) %>
   updated_at: <%= 8.days.ago.to_formatted_s(:db) %>
-  timestamp: <%= (8.days.ago.to_f * 1000).to_i %>
+  revised_at: <%= 8.days.ago.to_formatted_s(:db) %>
   page_id: 3
-  number: 1
   content: SmartEngine
   author: Me
 
@@ -33,9 +30,8 @@ that_way_first_revision:
   id: 4
   created_at: <%= 7.days.ago.to_formatted_s(:db) %>
   updated_at: <%= 7.days.ago.to_formatted_s(:db) %>
-  timestamp: <%= (7.days.ago.to_f * 1000).to_i %>
+  revised_at: <%= 7.days.ago.to_formatted_s(:db) %>
   page_id: 4
-  number: 1
   content: ThatWay
   author: Me
 
@@ -43,9 +39,8 @@ no_wiki_word_first_revision:
   id: 5
   created_at: <%= 6.days.ago.to_formatted_s(:db) %>
   updated_at: <%= 6.days.ago.to_formatted_s(:db) %>
-  timestamp: <%= (6.days.ago.to_f * 1000).to_i %>
+  revised_at: <%= 6.days.ago.to_formatted_s(:db) %>
   page_id: 5
-  number: 1
   content: hey you
   author: Me
   
@@ -53,9 +48,8 @@ home_page_second_revision:
   id: 6
   created_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
   updated_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
-  timestamp: <%= (Time.local(2004, 4, 4, 16, 50).to_f * 1000).to_i %>
+  revised_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
   page_id: 1
-  number: 2
   content: HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEngine in that SmartEngineGUI
   author: DavidHeinemeierHansson
   
@@ -63,9 +57,8 @@ first_page_first_revision:
   id: 7
   created_at: <%= Time.local(2004, 4, 4, 16, 55).to_formatted_s(:db) %>
   updated_at: <%= Time.local(2004, 4, 4, 16, 55).to_formatted_s(:db) %>
-  timestamp: <%= (Time.local(2004, 4, 4, 16, 55).to_f * 1000).to_i %>
+  revised_at: <%= Time.local(2004, 4, 4, 16, 55).to_formatted_s(:db) %>
   page_id: 6
-  number: 1
   content: HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\OverThere -- see SmartEngine in that SmartEngineGUI
   author: DavidHeinemeierHansson
   
@@ -73,9 +66,8 @@ oak_first_revision:
   id: 8
   created_at: <%= 5.days.ago.to_formatted_s(:db) %>
   updated_at: <%= 5.days.ago.to_formatted_s(:db) %>
-  timestamp: <%= (5.days.ago.to_f * 1000).to_i %>
+  revised_at: <%= 5.days.ago.to_formatted_s(:db) %>
   page_id: 7
-  number: 1
   content: "All about oak.\ncategory: trees"
   author: TreeHugger
   ip: 127.0.0.2
@@ -84,9 +76,8 @@ elephant_first_revision:
   id: 9
   created_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
   updated_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
-  timestamp: <%= (10.minutes.ago.to_f * 1000).to_i %>
+  revised_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
   page_id: 8
-  number: 1
   content: "All about elephants.\ncategory: animals"
   author: Guest
   ip: 127.0.0.2

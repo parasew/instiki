@@ -64,9 +64,9 @@ class Wiki
     page.revise(content, revised_on, author)
   end
 
-  def rollback_page(web_address, page_name, revision_number, created_at, author_id = nil)
+  def rollback_page(web_address, page_name, revision_number, time, author_id = nil)
     page = read_page(web_address, page_name)
-    page.rollback(revision_number, created_at, author_id)
+    page.rollback(revision_number, time, author_id)
   end
   
   def setup(password, web_name, web_address)

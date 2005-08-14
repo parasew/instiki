@@ -104,7 +104,7 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
   def test_export_html
-    @home.rollback(1, Time.now, 'Rick') # much simpler regex statement to match
+    @home.rollback(0, Time.now, 'Rick') # much simpler regex statement to match
     r = process 'export_html', 'web' => 'wiki1'
     
     assert_response :success
@@ -355,7 +355,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     assert_response :success
     assert_equal @home, r.template_objects['page']
-    assert_equal @home.revisions[0], r.template_objects['revision']
+    assert_equal @home.revisions[0], r.template_objects['revision'] 
   end
   
 
