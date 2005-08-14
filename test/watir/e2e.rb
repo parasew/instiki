@@ -307,9 +307,9 @@ class InstikiController
     startup_info = [68].pack('lx64')
     process_info = [0, 0, 0, 0].pack('llll')
 
+    clear_database
     startup_command =
-        "ruby #{RAILS_ROOT}/instiki.rb --storage #{prepare_storage} " +
-        "     --port #{INSTIKI_PORT} --environment development"
+        "ruby #{RAILS_ROOT}/instiki.rb --port #{INSTIKI_PORT} --environment development"
 
     result = Win32API.new('kernel32.dll', 'CreateProcess', 'pplllllppp', 'L').call(
         nil, 
@@ -323,11 +323,10 @@ class InstikiController
     return self.new(process_id)
   end
 
-  def self.prepare_storage
-    storage_path = INSTIKI_ROOT + '/storage/e2e'
-    FileUtils.rm_rf(storage_path) if File.exists? storage_path
-    FileUtils.mkdir_p(storage_path)
-    storage_path
+  def self.clear_database
+    ENV['RAILS_ENV'] = 'development'
+    require INSTIKI_ROOT + '/config/environment.rb'
+    [Revision, Page, Web, System].each { |entity| entity.delete_all }
   end
 
   def initialize(pid)
