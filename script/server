@@ -21,13 +21,13 @@ ARGV.options do |opts|
           "Runs Instiki on the specified port.",
           "Default: 2500") { |OPTIONS[:port]| }
   opts.on("-b", "--binding=ip", String,
-          "Binds Rails to the specified ip.",
+          "Binds Instiki to the specified ip.",
           "Default: 0.0.0.0") { |OPTIONS[:ip]| }
   opts.on("-e", "--environment=name", String,
           "Specifies the environment to run this server under (test/development/production).",
           "Default: development") { |OPTIONS[:environment]| }
   opts.on("-d", "--daemon",
-          "Make Rails run as a Daemon (only works if fork is available -- meaning on *nix)."
+          "Make Instiki run as a Daemon (only works if fork is available -- meaning on *nix)."
           ) { OPTIONS[:server_type] = WEBrick::Daemon }
 
   opts.separator ""
