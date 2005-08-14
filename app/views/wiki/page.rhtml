@@ -22,7 +22,7 @@
 <% end %>
 
 <div class="byline">
-  <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_on %> 
+  <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 
   by <%= @page.author_link %>
   <%= "(#{@page.author.ip})" if @page.author.respond_to?(:ip) %>
   <% if @web.count_pages? %>

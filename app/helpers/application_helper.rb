@@ -72,4 +72,10 @@ module ApplicationHelper
     h(text).gsub(/\n/, '<br/>')
   end
 
+  def format_date(date)
+    # Must use DateTime because Time doesn't support %e on at least some platforms
+    DateTime.new(date.year, date.mon, date.day, date.hour, date.min, 
+        date.sec).strftime("%B %e, %Y %H:%M:%S")
+  end
+
 end

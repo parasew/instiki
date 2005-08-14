@@ -8,7 +8,7 @@
 <%= @page.display_content_for_export %>
 
 <div class="byline">
-  <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_on %> 
+  <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 
   by
   <%= @page.author_link({ :mode => (@link_mode || :show) }) %>
 </div>

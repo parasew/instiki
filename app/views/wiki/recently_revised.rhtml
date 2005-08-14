@@ -17,7 +17,7 @@
       <%= link_to_existing_page page %>
       <div class="byline" style="margin-bottom: 0px">
         by <%= link_to_page(page.author) %>
-        at <%= page.current_revision.pretty_created_on %>
+        at <%= format_date(page.revised_at) %>
         <%= "from #{page.author.ip}" if page.author.respond_to?(:ip) %>
       </div>
     </li>

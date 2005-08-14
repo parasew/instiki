@@ -3,14 +3,6 @@ class Revision < ActiveRecord::Base
   belongs_to :page
   composed_of :author, :mapping => [ %w(author name), %w(ip ip) ]
 
-  # TODO this method belongs in the view helpers (only views use it)
-  def pretty_created_on
-    # Must use DateTime because Time doesn't support %e on at least some platforms
-    DateTime.new(
-      revised_at.year, revised_at.mon, revised_at.day, revised_at.hour, revised_at.min, revised_at.sec
-    ).strftime "%B %e, %Y %H:%M:%S"  
-  end
-
   # Returns an array of all the WikiIncludes present in the content of this revision.
   def wiki_includes
     unless @wiki_includes_cache 
