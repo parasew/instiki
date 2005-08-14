@@ -112,11 +112,18 @@ class Revision < ActiveRecord::Base
   end
 
   protected
-  before_create :set_revision_number
+  before_create :set_revision_number, :set_timestamp
   after_create :force_rendering
   after_save :clear_display_cache
   
+  # TODO Refactor this away. Revisions collection should not rely on the revision number for 
+  # sorting etc - revisions must be easy to delete (this helps fighting wiki spam)
   def set_revision_number
     self.number = self.class.count(['page_id = ?', page_id]) + 1
   end
+  
+  def set_timestamp
+    self.timestamp = (Time.now.to_f * 1000).to_i.to_s
+  end
+
 end

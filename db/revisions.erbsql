@@ -2,6 +2,8 @@ CREATE TABLE revisions (
     id <%= @pk %>,
     created_at <%= @datetime %> NOT NULL,
     updated_at <%= @datetime %> NOT NULL,
+
+    timestamp CHAR(13) NOT NULL,
     page_id INTEGER NOT NULL,
     content TEXT NOT NULL,
     author VARCHAR(60),
