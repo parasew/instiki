@@ -53,8 +53,7 @@
 			sourceTree = "<group>";
 		};
 		1058C7A1FEA54F0111CA2CBB = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
@@ -111,6 +110,10 @@
 		};
 		17BF6FD9067536EB003F37D6 = {
 			children = (
+				4F32CE69089CD9F5003CF12F,
+				4F32CE72089CD9F5003CF12F,
+				4F32CE81089CD9F5003CF12F,
+				4F32CE86089CD9F5003CF12F,
 				63B86D2F0673A5D300807E13,
 				63B86D1A0673A5B200807E13,
 				63B86D100673A58400807E13,
@@ -146,7 +149,7 @@
 			isa = PBXFileReference;
 			lastKnownFileType = "compiled.mach-o.executable";
 			name = ruby;
-			path = /usr/local/bin/ruby;
+			path = /usr/bin/ruby;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
@@ -160,7 +163,7 @@
 			isa = PBXFileReference;
 			lastKnownFileType = folder;
 			name = ruby;
-			path = /usr/local/lib/ruby;
+			path = /usr/lib/ruby;
 			refType = 0;
 			sourceTree = "<absolute>";
 		};
@@ -313,8 +316,7 @@
 			sourceTree = "<group>";
 		};
 		29B97324FDCFA39411CA2CEA = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = AppKit.framework;
 			path = /System/Library/Frameworks/AppKit.framework;
@@ -322,8 +324,7 @@
 			sourceTree = "<absolute>";
 		};
 		29B97325FDCFA39411CA2CEA = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
@@ -359,8 +360,6 @@
 //4A3
 //4A4
 		4A9504CCFFE6A4B311CA0CBA = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
@@ -375,8 +374,6 @@
 			name = Development;
 		};
 		4A9504CDFFE6A4B311CA0CBA = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -390,6 +387,85 @@
 //4A2
 //4A3
 //4A4
+//4F0
+//4F1
+//4F2
+//4F3
+//4F4
+		4F32CE69089CD9F5003CF12F = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder;
+			name = config;
+			path = ../../../config;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		4F32CE72089CD9F5003CF12F = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder;
+			name = public;
+			path = ../../../public;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		4F32CE81089CD9F5003CF12F = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder;
+			name = script;
+			path = ../../../script;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		4F32CE86089CD9F5003CF12F = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder;
+			name = vendor;
+			path = ../../../vendor;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		4F32D28F089CD9FC003CF12F = {
+			fileRef = 4F32CE69089CD9F5003CF12F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4F32D290089CD9FC003CF12F = {
+			fileRef = 4F32CE72089CD9F5003CF12F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4F32D291089CD9FC003CF12F = {
+			fileRef = 4F32CE81089CD9F5003CF12F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4F32D292089CD9FC003CF12F = {
+			fileRef = 4F32CE86089CD9F5003CF12F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4F32D336089CDDE0003CF12F = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "";
+		};
+//4F0
+//4F1
+//4F2
+//4F3
+//4F4
 //630
 //631
 //632
@@ -400,6 +476,10 @@
 			dstPath = rb_src;
 			dstSubfolderSpec = 7;
 			files = (
+				4F32D290089CD9FC003CF12F,
+				4F32D291089CD9FC003CF12F,
+				4F32D28F089CD9FC003CF12F,
+				4F32D292089CD9FC003CF12F,
 				63B86D310673A5D600807E13,
 				63B86D1C0673A5B600807E13,
 				63B86D120673A59100807E13,
@@ -412,9 +492,9 @@
 			fileEncoding = 4;
 			isa = PBXFileReference;
 			name = app;
-			path = /Users/duff/Source/rb_src/instiki/app;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../../../app;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		63B86D120673A59100807E13 = {
 			fileRef = 63B86D100673A58400807E13;
@@ -426,10 +506,10 @@
 			explicitFileType = folder;
 			fileEncoding = 4;
 			isa = PBXFileReference;
-			name = libraries;
-			path = /Users/duff/Source/rb_src/instiki/libraries;
-			refType = 0;
-			sourceTree = "<absolute>";
+			name = lib;
+			path = ../../../lib;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		63B86D1C0673A5B600807E13 = {
 			fileRef = 63B86D1A0673A5B200807E13;
@@ -442,9 +522,9 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.ruby;
 			name = instiki.rb;
-			path = /Users/duff/Source/rb_src/instiki/instiki.rb;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../../../instiki.rb;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		63B86D310673A5D600807E13 = {
 			fileRef = 63B86D2F0673A5D300807E13;
@@ -470,6 +550,7 @@
 				8D11072E0486CEB800E47090,
 				17F6C3A90662960F007E0BD0,
 				63B86D0F0673A53100807E13,
+				4F32D336089CDDE0003CF12F,
 			);
 			buildRules = (
 			);
