@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'redcloth_for_tex'
 require 'parsedate'
+require 'zip/zip'
 
 class WikiController < ApplicationController
 

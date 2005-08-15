@@ -63,6 +63,7 @@ class ApplicationController < ActionController::Base
 
   def send_file(file, options = {})
     options[:type] ||= (FILE_TYPES[File.extname(file)] || 'application/octet-stream')
+    options[:stream] = false
     super(file, options)
   end
 
