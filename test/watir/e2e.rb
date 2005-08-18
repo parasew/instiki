@@ -4,6 +4,7 @@ require 'test/unit'
 require 'rexml/document'
 
 INSTIKI_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
+
 require(File.expand_path(File.dirname(__FILE__) + "/../../config/environment"))
 
 # Use instiki/../watir, if such a directory exists; This can be a CVS HEAD version of Watir. 
@@ -19,8 +20,9 @@ class E2EInstikiTest < Test::Unit::TestCase
   def startup
     @@instiki = InstikiController.start
 
-    sleep 5
+    sleep 8
     @@ie = Watir::IE.start(HOME)
+    @@ie.set_fast_speed if (ARGV & ['-d', '--demo', '-demo', 'demo']).empty?
 
     setup_web
     setup_home_page
@@ -268,19 +270,19 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
 
   def setup_web
-    assert_equal 'Wiki', ie.textField(:name, 'web_name').value
-    assert_equal 'wiki', ie.textField(:name, 'web_address').value
-    assert_equal '', ie.textField(:name, 'password').value
-    assert_equal '', ie.textField(:name, 'password_check').value
+    assert_equal 'Wiki', ie.text_field(:name, 'web_name').value
+    assert_equal 'wiki', ie.text_field(:name, 'web_address').value
+    assert_equal '', ie.text_field(:name, 'password').value
+    assert_equal '', ie.text_field(:name, 'password_check').value
     
-    ie.textField(:name, 'password').set('123')
-    ie.textField(:name, 'password_check').set('123')
+    ie.text_field(:name, 'password').set('123')
+    ie.text_field(:name, 'password_check').set('123')
     ie.button(:value, 'Setup').click
     assert_equal url(:new, 'HomePage'), ie.url
   end
 
   def setup_home_page
-    ie.textField(:name, 'content').set('Homepage of a test wiki')
+    ie.text_field(:name, 'content').set('Homepage of a test wiki')
     ie.button(:value, 'Submit').click
     assert_equal url(:show, 'HomePage'), ie.url
   end
