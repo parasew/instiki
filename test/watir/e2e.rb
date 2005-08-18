@@ -21,7 +21,7 @@ class E2EInstikiTest < Test::Unit::TestCase
 
     sleep 8
     @@ie = Watir::IE.start(HOME)
-    @@ie.set_fast_speed unless ARGV.includes? '-demo'
+    @@ie.set_fast_speed if (ARGV & ['-d', '--demo', '-demo', 'demo']).empty?
 
     setup_web
     setup_home_page
