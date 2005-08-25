@@ -34,8 +34,8 @@ class FileControllerTest < Test::Unit::TestCase
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.txt'
     
-    assert_success
-    assert_equal "aaa\nbbb\n", r.binary_content
+    assert_success(bypass_body_parsing = true)
+    assert_equal "aaa\nbbb\n", r.body
     assert_equal 'text/plain', r.headers['Content-Type']
   end
 
@@ -44,8 +44,8 @@ class FileControllerTest < Test::Unit::TestCase
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.pdf'
     
-    assert_success
-    assert_equal "aaa\nbbb\n", r.binary_content
+    assert_success(bypass_body_parsing = true)
+    assert_equal "aaa\nbbb\n", r.body
     assert_equal 'application/pdf', r.headers['Content-Type']
   end
 
@@ -54,8 +54,8 @@ class FileControllerTest < Test::Unit::TestCase
     
     r = process 'pic', 'web' => 'wiki1', 'id' => 'rails.gif'
     
-    assert_success
-    assert_equal File.size("#{FILE_AREA}/rails.gif"), r.binary_content.size
+    assert_success(bypass_body_parsing = true)
+    assert_equal File.size("#{FILE_AREA}/rails.gif"), r.body.size
   end
   
   def test_pic_unknown_pic

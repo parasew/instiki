@@ -118,10 +118,11 @@ if defined? $validate_xml_in_assert_success and $validate_xml_in_assert_success 
         unless method_defined? :__assert_success_before_ovverride_by_instiki
           alias :__assert_success_before_ovverride_by_instiki :assert_success 
         end
-        def assert_success
+        def assert_success(bypass_body_parsing = false)
           __assert_success_before_ovverride_by_instiki
-          if @response.body.kind_of?(Proc) then # it's a file download, not an HTML content
-          else assert_nothing_raised(@response.body) { REXML::Document.new(@response.body) } end
+          unless bypass_body_parsing
+            assert_nothing_raised(@response.body) { REXML::Document.new(@response.body) }
+          end
         end
       end
     end

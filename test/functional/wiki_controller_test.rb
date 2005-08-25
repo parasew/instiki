@@ -111,18 +111,17 @@ class WikiControllerTest < Test::Unit::TestCase
     
     r = process 'export_html', 'web' => 'wiki1'
     
-    assert_success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
     assert_equal :export, r.template_objects['link_mode']
     
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
     begin 
-      File.open(@tempfile_path, 'wb') { |f| f.write(content); @exported_file = f.path }
+      File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
         assert_equal %w(Elephant.html HomePage.html Oak.html index.html), zip.dir.entries('.').sort
         assert_match /.*<html .*All about elephants.*<\/html>/, 
@@ -143,38 +142,35 @@ class WikiControllerTest < Test::Unit::TestCase
     
     r = process 'export_html', 'web' => 'wiki1', 'layout' => 'no'
     
-    assert_success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
     assert_equal :export, r.template_objects['link_mode']
   end
 
   def test_export_markup
     r = process 'export_markup', 'web' => 'wiki1'
 
-    assert_success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-textile-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end
 
 
-  if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
+  if ENV['INSTIKI_TEST_PDFLATEX'] or defined? $INSTIKI_TEST_PDFLATEX
 
     def test_export_pdf
       r = process 'export_pdf', 'web' => 'wiki1'
-      assert_success
+      assert_success(bypass_body_parsing = true)
       assert_equal 'application/pdf', r.headers['Content-Type']
       assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
           r.headers['Content-Disposition']
-      content = r.binary_content
-      assert_equal '%PDF', content[0..3]
-      assert_equal "EOF\n", content[-4..-1]
+      assert_equal '%PDF', r.body[0..3]
+      assert_equal "EOF\n", r.body[-4..-1]
     end
 
   else
@@ -189,12 +185,11 @@ class WikiControllerTest < Test::Unit::TestCase
     
     r = process 'export_tex', 'web' => 'wiki1'
 
-    assert_success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/octet-stream', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
-        r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal '\documentclass', content[0..13], 'Content is not a TeX file'
+    assert_match(/attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
+        r.headers['Content-Disposition'])
+    assert_equal '\documentclass', r.body[0..13], 'Content is not a TeX file'
   end
 
   def test_feeds
