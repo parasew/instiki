@@ -1,3 +1,4 @@
+require 'diff'
 # Temporary class containing all rendering stuff from a Revision 
 # I want to shift all rendering loguc to the controller eventually
 

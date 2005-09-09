@@ -2,7 +2,7 @@ class Page < ActiveRecord::Base
   belongs_to :web
   has_many :revisions, :order => 'id'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
-    
+
   def revise(content, time, author)
     revisions_size = new_record? ? 0 : revisions.size
     if (revisions_size > 0) and content == current_revision.content
@@ -13,7 +13,8 @@ class Page < ActiveRecord::Base
     author = Author.new(author.to_s) unless author.is_a?(Author)
 
     # Try to render content to make sure that markup engine can take it,
-    Revision.new(:page => self, :content => content, :author => author, :revised_at => time).force_rendering
+    r = Revision.new(:page => self, :content => content, :author => author, :revised_at => time)
+    PageRenderer.new(r).force_rendering
 
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 
