@@ -27,7 +27,7 @@ class FileControllerTest < Test::Unit::TestCase
   def test_file
     process 'file', 'web' => 'wiki1', 'id' => 'foo.tgz'
     
-    assert_response :success
+    assert_success
     assert_rendered_file 'file/file'
   end
 
@@ -36,8 +36,8 @@ class FileControllerTest < Test::Unit::TestCase
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.txt'
     
-    assert_response :success
-    assert_equal "aaa\nbbb\n", r.binary_content
+    assert_success(bypass_body_parsing = true)
+    assert_equal "aaa\nbbb\n", r.body
     assert_equal 'text/plain', r.headers['Content-Type']
   end
 
@@ -46,8 +46,8 @@ class FileControllerTest < Test::Unit::TestCase
   
     r = process 'file', 'web' => 'wiki1', 'id' => 'foo.pdf'
     
-    assert_response :success
-    assert_equal "aaa\nbbb\n", r.binary_content
+    assert_success(bypass_body_parsing = true)
+    assert_equal "aaa\nbbb\n", r.body
     assert_equal 'application/pdf', r.headers['Content-Type']
   end
 
@@ -56,14 +56,14 @@ class FileControllerTest < Test::Unit::TestCase
     
     r = process 'pic', 'web' => 'wiki1', 'id' => 'rails.gif'
     
-    assert_response :success
-    assert_equal File.size("#{FILE_AREA}/rails.gif"), r.binary_content.size
+    assert_success(bypass_body_parsing = true)
+    assert_equal File.size("#{FILE_AREA}/rails.gif"), r.body.size
   end
   
   def test_pic_unknown_pic
     r = process 'pic', 'web' => 'wiki1', 'id' => 'non-existant.gif'
     
-    assert_response :success
+    assert_success
     assert_rendered_file 'file/file'
   end
 
@@ -76,7 +76,7 @@ class FileControllerTest < Test::Unit::TestCase
   
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
     r = process 'pic', 'web' => 'wiki1', 'id' => 'rails-e2e.gif'
-    assert_response :success
+    assert_success
     assert_rendered_file 'file/file'
 
     # User uploads the picture
@@ -100,7 +100,7 @@ class FileControllerTest < Test::Unit::TestCase
         
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
     r = process 'file', 'web' => 'wiki1', 'id' => 'instiki-e2e.txt'
-    assert_response :success
+    assert_success
     assert_rendered_file 'file/file'
 
     # User uploads the picture
@@ -120,7 +120,7 @@ class FileControllerTest < Test::Unit::TestCase
   def test_uploads_blocking
     set_web_property :allow_uploads, true
     r = process 'file', 'web' => 'wiki1', 'id' => 'filename'
-    assert_response :success
+    assert_success
 
     set_web_property :allow_uploads, false
     r = process 'file', 'web' => 'wiki1', 'id' => 'filename'

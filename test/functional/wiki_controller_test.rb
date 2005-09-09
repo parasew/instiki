@@ -50,7 +50,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     r = process('authors', 'web' => 'wiki1')
 
-    assert_response :success
+    assert_success
     assert_equal %w(AnAuthor BreakingTheOrder DavidHeinemeierHansson Guest Me TreeHugger), 
         r.template_objects['authors']
   end
@@ -67,7 +67,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_edit
     r = process 'edit', 'web' => 'wiki1', 'id' => 'HomePage'
-    assert_response :success
+    assert_success
     assert_equal @wiki.read_page('wiki1', 'HomePage'), r.template_objects['page']
   end
 
@@ -80,7 +80,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_edit_page_break_lock
     @home.lock(Time.now, 'Locky')
     process 'edit', 'web' => 'wiki1', 'id' => 'HomePage', 'break_lock' => 'y'
-    assert_response :success
+    assert_success
     @home = Page.find(@home.id)
     assert @home.locked?(Time.now)
   end
@@ -97,7 +97,7 @@ class WikiControllerTest < Test::Unit::TestCase
     Time.now, Author.new('Special', '127.0.0.3'))
     
     r = process 'edit', 'web' => 'wiki1', 'id' => 'With : Special /> symbols'
-    assert_response :success
+    assert_success
     xml = REXML::Document.new(r.body)
     form = REXML::XPath.first(xml, '//form')
     assert_equal '/wiki1/save/With+%3A+Special+%2F%3E+symbols', form.attributes['action']
@@ -107,18 +107,17 @@ class WikiControllerTest < Test::Unit::TestCase
     @home.rollback(0, Time.now, 'Rick') # much simpler regex statement to match
     r = process 'export_html', 'web' => 'wiki1'
     
-    assert_response :success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
     assert_equal :export, r.template_objects['link_mode']
     
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
     begin 
-      File.open(@tempfile_path, 'wb') { |f| f.write(content); @exported_file = f.path }
+      File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
         assert_equal %w(Elephant.html FirstPage.html HomePage.html MyWay.html NoWikiWord.html Oak.html SmartEngine.html ThatWay.html index.html), zip.dir.entries('.').sort
         assert_match /.*<html .*All about elephants.*<\/html>/, 
@@ -137,24 +136,22 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_export_html_no_layout    
     r = process 'export_html', 'web' => 'wiki1', 'layout' => 'no'
     
-    assert_response :success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
     assert_equal :export, r.template_objects['link_mode']
   end
 
   def test_export_markup
     r = process 'export_markup', 'web' => 'wiki1'
 
-    assert_response :success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-textile-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal 'PK', content[0..1], 'Content is not a zip file'
+    assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end
 
 
@@ -162,13 +159,12 @@ class WikiControllerTest < Test::Unit::TestCase
 
     def test_export_pdf
       r = process 'export_pdf', 'web' => 'wiki1'
-      assert_response :success
+      assert_success(bypass_body_parsing = true)
       assert_equal 'application/pdf', r.headers['Content-Type']
       assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
           r.headers['Content-Disposition']
-      content = r.binary_content
-      assert_equal '%PDF', content[0..3]
-      assert_equal "EOF\n", content[-4..-1]
+      assert_equal '%PDF', r.body[0..3]
+      assert_equal "EOF\n", r.body[-4..-1]
     end
 
   else
@@ -180,12 +176,11 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_export_tex    
     r = process 'export_tex', 'web' => 'wiki1'
 
-    assert_response :success
+    assert_success(bypass_body_parsing = true)
     assert_equal 'application/octet-stream', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
         r.headers['Content-Disposition']
-    content = r.binary_content
-    assert_equal '\documentclass', content[0..13], 'Content is not a TeX file'
+    assert_equal '\documentclass', r.body[0..13], 'Content is not a TeX file'
   end
 
   def test_feeds
@@ -230,21 +225,21 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_locked
     @home.lock(Time.now, 'Locky')
     r = process('locked', 'web' => 'wiki1', 'id' => 'HomePage')
-    assert_response :success
+    assert_success
     assert_equal @home, r.template_objects['page']
   end
 
 
   def test_login
     r = process 'login', 'web' => 'wiki1'
-    assert_response :success
+    assert_success
     # this action goes straight to the templates
   end
 
 
   def test_new
     r = process('new', 'id' => 'NewPage', 'web' => 'wiki1')
-    assert_response :success
+    assert_success
     assert_equal 'AnonymousCoward', r.template_objects['author']
     assert_equal 'NewPage', r.template_objects['page_name']
   end
@@ -255,12 +250,10 @@ class WikiControllerTest < Test::Unit::TestCase
     def test_pdf
       assert RedClothForTex.available?, 'Cannot do test_pdf when pdflatex is not available'
       r = process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
-      assert_response :success
+      assert_success(bypass_body_parsing = true)
 
-      content = r.binary_content
-      
-      assert_equal '%PDF', content[0..3]
-      assert_equal "EOF\n", content[-4..-1]
+      assert_equal '%PDF', r.body[0..3]
+      assert_equal "EOF\n", r.body[-4..-1]
 
       assert_equal 'application/pdf', r.headers['Content-Type']
       assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
@@ -273,7 +266,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_print
     r = process('print', 'web' => 'wiki1', 'id' => 'HomePage')
 
-    assert_response :success
+    assert_success
     assert_equal :show, r.template_objects['link_mode']
   end
 
@@ -283,7 +276,7 @@ class WikiControllerTest < Test::Unit::TestCase
     
     r = process('published', 'web' => 'wiki1', 'id' => 'HomePage')
     
-    assert_response :success
+    assert_success
     assert_equal @home, r.template_objects['page']
   end
 
@@ -299,7 +292,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_recently_revised
     r = process('recently_revised', 'web' => 'wiki1')
-    assert_response :success
+    assert_success
     
     assert_equal %w(animals trees), r.template_objects['categories']
     assert_nil r.template_objects['category']
@@ -314,7 +307,7 @@ class WikiControllerTest < Test::Unit::TestCase
         Time.now, Author.new('AnotherAuthor', '127.0.0.2'))
       
     r = process('recently_revised', 'web' => 'wiki1')
-    assert_response :success
+    assert_success
     
     assert_equal %w(animals categorized trees), r.template_objects['categories']
     # no category is specified in params
@@ -327,7 +320,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_recently_revised_with_categorized_page_multiple_categories
     r = process('recently_revised', 'web' => 'wiki1')
-    assert_response :success
+    assert_success
 
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     # no category is specified in params
@@ -340,7 +333,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_recently_revised_with_specified_category
     r = process('recently_revised', 'web' => 'wiki1', 'category' => 'animals')
-    assert_response :success
+    assert_success
     
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     # no category is specified in params
@@ -353,7 +346,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_revision
     r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '0'
 
-    assert_response :success
+    assert_success
     assert_equal @home, r.template_objects['page']
     assert_equal @home.revisions[0], r.template_objects['revision'] 
   end
@@ -364,7 +357,7 @@ class WikiControllerTest < Test::Unit::TestCase
     # its assigns the same as or revision
     r = process 'rollback', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '0'
 
-    assert_response :success
+    assert_success
     assert_equal @home, r.template_objects['page']
     assert_equal @home.revisions[0], r.template_objects['revision']
   end
@@ -372,7 +365,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_rss_with_content
     r = process 'rss_with_content', 'web' => 'wiki1'
     
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal [@elephant, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home], pages,
         "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
@@ -398,7 +391,7 @@ class WikiControllerTest < Test::Unit::TestCase
   
     r = process 'rss_with_headlines', 'web' => 'wiki1'
 
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal [@elephant, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home], pages, "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
@@ -432,7 +425,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     r = process 'rss_with_headlines', 'web' => 'wiki1'
 
-    assert_response :success
+    assert_success
     xml = REXML::Document.new(r.body)
 
     expected_page_links =
@@ -455,37 +448,37 @@ class WikiControllerTest < Test::Unit::TestCase
     setup_wiki_with_30_pages
 
     r = process 'rss_with_headlines', 'web' => 'wiki1'
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal 15, pages.size, 15
     
     r = process 'rss_with_headlines', 'web' => 'wiki1', 'limit' => '5'
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal 5, pages.size
     
     r = process 'rss_with_headlines', 'web' => 'wiki1', 'limit' => '25'
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal 25, pages.size
     
     r = process 'rss_with_headlines', 'web' => 'wiki1', 'limit' => 'all'
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal 38, pages.size
     
     r = process 'rss_with_headlines', 'web' => 'wiki1', 'start' => '1976-10-16'
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal 23, pages.size
     
     r = process 'rss_with_headlines', 'web' => 'wiki1', 'end' => '1976-10-16'
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal 15, pages.size
     
     r = process 'rss_with_headlines', 'web' => 'wiki1', 'start' => '1976-10-01', 'end' => '1976-10-06'
-    assert_response :success
+    assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal 5, pages.size
   end
@@ -564,7 +557,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_search_multiple_results
     r = process 'search', 'web' => 'wiki1', 'query' => 'All about'
     
-    assert_response :success
+    assert_success
     assert_equal 'All about', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
@@ -573,7 +566,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_search_by_content_and_title
     r = process 'search', 'web' => 'wiki1', 'query' => '(Oak|Elephant)'
     
-    assert_response :success
+    assert_success
     assert_equal '(Oak|Elephant)', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
     assert_equal [@elephant, @oak], r.template_objects['title_results']
@@ -582,14 +575,14 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_search_zero_results
     r = process 'search', 'web' => 'wiki1', 'query' => 'non-existant text'
     
-    assert_response :success
+    assert_success
     assert_equal [], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
   end
 
   def test_show_page
     r = process('show', 'id' => 'Oak', 'web' => 'wiki1')
-    assert_response :success
+    assert_success
     assert_tag :content => /All about oak/
   end
 
@@ -599,7 +592,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
-    assert_response :success
+    assert_success
     assert_match /Second revision of the <a.*HomePage.*<\/a> end/, r.body
   end
 
@@ -619,7 +612,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_tex
     r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
-    assert_response :success
+    assert_success
     
     assert_equal "\\documentclass[12pt,titlepage]{article}\n\n\\usepackage[danish]{babel}      " +
         "%danske tekster\n\\usepackage[OT1]{fontenc}       %rigtige danske bogstaver...\n" +
@@ -637,7 +630,7 @@ class WikiControllerTest < Test::Unit::TestCase
     
     r = process('web_list')
     
-    assert_response :success
+    assert_success
     assert_equal [another_wiki, webs(:instiki), @web], r.template_objects['webs']
   end
   
