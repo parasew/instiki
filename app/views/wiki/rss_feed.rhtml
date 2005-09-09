@@ -7,10 +7,10 @@
 		<language>en-us</language>
 		<ttl>40</ttl>
   <% for page in @pages_by_revision %>
-		<item>
+    <item>
       <title><%= h page.plain_name %></title>
     <% unless @hide_description %>
-      <description><%= h page.display_content %></description>
+      <description><%= h rendered_content(page) %></description>
     <% end %>
       <pubDate><%= page.revised_at.getgm.strftime "%a, %d %b %Y %H:%M:%S Z" %></pubDate>
       <guid><%= url_for :only_path => false, :web => @web_name, :action => @link_action, :id => page.name %></guid>

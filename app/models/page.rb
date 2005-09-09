@@ -24,10 +24,7 @@ class Page < ActiveRecord::Base
     else
       Revision.create(:page => self, :content => content, :author => author, :revised_at => time)
     end
-    
     save
-    web.refresh_pages_with_references(name) if revisions_size == 0
-    
     self
   end
 
@@ -56,14 +53,6 @@ class Page < ActiveRecord::Base
     else
       revisions[revision_index - 1]
     end
-  end
-
-  def in_category?(cat)
-    cat.nil? || cat.empty? || categories.include?(cat)
-  end
-
-  def categories
-    display_content.find_chunks(Category).map { |cat| cat.list }.flatten
   end
 
   def authors

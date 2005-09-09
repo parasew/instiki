@@ -66,17 +66,6 @@ class Web < ActiveRecord::Base
     end
   end
 
-  # Clears the display cache for all the pages with references to 
-  def refresh_pages_with_references(page_name)
-    #select.pages_that_reference(page_name).each { |page| 
-    #  page.revisions.each { |revision| revision.clear_display_cache }
-    #}
-  end
-  
-  def refresh_revisions
-    select.each { |page| page.revisions.each { |revision| revision.clear_display_cache } }
-  end
-
   def remove_pages(pages_to_be_removed)
     pages_to_be_removed.each { |p| p.destroy }
   end

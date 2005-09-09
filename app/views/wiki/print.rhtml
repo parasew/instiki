@@ -5,7 +5,7 @@
   @inline_style = true
 %>
 
-<%= @page.display_content_for_export %>
+<%= @renderer.display_content_for_export %>
 
 <div class="byline">
   <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 

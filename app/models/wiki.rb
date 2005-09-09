@@ -32,7 +32,6 @@ class Wiki
       raise Instiki::ValidationError.new("Web with address '#{old_address}' does not exist")
     end
     
-    web.refresh_revisions if web.settings_changed?(markup, safe_mode, brackets_only)
     web.update_attributes(:address => new_address, :name => name, :markup => markup, :color => color, 
       :additional_style => additional_style, :safe_mode => safe_mode, :password => password, :published => published,
       :brackets_only => brackets_only, :count_pages => count_pages, :allow_uploads => allow_uploads, :max_upload_size => max_upload_size)

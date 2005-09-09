@@ -48,6 +48,7 @@ class WikiController < ApplicationController
   def export_html
     export_pages_as_zip('html') do |page| 
       @page = page
+      @renderer = PageRenderer.new(page.revisions.last)
       @link_mode = :export
       render_to_string('wiki/print', use_layout = (@params['layout'] != 'no'))
     end
@@ -152,12 +153,14 @@ class WikiController < ApplicationController
 
   def print
     @link_mode ||= :show
+    @renderer = PageRenderer.new(@page.revisions.last)
     # to template
   end
 
   def published
     if @web.published?
-      @page = wiki.read_page(@web_name, @page_name || 'HomePage') 
+      page = wiki.read_page(@web_name, @page_name || 'HomePage') 
+      @renderer = PageRenderer.new(page.revisions.last)
     else 
       redirect_home
     end
@@ -165,6 +168,7 @@ class WikiController < ApplicationController
   
   def revision
     get_page_and_revision
+    @renderer = PageRenderer.new(@revision)
   end
 
   def rollback
@@ -200,6 +204,7 @@ class WikiController < ApplicationController
   def show
     if @page
       begin
+        @renderer = PageRenderer.new(@page.revisions.last)
         render_action 'page'
       # TODO this rescue should differentiate between errors due to rendering and errors in 
       # the application itself (for application errors, it's better not to rescue the error at all)
@@ -280,14 +285,20 @@ class WikiController < ApplicationController
   end
 
   def parse_category
-    @categories = @web.categories
     @category = @params['category']
-    if @categories.include?(@category)
-      @pages_in_category = @web.select { |page| page.in_category?(@category) }
-      @set_name = "category '#{@category}'"
-    else 
+    @categories = []
+    @pages_in_category = @web.select do |page|
+      page_categories = PageRenderer.new(page.revisions.last).display_content.find_chunks(Category)
+      page_categories = page_categories.map { |cat| cat.list }.flatten
+      page_categories.each {|c| @categories << c unless @categories.include? c }
+      page_categories.include?(@category) 
+    end
+    @categories.sort!
+    if (@pages_in_category.empty?)
       @pages_in_category = PageSet.new(@web).by_name
       @set_name = 'the web'
+    else 
+      @set_name = "category '#{@category}'"
     end
   end
 

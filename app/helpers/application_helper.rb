@@ -78,4 +78,8 @@ module ApplicationHelper
         date.sec).strftime("%B %e, %Y %H:%M:%S")
   end
 
+  def rendered_content(page)
+    PageRenderer.new(page.revisions.last).display_content
+  end
+
 end

@@ -7,21 +7,6 @@ class WebTest < Test::Unit::TestCase
     @web = webs(:instiki)
   end
   
-  def test_wiki_word_linking
-    @web.add_page('SecondPage', 'Yo, yo. Have you EverBeenHated', 
-                   Time.now, 'DavidHeinemeierHansson')
-    
-    assert_equal('<p>Yo, yo. Have you <span class="newWikiWord">Ever Been Hated' + 
-        '<a href="../show/EverBeenHated">?</a></span></p>', 
-        @web.page("SecondPage").display_content)
-    
-    @web.add_page('EverBeenHated', 'Yo, yo. Have you EverBeenHated', Time.now, 
-                  'DavidHeinemeierHansson')
-    assert_equal('<p>Yo, yo. Have you <a class="existingWikiWord" ' +
-        'href="../show/EverBeenHated">Ever Been Hated</a></p>', 
-        @web.page("SecondPage").display_content)
-  end
-  
   def test_pages_by_revision
     add_sample_pages
     assert_equal 'EverBeenHated', @web.select.by_revision.first.name
@@ -45,52 +30,6 @@ class WebTest < Test::Unit::TestCase
     assert_equal 2, @web.pages.length
     @web.remove_pages([ @web.page('EverBeenInLove') ])
     assert_equal 1, @web.pages(true).length
-  end
-  
-  def test_make_link
-    add_sample_pages
-    
-    existing_page_wiki_url = 
-        '<a class="existingWikiWord" href="../show/EverBeenInLove">Ever Been In Love</a>'
-    existing_page_published_url = 
-        '<a class="existingWikiWord" href="../published/EverBeenInLove">Ever Been In Love</a>'
-    existing_page_static_url = 
-        '<a class="existingWikiWord" href="EverBeenInLove.html">Ever Been In Love</a>'
-    new_page_wiki_url = 
-        '<span class="newWikiWord">Unknown Word<a href="../show/UnknownWord">?</a></span>'
-    new_page_published_url = 
-    new_page_static_url =
-        '<span class="newWikiWord">Unknown Word</span>'
-    
-    # no options
-    assert_equal existing_page_wiki_url, @web.make_link('EverBeenInLove')
-  
-    # :mode => :export
-    assert_equal existing_page_static_url, @web.make_link('EverBeenInLove', nil, :mode => :export)
-  
-    # :mode => :publish
-    assert_equal existing_page_published_url, 
-        @web.make_link('EverBeenInLove', nil, :mode => :publish)
-  
-    # new page, no options
-    assert_equal new_page_wiki_url, @web.make_link('UnknownWord')
-  
-    # new page, :mode => :export
-    assert_equal new_page_static_url, @web.make_link('UnknownWord', nil, :mode => :export)
-  
-    # new page, :mode => :publish
-    assert_equal new_page_published_url, @web.make_link('UnknownWord', nil, :mode => :publish)
-  
-    # Escaping special characters in the name
-    assert_equal(
-        '<span class="newWikiWord">Smith &amp; Wesson<a href="../show/Smith+%26+Wesson">?</a></span>', 
-        @web.make_link('Smith & Wesson'))
-  
-    # optionally using text as the link text
-    assert_equal(
-      existing_page_published_url.sub(/>Ever Been In Love</, ">Haven't you ever been in love?<"),
-      @web.make_link('EverBeenInLove', "Haven't you ever been in love?", :mode => :publish))
-  
   end
   
   def test_initialize  
@@ -129,7 +68,7 @@ class WebTest < Test::Unit::TestCase
     @web.pages(true)
     assert_equal [home], @web.select.pages_that_link_to('AnotherPage')
   end
-  
+
   def test_orphaned_pages
     add_sample_pages
     home = @web.add_page('HomePage', 

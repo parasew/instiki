@@ -31,15 +31,15 @@ class PageSet < Array
   end
   
   def pages_that_reference(page_name)
-    self.select { |page| page.wiki_references.include?(page_name) }
+    self.select { |page| PageRenderer.new(page.revisions.last).wiki_references.include?(page_name) }
   end
   
   def pages_that_link_to(page_name)
-    self.select { |page| page.wiki_words.include?(page_name) }
+    self.select { |page| PageRenderer.new(page.revisions.last).wiki_words.include?(page_name) }
   end
 
   def pages_that_include(page_name)
-    self.select { |page| page.wiki_includes.include?(page_name) }
+    self.select { |page| PageRenderer.new(page.revisions.last).wiki_includes.include?(page_name) }
   end
 
   def pages_authored_by(author)
@@ -78,7 +78,7 @@ class PageSet < Array
   end
 
   def wiki_words
-    self.inject([]) { |wiki_words, page| wiki_words << page.wiki_words }.flatten.uniq
+    self.inject([]) { |wiki_words, page| wiki_words << PageRenderer.new(page.revisions.last).wiki_words }.flatten.uniq
   end
 
   def authors

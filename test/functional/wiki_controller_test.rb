@@ -364,7 +364,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_rss_with_content
     r = process 'rss_with_content', 'web' => 'wiki1'
-    
+
     assert_success
     pages = r.template_objects['pages_by_revision']
     assert_equal [@elephant, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home], pages,
