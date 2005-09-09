@@ -1,5 +1,3 @@
-require 'cgi'
-
 class Web < ActiveRecord::Base
   has_many :pages#, :include => [:current_revision, :web]
 
