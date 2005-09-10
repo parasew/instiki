@@ -4,7 +4,16 @@ require 'diff'
 
 class PageRenderer
 
+  def self.setup_url_generator(url_generator)
+    @@url_generator = url_generator
+  end
+
+  def self.teardown_url_generator
+    @@url_generator = nil
+  end
+
   attr_accessor :revision
+
 
   def initialize(revision = nil)
     @revision = revision
@@ -53,7 +62,7 @@ class PageRenderer
   # Ensures new version works with older snapshots.
   def display_content
     unless @display_cache && @display_cache.respond_to?(:chunks_by_type)
-      @display_cache = WikiContent.new(@revision)
+      @display_cache = WikiContent.new(@revision, @@url_generator)
       @display_cache.render!
     end
     @display_cache
@@ -76,28 +85,28 @@ class PageRenderer
 
   def display_published
     unless @published_cache && @published_cache.respond_to?(:chunks_by_type)
-      @published_cache = WikiContent.new(@revision, {:mode => :publish})
+      @published_cache = WikiContent.new(@revision, @@url_generator, {:mode => :publish})
       @published_cache.render!
     end
     @published_cache
   end
 
   def display_content_for_export
-    WikiContent.new(@revision, {:mode => :export} ).render!
+    WikiContent.new(@revision, @@url_generator, {:mode => :export} ).render!
   end
   
   def force_rendering
     begin
       display_content.render!
     rescue => e
-      logger.error "Failed rendering page #{@name}"
-      logger.error e
+      ActionController::Base.logger.error "Failed rendering page #{@name}"
+      ActionController::Base.logger.error e
       message = e.message
       # substitute content with an error message
       @revision.content = <<-EOL
           <p>Markup engine has failed to render this page, raising the following error:</p>
           <p>#{message}</p>
-          <pre>#{self.content}</pre>
+          <pre>#{@revision.content}</pre>
       EOL
       clear_display_cache
       raise e

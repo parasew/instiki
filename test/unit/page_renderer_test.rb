@@ -25,50 +25,6 @@ class PageRendererTest < Test::Unit::TestCase
         rendered_content(@web.page("SecondPage")))
   end
   
-  def test_make_link
-    add_sample_pages
-    
-    existing_page_wiki_url = 
-        '<a class="existingWikiWord" href="../show/EverBeenInLove">Ever Been In Love</a>'
-    existing_page_published_url = 
-        '<a class="existingWikiWord" href="../published/EverBeenInLove">Ever Been In Love</a>'
-    existing_page_static_url = 
-        '<a class="existingWikiWord" href="EverBeenInLove.html">Ever Been In Love</a>'
-    new_page_wiki_url = 
-        '<span class="newWikiWord">Unknown Word<a href="../show/UnknownWord">?</a></span>'
-    new_page_published_url =  new_page_static_url = '<span class="newWikiWord">Unknown Word</span>'
-    
-    # no options
-    assert_equal existing_page_wiki_url, @web.make_link('EverBeenInLove')
-  
-    # :mode => :export
-    assert_equal existing_page_static_url, @web.make_link('EverBeenInLove', nil, :mode => :export)
-  
-    # :mode => :publish
-    assert_equal existing_page_published_url, 
-        @web.make_link('EverBeenInLove', nil, :mode => :publish)
-  
-    # new page, no options
-    assert_equal new_page_wiki_url, @web.make_link('UnknownWord')
-  
-    # new page, :mode => :export
-    assert_equal new_page_static_url, @web.make_link('UnknownWord', nil, :mode => :export)
-  
-    # new page, :mode => :publish
-    assert_equal new_page_published_url, @web.make_link('UnknownWord', nil, :mode => :publish)
-  
-    # Escaping special characters in the name
-    assert_equal(
-        '<span class="newWikiWord">Smith &amp; Wesson<a href="../show/Smith+%26+Wesson">?</a></span>', 
-        @web.make_link('Smith & Wesson'))
-  
-    # optionally using text as the link text
-    assert_equal(
-      existing_page_published_url.sub(/>Ever Been In Love</, ">Haven't you ever been in love?<"),
-      @web.make_link('EverBeenInLove', "Haven't you ever been in love?", :mode => :publish))
-  
-  end
-
   def test_wiki_words
     assert_equal %w( HisWay MyWay SmartEngine SmartEngineGUI ThatWay ), 
         test_renderer(@revision).wiki_words.sort

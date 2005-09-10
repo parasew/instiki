@@ -44,28 +44,6 @@ class Web < ActiveRecord::Base
     read_attribute('markup').to_sym
   end
 
-  # Create a link for the given page name and link text based
-  # on the render mode in options and whether the page exists
-  # in the this web.
-  # The links a relative, and will work only if displayed on another WikiPage.
-  # It should not be used in menus, templates and such - instead, use link_to_page helper
-  def make_link(name, text = nil, options = {})
-    text = CGI.escapeHTML(text || WikiWords.separate(name))
-    mode = options[:mode] || :show
-    base_url = options[:base_url] || '..'
-    link_type = options[:link_type] || :show
-    case link_type.to_sym
-    when :show
-      UrlGenerator.new.make_page_link(mode, name, text, base_url, has_page?(name))
-    when :file
-      UrlGenerator.new.make_file_link(mode, name, text, base_url, has_file?(name))
-    when :pic
-      UrlGenerator.new.make_pic_link(mode, name, text, base_url, has_file?(name))
-    else
-      raise "Unknown link type: #{link_type}"
-    end
-  end
-
   def remove_pages(pages_to_be_removed)
     pages_to_be_removed.each { |p| p.destroy }
   end

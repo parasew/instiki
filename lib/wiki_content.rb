@@ -126,8 +126,9 @@ class WikiContent < String
 
   # Create a new wiki content string from the given one.
   # The options are explained at the top of this file.
-  def initialize(revision, options = {})
+  def initialize(revision, url_generator, options = {})
     @revision = revision
+    @url_generator = url_generator
     @web = @revision.page.web
 
     @options = DEFAULT_OPTS.dup.merge(options)
@@ -146,7 +147,7 @@ class WikiContent < String
   # Call @web.page_link using current options.
   def page_link(name, text, link_type)
     @options[:link_type] = (link_type || :show)
-    @web.make_link(name, text, @options)
+    @url_generator.make_link(name, @web, text, @options)
   end
 
   def build_chunks

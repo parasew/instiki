@@ -11,6 +11,7 @@ require 'action_controller/test_process'
 require 'action_web_service/test_invoke'
 require 'breakpoint'
 require 'wiki_content'
+require 'url_generator'
 
 # Uncomment these and hang on, because the tests will be FAST
 #Test::Unit::TestCase.pre_loaded_fixtures = false
@@ -43,6 +44,7 @@ class Test::Unit::TestCase
   end
 
   def test_renderer(revision = nil)
+    PageRenderer.setup_url_generator(StubUrlGenerator.new)
     PageRenderer.new(revision)
   end
 
@@ -89,6 +91,64 @@ module ChunkMatch
   def no_match(chunk_type, test_text)
     if chunk_type.respond_to? :pattern
       assert_no_match(chunk_type.pattern, test_text)
+    end
+  end
+end
+
+class StubUrlGenerator < AbstractUrlGenerator
+
+  def initialize
+    super(:doesnt_need_controller)
+  end
+
+  def file_link(mode, name, text, web_name, known_file)
+    link = CGI.escape(name)
+    case mode
+    when :export
+      if known_file then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
+      else %{<span class="newWikiWord">#{text}</span>} end
+    when :publish
+      if known_file then %{<a class="existingWikiWord" href="../published/#{link}">#{text}</a>}
+      else %{<span class=\"newWikiWord\">#{text}</span>} end
+    else 
+      if known_file
+        %{<a class=\"existingWikiWord\" href=\"../file/#{link}\">#{text}</a>}
+      else 
+        %{<span class=\"newWikiWord\">#{text}<a href=\"../file/#{link}\">?</a></span>}
+      end
+    end
+  end
+
+  def page_link(mode, name, text, web_address, known_page)
+    link = CGI.escape(name)
+    case mode.to_sym
+    when :export
+      if known_page then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
+      else %{<span class="newWikiWord">#{text}</span>} end
+    when :publish
+      if known_page then %{<a class="existingWikiWord" href="../published/#{link}">#{text}</a>}
+      else %{<span class="newWikiWord">#{text}</span>} end
+    else 
+      if known_page
+        %{<a class="existingWikiWord" href="../show/#{link}">#{text}</a>}
+      else 
+        %{<span class="newWikiWord">#{text}<a href="../show/#{link}">?</a></span>}
+      end
+    end
+  end
+
+  def pic_link(mode, name, text, web_name, known_pic)
+    link = CGI.escape(name)
+    case mode.to_sym
+    when :export
+      if known_pic then %{<img alt="#{text}" src="#{link}" />}
+      else %{<img alt="#{text}" src="no image" />} end
+    when :publish
+      if known_pic then %{<img alt="#{text}" src="#{link}" />}
+      else %{<span class="newWikiWord">#{text}</span>} end
+    else 
+      if known_pic then %{<img alt="#{text}" src="../pic/#{link}" />}
+      else %{<span class="newWikiWord">#{text}<a href="../pic/#{link}">?</a></span>} end
     end
   end
 end

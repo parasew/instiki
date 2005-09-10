@@ -79,19 +79,6 @@ class Page < ActiveRecord::Base
     web.brackets_only? ? name : WikiWords.separate(name)
   end
 
-  # used to build chunk ids. 
-  #def id
-  #  @id ||= name.unpack('H*').first
-  #end
-
-  def link(options = {})
-    web.make_link(name, nil, options)
-  end
-
-  def author_link(options = {})
-    web.make_link(author, nil, options)
-  end
-
   LOCKING_PERIOD = 30.minutes
 
   def lock(time, locked_by)

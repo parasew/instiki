@@ -59,7 +59,7 @@ class E2EInstikiTest < Test::Unit::TestCase
   def test_00020_add_a_page
     # Add reference to a non-existant wiki page
     enter_markup('HomePage', '[[Another Wiki Page]]')
-    assert_equal '?', ie.link(:url, url(:show, 'Another Wiki Page')).text
+    assert_equal '?', ie.link(:url, url(:new, 'Another Wiki Page')).text
     
     # Edit the first revision of a page
     enter_markup('Another Wiki Page', 'First revision of Another Wiki Page, linked from HomePage')
