@@ -35,10 +35,15 @@ class Test::Unit::TestCase
     ActiveRecord::Base.silence do
       (1..30).each do |i|
         @wiki.write_page('wiki1', "page#{i}", "Test page #{i}\ncategory: test", 
-                         Time.local(1976, 10, i, 12, 00, 00), Author.new('Dema', '127.0.0.2'))
+                         Time.local(1976, 10, i, 12, 00, 00), Author.new('Dema', '127.0.0.2'),
+                         test_renderer)
       end
     end
     @web = Web.find(@web.id)
+  end
+
+  def test_renderer(revision = nil)
+    PageRenderer.new(revision)
   end
 
   def use_blank_wiki

@@ -58,9 +58,9 @@ class Wiki
     web.remove_pages(web.select.orphaned_pages)
   end
   
-  def revise_page(web_address, page_name, content, revised_at, author)
+  def revise_page(web_address, page_name, content, revised_at, author, renderer)
     page = read_page(web_address, page_name)
-    page.revise(content, revised_at, author)
+    page.revise(content, revised_at, author, renderer)
   end
 
   def rollback_page(web_address, page_name, revision_number, time, author_id = nil)
@@ -89,7 +89,7 @@ class Wiki
     self.class.storage_path
   end
   
-  def write_page(web_address, page_name, content, written_on, author)
-    Web.find_by_address(web_address).add_page(page_name, content, written_on, author)
+  def write_page(web_address, page_name, content, written_on, author, renderer)
+    Web.find_by_address(web_address).add_page(page_name, content, written_on, author, renderer)
   end
 end

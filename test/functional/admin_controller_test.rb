@@ -195,7 +195,7 @@ class AdminControllerTest < Test::Unit::TestCase
     orphan_page_linking_to_oak = @wiki.write_page('wiki1', 'Pine',
         "Refers to [[Oak]].\n" +
         "category: trees", 
-        Time.now, Author.new('TreeHugger', '127.0.0.2'))
+        Time.now, Author.new('TreeHugger', '127.0.0.2'), test_renderer)
 
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
 

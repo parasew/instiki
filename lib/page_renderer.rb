@@ -4,7 +4,9 @@ require 'diff'
 
 class PageRenderer
 
-  def initialize(revision)
+  attr_accessor :revision
+
+  def initialize(revision = nil)
     @revision = revision
   end
 

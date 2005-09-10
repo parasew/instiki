@@ -61,9 +61,9 @@ class WebTest < Test::Unit::TestCase
   def test_new_page_linked_from_mother_page
     # this was a bug in revision 204
     home = @web.add_page('HomePage', 'This page refers to AnotherPage', 
-        Time.local(2004, 4, 4, 16, 50), 'Alexey Verkhovsky')
+        Time.local(2004, 4, 4, 16, 50), 'Alexey Verkhovsky', test_renderer)
     @web.add_page('AnotherPage', 'This is \AnotherPage', 
-        Time.local(2004, 4, 4, 16, 51), 'Alexey Verkhovsky')
+        Time.local(2004, 4, 4, 16, 51), 'Alexey Verkhovsky', test_renderer)
 
     @web.pages(true)
     assert_equal [home], @web.select.pages_that_link_to('AnotherPage')
@@ -73,13 +73,13 @@ class WebTest < Test::Unit::TestCase
     add_sample_pages
     home = @web.add_page('HomePage', 
         'This is a home page, it should not be an orphan',
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky')
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
     author = @web.add_page('AlexeyVerkhovsky', 
         'This is an author page, it should not be an orphan',
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky')
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
     self_linked = @web.add_page('SelfLinked', 
         'I am me SelfLinked and link to EverBeenInLove',
-        Time.local(2004, 4, 4, 16, 50), 'AnonymousCoward')
+        Time.local(2004, 4, 4, 16, 50), 'AnonymousCoward', test_renderer)
         
     # page that links to itself, and nobody else links to it must be an orphan
     assert_equal ['EverBeenHated', 'SelfLinked'], 
@@ -90,8 +90,8 @@ class WebTest < Test::Unit::TestCase
   
   def add_sample_pages
     @in_love = @web.add_page('EverBeenInLove', 'Who am I me', 
-        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
+        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson', test_renderer)
     @hated = @web.add_page('EverBeenHated', 'I am me EverBeenHated', 
-        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson')
+        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson', test_renderer)
   end
 end

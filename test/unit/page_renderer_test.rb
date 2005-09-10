@@ -12,14 +12,14 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_wiki_word_linking
     @web.add_page('SecondPage', 'Yo, yo. Have you EverBeenHated', 
-                   Time.now, 'DavidHeinemeierHansson')
+                   Time.now, 'DavidHeinemeierHansson', test_renderer)
     
     assert_equal('<p>Yo, yo. Have you <span class="newWikiWord">Ever Been Hated' + 
         '<a href="../show/EverBeenHated">?</a></span></p>', 
         rendered_content(@web.page("SecondPage")))
     
     @web.add_page('EverBeenHated', 'Yo, yo. Have you EverBeenHated', Time.now, 
-                  'DavidHeinemeierHansson')
+                  'DavidHeinemeierHansson', test_renderer)
     assert_equal('<p>Yo, yo. Have you <a class="existingWikiWord" ' +
         'href="../show/EverBeenHated">Ever Been Hated</a></p>', 
         rendered_content(@web.page("SecondPage")))
@@ -71,18 +71,18 @@ class PageRendererTest < Test::Unit::TestCase
 
   def test_wiki_words
     assert_equal %w( HisWay MyWay SmartEngine SmartEngineGUI ThatWay ), 
-        PageRenderer.new(@revision).wiki_words.sort
+        test_renderer(@revision).wiki_words.sort
     
-    @wiki.write_page('wiki1', 'NoWikiWord', 'hey you!', Time.now, 'Me')
-    assert_equal [], PageRenderer.new(@wiki.read_page('wiki1', 'NoWikiWord').revisions.last).wiki_words
+    @wiki.write_page('wiki1', 'NoWikiWord', 'hey you!', Time.now, 'Me', test_renderer)
+    assert_equal [], test_renderer(@wiki.read_page('wiki1', 'NoWikiWord').revisions.last).wiki_words
   end
   
   def test_existing_pages
-    assert_equal %w( MyWay SmartEngine ThatWay ), PageRenderer.new(@revision).existing_pages.sort
+    assert_equal %w( MyWay SmartEngine ThatWay ), test_renderer(@revision).existing_pages.sort
   end
   
   def test_unexisting_pages
-    assert_equal %w( HisWay SmartEngineGUI ), PageRenderer.new(@revision).unexisting_pages.sort
+    assert_equal %w( HisWay SmartEngineGUI ), test_renderer(@revision).unexisting_pages.sort
   end
 
   def test_content_with_wiki_links
@@ -94,7 +94,7 @@ class PageRendererTest < Test::Unit::TestCase
         '<a class="existingWikiWord" href="../show/SmartEngine">Smart Engine</a> in that ' +
         '<span class="newWikiWord">Smart Engine GUI' +
         '<a href="../show/SmartEngineGUI">?</a></span></p>', 
-        PageRenderer.new(@revision).display_content
+        test_renderer(@revision).display_content
   end
 
   def test_markdown
@@ -173,7 +173,7 @@ class PageRendererTest < Test::Unit::TestCase
   
     assert_equal "<tt>hello</tt> that <span class=\"newWikiWord\">Smart Engine GUI" +
         "<a href=\"../show/SmartEngineGUI\">?</a></span>\n\n", 
-        PageRenderer.new(@revision).display_content
+        test_renderer(@revision).display_content
   end
   
   def test_content_with_auto_links
@@ -271,36 +271,36 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_content_for_export
     assert_equal '<p><span class="newWikiWord">His Way</span> would be ' +
-      '<a class="existingWikiWord" href="MyWay.html">My Way</a> in kinda ' +
-      '<a class="existingWikiWord" href="ThatWay.html">That Way</a> in ' +
-      '<span class="newWikiWord">His Way</span> though ' +
-      '<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere&#8212;see ' +
-      '<a class="existingWikiWord" href="SmartEngine.html">Smart Engine</a> in that ' +
-      '<span class="newWikiWord">Smart Engine GUI</span></p>', 
-      PageRenderer.new(@revision).display_content_for_export
+        '<a class="existingWikiWord" href="MyWay.html">My Way</a> in kinda ' +
+        '<a class="existingWikiWord" href="ThatWay.html">That Way</a> in ' +
+        '<span class="newWikiWord">His Way</span> though ' +
+        '<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere&#8212;see ' +
+        '<a class="existingWikiWord" href="SmartEngine.html">Smart Engine</a> in that ' +
+        '<span class="newWikiWord">Smart Engine GUI</span></p>', 
+        test_renderer(@revision).display_content_for_export
   end
   
   def test_double_replacing
     @revision.content = "VersionHistory\r\n\r\ncry VersionHistory"
     assert_equal '<p><span class="newWikiWord">Version History' +
-      "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
-      '<span class="newWikiWord">Version History<a href="../show/VersionHistory">?</a>' +
-      '</span></p>', 
-      PageRenderer.new(@revision).display_content
+        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
+        '<span class="newWikiWord">Version History<a href="../show/VersionHistory">?</a>' +
+        '</span></p>', 
+        test_renderer(@revision).display_content
   
     @revision.content = "f\r\nVersionHistory\r\n\r\ncry VersionHistory"
     assert_equal "<p>f<br /><span class=\"newWikiWord\">Version History" +
-      "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
-      "<span class=\"newWikiWord\">Version History<a href=\"../show/VersionHistory\">?</a>" +
-      "</span></p>", 
-      PageRenderer.new(@revision).display_content
+        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
+        "<span class=\"newWikiWord\">Version History<a href=\"../show/VersionHistory\">?</a>" +
+        "</span></p>", 
+        test_renderer(@revision).display_content
   end  
   
   def test_difficult_wiki_words
     @revision.content = "[[It's just awesome GUI!]]"
     assert_equal "<p><span class=\"newWikiWord\">It's just awesome GUI!" +
-      "<a href=\"../show/It%27s+just+awesome+GUI%21\">?</a></span></p>", 
-      PageRenderer.new(@revision).display_content
+        "<a href=\"../show/It%27s+just+awesome+GUI%21\">?</a></span></p>", 
+        test_renderer(@revision).display_content
   end
   
   def test_revisions_diff
@@ -311,7 +311,7 @@ class PageRendererTest < Test::Unit::TestCase
 
     assert_equal "<p>What a <del class=\"diffmod\">blue </del><ins class=\"diffmod\">red " +
         "</ins>and lovely <del class=\"diffmod\">morning</del><ins class=\"diffmod\">morning " +
-        "today</ins></p>", PageRenderer.new(@page.revisions.last).display_diff
+        "today</ins></p>", test_renderer(@page.revisions.last).display_diff
   end
   
   def test_link_to_file
@@ -373,18 +373,18 @@ class PageRendererTest < Test::Unit::TestCase
 
   def add_sample_pages
     @in_love = @web.add_page('EverBeenInLove', 'Who am I me', 
-        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson')
+        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson', test_renderer)
     @hated = @web.add_page('EverBeenHated', 'I am me EverBeenHated', 
-        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson')
+        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson', test_renderer)
   end
 
   def assert_markup_parsed_as(expected_output, input)
     revision = Revision.new(:page => @page, :content => input, :author => Author.new('AnAuthor'))
-    assert_equal expected_output, PageRenderer.new(revision).display_content, 'Rendering output not as expected'
+    assert_equal expected_output, test_renderer(revision).display_content, 'Rendering output not as expected'
   end
 
   def rendered_content(page)
-    PageRenderer.new(page.revisions.last).display_content
+    test_renderer(page.revisions.last).display_content
   end
   
 end

@@ -93,10 +93,11 @@ class FileControllerTest < Test::Unit::TestCase
 
   def test_pic_upload_end_to_end
     # edit and re-render home page so that it has an "unknown file" link to 'rails-e2e.gif'
-    @wiki.revise_page('wiki1', 'HomePage', '[[instiki-e2e.txt:file]]', Time.now, 'AnonymousBrave')
+    @wiki.revise_page('wiki1', 'HomePage', '[[instiki-e2e.txt:file]]', Time.now, 'AnonymousBrave',
+        test_renderer)
     assert_equal "<p><span class=\"newWikiWord\">instiki-e2e.txt" +
         "<a href=\"../file/instiki-e2e.txt\">?</a></span></p>", 
-        PageRenderer.new(@home.revisions.last).display_content
+        test_renderer(@home.revisions.last).display_content
 
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
     r = process 'file', 'web' => 'wiki1', 'id' => 'instiki-e2e.txt'
@@ -114,7 +115,7 @@ class FileControllerTest < Test::Unit::TestCase
     @home = Page.find(@home.id)
     assert_equal "<p><a class=\"existingWikiWord\" href=\"../file/instiki-e2e.txt\">" +
         "instiki-e2e.txt</a></p>", 
-        PageRenderer.new(@home.revisions.last).display_content
+        test_renderer(@home.revisions.last).display_content
   end
 
   def test_uploads_blocking

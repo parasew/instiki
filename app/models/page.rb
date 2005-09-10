@@ -3,7 +3,7 @@ class Page < ActiveRecord::Base
   has_many :revisions, :order => 'id'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
 
-  def revise(content, time, author)
+  def revise(content, time, author, renderer)
     revisions_size = new_record? ? 0 : revisions.size
     if (revisions_size > 0) and content == current_revision.content
       raise Instiki::ValidationError.new(
@@ -13,8 +13,9 @@ class Page < ActiveRecord::Base
     author = Author.new(author.to_s) unless author.is_a?(Author)
 
     # Try to render content to make sure that markup engine can take it,
-    r = Revision.new(:page => self, :content => content, :author => author, :revised_at => time)
-    PageRenderer.new(r).force_rendering
+    renderer.revision = Revision.new(
+        :page => self, :content => content, :author => author, :revised_at => time)
+    renderer.force_rendering
 
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 
@@ -29,14 +30,15 @@ class Page < ActiveRecord::Base
     self
   end
 
-  def rollback(revision_number, time, author_ip = nil)
+  def rollback(revision_number, time, author_ip, renderer)
     roll_back_revision = self.revisions[revision_number]
     if roll_back_revision.nil?
       raise Instiki::ValidationError.new("Revision #{revision_number} not found")
     end
-    revise(roll_back_revision.content, time, Author.new(roll_back_revision.author, author_ip))
+    author = Author.new(roll_back_revision.author.name, author_ip)
+    revise(roll_back_revision.content, time, author, renderer)
   end
-  
+
   def revisions?
     revisions.size > 1
   end

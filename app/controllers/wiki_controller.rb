@@ -182,11 +182,11 @@ class WikiController < ApplicationController
     begin
       if @page
         wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip))
+            Author.new(@params['author'], remote_ip), PageRenderer.new)
         @page.unlock
       else
         wiki.write_page(@web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip))
+            Author.new(@params['author'], remote_ip), PageRenderer.new)
       end
       redirect_to_page @page_name
     rescue => e

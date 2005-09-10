@@ -46,7 +46,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_authors
     @wiki.write_page('wiki1', 'BreakSortingOrder',
         "This page breaks the accidentally correct sorting order of authors",
-        Time.now, Author.new('BreakingTheOrder', '127.0.0.2'))
+        Time.now, Author.new('BreakingTheOrder', '127.0.0.2'), test_renderer)
 
     r = process('authors', 'web' => 'wiki1')
 
@@ -92,9 +92,9 @@ class WikiControllerTest < Test::Unit::TestCase
   end
   
   def test_edit_page_with_special_symbols
-    @wiki.write_page('wiki1', 'With : Special /> symbols',
-    'This page has special symbols in the name',
-    Time.now, Author.new('Special', '127.0.0.3'))
+    @wiki.write_page('wiki1', 'With : Special /> symbols', 
+         'This page has special symbols in the name', Time.now, Author.new('Special', '127.0.0.3'), 
+         test_renderer)
     
     r = process 'edit', 'web' => 'wiki1', 'id' => 'With : Special /> symbols'
     assert_success
@@ -104,7 +104,8 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
   def test_export_html
-    @home.rollback(0, Time.now, 'Rick') # much simpler regex statement to match
+    # rollback homepage to a version that is easier to match
+    @home.rollback(0, Time.now, 'Rick', test_renderer)
     r = process 'export_html', 'web' => 'wiki1'
     
     assert_success(bypass_body_parsing = true)
@@ -304,7 +305,7 @@ class WikiControllerTest < Test::Unit::TestCase
     page2 = @wiki.write_page('wiki1', 'Page2',
         "Page2 contents.\n" +
         "category: categorized", 
-        Time.now, Author.new('AnotherAuthor', '127.0.0.2'))
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
       
     r = process('recently_revised', 'web' => 'wiki1')
     assert_success
@@ -384,7 +385,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_rss_with_headlines
     @title_with_spaces = @wiki.write_page('wiki1', 'Title With Spaces', 
-      'About spaces', 1.hour.ago, Author.new('TreeHugger', '127.0.0.2'))
+      'About spaces', 1.hour.ago, Author.new('TreeHugger', '127.0.0.2'), test_renderer)
     
     @request.host = 'localhost'
     @request.port = 8080
@@ -486,7 +487,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_rss_title_with_ampersand
     # was ticket:143    
     @wiki.write_page('wiki1', 'Title&With&Ampersands', 
-      'About spaces', 1.hour.ago, Author.new('NitPicker', '127.0.0.3'))
+      'About spaces', 1.hour.ago, Author.new('NitPicker', '127.0.0.3'), test_renderer)
 
     r = process 'rss_with_headlines', 'web' => 'wiki1'
 
@@ -496,7 +497,8 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_rss_timestamp    
     new_page = @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime', 
-      'Created on 1 Jan 1970 at 0:00:00 Z', Time.at(0), Author.new('NitPicker', '127.0.0.3'))
+      'Created on 1 Jan 1970 at 0:00:00 Z', Time.at(0), Author.new('NitPicker', '127.0.0.3'),
+      test_renderer)
 
     r = process 'rss_with_headlines', 'web' => 'wiki1'
     assert_template_xpath_match '/rss/channel/item/pubDate[9]', "Thu, 01 Jan 1970 00:00:00 Z"
@@ -588,7 +590,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_show_page_with_multiple_revisions
     @wiki.write_page('wiki1', 'HomePage', 'Second revision of the HomePage end', Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'))
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 

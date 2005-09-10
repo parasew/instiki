@@ -15,9 +15,9 @@ class Web < ActiveRecord::Base
     self.brackets_only != brackets_only
   end
   
-  def add_page(name, content, time, author)
+  def add_page(name, content, time, author, renderer)
     page = page(name) || Page.new(:web => self, :name => name)
-    page.revise(content, time, author)
+    page.revise(content, time, author, renderer)
   end
   
   def authors
