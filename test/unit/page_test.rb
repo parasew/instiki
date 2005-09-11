@@ -7,6 +7,7 @@ class PageTest < Test::Unit::TestCase
     @page = pages(:first_page)
   end
 
+
   def test_lock
     assert !@page.locked?(Time.local(2004, 4, 4, 16, 50))
 
@@ -83,6 +84,33 @@ class PageTest < Test::Unit::TestCase
     assert_equal last_revision_before, @page.current_revision(true)
     assert_equal revisions_number_before, @page.revisions.size
   end
+
+  def test_revise_changes_references_from_wanted_to_linked_for_new_pages
+    web = Web.find(1)
+    new_page = Page.new(:web => web, :name => 'NewPage')
+    new_page.revise('Reference to WantedPage, and to WantedPage2', Time.now, 'AlexeyVerkhovsky', 
+        test_renderer)
+    
+    references = new_page.wiki_references(true)
+    assert_equal 2, references.size
+    assert_equal 'WantedPage', references[0].referenced_page_name
+    assert_equal WikiReference::WANTED_PAGE, references[0].link_type
+    assert_equal 'WantedPage2', references[1].referenced_page_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+
+    wanted_page = Page.new(:web => web, :name => 'WantedPage')
+    wanted_page.revise('And here it is!', Time.now, 'AlexeyVerkhovsky', test_renderer)
+
+    # link type stored for NewPage -> WantedPage reference should change from WANTED to LINKED
+    # reference NewPage -> WantedPage2 should remain the same
+    references = new_page.wiki_references(true)
+    assert_equal 2, references.size
+    assert_equal 'WantedPage', references[0].referenced_page_name
+    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
+    assert_equal 'WantedPage2', references[1].referenced_page_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+  end
+
 
   def test_rollback
     @page.revise("spot two", Time.now, "David", test_renderer)
