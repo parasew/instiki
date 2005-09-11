@@ -16,7 +16,7 @@ module WikiChunk
     
     # the referenced page
     def refpage
-      @content.web.pages[@page_name]
+      @content.web.page(@page_name)
     end
   
   end
@@ -43,11 +43,6 @@ module WikiChunk
           chunk.mask
         end
       end
-    end
-
-    # the referenced page
-    def refpage
-      @content.web.pages[@page_name]
     end
 
     def textile_url?

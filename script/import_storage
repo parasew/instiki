@@ -5,6 +5,7 @@ require 'optparse'
 OPTIONS = {
   :instiki_root => nil,
   :storage => nil,
+  :database => 'mysql'
 }
 
 ARGV.options do |opts|
@@ -36,6 +37,12 @@ ARGV.options do |opts|
           "you want the SQL output placed, such as ",
           "/home/joe/instiki.sql") do |outfile|
             OPTIONS[:outfile] = outfile
+          end
+
+  opts.on("-d", "--database {mysql|sqlite|postgres}", String,
+          "Target database (they have slightly different syntax)",
+          "default: mysql") do |database|
+            OPTIONS[:database] = database
           end
 
   opts.separator ""
@@ -95,15 +102,29 @@ class Revision
   end
 end
 
+class Time
+  def ansi
+    strftime('%Y-%m-%d %H:%M:%S')
+  end
+end
+
 def sql_insert(table, hash)
   output = "INSERT INTO #{table} ("
   output << hash.keys.join(", ")
 
   output << ") VALUES ('"
-  output << hash.values.map{|v| v.to_s.gsub("'", "\\\\'")}.join("', '")
-
+  output << hash.values.map do |v|
+    case OPTIONS[:database] 
+    when 'mysql', 'postgres'
+      v.to_s.gsub("'", "\\\\'")
+    when 'sqlite'
+      v.to_s.gsub("'", "''")
+    else 
+      raise "Unsupported database option #{OPTIONS[:database]}"
+    end
+  end.join("', '")
   output << "');"
-  return output
+  output
 end
 
 WikiService.storage_path = OPTIONS[:storage]
@@ -125,34 +146,36 @@ File.open(OPTIONS[:outfile], 'w') { |outfile|
       :max_upload_size  => web.max_upload_size,
       :safe_mode        => web.safe_mode,
       :brackets_only    => web.brackets_only,
+      :created_at       => web.pages.values.map { |p| p.revisions.first.created_at }.min.ansi,
+      :updated_at       => web.pages.values.map { |p| p.revisions.last.created_at }.max.ansi
     })
 
     puts "Web #{web_name} has #{web.pages.keys.size} pages"
     web.pages.each_pair do |page_name, page|
       outfile.puts sql_insert(:pages, {
-        :id        => page.object_id,
-        :web_id    => web.object_id,
-        :locked_by => page.locked_by,
-        :name      => page.name
+        :id         => page.object_id,
+        :web_id     => web.object_id,
+        :locked_by  => page.locked_by,
+        :name       => page.name,
+        :created_at => page.revisions.first.created_at.ansi,
+        :updated_at => page.revisions.last.created_at.ansi
       })
 
       puts "  Page #{page_name} has #{page.revisions.size} revisions"
       page.revisions.each_with_index do |rev, i|
+      
         outfile.puts sql_insert(:revisions, {
-          :id      => rev.object_id,
-          :page_id => page.object_id,
-          :content => rev.content,
-          :author  => rev.author,
-          :ip      => '0.0.0.0',
+          :id         => rev.object_id,
+          :page_id    => page.object_id,
+          :content    => rev.content,
+          :author     => rev.author.to_s,
+          :ip         => (rev.author.is_a?(Author) ? rev.author.ip : 'N/A'),
+          :created_at => rev.created_at.ansi,
+          :updated_at => rev.created_at.ansi,
+          :revised_at => rev.created_at.ansi
         })
-        puts "    Revision #{i} created at #{rev.created_at}"
+        puts "    Revision #{i} created at #{rev.created_at.ansi}"
       end
     end
   end
-
-  ['webs', 'pages', 'revisions'].each do |table|
-    outfile.puts "UPDATE #{table} SET created_at = NOW();"
-    outfile.puts "UPDATE #{table} SET updated_at = NOW();"
-  end
-  outfile.puts "UPDATE revisions SET revised_at = NOW();"
 }

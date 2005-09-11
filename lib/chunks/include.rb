@@ -22,16 +22,17 @@ class Include < WikiChunk::WikiReference
   private
   
   def get_unmask_text_avoiding_recursion_loops
-    if refpage then
-      refpage.clear_display_cache
-      if refpage.wiki_includes.include?(@content.page_name)
+    if refpage
+      # TODO This way of instantiating a renderer is ugly.
+      renderer = PageRenderer.new(refpage.current_revision)
+      if renderer.wiki_includes.include?(@content.page_name)
         # this will break the recursion
         @content.delete_chunk(self)
         return "<em>Recursive include detected; #{@page_name} --> #{@content.page_name} " + 
                "--> #{@page_name}</em>\n"
       else
-        @content.merge_chunks(refpage.display_content)
-        return refpage.display_content.pre_rendered 
+        @content.merge_chunks(renderer.display_content)
+        return renderer.display_content.pre_rendered
       end
     else
       return "<em>Could not include #{@page_name}</em>\n"

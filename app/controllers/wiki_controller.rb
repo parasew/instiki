@@ -5,6 +5,9 @@ require 'zip/zip'
 
 class WikiController < ApplicationController
 
+  # TODO implement cache sweeping
+  caches_page :show
+  
   layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex,  :export_tex, :export_html]
 
   def index

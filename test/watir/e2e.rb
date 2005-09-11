@@ -6,6 +6,11 @@ require 'rexml/document'
 INSTIKI_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
 require(File.expand_path(File.dirname(__FILE__) + "/../../config/environment"))
 
+# TODO Create tests for:
+# * exporting HTML
+# * exporting markup
+# * include tag
+
 # Use instiki/../watir, if such a directory exists; This can be a CVS HEAD version of Watir. 
 # Otherwise Watir has to be installed in ruby/lib.
 $:.unshift INSTIKI_ROOT + '/../watir' if File.exists?(INSTIKI_ROOT + '/../watir/watir.rb')
