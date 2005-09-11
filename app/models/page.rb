@@ -4,6 +4,10 @@ class Page < ActiveRecord::Base
   has_many :wiki_references, :order => 'referenced_page_name'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
 
+  def before_create
+    WikiReference.register_page_creation(self)
+  end
+
   def revise(content, time, author, renderer)
     revisions_size = new_record? ? 0 : revisions.size
     if (revisions_size > 0) and content == current_revision.content

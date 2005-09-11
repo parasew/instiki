@@ -340,6 +340,27 @@ class PageRendererTest < Test::Unit::TestCase
   end
 
   def test_rendering_changes_references_from_wanted_to_linked
+    new_page = @web.add_page('NewPage', 'Reference to WantedPage, and to WantedPage2', 
+        Time.now, 'AlexeyVerkhovsky', test_renderer)
+    
+    references = new_page.wiki_references(true)
+    assert_equal 2, references.size
+    assert_equal 'WantedPage', references[0].referenced_page_name
+    assert_equal WikiReference::WANTED_PAGE, references[0].link_type
+    assert_equal 'WantedPage2', references[1].referenced_page_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+
+    wanted_page = @web.add_page('WantedPage', 'And here it is!',
+        Time.now, 'AlexeyVerkhovsky', test_renderer)
+    
+    # link type stored for NewPage -> WantedPage reference should change from WANTED to LINKED
+    # reference NewPage -> WantedPage2 should remain the same
+    references = new_page.wiki_references(true)
+    assert_equal 2, references.size
+    assert_equal 'WantedPage', references[0].referenced_page_name
+    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
+    assert_equal 'WantedPage2', references[1].referenced_page_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
   end
 
   private
