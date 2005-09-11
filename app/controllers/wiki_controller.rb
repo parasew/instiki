@@ -6,8 +6,9 @@ require 'zip/zip'
 class WikiController < ApplicationController
 
   # TODO implement cache sweeping
-  caches_page :show, :published
-  
+  caches_page :show, :published, :authors, :recently_revised, :list, :rss_with_content, :rss_with_headlines
+  cache_sweeper :revision_sweeper
+
   layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex,  :export_tex, :export_html]
 
   def index
@@ -194,6 +195,7 @@ class WikiController < ApplicationController
       redirect_to_page @page_name
     rescue => e
       flash[:error] = e
+      logger.error e
       flash[:content] = @params['content']
       if @page
         @page.unlock
