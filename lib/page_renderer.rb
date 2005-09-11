@@ -89,8 +89,9 @@ class PageRenderer
   def render(options = {})
     result = WikiContent.new(@revision, @@url_generator, options).render!
     WikiReference.delete_all ['page_id = ?', @revision.page_id]
-    @revision.page.wiki_references.delete
-    
+
+    references = @revision.page.wiki_references
+        
     wiki_word_chunks = result.find_chunks(WikiChunk::WikiLink)
     wiki_words = wiki_word_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     
@@ -101,10 +102,14 @@ class PageRenderer
       else
         link_type = WikiReference.link_type(@revision.page.web, referenced_page_name)
       end
-      @revision.page.wiki_references.create({
-          :referenced_page_name => referenced_page_name,
-          :link_type => link_type
-        })
+      references.create :referenced_page_name => referenced_page_name, :link_type => link_type
+    end
+    
+    include_chunks = result.find_chunks(Include)
+    includes = include_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
+    includes.each do |included_page_name|
+      references.create :referenced_page_name => included_page_name, 
+          :link_type => WikiReference::INCLUDED_PAGE
     end
     result
   end

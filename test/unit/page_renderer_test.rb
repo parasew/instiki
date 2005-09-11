@@ -326,8 +326,7 @@ class PageRendererTest < Test::Unit::TestCase
   end
 
   
-  # Tests for the caching of wiki references and categories
-  def test_references_creation
+  def test_references_creation_links
     new_page = @web.add_page('NewPage', 'HomePage NewPage', 
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
         
@@ -337,6 +336,16 @@ class PageRendererTest < Test::Unit::TestCase
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
     assert_equal 'NewPage', references[1].referenced_page_name
     assert_equal WikiReference::LINKED_PAGE, references[1].link_type
+  end
+
+  def test_references_creation_includes
+    new_page = @web.add_page('NewPage', '[[!include IncludedPage]]',
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+        
+    references = new_page.wiki_references(true)
+    assert_equal 1, references.size
+    assert_equal 'IncludedPage', references[0].referenced_page_name
+    assert_equal WikiReference::INCLUDED_PAGE, references[0].link_type
   end
 
   private
