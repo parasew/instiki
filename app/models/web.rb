@@ -56,6 +56,10 @@ class Web < ActiveRecord::Base
     PageSet.new(self, pages, condition)
   end
   
+  def select_all
+    PageSet.new(self, pages, nil)
+  end
+  
   private
 
     # Returns an array of all the wiki words in any current revision

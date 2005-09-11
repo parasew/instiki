@@ -93,9 +93,9 @@ class PageTest < Test::Unit::TestCase
     
     references = new_page.wiki_references(true)
     assert_equal 2, references.size
-    assert_equal 'WantedPage', references[0].referenced_page_name
+    assert_equal 'WantedPage', references[0].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[0].link_type
-    assert_equal 'WantedPage2', references[1].referenced_page_name
+    assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
 
     wanted_page = Page.new(:web => web, :name => 'WantedPage')
@@ -105,9 +105,9 @@ class PageTest < Test::Unit::TestCase
     # reference NewPage -> WantedPage2 should remain the same
     references = new_page.wiki_references(true)
     assert_equal 2, references.size
-    assert_equal 'WantedPage', references[0].referenced_page_name
+    assert_equal 'WantedPage', references[0].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
-    assert_equal 'WantedPage2', references[1].referenced_page_name
+    assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
   end
 

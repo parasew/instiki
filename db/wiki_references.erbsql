@@ -4,6 +4,6 @@ CREATE TABLE wiki_references (
     updated_at <%= @datetime %> NOT NULL,
 
     page_id INTEGER NOT NULL,
-    referenced_page_name VARCHAR NOT NULL,
+    referenced_name VARCHAR NOT NULL,
     link_type CHAR(1) NOT NULL
 ) <%= create_options %>;

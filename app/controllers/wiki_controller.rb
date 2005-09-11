@@ -289,20 +289,13 @@ class WikiController < ApplicationController
 
   def parse_category
     @category = @params['category']
-    @categories = []
-    @pages_in_category = @web.select do |page|
-      # FIXME: was PageRenderer.new(page.revisions.last).display_content.find_chunks(Category),
-      # heinously slow
-      page_categories = [] 
-      page_categories = page_categories.map { |cat| cat.list }.flatten
-      page_categories.each {|c| @categories << c unless @categories.include? c }
-      page_categories.include?(@category) 
-    end
-    @categories.sort!
-    if (@pages_in_category.empty?)
-      @pages_in_category = PageSet.new(@web).by_name
+    @categories = WikiReference.list_categories.sort
+    page_names_in_category = WikiReference.pages_in_category(@category)
+    if (page_names_in_category.empty?)
+      @pages_in_category = @web.select_all.by_name
       @set_name = 'the web'
     else 
+      @pages_in_category = @web.select { |page| page_names_in_category.include?(page.name) }.by_name
       @set_name = "category '#{@category}'"
     end
   end

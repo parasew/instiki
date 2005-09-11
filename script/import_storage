@@ -76,7 +76,7 @@ expected_page_rb_path = File.join(OPTIONS[:instiki], 'app/models/page.rb')
 raise "Instiki installation not found in #{OPTIONS[:instiki]}" unless File.file?(expected_page_rb_path)
 
 expected_snapshot_pattern = File.join(OPTIONS[:storage], '*.snapshot')
-raise "No snapshots found in OPTIONS[:storage]" if Dir[expected_snapshot_pattern].empty?
+raise "No snapshots found in #{expected_snapshot_pattern}" if Dir[expected_snapshot_pattern].empty?
 
 INSTIKI_ROOT = File.expand_path(OPTIONS[:instiki])
 
@@ -109,31 +109,61 @@ class Time
 end
 
 def sql_insert(table, hash)
-  output = "INSERT INTO #{table} ("
-  output << hash.keys.join(", ")
+  columns = hash.keys
 
-  output << ") VALUES ('"
-  output << hash.values.map do |v|
-    case OPTIONS[:database] 
-    when 'mysql', 'postgres'
-      v.to_s.gsub("'", "\\\\'")
-    when 'sqlite'
-      v.to_s.gsub("'", "''")
-    else 
-      raise "Unsupported database option #{OPTIONS[:database]}"
+  values = columns.map { |column| hash[column] }
+  values = values.map do |val|
+    if val.nil?
+      'NULL'
+    else
+      case OPTIONS[:database]
+      when 'mysql', 'postgres'
+        escaped_value = val.to_s.gsub("'", "\\\\'")
+      when 'sqlite'
+        escaped_value = val.to_s.gsub("'", "''")
+      else 
+       raise "Unsupported database option #{OPTIONS[:database]}"
+      end
+      "'#{escaped_value}'"
     end
-  end.join("', '")
-  output << "');"
+  end
+  
+  output = "INSERT INTO #{table} ("
+  output << columns.join(", ")
+
+  output << ") VALUES ("
+  output << values.join(", ")
+  output << ");"
   output
+end
+
+def delete_all(outfile)
+  %w(wiki_references revisions pages system webs).each { |table| outfile.puts "DELETE FROM #{table};" }
+end
+
+def next_id(key)
+  $ids ||= {}
+  if $ids[key].nil?
+    $ids[key] = 1
+  else
+    $ids[key] = $ids[key] + 1
+  end
+  $ids[key]
+end
+
+def current_id(key)
+  $ids[key] or raise "No curent ID for #{key.inspect}"
 end
 
 WikiService.storage_path = OPTIONS[:storage]
 wiki = WikiService.instance
 
 File.open(OPTIONS[:outfile], 'w') { |outfile|
+  delete_all(outfile)
+
   wiki.webs.each_pair do |web_name, web|
     outfile.puts sql_insert(:webs, {
-      :id               => web.object_id,
+      :id               => next_id(:web),
       :name             => web.name,
       :address          => web.address,
       :password         => web.password,
@@ -152,9 +182,12 @@ File.open(OPTIONS[:outfile], 'w') { |outfile|
 
     puts "Web #{web_name} has #{web.pages.keys.size} pages"
     web.pages.each_pair do |page_name, page|
+
+      outfile.puts "BEGIN TRANSACTION;"
+
       outfile.puts sql_insert(:pages, {
-        :id         => page.object_id,
-        :web_id     => web.object_id,
+        :id         => next_id(:page),
+        :web_id     => current_id(:web),
         :locked_by  => page.locked_by,
         :name       => page.name,
         :created_at => page.revisions.first.created_at.ansi,
@@ -165,8 +198,8 @@ File.open(OPTIONS[:outfile], 'w') { |outfile|
       page.revisions.each_with_index do |rev, i|
       
         outfile.puts sql_insert(:revisions, {
-          :id         => rev.object_id,
-          :page_id    => page.object_id,
+          :id         => next_id(:revision),
+          :page_id    => current_id(:page),
           :content    => rev.content,
           :author     => rev.author.to_s,
           :ip         => (rev.author.is_a?(Author) ? rev.author.ip : 'N/A'),
@@ -176,6 +209,9 @@ File.open(OPTIONS[:outfile], 'w') { |outfile|
         })
         puts "    Revision #{i} created at #{rev.created_at.ansi}"
       end
+
+      outfile.puts "COMMIT;"
+
     end
   end
 }

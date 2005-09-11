@@ -332,9 +332,9 @@ class PageRendererTest < Test::Unit::TestCase
         
     references = new_page.wiki_references(true)
     assert_equal 2, references.size
-    assert_equal 'HomePage', references[0].referenced_page_name
+    assert_equal 'HomePage', references[0].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
-    assert_equal 'NewPage', references[1].referenced_page_name
+    assert_equal 'NewPage', references[1].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[1].link_type
   end
 
@@ -344,8 +344,18 @@ class PageRendererTest < Test::Unit::TestCase
         
     references = new_page.wiki_references(true)
     assert_equal 1, references.size
-    assert_equal 'IncludedPage', references[0].referenced_page_name
+    assert_equal 'IncludedPage', references[0].referenced_name
     assert_equal WikiReference::INCLUDED_PAGE, references[0].link_type
+  end
+
+  def test_references_creation_categories
+    new_page = @web.add_page('NewPage', "Foo\ncategory: NewPageCategory",
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+
+    references = new_page.wiki_references(true)
+    assert_equal 1, references.size
+    assert_equal 'NewPageCategory', references[0].referenced_name
+    assert_equal WikiReference::CATEGORY, references[0].link_type
   end
 
   private

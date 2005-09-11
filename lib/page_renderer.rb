@@ -95,21 +95,26 @@ class PageRenderer
     wiki_word_chunks = result.find_chunks(WikiChunk::WikiLink)
     wiki_words = wiki_word_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     
-    wiki_words.each do |referenced_page_name|
+    wiki_words.each do |referenced_name|
       # Links to self are always considered linked
-      if referenced_page_name == @revision.page.name
+      if referenced_name == @revision.page.name
         link_type = WikiReference::LINKED_PAGE
       else
-        link_type = WikiReference.link_type(@revision.page.web, referenced_page_name)
+        link_type = WikiReference.link_type(@revision.page.web, referenced_name)
       end
-      references.create :referenced_page_name => referenced_page_name, :link_type => link_type
+      references.create :referenced_name => referenced_name, :link_type => link_type
     end
     
     include_chunks = result.find_chunks(Include)
     includes = include_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     includes.each do |included_page_name|
-      references.create :referenced_page_name => included_page_name, 
+      references.create :referenced_name => included_page_name, 
           :link_type => WikiReference::INCLUDED_PAGE
+    end
+    
+    categories = result.find_chunks(Category).map { |cat| cat.list }.flatten
+    categories.each do |category|
+      references.create :referenced_name => category, :link_type => WikiReference::CATEGORY
     end
     result
   end

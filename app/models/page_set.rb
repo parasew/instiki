@@ -82,7 +82,9 @@ class PageSet < Array
 
   def wiki_words
     self.inject([]) { |wiki_words, page|
-      wiki_words + page.wiki_references.map { |ref| ref.referenced_page_name }
+      wiki_words + page.wiki_references.
+          select { |ref| ref.link_type != WikiReference::CATEGORY }.
+          map { |ref| ref.referenced_name }
     }.flatten.uniq
   end
 

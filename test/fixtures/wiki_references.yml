@@ -1,7 +1,7 @@
 my_way_1:
   id: 1
   page_id: 2
-  referenced_page_name: MyWay
+  referenced_name: MyWay
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -9,7 +9,7 @@ my_way_1:
 smart_engine_1:
   id: 2
   page_id: 3
-  referenced_page_name: SmartEngine
+  referenced_name: SmartEngine
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -17,7 +17,7 @@ smart_engine_1:
 that_way_1:
   id: 3
   page_id: 4
-  referenced_page_name: ThatWay
+  referenced_name: ThatWay
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -25,7 +25,7 @@ that_way_1:
 home_page_1:
   id: 4
   page_id: 1
-  referenced_page_name: HisWay
+  referenced_name: HisWay
   link_type: W
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -33,7 +33,7 @@ home_page_1:
 home_page_2:
   id: 5
   page_id: 1
-  referenced_page_name: MyWay
+  referenced_name: MyWay
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -41,7 +41,7 @@ home_page_2:
 home_page_3:
   id: 6
   page_id: 1
-  referenced_page_name: ThatWay
+  referenced_name: ThatWay
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -49,7 +49,7 @@ home_page_3:
 home_page_4:
   id: 7
   page_id: 1
-  referenced_page_name: SmartEngine
+  referenced_name: SmartEngine
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -57,7 +57,7 @@ home_page_4:
 first_page_1:
   id: 8
   page_id: 6
-  referenced_page_name: HisWay
+  referenced_name: HisWay
   link_type: W
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -65,7 +65,7 @@ first_page_1:
 first_page_2:
   id: 9
   page_id: 6
-  referenced_page_name: MyWay
+  referenced_name: MyWay
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -73,7 +73,7 @@ first_page_2:
 first_page_3:
   id: 10
   page_id: 6
-  referenced_page_name: ThatWay
+  referenced_name: ThatWay
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -81,7 +81,7 @@ first_page_3:
 first_page_4:
   id: 11
   page_id: 6
-  referenced_page_name: OverThere
+  referenced_name: OverThere
   link_type: W
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
@@ -89,7 +89,24 @@ first_page_4:
 first_page_5:
   id: 12
   page_id: 6
-  referenced_page_name: SmartEngine
+  referenced_name: SmartEngine
   link_type: L
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
+
+oak_1:
+  id: 13
+  page_id: 7
+  referenced_name: trees
+  link_type: C
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+
+elephant_1:
+  id: 14
+  page_id: 8
+  referenced_name: animals
+  link_type: C
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  
