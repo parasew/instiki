@@ -12,7 +12,6 @@ class Include < WikiChunk::WikiReference
   INCLUDE_PATTERN = /\[\[!include\s+(.*?)\]\]\s*/i
   def self.pattern() INCLUDE_PATTERN end
 
-
   def initialize(match_data, content)
     super
     @page_name = match_data[1].strip

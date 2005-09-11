@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
 class PageRendererTest < Test::Unit::TestCase
-  fixtures :webs, :pages, :revisions, :system
+  fixtures :webs, :pages, :revisions, :system, :wiki_references
   
   def setup
     @wiki = Wiki.new
@@ -323,6 +323,18 @@ class PageRendererTest < Test::Unit::TestCase
     assert_markup_parsed_as(
       "<p><img src=\"http://google.com\" alt=\"\" />\nss</p>",
       "!http://google.com!\r\nss")
+  end
+
+  
+  # Tests for the caching of wiki references and categories
+  def test_references_creation
+    new_page = @web.add_page('NewPage', 'HomePage', 
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+        
+    references = new_page.wiki_references(true)
+    assert_equal 1, references.size
+    assert_equal 'HomePage', references[0].referenced_page_name
+    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
   end
 
   private

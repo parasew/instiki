@@ -1,6 +1,7 @@
 class Page < ActiveRecord::Base
   belongs_to :web
   has_many :revisions, :order => 'id'
+  has_many :wiki_references, :order => 'referenced_page_name'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
 
   def revise(content, time, author, renderer)
@@ -15,7 +16,7 @@ class Page < ActiveRecord::Base
     # Try to render content to make sure that markup engine can take it,
     renderer.revision = Revision.new(
         :page => self, :content => content, :author => author, :revised_at => time)
-    renderer.force_rendering
+    renderer.display_content
 
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 

@@ -12,11 +12,37 @@ class PageRenderer
     @@url_generator = nil
   end
 
-  attr_accessor :revision
-
+  attr_reader :revision
 
   def initialize(revision = nil)
-    @revision = revision
+    self.revision = revision
+  end
+
+  def revision=(r)
+    @revision = r
+    @wiki_words_cache = @wiki_includes_cache = @wiki_references_cache = nil
+  end
+
+  def display_content
+    render
+  end
+
+  def display_content_for_export
+    render :mode => :export
+  end
+
+  def display_published
+    render :mode => :publish
+  end
+
+  def display_diff
+    previous_revision = @revision.page.previous_revision(@revision)
+    if previous_revision 
+      rendered_previous_revision = WikiContent.new(previous_revision, @@url_generator).render!
+      HTMLDiff.diff(rendered_previous_revision, display_content) 
+    else
+      display_content
+    end
   end
 
   # Returns an array of all the WikiIncludes present in the content of this revision.
@@ -35,7 +61,7 @@ class PageRenderer
       @wiki_references_cache = chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     end
     @wiki_references_cache
-  end  
+  end
 
   # Returns an array of all the WikiWords present in the content of this revision.
   def wiki_words
@@ -58,61 +84,21 @@ class PageRenderer
     wiki_words - existing_pages
   end  
 
-  # Explicit check for new type of display cache with chunks_by_type method.
-  # Ensures new version works with older snapshots.
-  def display_content
-    unless @display_cache && @display_cache.respond_to?(:chunks_by_type)
-      @display_cache = WikiContent.new(@revision, @@url_generator)
-      @display_cache.render!
-    end
-    @display_cache
-  end
-
-  # TODO this probably doesn't belong in revision (because it has to call back the page)
-  def display_diff
-    previous_revision = @revision.page.previous_revision(@revision)
-    if previous_revision 
-      HTMLDiff.diff(PageRenderer.new(previous_revision).display_content, display_content) 
-    else 
-      display_content
-    end
-  end
-
-  def clear_display_cache
-    @wiki_words_cache = @published_cache = @display_cache = @wiki_includes_cache = 
-      @wiki_references_cache = nil
-  end
-
-  def display_published
-    unless @published_cache && @published_cache.respond_to?(:chunks_by_type)
-      @published_cache = WikiContent.new(@revision, @@url_generator, {:mode => :publish})
-      @published_cache.render!
-    end
-    @published_cache
-  end
-
-  def display_content_for_export
-    WikiContent.new(@revision, @@url_generator, {:mode => :export} ).render!
-  end
+  private
   
-  def force_rendering
-    begin
-      display_content.render!
-    rescue => e
-      ActionController::Base.logger.error "Failed rendering page #{@name}"
-      ActionController::Base.logger.error e
-      message = e.message
-      # substitute content with an error message
-      @revision.content = <<-EOL
-          <p>Markup engine has failed to render this page, raising the following error:</p>
-          <p>#{message}</p>
-          <pre>#{@revision.content}</pre>
-      EOL
-      clear_display_cache
-      raise e
+  def render(options = {})
+    result = WikiContent.new(@revision, @@url_generator, options).render!
+    @revision.page.wiki_references.delete
+    
+    wiki_word_chunks = result.find_chunks(WikiChunk::WikiLink)
+    wiki_words = wiki_word_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
+    
+    wiki_words.each do |referenced_page_name|
+      @revision.page.wiki_references.create({
+          :referenced_page_name => referenced_page_name,
+          :link_type => WikiReference.link_type(@revision.page.web, referenced_page_name)
+        })
     end
+    result
   end
-
-  protected
-
 end
