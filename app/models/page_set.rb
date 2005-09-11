@@ -81,7 +81,9 @@ class PageSet < Array
   end
 
   def wiki_words
-    self.inject([]) { |wiki_words, page| WikiReference.wiki_words(page) }.flatten.uniq
+    self.inject([]) { |wiki_words, page|
+      wiki_words + page.wiki_references.map { |ref| ref.referenced_page_name }
+    }.flatten.uniq
   end
 
   def authors

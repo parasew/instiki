@@ -1,5 +1,5 @@
 class Web < ActiveRecord::Base
-  has_many :pages#, :include => [:current_revision, :web]
+  has_many :pages
 
   def wiki
     Wiki.new

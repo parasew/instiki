@@ -88,6 +88,7 @@ class PageRenderer
   
   def render(options = {})
     result = WikiContent.new(@revision, @@url_generator, options).render!
+    WikiReference.delete_all ['page_id = ?', @revision.page_id]
     @revision.page.wiki_references.delete
     
     wiki_word_chunks = result.find_chunks(WikiChunk::WikiLink)

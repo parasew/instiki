@@ -291,7 +291,9 @@ class WikiController < ApplicationController
     @category = @params['category']
     @categories = []
     @pages_in_category = @web.select do |page|
-      page_categories = PageRenderer.new(page.revisions.last).display_content.find_chunks(Category)
+      # FIXME: was PageRenderer.new(page.revisions.last).display_content.find_chunks(Category),
+      # heinously slow
+      page_categories = [] 
       page_categories = page_categories.map { |cat| cat.list }.flatten
       page_categories.each {|c| @categories << c unless @categories.include? c }
       page_categories.include?(@category) 
