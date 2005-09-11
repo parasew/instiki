@@ -7,7 +7,7 @@ require 'admin_controller'
 class AdminController; def rescue_action(e) logger.error(e); raise e end; end
 
 class AdminControllerTest < Test::Unit::TestCase
-  fixtures :webs, :pages, :revisions, :system
+  fixtures :webs, :pages, :revisions, :system, :wiki_references
 
   def setup
     @controller = AdminController.new
@@ -203,7 +203,6 @@ class AdminControllerTest < Test::Unit::TestCase
     @web.pages(true)
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
-
 
     # Oak is now orphan, second pass should remove it
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')

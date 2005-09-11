@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
 class WebTest < Test::Unit::TestCase
-  fixtures :webs, :pages, :revisions, :system
+  fixtures :webs, :pages, :revisions, :system, :wiki_references
   
   def setup
     @web = webs(:instiki)
@@ -78,7 +78,7 @@ class WebTest < Test::Unit::TestCase
         'This is an author page, it should not be an orphan',
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
     self_linked = @web.add_page('SelfLinked', 
-        'I am me SelfLinked and link to EverBeenInLove',
+        'I am SelfLinked and link to EverBeenInLove',
         Time.local(2004, 4, 4, 16, 50), 'AnonymousCoward', test_renderer)
         
     # page that links to itself, and nobody else links to it must be an orphan

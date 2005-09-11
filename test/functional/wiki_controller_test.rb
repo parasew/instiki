@@ -14,7 +14,7 @@ require 'zip/zipfilesystem'
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
 
 class WikiControllerTest < Test::Unit::TestCase
-  fixtures :webs, :pages, :revisions, :system
+  fixtures :webs, :pages, :revisions, :system, :wiki_references
   
   def setup
     @controller = WikiController.new

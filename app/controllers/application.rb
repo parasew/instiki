@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
   before_filter :set_utf8_http_header, :connect_to_model, :setup_url_generator
   after_filter :remember_location, :teardown_url_generator
 
+  observer :page_observer
+
   # For injecting a different wiki model implementation. Intended for use in tests
   def self.wiki=(the_wiki)
     # a global variable is used here because Rails reloads controller and model classes in the 

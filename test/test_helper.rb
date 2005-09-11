@@ -20,6 +20,9 @@ require 'url_generator'
 Test::Unit::TestCase.use_instantiated_fixtures = false
 Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + "/fixtures/"
 
+# activate PageObserver
+PageObserver.instance
+
 class Test::Unit::TestCase
   def create_fixtures(*table_names)
     Fixtures.create_fixtures(File.dirname(__FILE__) + "/fixtures", table_names)
