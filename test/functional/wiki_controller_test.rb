@@ -485,7 +485,7 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
   def test_rss_title_with_ampersand
-    # was ticket:143    
+    # was ticket:143
     @wiki.write_page('wiki1', 'Title&With&Ampersands', 
       'About spaces', 1.hour.ago, Author.new('NitPicker', '127.0.0.3'), test_renderer)
 

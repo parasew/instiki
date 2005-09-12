@@ -2,7 +2,7 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
-  before_filter :set_utf8_http_header, :connect_to_model, :setup_url_generator
+  before_filter :connect_to_model, :setup_url_generator, :set_content_type_header
   after_filter :remember_location, :teardown_url_generator
 
   observer :page_observer
@@ -144,8 +144,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_utf8_http_header
-    @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+  def set_content_type_header
+    if %w(rss_with_content rss_with_headlines).include?(action_name)
+      @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
+    else
+      @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+    end
   end
 
   def setup_url_generator

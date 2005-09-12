@@ -16,9 +16,12 @@ class RevisionSweeper < ActionController::Caching::Sweeper
   private
   
   def expire_caches(page)
-    expire_page :controller => 'wiki', :web => page.web.address,
+    web = page.web
+    expire_action :controller => 'wiki', :web => web.address,
         :action => %w(show published), :id => page.name
-    expire_page :controller => 'wiki', :web => page.web.address,
-        :action => %w(authors recently_revised list rss_with_content rss_with_headlines)
+    expire_action :controller => 'wiki', :web => web.address,
+        :action => %w(authors recently_revised list)
+    expire_fragment :controller => 'wiki', :web => web.address,
+        :action => %w(rss_with_headlines rss_with_content)
   end
 end

@@ -6,7 +6,7 @@ require 'zip/zip'
 class WikiController < ApplicationController
 
   # TODO implement cache sweeping
-  caches_page :show, :published, :authors, :recently_revised, :list, :rss_with_content, :rss_with_headlines
+  caches_action :show, :published, :authors, :recently_revised, :list
   cache_sweeper :revision_sweeper
 
   layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex,  :export_tex, :export_html]
@@ -330,10 +330,9 @@ class WikiController < ApplicationController
     end
     
     @hide_description = hide_description
-    @response.headers['Content-Type'] = 'text/xml'
     @link_action = @web.password ? 'published' : 'show'
     
-    render 'wiki/rss_feed'
+    render :action => 'rss_feed'
   end
 
   def render_tex_web
@@ -346,7 +345,7 @@ class WikiController < ApplicationController
   def render_to_string(template_name, with_layout = false)
     add_variables_to_assigns
     self.assigns['content_for_layout'] = @template.render_file(template_name)
-    if with_layout 
+    if with_layout
       @template.render_file('layouts/default')
     else 
       self.assigns['content_for_layout']
