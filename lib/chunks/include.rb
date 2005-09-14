@@ -30,8 +30,6 @@ class Include < WikiChunk::WikiReference
         return "<em>Recursive include detected; #{@page_name} --> #{@content.page_name} " + 
                "--> #{@page_name}</em>\n"
       else
-require 'breakpoint'
-breakpoint
         included_content = renderer.display_content
         @content.merge_chunks(included_content)
         return included_content.pre_rendered
