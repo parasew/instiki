@@ -202,4 +202,4 @@ task :migrate => :environment do
 end
 
 task :ft => :test_functional
-task :ut => :test_unit
+task :ut => :test_units

@@ -28,7 +28,7 @@ module Chunk
     # a regexp that matches all chunk_types masks
     def Abstract::mask_re(chunk_types)
       chunk_classes = chunk_types.map{|klass| klass.mask_string}.join("|")
-      /chunk(\d+)(#{chunk_classes})chunk/
+      /chunk(-?\d+)(#{chunk_classes})chunk/
     end
     
     attr_reader :text, :unmask_text, :unmask_mode
