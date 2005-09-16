@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
 
   s.has_rdoc = false
   
-  s.add_dependency('RedCloth', '= 3.0.3')
+  s.add_dependency('RedCloth', '= 3.0.4')
   s.add_dependency('rubyzip', '= 0.5.8')
   s.add_dependency('rails', '= 0.13.1')
   s.add_dependency('sqlite3-ruby', '= 1.1.0')
