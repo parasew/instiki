@@ -156,6 +156,9 @@ class WikiController < ApplicationController
   end
 
   def print
+    if @page.nil?
+      redirect_home
+    end
     @link_mode ||= :show
     @renderer = PageRenderer.new(@page.revisions.last)
     # to template
