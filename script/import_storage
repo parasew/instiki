@@ -124,7 +124,7 @@ def sql_insert(table, hash)
       else 
        raise "Unsupported database option #{OPTIONS[:database]}"
       end
-      "'#{escaped_value}'"
+      "'#{escaped_value.gsub("\r\n", "\n")}'"
     end
   end
   
