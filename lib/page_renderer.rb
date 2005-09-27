@@ -24,7 +24,7 @@ class PageRenderer
   end
 
   def display_content
-    render
+    @display_content ||= render
   end
 
   def display_content_for_export
@@ -32,12 +32,12 @@ class PageRenderer
   end
 
   def display_published
-    render :mode => :publish
+    @display_published ||= render(:mode => :publish)
   end
 
   def display_diff
     previous_revision = @revision.page.previous_revision(@revision)
-    if previous_revision 
+    if previous_revision
       rendered_previous_revision = WikiContent.new(previous_revision, @@url_generator).render!
       HTMLDiff.diff(rendered_previous_revision, display_content) 
     else
