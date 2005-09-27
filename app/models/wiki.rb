@@ -1,4 +1,5 @@
 class Wiki
+
   cattr_accessor :storage_path, :logger
   self.storage_path = "#{RAILS_ROOT}/storage/"
   self.logger = RAILS_DEFAULT_LOGGER

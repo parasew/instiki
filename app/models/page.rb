@@ -16,7 +16,7 @@ class Page < ActiveRecord::Base
     # Try to render content to make sure that markup engine can take it,
     renderer.revision = Revision.new(
        :page => self, :content => content, :author => author, :revised_at => time)
-    renderer.display_content
+    renderer.display_content(update_references = true)
 
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 
@@ -57,10 +57,6 @@ class Page < ActiveRecord::Base
     else
       revisions[revision_index - 1]
     end
-  end
-
-  def authors
-    revisions.collect { |rev| rev.author }
   end
 
   def references

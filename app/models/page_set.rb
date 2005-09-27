@@ -46,6 +46,9 @@ class PageSet < Array
   end
 
   def pages_authored_by(author)
+    all_pages_authored_by_the_author = 
+        Page.connection.select_all(sanitize_sql([
+            "SELECT page_id FROM revision WHERE author = '?'", author]))
     self.select { |page| page.authors.include?(author) }
   end
 
@@ -59,7 +62,7 @@ class PageSet < Array
   # references and so cannot be orphans
   # Pages that refer to themselves and have no links from outside are oprphans.
   def orphaned_pages
-    never_orphans = web.select.authors + ['HomePage']
+    never_orphans = web.authors + ['HomePage']
     self.select { |page|
       if never_orphans.include? page.name
         false
@@ -86,10 +89,6 @@ class PageSet < Array
           select { |ref| ref.link_type != WikiReference::CATEGORY }.
           map { |ref| ref.referenced_name }
     }.flatten.uniq
-  end
-
-  def authors
-    self.inject([]) { |authors, page| authors << page.authors }.flatten.uniq.sort
   end
 
 end

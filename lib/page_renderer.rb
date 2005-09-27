@@ -20,11 +20,12 @@ class PageRenderer
 
   def revision=(r)
     @revision = r
-    @wiki_words_cache = @wiki_includes_cache = @wiki_references_cache = nil
+    @display_content = @display_published = @wiki_words_cache = @wiki_includes_cache = 
+        @wiki_references_cache = nil
   end
 
-  def display_content
-    @display_content ||= render
+  def display_content(update_references = false)
+    @display_content ||= render(:update_references => update_references)
   end
 
   def display_content_for_export
@@ -87,12 +88,21 @@ class PageRenderer
   private
   
   def render(options = {})
-    result = WikiContent.new(@revision, @@url_generator, options).render!
+
+    rendering_result = WikiContent.new(@revision, @@url_generator, options).render!
+    
+    if options[:update_references]
+      update_references(rendering_result)
+    end
+    rendering_result
+  end
+  
+  def update_references(rendering_result)
     WikiReference.delete_all ['page_id = ?', @revision.page_id]
 
     references = @revision.page.wiki_references
         
-    wiki_word_chunks = result.find_chunks(WikiChunk::WikiLink)
+    wiki_word_chunks = rendering_result.find_chunks(WikiChunk::WikiLink)
     wiki_words = wiki_word_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     
     wiki_words.each do |referenced_name|
@@ -105,17 +115,16 @@ class PageRenderer
       references.create :referenced_name => referenced_name, :link_type => link_type
     end
     
-    include_chunks = result.find_chunks(Include)
+    include_chunks = rendering_result.find_chunks(Include)
     includes = include_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     includes.each do |included_page_name|
       references.create :referenced_name => included_page_name, 
           :link_type => WikiReference::INCLUDED_PAGE
     end
     
-    categories = result.find_chunks(Category).map { |cat| cat.list }.flatten
+    categories = rendering_result.find_chunks(Category).map { |cat| cat.list }.flatten
     categories.each do |category|
       references.create :referenced_name => category, :link_type => WikiReference::CATEGORY
     end
-    result
   end
 end

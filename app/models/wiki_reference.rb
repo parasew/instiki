@@ -4,9 +4,10 @@ class WikiReference < ActiveRecord::Base
   WANTED_PAGE = 'W'
   INCLUDED_PAGE = 'I'
   CATEGORY = 'C'
+  AUTHOR = 'A'
 
   belongs_to :page
-  validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, INCLUDED_PAGE, CATEGORY]
+  validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, INCLUDED_PAGE, CATEGORY, AUTHOR]
 
   # FIXME all finders below MUST restrict their results to pages belonging to a particular web
 

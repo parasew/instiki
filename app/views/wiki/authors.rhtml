@@ -5,7 +5,7 @@
     <li>
       <%= link_to_page author %>
       co- or authored:
-      <%= @web.select.pages_authored_by(author).collect { |page| link_to_page(page.name) }.sort.join ', ' %>
+      <%= @page_names_by_author[author].collect { |page_name| link_to_page(page_name) }.sort.join ', ' %>
     </li>
   <% end %>
 </ul>

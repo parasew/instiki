@@ -53,6 +53,9 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_success
     assert_equal %w(AnAuthor BreakingTheOrder DavidHeinemeierHansson Guest Me TreeHugger), 
         r.template_objects['authors']
+    page_names_by_author = r.template_objects['page_names_by_author'] 
+    assert_equal r.template_objects['authors'], page_names_by_author.keys.sort
+    assert_equal %w(FirstPage HomePage), page_names_by_author['DavidHeinemeierHansson']
   end
 
   def test_cancel_edit

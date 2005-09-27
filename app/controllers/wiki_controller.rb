@@ -46,7 +46,8 @@ class WikiController < ApplicationController
   # Within a single web ---------------------------------------------------------
 
   def authors
-    @authors = @web.select.authors.sort
+    @page_names_by_author = @web.page_names_by_author
+    @authors = @page_names_by_author.keys.sort
   end
   
   def export_html

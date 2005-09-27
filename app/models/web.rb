@@ -21,7 +21,11 @@ class Web < ActiveRecord::Base
   end
   
   def authors
-    select.authors 
+    connection.select_all(
+        'SELECT DISTINCT r.author AS author ' + 
+        'FROM revisions r ' +
+        'JOIN pages p ON p.id = r.page_id ' +
+        'ORDER by 1').collect { |row| row['author'] }
   end
 
   def categories
@@ -42,6 +46,21 @@ class Web < ActiveRecord::Base
 
   def markup
     read_attribute('markup').to_sym
+  end
+
+  def page_names_by_author
+    connection.select_all(
+        'SELECT DISTINCT r.author AS author, p.name AS page_name ' +
+        'FROM revisions r ' +
+        'JOIN pages p ON r.page_id = p.id ' +
+        "WHERE p.web_id = #{self.id} " +
+        'ORDER by p.name'
+    ).inject({}) { |result, row|
+        author, page_name = row['author'], row['page_name']
+        result[author] = [] unless result.has_key?(author)
+        result[author] << page_name
+        result
+    }
   end
 
   def remove_pages(pages_to_be_removed)

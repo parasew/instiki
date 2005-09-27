@@ -16,7 +16,7 @@ Web.find_all.each do |web|
   web.pages.find(:all, :order => 'name').each do |page|
     $stderr.puts "Processing page '#{page.name}'"
     begin
-      PageRenderer.new(page.current_revision).display_content
+      PageRenderer.new(page.current_revision).display_content(update_references = true)
     rescue => e
       puts e
       puts e.backtrace
