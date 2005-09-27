@@ -17,15 +17,16 @@ class RevisionSweeper < ActionController::Caching::Sweeper
   
   def expire_caches(page)
     web = page.web
-    expire_action :controller => 'wiki', :web => web.address,
-        :action => %w(show published), :id => page.name
+
+    ([page.name] + WikiReference.pages_that_reference(page.name)).uniq.each do |page_name|
+      expire_action :controller => 'wiki', :web => web.address,
+          :action => %w(show published), :id => page_name
+    end
+
     expire_action :controller => 'wiki', :web => web.address,
         :action => %w(authors recently_revised list)
     expire_fragment :controller => 'wiki', :web => web.address,
         :action => %w(rss_with_headlines rss_with_content)
-    WikiReference.pages_that_reference(page.name).each do |ref|
-      expire_action :controller => 'wiki', :web => web.address,
-          :action => %w(show published), :id => ref.page.name
-    end
   end
+
 end
