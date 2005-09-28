@@ -183,7 +183,7 @@ File.open(OPTIONS[:outfile], 'w') { |outfile|
     puts "Web #{web_name} has #{web.pages.keys.size} pages"
     web.pages.each_pair do |page_name, page|
 
-      outfile.puts "BEGIN TRANSACTION;"
+      outfile.puts "BEGIN;"
 
       outfile.puts sql_insert(:pages, {
         :id         => next_id(:page),
