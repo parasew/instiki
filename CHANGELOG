@@ -1,6 +1,5 @@
- * instiki-ar
+ * instiki-ar:
    SQL-based backend (ActiveRecord)
-   Upgrade to RedCloth 3.0.4
    Replaced internal link generator with routing
    Fixed --daemon option
 

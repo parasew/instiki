@@ -20,36 +20,12 @@ desc "Generate API documentation, show coding stats"
 task :doc => [ :appdoc, :stats ]
 
 
-# Look up tests for recently modified sources.
-def recent_tests(source_pattern, test_path, touched_since = 10.minutes.ago)
-  FileList[source_pattern].map do |path|
-    if File.mtime(path) > touched_since
-      test = "#{test_path}/#{File.basename(path, '.rb')}_test.rb"
-      test if File.exists?(test)
-    end
-  end.compact
-end
-
-desc 'Test recent changes.'
-Rake::TestTask.new(:recent => [ :clone_structure_to_test ]) do |t|
-  since = TEST_CHANGES_SINCE
-  touched = FileList['test/**/*_test.rb'].select { |path| File.mtime(path) > since } +
-    recent_tests('app/models/*.rb', 'test/unit', since) +
-    recent_tests('app/controllers/*.rb', 'test/functional', since)
-
-  t.libs << 'test'
-  t.verbose = true
-  t.test_files = touched.uniq
-end
-task :test_recent => [ :clone_structure_to_test ]
-
 desc "Run the unit tests in test/unit"
 Rake::TestTask.new("test_units") { |t|
   t.libs << "test"
   t.pattern = 'test/unit/**/*_test.rb'
   t.verbose = true
 }
-task :test_units => [ :clone_structure_to_test ]
 
 desc "Run the functional tests in test/functional"
 Rake::TestTask.new("test_functional") { |t|
@@ -57,7 +33,6 @@ Rake::TestTask.new("test_functional") { |t|
   t.pattern = 'test/functional/**/*_test.rb'
   t.verbose = true
 }
-task :test_functional => [ :clone_structure_to_test ]
 
 desc "Generate documentation for the application"
 Rake::RDocTask.new("appdoc") { |rdoc|
@@ -116,52 +91,6 @@ task :stats => [ :environment ] do
     ["Models", "app/models"],
     ["Units", "test/unit"]
   ).to_s
-end
-
-desc "Recreate the test databases from the development structure"
-task :clone_structure_to_test => [ :db_structure_dump, :purge_test_database ] do
-  abcs = ActiveRecord::Base.configurations
-  case abcs["test"]["adapter"]
-    when  "mysql"
-      ActiveRecord::Base.establish_connection(:test)
-      ActiveRecord::Base.connection.execute('SET foreign_key_checks = 0')
-      IO.readlines("db/#{RAILS_ENV}_structure.sql").join.split("\n\n").each do |table|
-        ActiveRecord::Base.connection.execute(table)
-      end
-    when "postgresql"
-      ENV['PGHOST']     = abcs["test"]["host"] if abcs["test"]["host"]
-      ENV['PGPORT']     = abcs["test"]["port"].to_s if abcs["test"]["port"]
-      ENV['PGPASSWORD'] = abcs["test"]["password"].to_s if abcs["test"]["password"]
-      `psql -U "#{abcs["test"]["username"]}" -f db/#{RAILS_ENV}_structure.sql #{abcs["test"]["database"]}`
-    when "sqlite", "sqlite3"
-      `#{abcs[RAILS_ENV]["adapter"]} #{abcs["test"]["dbfile"]} < db/#{RAILS_ENV}_structure.sql`
-    when "sqlserver"
-      `osql -E -S #{abcs["test"]["host"]} -d #{abcs["test"]["database"]} -i db\\#{RAILS_ENV}_structure.sql`
-    else 
-      raise "Unknown database adapter '#{abcs["test"]["adapter"]}'"
-  end
-end
-
-desc "Dump the database structure to a SQL file"
-task :db_structure_dump => :environment do
-  abcs = ActiveRecord::Base.configurations
-  case abcs[RAILS_ENV]["adapter"] 
-    when "mysql"
-      ActiveRecord::Base.establish_connection(abcs[RAILS_ENV])
-      File.open("db/#{RAILS_ENV}_structure.sql", "w+") { |f| f << ActiveRecord::Base.connection.structure_dump }
-    when "postgresql"
-      ENV['PGHOST']     = abcs[RAILS_ENV]["host"] if abcs[RAILS_ENV]["host"]
-      ENV['PGPORT']     = abcs[RAILS_ENV]["port"].to_s if abcs[RAILS_ENV]["port"]
-      ENV['PGPASSWORD'] = abcs[RAILS_ENV]["password"].to_s if abcs[RAILS_ENV]["password"]
-      `pg_dump -U "#{abcs[RAILS_ENV]["username"]}" -s -x -O -f db/#{RAILS_ENV}_structure.sql #{abcs[RAILS_ENV]["database"]}`
-    when "sqlite", "sqlite3"
-      `#{abcs[RAILS_ENV]["adapter"]} #{abcs[RAILS_ENV]["dbfile"]} .schema > db/#{RAILS_ENV}_structure.sql`
-    when "sqlserver"
-      `scptxfr /s #{abcs[RAILS_ENV]["host"]} /d #{abcs[RAILS_ENV]["database"]} /I /f db\\#{RAILS_ENV}_structure.sql /q /A /r`
-      `scptxfr /s #{abcs[RAILS_ENV]["host"]} /d #{abcs[RAILS_ENV]["database"]} /I /F db\ /q /A /r`
-    else 
-      raise "Unknown database adapter '#{abcs["test"]["adapter"]}'"
-  end
 end
 
 desc "Empty the test database"

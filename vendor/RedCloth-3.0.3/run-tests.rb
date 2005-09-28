@@ -5,9 +5,7 @@ require 'yaml'
 Dir["tests/*.yml"].each do |testfile|
     YAML::load_documents( File.open( testfile ) ) do |doc|
         if doc['in'] and doc['out']
-            opts = []
-            opts << :hard_breaks if testfile =~ /hard_breaks/
-            red = RedCloth.new( doc['in'], opts )
+            red = RedCloth.new( doc['in'] )
             html = if testfile =~ /markdown/
                        red.to_html( :markdown )
                    else
