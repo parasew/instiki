@@ -513,6 +513,7 @@ class WikiControllerTest < Test::Unit::TestCase
     
     assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'NewPage'
     assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
+    assert_equal Time.utc(2030), r.cookies['author'].expires
     new_page = @wiki.read_page('wiki1', 'NewPage')
     assert_equal 'Contents of a new page', new_page.content
     assert_equal 'AuthorOfNewPage', new_page.author

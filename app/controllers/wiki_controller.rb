@@ -185,7 +185,7 @@ class WikiController < ApplicationController
 
   def save
     redirect_home if @page_name.nil?
-    cookies['author'] = @params['author']
+    cookies['author'] = { :value => @params['author'], :expires => Time.utc(2030) }
 
     begin
       if @page
