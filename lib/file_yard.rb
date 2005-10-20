@@ -17,7 +17,7 @@ class FileYard
     if io.kind_of?(Tempfile)
       io.close
       check_upload_size(io.size)
-      File.chmod(600, file_path(name)) if File.exists? file_path(name)
+      File.chmod(0600, file_path(name)) if File.exists? file_path(name)
       FileUtils.mv(io.path, file_path(name))
     else
       content = io.read
