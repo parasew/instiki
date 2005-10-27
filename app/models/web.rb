@@ -79,6 +79,10 @@ class Web < ActiveRecord::Base
     PageSet.new(self, pages, nil)
   end
   
+  def to_param
+    address
+  end
+  
   private
 
     # Returns an array of all the wiki words in any current revision

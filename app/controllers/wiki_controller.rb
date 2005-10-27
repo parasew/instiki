@@ -51,11 +51,41 @@ class WikiController < ApplicationController
   end
   
   def export_html
+    stylesheet = File.read(File.join(RAILS_ROOT, 'public', 'stylesheets', 'instiki.css'))
     export_pages_as_zip('html') do |page| 
-      @page = page
-      @renderer = PageRenderer.new(page.revisions.last)
-      @link_mode = :export
-      render_to_string('wiki/print', use_layout = (@params['layout'] != 'no'))
+
+      renderer = PageRenderer.new(page.revisions.last)
+      rendered_page = <<-EOL
+        <!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+          <title>#{page.plain_name} in #{@web.name}</title>
+          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  
+          <style type="text/css">
+            h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover { 
+              color: ##{@web ? @web.color : "393" }; 
+            }
+            .newWikiWord { background-color: white; font-style: italic; }
+            #{stylesheet}
+          </style>
+          <style type="text/css">
+            #{@web.additional_style}
+          </style>
+        </head>
+        <body>
+          #{renderer.display_content_for_export}
+          <div class="byline">
+            #{page.revisions? ? "Revised" : "Created" } on #{ page.revised_at.strftime('%B %d, %Y %H:%M:%S') }
+            by
+            #{ UrlGenerator.new(self).make_link(page.author.name, @web, nil, { :mode => :export }) }
+          </div>
+        </body>
+        </html>
+      EOL
+      rendered_page
     end
   end
 
@@ -256,7 +286,7 @@ class WikiController < ApplicationController
 
   def export_page_to_tex(file_path)
     tex
-    File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex')) }
+    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => nil)) }
   end
 
   def export_pages_as_zip(file_type, &block)
@@ -285,7 +315,7 @@ class WikiController < ApplicationController
 
   def export_web_to_tex(file_path)
     @tex_content = table_of_contents(@web.page('HomePage').content, render_tex_web)
-    File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex_web')) }
+    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex_web', :layout => nil)) }
   end
 
   def get_page_and_revision
@@ -346,16 +376,6 @@ class WikiController < ApplicationController
     end
   end
 
-  def render_to_string(template_name, with_layout = false)
-    add_variables_to_assigns
-    self.assigns['content_for_layout'] = @template.render_file(template_name)
-    if with_layout
-      @template.render_file('layouts/default')
-    else 
-      self.assigns['content_for_layout']
-    end
-  end
-  
   def rss_with_content_allowed?
     @web.password.nil? or @web.published?
   end

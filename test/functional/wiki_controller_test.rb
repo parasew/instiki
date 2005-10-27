@@ -116,7 +116,6 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
-    assert_equal :export, r.template_objects['link_mode']
     
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
@@ -145,7 +144,6 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
-    assert_equal :export, r.template_objects['link_mode']
   end
 
   def test_export_markup

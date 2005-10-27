@@ -94,6 +94,10 @@ class Page < ActiveRecord::Base
     locked_at + LOCKING_PERIOD > comparison_time unless locked_at.nil?
   end
 
+  def to_param
+    name
+  end
+
   private
 
     def continous_revision?(time, author)
