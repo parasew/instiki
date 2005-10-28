@@ -5,7 +5,6 @@ require 'zip/zip'
 
 class WikiController < ApplicationController
 
-  # TODO implement cache sweeping
   caches_action :show, :published, :authors, :recently_revised, :list
   cache_sweeper :revision_sweeper
 
