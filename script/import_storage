@@ -25,8 +25,8 @@ ARGV.options do |opts|
   opts.separator ""
 
   opts.on("-i", "--instiki /full/path/to/instiki", String,
-          "Full path to your Instiki installation, ",
-          "such as /home/joe/instiki") do |instiki| 
+          "Full path to your Instiki 0.10 installation, ",
+          "such as /home/joe/instiki-0.10.2") do |instiki| 
             OPTIONS[:instiki] = instiki
           end
 
@@ -54,7 +54,7 @@ ARGV.options do |opts|
 end
 
 if OPTIONS[:instiki].nil? or OPTIONS[:storage].nil? or OPTIONS[:outfile].nil?
-  $stderr.puts "Please specify full paths to Instiki installation and storage,"
+  $stderr.puts "Please specify full paths to Instiki 0.10 installation and storage,"
   $stderr.puts "as well as the path to the output file"
   $stderr.puts
   puts ARGV.options
