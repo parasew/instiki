@@ -195,12 +195,13 @@ class WikiController < ApplicationController
   end
 
   def published
-    if @web.published?
-      page = wiki.read_page(@web_name, @page_name || 'HomePage') 
-      @renderer = PageRenderer.new(page.revisions.last)
-    else 
-      redirect_home
-    end
+    render_text("Published version of web '#{@web_name}' is not available", 404) and return if not @web.published?
+
+    page_name = @page_name || 'HomePage'
+    page = wiki.read_page(@web_name, page_name)
+    render_text("Page '#{page_name}' not found", 404) and return unless page
+    
+    @renderer = PageRenderer.new(page.revisions.last)
   end
   
   def revision

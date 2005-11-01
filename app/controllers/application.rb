@@ -2,7 +2,7 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
-  before_filter :connect_to_model, :setup_url_generator, :set_content_type_header
+  before_filter :connect_to_model, :setup_url_generator, :set_content_type_header, :set_robots_metatag
   after_filter :remember_location, :teardown_url_generator
 
   observer :page_observer
@@ -149,6 +149,14 @@ class ApplicationController < ActionController::Base
       @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
     else
       @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+    end
+  end
+
+  def set_robots_metatag
+    if controller_name == 'wiki' and %w(show published).include? action_name 
+      @robots_metatag_value = 'index,follow'
+    else
+      @robots_metatag_value = 'noindex,nofollow'
     end
   end
 

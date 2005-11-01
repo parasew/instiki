@@ -14,7 +14,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   </title>
 
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
+  <meta name="robots" content="<%= @robots_metatag_value %>" />
+  
   <style type="text/css">
     h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, #TextileHelp h3 { 
       color: #<%= @web ? @web.color : "393" %>; 
