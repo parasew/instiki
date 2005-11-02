@@ -14,7 +14,7 @@ Rails::Initializer.run do |config|
   # config.action_controller.fragment_cache_store = :file_store, "#{RAILS_ROOT}/cache"
 
   # Activate observers that should always be running
-  # config.active_record.observers = :cacher, :garbage_collector
+  config.active_record.observers = :page_observer
 
   # Use Active Record's schema dumper instead of SQL when creating the test database
   # (enables use of different database adapters for development and test environments)

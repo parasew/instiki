@@ -23,6 +23,14 @@ ActiveRecord::Schema.define() do
     t.column "ip", :string, :limit => 60
   end
 
+  create_table "sessions", :force => true do |t|
+    t.column "session_id", :string
+    t.column "data", :text
+    t.column "updated_at", :datetime
+  end
+
+  add_index "sessions", ["session_id"], :name => "sessions_session_id_index"
+
   create_table "system", :force => true do |t|
     t.column "password", :string, :limit => 60
   end
