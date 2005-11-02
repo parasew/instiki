@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_authorization
-    if in_a_web? and needs_authorization?(@action_name) and not authorized? and 
+    if in_a_web? and authorization_needed? and not authorized? and 
       redirect_to :controller => 'wiki', :action => 'login', :web => @web_name
       return false
     end
@@ -98,28 +98,26 @@ class ApplicationController < ActionController::Base
 
   def redirect_to_page(page_name = @page_name, web = @web_name)
     redirect_to :web => web, :controller => 'wiki', :action => 'show', 
-        :id => (page_name || 'HomePage')
+        :id => (page_name or 'HomePage')
   end
 
-  @@REMEMBER_NOT = ['locked', 'save', 'back', 'file', 'pic', 'import']
   def remember_location
-    if @response.headers['Status'] == '200 OK'
-      unless @@REMEMBER_NOT.include? action_name or @request.method != :get
-        @session[:return_to] = @request.request_uri
-        logger.debug("Session ##{session.object_id}: remembered URL '#{@session[:return_to]}'")
-      end
+    if @request.method == :get and 
+        @response.headers['Status'] == '200 OK' and not
+        %w(locked save back file pic import).include?(action_name)
+      @session[:return_to] = @request.request_uri
+      logger.debug "Session ##{session.object_id}: remembered URL '#{@session[:return_to]}'"
     end
   end
 
   def rescue_action_in_public(exception)
-    message = <<-EOL
+    render :status => 500, :text => <<-EOL
       <html><body>
-        <h2>Internal Error 500</h2>
+        <h2>Internal Error</h2>
         <p>An application error occurred while processing your request.</p>
-        <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n  -->
+        <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n -->
       </body></html>
     EOL
-    render_text message, 'Internal Error 500'
   end
 
   def return_to_last_remembered
@@ -170,8 +168,8 @@ class ApplicationController < ActionController::Base
     self.class.wiki
   end
 
-  def needs_authorization?(action)
-    not %w( login authenticate published rss_with_content rss_with_headlines ).include?(action)
+  def authorization_needed?
+    not %w( login authenticate published rss_with_content rss_with_headlines ).include?(action_name)
   end
 
 end
