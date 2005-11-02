@@ -195,11 +195,14 @@ class WikiController < ApplicationController
   end
 
   def published
-    render_text("Published version of web '#{@web_name}' is not available", 404) and return if not @web.published?
+    if not @web.published?
+      render(:text => "Published version of web '#{@web_name}' is not available", :status => 404)
+      return 
+    end
 
     page_name = @page_name || 'HomePage'
     page = wiki.read_page(@web_name, page_name)
-    render_text("Page '#{page_name}' not found", 404) and return unless page
+    render(:text => "Page '#{page_name}' not found", status => 404) and return unless page
     
     @renderer = PageRenderer.new(page.revisions.last)
   end

@@ -288,7 +288,7 @@ class WikiControllerTest < Test::Unit::TestCase
     
     r = process('published', 'web' => 'wiki1', 'id' => 'HomePage')
 
-    assert_redirected_to :action => 'show', :id => 'HomePage'    
+    assert_response :missing
   end
 
 
