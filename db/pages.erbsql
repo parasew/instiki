@@ -1,9 +1,0 @@
-CREATE TABLE pages (
-  id <%= @pk %>,
-  created_at <%= @datetime %> NOT NULL,
-  updated_at <%= @datetime %> NOT NULL,
-  web_id INTEGER NOT NULL,
-  locked_by VARCHAR(60),
-  name VARCHAR(60),
-  locked_at <%= @datetime %>
-) <%= create_options %>;
