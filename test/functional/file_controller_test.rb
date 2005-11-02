@@ -3,6 +3,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'file_controller'
 require 'fileutils'
+require 'stringio'
 
 # Raise errors beyond the default web-based presentation
 class FileController; def rescue_action(e) logger.error(e); raise e end; end

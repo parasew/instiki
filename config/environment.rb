@@ -16,9 +16,6 @@ Rails::Initializer.run do |config|
   # Activate observers that should always be running
   # config.active_record.observers = :cacher, :garbage_collector
 
-  # Make Active Record use UTC-base instead of local time
-  config.active_record.default_timezone = :utc
-  
   # Use Active Record's schema dumper instead of SQL when creating the test database
   # (enables use of different database adapters for development and test environments)
   config.active_record.schema_format = :ruby
