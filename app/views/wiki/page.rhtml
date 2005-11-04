@@ -71,8 +71,8 @@
   <small>
     | Views: 
     <%= link_to('Print',
-          {:web => @web.address, :action => 'print', :id => @page.name},
-          {:accesskey => 'p', :name => 'view_print'}) %>
+            { :web => @web.address, :action => 'print', :id => @page.name },
+            { :accesskey => 'p', :name => 'view_print' }) %>
   <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
     | 
     <%= link_to 'TeX', {:web => @web.address, :action => 'tex', :id => @page.name}, 
@@ -83,24 +83,7 @@
   <% end %>
   </small>
 
-  <% unless @page.linked_from.empty? %>
-    <small>
-      | Linked from: 
-      <%= @page.linked_from.collect { |referring_page| 
-            link_to_existing_page referring_page
-          }.join(", ")
-      %>
-    </small>
-  <% end %>
-
-  <% if @page.included_from.length > 0 %>
-    <small>
-      | Included from: <%= @page.included_from.collect { |referring_page|
-	 link_to_existing_page referring_page
-	}.join(", ") 
-	%>
-    </small>
-  <% end %>
+  <%= render :partial => 'inbound_links' %>
 </div>
 
 <script language="Javascript" type="text/Javascript">

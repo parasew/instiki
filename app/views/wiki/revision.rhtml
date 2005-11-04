@@ -72,18 +72,9 @@
         {:web => @web.address, :action => 'rollback', :id => @page.name, :rev => @revision_number},
         {:class => 'navlink', :name => 'rollback'})
   %>
+
+  <%= render :partial => 'inbound_links' %>
   
-  <% if @page.references.length > 0 %>
-    <small>
-      | Linked from: 
-      <%= @page.references.collect { |ref| 
-            link_to ref.name, :web => @web.address, :action => 'show', :id => ref.name 
-          }.join(", ") 
-      %>
-    </small>
-  <% else %>
-    Orphan page
-  <% end %>
 </div>
 
 <script language="Javascript">
