@@ -18,8 +18,9 @@
 </p>
 <p>
     <input type="submit" value="Submit" accesskey="s"/> as 
-    <input type="text" name="author" id="authorName" value="<%= @author %>" 
-        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
+    <%= text_field_tag :author, @author, 
+            :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
+            :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
     | 
     <%= link_to('Cancel', {:web => @web.address, :action => 'cancel_edit', :id => @page.name},
           {:accesskey => 'c'})

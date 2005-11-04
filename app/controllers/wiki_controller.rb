@@ -217,9 +217,9 @@ class WikiController < ApplicationController
   end
 
   def save
-    redirect_home if @page_name.nil?
-    cookies['author'] = { :value => @params['author'], :expires => Time.utc(2030) }
+    render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
 
+    cookies['author'] = { :value => @params['author'], :expires => Time.utc(2030) }
     begin
       if @page
         wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 

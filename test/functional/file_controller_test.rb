@@ -121,12 +121,12 @@ class FileControllerTest < Test::Unit::TestCase
 
   def test_uploads_blocking
     set_web_property :allow_uploads, true
-    r = process 'file', 'web' => 'wiki1', 'id' => 'filename'
+    process 'file', 'web' => 'wiki1', 'id' => 'filename'
     assert_success
 
     set_web_property :allow_uploads, false
-    r = process 'file', 'web' => 'wiki1', 'id' => 'filename'
-    assert_equal '403 Forbidden', r.headers['Status']
+    process 'file', 'web' => 'wiki1', 'id' => 'filename'
+    assert_response 403
   end
 
 end
