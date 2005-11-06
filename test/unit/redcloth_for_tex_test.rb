@@ -1,4 +1,4 @@
-#!/bin/env ruby -w
+#!/usr/bin/env ruby
 
 require File.dirname(__FILE__) + '/../test_helper'
 require 'redcloth_for_tex'

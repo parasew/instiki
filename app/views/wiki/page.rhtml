@@ -4,7 +4,7 @@
 %>
 
 <div id="revision">
-  <%= @page.display_content %>
+  <%= @renderer.display_content %>
 </div>
 
 
@@ -12,20 +12,20 @@
   <div id="changes" style="display: none">
     <p style="background: #eee; padding: 3px; border: 1px solid silver">
       <small>
-        Showing changes from revision #<%= @page.number - 1 %> to #<%= @page.number %>:
+        Showing changes from revision #<%= @page.revisions.size - 2 %> to #<%= @page.revisions.size - 1 %>:
         <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>
       </small>
     </p>
 
-    <%= @page.display_diff %>
+    <%= @renderer.display_diff %>
   </div>
 <% end %>
 
 <div class="byline">
-  <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_at %> 
-  by <%= @page.author_link %>
+  <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 
+  by <%= author_link(@page) %>
   <%= "(#{@page.author.ip})" if @page.author.respond_to?(:ip) %>
-  <% if @web.count_pages %>
+  <% if @web.count_pages? %>
     <% total_chars = @page.content.length %>
     (<%= total_chars %> characters / <%= sprintf("%-.1f", (total_chars / 2275 rescue 0)) %> pages)
   <% end %>
@@ -71,8 +71,8 @@
   <small>
     | Views: 
     <%= link_to('Print',
-          {:web => @web.address, :action => 'print', :id => @page.name},
-          {:accesskey => 'p', :name => 'view_print'}) %>
+            { :web => @web.address, :action => 'print', :id => @page.name },
+            { :accesskey => 'p', :name => 'view_print' }) %>
   <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
     | 
     <%= link_to 'TeX', {:web => @web.address, :action => 'tex', :id => @page.name}, 
@@ -83,24 +83,7 @@
   <% end %>
   </small>
 
-  <% unless @page.linked_from.empty? %>
-    <small>
-      | Linked from: 
-      <%= @page.linked_from.collect { |referring_page| 
-            link_to_existing_page referring_page
-          }.join(", ")
-      %>
-    </small>
-  <% end %>
-
-  <% if @page.included_from.length > 0 %>
-    <small>
-      | Included from: <%= @page.included_from.collect { |referring_page|
-	 link_to_existing_page referring_page
-	}.join(", ") 
-	%>
-    </small>
-  <% end %>
+  <%= render :partial => 'inbound_links' %>
 </div>
 
 <script language="Javascript" type="text/Javascript">

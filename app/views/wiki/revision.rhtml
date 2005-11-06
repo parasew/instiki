@@ -1,33 +1,33 @@
-<% @title = "#{@page.plain_name} (Rev ##{@revision.number})" %>
+<% @title = "#{@page.plain_name} (Rev ##{@revision_number})" %>
 
 <div id="revision">
-  <%= @revision.display_content %>
+  <%= @renderer.display_content %>
 </div>
 
 <div id="changes" style="display: none">
   <p style="background: #eee; padding: 3px; border: 1px solid silver">
     <small>
-      Showing changes from revision #<%= @revision.number - 1 %> to #<%= @revision.number %>:
+      Showing changes from revision #<%= @revision_number - 1 %> to #<%= @revision_number %>:
       <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>
     </small>
   </p>
 
-  <%= @revision.display_diff %>
+  <%= @renderer.display_diff %>
 </div>
 
 
 <div class="byline">
-  <%= "Revision from #{@revision.pretty_created_at} by" %>
+  <%= "Revision from #{format_date(@revision.revised_at)} by" %>
   <%= link_to_page @revision.author %>
 </div>
 
 <div class="navigation">
 
-  <% if @revision.next_revision %>
-    <% if @revision.next_revision.number < (@page.revisions.length - 1) %>
+  <% if @revision_number < @page.revisions.length - 1 %>
+    <% if @revision_number < @page.revisions.length - 2 %>
       <%= link_to('Forward in time',
               {:web => @web.address, :action => 'revision', :id => @page.name, 
-               :rev => @revision.next_revision.number},
+               :rev => @revision_number + 1},
               {:class => 'navlink', :name => 'to_next_revision'})
       %>
     <% else %>
@@ -36,20 +36,20 @@
               {:class => 'navlink', :name => 'to_next_revision'})
       %>
     <% end %>
-    <small>(<%= @revision.page.revisions.length - @revision.next_revision.number %> more)</small>
+    <small>(<%= @revision.page.revisions.length - @revision_number - 1 %> more)</small>
   <% end %>
 
-  <% if @revision.next_revision && @revision.previous_revision %>
+  <% if @revision_number > 0 && @revision_number < @page.revisions.size - 1 %>
     |
   <% end %>
 
-  <% if @revision.previous_revision %>
+  <% if @revision_number > 0 %>
     <%= link_to('Back in time',
           {:web => @web.address, :action => 'revision', :id => @page.name, 
-           :rev => @revision.previous_revision.number},
+           :rev => @revision_number - 1},
           {:class => 'navlink', :name => 'to_previous_revision'})
     %>
-    <small>(<%= @revision.previous_revision.number + 1 %> more)</small>
+    <small>(<%= @revision_number %> more)</small>
   <% end %>
 
   | 
@@ -57,7 +57,7 @@
           {:class => 'navlink', :name => 'to_current_revision'})
   %>
 
-  <% if @revision.previous_revision %>
+  <% if @revision_number > 0 %>
     <span id="show_changes">
       | <a href="#" onClick="toggleChanges(); return false;">See changes</a>
     </span>
@@ -69,21 +69,12 @@
   | 
   
   <%= link_to('Rollback', 
-        {:web => @web.address, :action => 'rollback', :id => @page.name, :rev => @revision.number},
+        {:web => @web.address, :action => 'rollback', :id => @page.name, :rev => @revision_number},
         {:class => 'navlink', :name => 'rollback'})
   %>
+
+  <%= render :partial => 'inbound_links' %>
   
-  <% if @page.references.length > 0 %>
-    <small>
-      | Linked from: 
-      <%= @page.references.collect { |ref| 
-            link_to ref.name, :web => @web.address, :action => 'show', :id => ref.name 
-          }.join(", ") 
-      %>
-    </small>
-  <% else %>
-    Orphan page
-  <% end %>
 </div>
 
 <script language="Javascript">

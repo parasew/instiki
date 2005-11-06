@@ -17,7 +17,7 @@
     </li>
 <% end %></ul>
 
-<% if @web.count_pages %>
+<% if @web.count_pages? %>
   <% total_chars = @pages_in_category.characters %>
   <p><small>All content: <%= total_chars %> chars / <%= sprintf("%-.1f", (total_chars / 2275 )) %> pages</small></p>
 <% end %>

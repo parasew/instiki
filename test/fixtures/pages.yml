@@ -1,0 +1,55 @@
+home_page:
+  id: 1
+  created_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
+  updated_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
+  web_id: 1
+  name: HomePage
+  
+my_way:
+  id: 2
+  created_at: <%= 9.days.ago.to_formatted_s(:db) %>
+  updated_at: <%= 9.days.ago.to_formatted_s(:db) %>
+  web_id: 1
+  name: MyWay
+  
+smart_engine:
+  id: 3
+  created_at: <%= 8.days.ago.to_formatted_s(:db) %>
+  updated_at: <%= 8.days.ago.to_formatted_s(:db) %>
+  web_id: 1
+  name: SmartEngine
+  
+that_way:
+  id: 4
+  created_at: <%= 7.days.ago.to_formatted_s(:db) %>
+  updated_at: <%= 7.days.ago.to_formatted_s(:db) %>
+  web_id: 1
+  name: ThatWay
+
+no_wiki_word: 
+  id: 5
+  created_at: <%= 6.days.ago.to_formatted_s(:db) %>
+  updated_at: <%= 6.days.ago.to_formatted_s(:db) %>
+  web_id: 1
+  name: NoWikiWord
+  
+first_page:
+  id: 6
+  created_at: <%= Time.local(2004, 4, 4, 16, 55).to_formatted_s(:db) %>
+  updated_at: <%= Time.local(2004, 4, 4, 16, 55).to_formatted_s(:db) %>
+  web_id: 1
+  name: FirstPage
+  
+oak:
+  id: 7
+  created_at: <%= 5.days.ago.to_formatted_s(:db) %>
+  updated_at: <%= 5.days.ago.to_formatted_s(:db) %>
+  web_id: 1
+  name: Oak
+
+elephant:
+  id: 8
+  created_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
+  updated_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
+  web_id: 1
+  name: Elephant

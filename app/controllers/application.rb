@@ -2,40 +2,29 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
-  before_filter :set_utf8_http_header, :connect_to_model, :check_snapshot_thread
-  after_filter :remember_location
+  before_filter :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
+  after_filter :remember_location, :teardown_url_generator
 
   # For injecting a different wiki model implementation. Intended for use in tests
   def self.wiki=(the_wiki)
     # a global variable is used here because Rails reloads controller and model classes in the 
     # development environment; therefore, storing it as a class variable does not work
     # class variable is, anyway, not much different from a global variable
-    $instiki_wiki_service = the_wiki
+    #$instiki_wiki_service = the_wiki
     logger.debug("Wiki service: #{the_wiki.to_s}")
   end
 
   def self.wiki
-    $instiki_wiki_service
+    Wiki.new
   end
 
   protected
   
-  def authorized?
-    @web.nil? ||
-    @web.password.nil? ||
-    cookies['web_address'] == @web.password || 
-    password_check(@params['password'])
-  end
-
   def check_authorization
-    if in_a_web? and needs_authorization?(@action_name) and not authorized? and 
+    if in_a_web? and authorization_needed? and not authorized?
       redirect_to :controller => 'wiki', :action => 'login', :web => @web_name
       return false
     end
-  end
-
-  def check_snapshot_thread
-    WikiService.check_snapshot_thread
   end
 
   def connect_to_model
@@ -45,14 +34,13 @@ class ApplicationController < ActionController::Base
     if @web_name
       @web = @wiki.webs[@web_name] 
       if @web.nil?
-        render_text "Unknown web '#{@web_name}'", '404 Not Found'
+        render :status => 404, :text => "Unknown web '#{@web_name}'"
         return false
       end
     end
     @page_name = @file_name = @params['id']
     @page = @wiki.read_page(@web_name, @page_name) unless @page_name.nil?
     @author = cookies['author'] || 'AnonymousCoward'
-    check_authorization
   end
 
   FILE_TYPES = {
@@ -69,10 +57,6 @@ class ApplicationController < ActionController::Base
     options[:type] ||= (FILE_TYPES[File.extname(file)] || 'application/octet-stream')
     options[:stream] = false
     super(file, options)
-  end
-
-  def in_a_web?
-    not @web_name.nil?
   end
 
   def password_check(password)
@@ -102,28 +86,26 @@ class ApplicationController < ActionController::Base
 
   def redirect_to_page(page_name = @page_name, web = @web_name)
     redirect_to :web => web, :controller => 'wiki', :action => 'show', 
-        :id => (page_name || 'HomePage')
+        :id => (page_name or 'HomePage')
   end
 
-  @@REMEMBER_NOT = ['locked', 'save', 'back', 'file', 'pic', 'import']
   def remember_location
-    if @response.headers['Status'] == '200 OK'
-      unless @@REMEMBER_NOT.include? action_name or @request.method != :get
-        @session[:return_to] = @request.request_uri
-        logger.debug("Session ##{session.object_id}: remembered URL '#{@session[:return_to]}'")
-      end
+    if @request.method == :get and 
+        @response.headers['Status'] == '200 OK' and not
+        %w(locked save back file pic import).include?(action_name)
+      @session[:return_to] = @request.request_uri
+      logger.debug "Session ##{session.object_id}: remembered URL '#{@session[:return_to]}'"
     end
   end
 
   def rescue_action_in_public(exception)
-    message = <<-EOL
+    render :status => 500, :text => <<-EOL
       <html><body>
-        <h2>Internal Error 500</h2>
+        <h2>Internal Error</h2>
         <p>An application error occurred while processing your request.</p>
-        <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n  -->
+        <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n -->
       </body></html>
     EOL
-    render_text message, 'Internal Error 500'
   end
 
   def return_to_last_remembered
@@ -146,16 +128,48 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_utf8_http_header
-    @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+  def set_content_type_header
+    if %w(rss_with_content rss_with_headlines).include?(action_name)
+      @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
+    else
+      @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+    end
+  end
+
+  def set_robots_metatag
+    if controller_name == 'wiki' and %w(show published).include? action_name 
+      @robots_metatag_value = 'index,follow'
+    else
+      @robots_metatag_value = 'noindex,nofollow'
+    end
+  end
+
+  def setup_url_generator
+    PageRenderer.setup_url_generator(UrlGenerator.new(self))
+  end
+
+  def teardown_url_generator
+    PageRenderer.teardown_url_generator
   end
 
   def wiki
-    $instiki_wiki_service
+    self.class.wiki
   end
 
-  def needs_authorization?(action)
-    not %w( login authenticate published rss_with_content rss_with_headlines ).include?(action)
+  private
+
+  def in_a_web?
+    not @web_name.nil?
+  end
+
+  def authorization_needed?
+    not %w( login authenticate published rss_with_content rss_with_headlines ).include?(action_name)
+  end
+
+  def authorized?
+    @web.password.nil? or
+    cookies['web_address'] == @web.password or
+    password_check(@params['password'])
   end
 
 end

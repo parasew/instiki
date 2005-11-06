@@ -1,9 +1,12 @@
-require 'application'
 require 'fileutils'
 require 'redcloth_for_tex'
 require 'parsedate'
+require 'zip/zip'
 
 class WikiController < ApplicationController
+
+  caches_action :show, :published, :authors, :recently_revised, :list
+  cache_sweeper :revision_sweeper
 
   layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex,  :export_tex, :export_html]
 
@@ -42,14 +45,46 @@ class WikiController < ApplicationController
   # Within a single web ---------------------------------------------------------
 
   def authors
-    @authors = @web.select.authors.sort
+    @page_names_by_author = @web.page_names_by_author
+    @authors = @page_names_by_author.keys.sort
   end
   
   def export_html
+    stylesheet = File.read(File.join(RAILS_ROOT, 'public', 'stylesheets', 'instiki.css'))
     export_pages_as_zip('html') do |page| 
-      @page = page
-      @link_mode = :export
-      render_to_string('wiki/print', use_layout = (@params['layout'] != 'no'))
+
+      renderer = PageRenderer.new(page.revisions.last)
+      rendered_page = <<-EOL
+        <!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+          <title>#{page.plain_name} in #{@web.name}</title>
+          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  
+          <style type="text/css">
+            h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover { 
+              color: ##{@web ? @web.color : "393" }; 
+            }
+            .newWikiWord { background-color: white; font-style: italic; }
+            #{stylesheet}
+          </style>
+          <style type="text/css">
+            #{@web.additional_style}
+          </style>
+        </head>
+        <body>
+          #{renderer.display_content_for_export}
+          <div class="byline">
+            #{page.revisions? ? "Revised" : "Created" } on #{ page.revised_at.strftime('%B %d, %Y %H:%M:%S') }
+            by
+            #{ UrlGenerator.new(self).make_link(page.author.name, @web, nil, { :mode => :export }) }
+          </div>
+        </body>
+        </html>
+      EOL
+      rendered_page
     end
   end
 
@@ -58,7 +93,7 @@ class WikiController < ApplicationController
   end
 
   def export_pdf
-    file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}"
+    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
     file_path = File.join(@wiki.storage_path, file_name)
 
     export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
@@ -67,7 +102,7 @@ class WikiController < ApplicationController
   end
 
   def export_tex
-    file_name = "#{@web.address}-tex-#{@web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
+    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
     file_path = File.join(@wiki.storage_path, file_name)
     export_web_to_tex(file_path) unless FileTest.exists?(file_path)
     send_file file_path
@@ -141,7 +176,7 @@ class WikiController < ApplicationController
   def pdf
     page = wiki.read_page(@web_name, @page_name)
     safe_page_name = @page.name.gsub(/\W/, '')
-    file_name = "#{safe_page_name}-#{@web.address}-#{@page.created_at.strftime('%Y-%m-%d-%H-%M-%S')}"
+    file_name = "#{safe_page_name}-#{@web.address}-#{@page.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
     file_path = File.join(@wiki.storage_path, file_name)
 
     export_page_to_tex("#{file_path}.tex") unless FileTest.exists?("#{file_path}.tex")
@@ -151,20 +186,30 @@ class WikiController < ApplicationController
   end
 
   def print
+    if @page.nil?
+      redirect_home
+    end
     @link_mode ||= :show
+    @renderer = PageRenderer.new(@page.revisions.last)
     # to template
   end
 
   def published
-    if @web.published
-      @page = wiki.read_page(@web_name, @page_name || 'HomePage') 
-    else 
-      redirect_home
+    if not @web.published?
+      render(:text => "Published version of web '#{@web_name}' is not available", :status => 404)
+      return 
     end
+
+    page_name = @page_name || 'HomePage'
+    page = wiki.read_page(@web_name, page_name)
+    render(:text => "Page '#{page_name}' not found", status => 404) and return unless page
+    
+    @renderer = PageRenderer.new(page.revisions.last)
   end
   
   def revision
     get_page_and_revision
+    @renderer = PageRenderer.new(@revision)
   end
 
   def rollback
@@ -172,24 +217,22 @@ class WikiController < ApplicationController
   end
 
   def save
-    redirect_home if @page_name.nil?
-    cookies['author'] = @params['author']
+    render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
 
+    cookies['author'] = { :value => @params['author'], :expires => Time.utc(2030) }
     begin
-      check_for_spam(@params['content'], remote_ip)
-      check_blocked_ips(remote_ip)
-
       if @page
         wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip))
+            Author.new(@params['author'], remote_ip), PageRenderer.new)
         @page.unlock
       else
         wiki.write_page(@web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip))
+            Author.new(@params['author'], remote_ip), PageRenderer.new)
       end
       redirect_to_page @page_name
     rescue => e
       flash[:error] = e
+      logger.error e
       flash[:content] = @params['content']
       if @page
         @page.unlock
@@ -203,6 +246,7 @@ class WikiController < ApplicationController
   def show
     if @page
       begin
+        @renderer = PageRenderer.new(@page.revisions.last)
         render_action 'page'
       # TODO this rescue should differentiate between errors due to rendering and errors in 
       # the application itself (for application errors, it's better not to rescue the error at all)
@@ -230,26 +274,7 @@ class WikiController < ApplicationController
 
 
   private
-
-  def check_blocked_ips(ip)
-    if defined? BLOCKED_IPS and not BLOCKED_IPS.nil?
-      BLOCKED_IPS.each do |blocked_ip|
-        raise Instiki::ValidationError.new('Revision rejected by spam filter') if ip == blocked_ip
-      end
-    end
-  end
-
-  def check_for_spam(new_content, ip)
-    if defined? SPAM_PATTERNS and not SPAM_PATTERNS.nil?
-      SPAM_PATTERNS.each do |pattern|
-        if new_content =~ pattern
-          logger.info "Spam attempt from IP address #{ip}"
-          raise Instiki::ValidationError.new('Revision rejected by spam filter')
-        end
-      end
-    end
-  end
-
+    
   def convert_tex_to_pdf(tex_path)
     # TODO remove earlier PDF files with the same prefix
     # TODO handle gracefully situation where pdflatex is not available
@@ -264,13 +289,13 @@ class WikiController < ApplicationController
 
   def export_page_to_tex(file_path)
     tex
-    File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex')) }
+    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => nil)) }
   end
 
   def export_pages_as_zip(file_type, &block)
 
     file_prefix = "#{@web.address}-#{file_type}-"
-    timestamp = @web.revised_on.strftime('%Y-%m-%d-%H-%M-%S')
+    timestamp = @web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')
     file_path = File.join(@wiki.storage_path, file_prefix + timestamp + '.zip')
     tmp_path = "#{file_path}.tmp"
 
@@ -292,28 +317,25 @@ class WikiController < ApplicationController
   end
 
   def export_web_to_tex(file_path)
-    @tex_content = table_of_contents(@web.pages['HomePage'].content, render_tex_web)
-    File.open(file_path, 'w') { |f| f.write(render_to_string('wiki/tex_web')) }
+    @tex_content = table_of_contents(@web.page('HomePage').content, render_tex_web)
+    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex_web', :layout => nil)) }
   end
 
   def get_page_and_revision
-    revision_index = (@params['rev'] || 0).to_i
-    if @page.nil? or @page.revisions[revision_index].nil?
-      render_text 'Page not found', '404 Not Found'
-    else
-      @revision = @page.revisions[revision_index]
-    end
+    @revision_number = @params['rev'].to_i
+    @revision = @page.revisions[@revision_number]
   end
 
   def parse_category
-    @categories = @web.categories
     @category = @params['category']
-    if @categories.include?(@category)
-      @pages_in_category = @web.select { |page| page.in_category?(@category) }
-      @set_name = "category '#{@category}'"
-    else 
-      @pages_in_category = PageSet.new(@web).by_name
+    @categories = WikiReference.list_categories.sort
+    page_names_in_category = WikiReference.pages_in_category(@category)
+    if (page_names_in_category.empty?)
+      @pages_in_category = @web.select_all.by_name
       @set_name = 'the web'
+    else 
+      @pages_in_category = @web.select { |page| page_names_in_category.include?(page.name) }.by_name
+      @set_name = "category '#{@category}'"
     end
   end
 
@@ -340,15 +362,14 @@ class WikiController < ApplicationController
       @pages_by_revision = @web.select.by_revision.first(limit)
     else
       @pages_by_revision = @web.select.by_revision
-      @pages_by_revision.reject! { |page| page.created_at < start_date } if start_date
-      @pages_by_revision.reject! { |page| page.created_at > end_date } if end_date
+      @pages_by_revision.reject! { |page| page.revised_at < start_date } if start_date
+      @pages_by_revision.reject! { |page| page.revised_at > end_date } if end_date
     end
     
     @hide_description = hide_description
-    @response.headers['Content-Type'] = 'text/xml'
     @link_action = @web.password ? 'published' : 'show'
     
-    render 'wiki/rss_feed'
+    render :action => 'rss_feed'
   end
 
   def render_tex_web
@@ -358,18 +379,8 @@ class WikiController < ApplicationController
     end
   end
 
-  def render_to_string(template_name, with_layout = false)
-    add_variables_to_assigns
-    self.assigns['content_for_layout'] = @template.render_file(template_name)
-    if with_layout 
-      @template.render_file('layouts/default')
-    else 
-      self.assigns['content_for_layout']
-    end
-  end
-  
   def rss_with_content_allowed?
-    @web.password.nil? or @web.published
+    @web.password.nil? or @web.published?
   end
   
   def truncate(text, length = 30, truncate_string = '...')

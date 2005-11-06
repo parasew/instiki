@@ -4,10 +4,20 @@ Admitted, it's YetAnotherWikiClone[http://c2.com/cgi/wiki?WikiWikiClones], but w
 on simplicity of installation and running:
 
 Step 1. Download
-
 Step 2. Run "instiki"
 
-Step 3. Chuckle... "There's no step three!" (TM)
+Here it should say: "Step 3. Chuckle... "There's no step three!" (TM)"
+... but this is a beta version that introduces an SQL-based backend, so:
+
+3. Kill 'instiki'
+4. Install SQLite 3 database engine from http://www.sqlite.org/
+5. Install SQLite 3 driver for Ruby from http://sqlite-ruby.rubyforge.org/
+6. Install Rake from http://rake.rubyforge.org/
+7. Execute 'rake db_schema_import create_sessions_table'
+8. Make an embarrassed sigh (as I do while writing this)
+9. Run 'instiki' again
+10. Pat yourself on the shoulder for being such a talented geek
+11. At least, there is no step eleven! (TM)
 
 You're now running a perfectly suitable wiki on port 2500 
 that'll present you with one-step setup, followed by a textarea for the home page
@@ -38,20 +48,34 @@ gathering.
 ===Missing:
 * File attachments
 
-===Install from gem:
-* Install rubygems
-* Run "gem install instiki"
-* Change to a directory where you want Instiki to keep its data files (for example,  ~/instiki/)
-* Run "instiki" - this will create a "storage" directory (for example, ~/instiki/storage), and start a new Wiki service
-
-Make sure that you always launch Instiki from the same working directory, or specify the storage directory in runtime parameters, such as:
-  instiki --storage ~/instiki/storage
-
 ===Command-line options:
 * Run "instiki --help"
 
 ===History:
  * See CHANGELOG
+
+===Migrating Instiki 0.10.2 storage to Instiki-AR database
+1. Install Instiki-AR and check that it works (you should be able to create a web, edit and save a HomePage)
+2. Execute 
+      ruby script\import_storage \
+          -t /full/path/to/instiki0.10/storage \
+          -i /full/path/to/instiki0.10/installation \
+          -d sqlite (or mysql, or postgres, depending on what you use) \
+          -o instiki_import.sql
+   for example: 
+   ruby script\import_storage -t c:\instiki-0.10.2\storage\2500 -i c:\instiki-0.10.2 -d sqlite -o instiki_import.sql
+3. This will produce instiki_import.sql file in the current working directory. 
+   Open it in a text editor and inspect carefully.
+4. Connect to your production database (e.g., 'sqlite3 db\prod.db'), 
+   and have it execute instiki_import.sql (e.g., '.read instiki_import.sql')
+5. Execute ruby script\reset_references 
+   (this script parses all pages for crosslinks between them, so it may take a few minutes)
+6. Restart Instiki
+7. Go over some pages, especially those with a lot of complex markup, and see if anything is broken.
+
+The most common migration problem is this: 
+If you open All Pages screen and see a lot of orphaned pages, 
+you forgot to run ruby script\reset_references after importing the data.
 
 ===Download latest from: 
 * http://rubyforge.org/project/showfiles.php?group_id=186
@@ -63,6 +87,11 @@ Make sure that you always launch Instiki from the same working directory, or spe
 * same as Ruby's
 
 ---
-Author:: David Heinemeier Hansson
+Authors::
+
+Versions 0.1 to 0.9.1:: David Heinemeier Hansson
 Email::  david@loudthinking.com
 Weblog:: http://www.loudthinking.com
+
+From 0.9.2 onwards:: Alexey Verkhovsky
+Email:: alex@verk.info

@@ -1,0 +1,21 @@
+xml.rss('version' => '2.0') do
+  xml.channel do
+    xml.title(@web.name)
+    xml.link(url_for(:only_path => false, :web => @web_name, :action => @link_action, :id => 'HomePage'))
+    xml.description('An Instiki wiki')
+    xml.language('en-us')
+    xml.ttl('40')
+
+    for page in @pages_by_revision
+      xml.item do
+        xml.title(page.plain_name)
+        unless @hide_description
+          xml.description(rendered_content(page))
+        end
+        xml.pubDate(page.revised_at.getgm.strftime('%a, %d %b %Y %H:%M:%S Z'))
+        xml.guid(url_for(:only_path => false, :web => @web_name, :action => @link_action, :id => page.name))
+        xml.link(url_for(:only_path => false, :web => @web_name, :action => @link_action, :id => page.name))
+      end
+    end
+  end
+end

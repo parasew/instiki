@@ -1,16 +1,17 @@
-Dependencies.mechanism = :require
-ActionController::Base.consider_all_requests_local = false
-ActionController::Base.perform_caching = false
+# The production environment is meant for finished, "live" apps.
+# Code is not reloaded between requests
+config.cache_classes = true
+
+# Use a different logger for distributed setups
+# config.logger        = SyslogLogger.new
 
 
-spam_patterns_filename = RAILS_ROOT + '/config/spam_patterns.txt'
-if File.exists? spam_patterns_filename
-  SPAM_PATTERNS = File.readlines(spam_patterns_filename).delete_if { |line| line.strip.empty? }.map { 
-      |line| Regexp.new(line.strip) }
-end
+# Full error reports are disabled and caching is turned on
+config.action_controller.consider_all_requests_local = false
+config.action_controller.perform_caching             = true
 
-blocked_ips_filename = RAILS_ROOT + '/config/blocked_ips.txt'
-if File.exists? blocked_ips_filename
-  BLOCKED_IPS = File.readlines(blocked_ips_filename).delete_if { |line| line.strip.empty? }.map { 
-      |line| line.strip }
-end
+# Enable serving of images, stylesheets, and javascripts from an asset server
+# config.action_controller.asset_host                  = "http://assets.example.com"
+
+# Disable delivery errors if you bad email addresses should just be ignored
+# config.action_mailer.raise_delivery_errors = false

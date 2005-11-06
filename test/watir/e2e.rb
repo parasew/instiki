@@ -4,8 +4,12 @@ require 'test/unit'
 require 'rexml/document'
 
 INSTIKI_ROOT = File.expand_path(File.dirname(__FILE__) + "/../..")
-
 require(File.expand_path(File.dirname(__FILE__) + "/../../config/environment"))
+
+# TODO Create tests for:
+# * exporting HTML
+# * exporting markup
+# * include tag
 
 # Use instiki/../watir, if such a directory exists; This can be a CVS HEAD version of Watir. 
 # Otherwise Watir has to be installed in ruby/lib.
@@ -60,7 +64,7 @@ class E2EInstikiTest < Test::Unit::TestCase
   def test_00020_add_a_page
     # Add reference to a non-existant wiki page
     enter_markup('HomePage', '[[Another Wiki Page]]')
-    assert_equal '?', ie.link(:url, url(:show, 'Another Wiki Page')).text
+    assert_equal '?', ie.link(:url, url(:new, 'Another Wiki Page')).text
     
     # Edit the first revision of a page
     enter_markup('Another Wiki Page', 'First revision of Another Wiki Page, linked from HomePage')
@@ -82,7 +86,7 @@ class E2EInstikiTest < Test::Unit::TestCase
   def test_00030_edit_page
     enter_markup('TestEditPage', 'Test Edit Page, revision 1')
     assert_match /Test Edit Page, revision 1/, ie.text
-    
+
     # subsequent revision by the anonymous author
     enter_markup('TestEditPage', 'Test Edit Page, revision 1, altered')
     assert_match /Test Edit Page, revision 1, altered/, ie.text
@@ -250,7 +254,7 @@ class E2EInstikiTest < Test::Unit::TestCase
 
   def date_pattern
     '(January|February|March|April|May|June|July|August|September|October|November|December) ' + 
-        '\d\d?, \d\d\d\d \d\d:\d\d'
+        '\d\d?, \d\d\d\d \d\d:\d\d:\d\d'
   end
 
   def enter_markup(page, content, author = nil)
@@ -309,9 +313,9 @@ class InstikiController
     startup_info = [68].pack('lx64')
     process_info = [0, 0, 0, 0].pack('llll')
 
+    clear_database
     startup_command =
-        "ruby #{RAILS_ROOT}/instiki.rb --storage #{prepare_storage} " +
-        "     --port #{INSTIKI_PORT} --environment development"
+        "ruby #{RAILS_ROOT}/instiki.rb --port #{INSTIKI_PORT} --environment development"
 
     result = Win32API.new('kernel32.dll', 'CreateProcess', 'pplllllppp', 'L').call(
         nil, 
@@ -325,11 +329,10 @@ class InstikiController
     return self.new(process_id)
   end
 
-  def self.prepare_storage
-    storage_path = INSTIKI_ROOT + '/storage/e2e'
-    FileUtils.rm_rf(storage_path) if File.exists? storage_path
-    FileUtils.mkdir_p(storage_path)
-    storage_path
+  def self.clear_database
+    ENV['RAILS_ENV'] = 'development'
+    require INSTIKI_ROOT + '/config/environment.rb'
+    [Revision, Page, Web, System].each { |entity| entity.delete_all }
   end
 
   def initialize(pid)

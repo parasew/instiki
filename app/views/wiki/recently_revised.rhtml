@@ -3,21 +3,21 @@
 <%= categories_menu %>
 
 <% unless @pages_by_revision.empty? %>
-  <% revision_date = @pages_by_revision.first.revised_on %>
-  <h3><%= revision_date.strftime('%B %e, %Y') %></h3>
+  <% revision_date = @pages_by_revision.first.revised_at %>
+  <h3><%= format_date(revision_date, include_time = false) %></h3>
   <ul>
   <% for page in @pages_by_revision %>
-    <% if page.revised_on < revision_date %>
-      <% revision_date = page.revised_on %>
+    <% if page.revised_at < revision_date %>
+      <% revision_date = page.revised_at %>
       </ul>
-      <h3><%= revision_date.strftime('%B %e, %Y') %></h3>
+      <h3><%= format_date(revision_date, include_time = false) %></h3>
       <ul>
     <% end %>
     <li>
       <%= link_to_existing_page page %>
       <div class="byline" style="margin-bottom: 0px">
         by <%= link_to_page(page.author) %>
-        at <%= page.created_at.strftime "%H:%M" %>
+        at <%= format_date(page.revised_at) %>
         <%= "from #{page.author.ip}" if page.author.respond_to?(:ip) %>
       </div>
     </li>

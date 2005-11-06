@@ -7,7 +7,7 @@ class PageSet < Array
     @web = web
     # if pages is not specified, make a list of all pages in the web
     if pages.nil?
-      super(web.pages.values)
+      super(web.pages)
     # otherwise use specified pages and condition to produce a set of pages
     elsif condition.nil?
       super(pages)
@@ -17,9 +17,8 @@ class PageSet < Array
   end
 
   def most_recent_revision
-    self.map { |page| page.created_at }.max || Time.at(0)
+    self.map { |page| page.revised_at }.max || Time.at(0)
   end
-
 
   def by_name
     PageSet.new(@web, sort_by { |page| page.name })
@@ -28,22 +27,28 @@ class PageSet < Array
   alias :sort :by_name
 
   def by_revision
-    PageSet.new(@web, sort_by { |page| page.created_at }).reverse 
+    PageSet.new(@web, sort_by { |page| page.revised_at }).reverse 
   end
   
   def pages_that_reference(page_name)
-    self.select { |page| page.wiki_references.include?(page_name) }
+    all_referring_pages = WikiReference.pages_that_reference(page_name)
+    self.select { |page| all_referring_pages.include?(page.name) }
   end
   
   def pages_that_link_to(page_name)
-    self.select { |page| page.wiki_words.include?(page_name) }
+    all_linking_pages = WikiReference.pages_that_link_to(page_name)
+    self.select { |page| all_linking_pages.include?(page.name) }
   end
 
   def pages_that_include(page_name)
-    self.select { |page| page.wiki_includes.include?(page_name) }
+    all_including_pages = WikiReference.pages_that_include(page_name)
+    self.select { |page| all_including_pages.include?(page.name) }
   end
 
   def pages_authored_by(author)
+    all_pages_authored_by_the_author = 
+        Page.connection.select_all(sanitize_sql([
+            "SELECT page_id FROM revision WHERE author = '?'", author]))
     self.select { |page| page.authors.include?(author) }
   end
 
@@ -57,7 +62,7 @@ class PageSet < Array
   # references and so cannot be orphans
   # Pages that refer to themselves and have no links from outside are oprphans.
   def orphaned_pages
-    never_orphans = web.select.authors + ['HomePage']
+    never_orphans = web.authors + ['HomePage']
     self.select { |page|
       if never_orphans.include? page.name
         false
@@ -79,11 +84,11 @@ class PageSet < Array
   end
 
   def wiki_words
-    self.inject([]) { |wiki_words, page| wiki_words << page.wiki_words }.flatten.uniq
-  end
-
-  def authors
-    self.inject([]) { |authors, page| authors << page.authors }.flatten.uniq.sort
+    self.inject([]) { |wiki_words, page|
+      wiki_words + page.wiki_references.
+          select { |ref| ref.link_type != WikiReference::CATEGORY }.
+          map { |ref| ref.referenced_name }
+    }.flatten.uniq
   end
 
 end

@@ -5,10 +5,10 @@
   @inline_style = true
 %>
 
-<%= @page.display_content_for_export %>
+<%= @renderer.display_content_for_export %>
 
 <div class="byline">
-  <%= @page.revisions? ? "Revised" : "Created" %> on <%= @page.pretty_created_at %> 
+  <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 
   by
-  <%= @page.author_link({ :mode => (@link_mode || :show) }) %>
+  <%= author_link(@page, { :mode => (@link_mode || :show) }) %>
 </div>
