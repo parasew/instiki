@@ -6,27 +6,32 @@ on simplicity of installation and running:
 Step 1. Download
 Step 2. Run "instiki"
 
-Here it should say: "Step 3. Chuckle... "There's no step three!" (TM)"
-... but this is a beta version that introduces an SQL-based backend, so:
-
-3. Kill 'instiki'
-4. Install SQLite 3 database engine from http://www.sqlite.org/
-5. Install SQLite 3 driver for Ruby from http://sqlite-ruby.rubyforge.org/
-6. Install Rake from http://rake.rubyforge.org/
-7. Execute 'rake db_schema_import create_sessions_table'
-8. Make an embarrassed sigh (as I do while writing this)
-9. Run 'instiki' again
-10. Pat yourself on the shoulder for being such a talented geek
-11. At least, there is no step eleven! (TM)
+If you are on Windows:
+"Step 3. Chuckle... "There's no step three!" (TM)"
 
 You're now running a perfectly suitable wiki on port 2500 
 that'll present you with one-step setup, followed by a textarea for the home page
-on http://localhost:2500.
+on http://localhost:2500
 
 Instiki lowers the barriers of interest for when you might consider
 using a wiki. It's so simple to get running that you'll find yourself
 using it for anything -- taking notes, brainstorming, organizing a 
 gathering.
+
+Having said all that, if you are not on Windows, in this version of Instiki it is a somewhat different story.
+Since the author has no Linux or Mac at hand, and Instiki is moving to a SQL-based backend, this is what it takes 
+to install (until somebody sends a patch to properly package Instiki for all those other platforms):
+
+3. Kill "instiki"
+4. Install SQLite 3 database engine from http://www.sqlite.org/
+5. Install SQLite 3 driver for Ruby from http://sqlite-ruby.rubyforge.org/
+6. Install Rake from http://rake.rubyforge.org/
+7. Execute rm -f db/*.db
+8. Execute 'rake db_schema_import'
+9. Make an embarrassed sigh (as I do while writing this)
+10. Run 'instiki' again
+11. Pat yourself on the shoulder for being such a talented geek
+12. At least, there is no step twelve! (TM)
 
 ===Features:
 * Regular expression search: Find deep stuff really fast
@@ -44,25 +49,24 @@ gathering.
 * Embedded webserver: Through WEBrick[http://www.webrick.org]
 * Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
 * Color diffs: Track changes through revisions
-
-===Missing:
-* File attachments
+* Definitely can run on SQLite and MySQL
+* May be able to run on Postgres, Oracle, DB2 and SqlServer (if you try this )
 
 ===Command-line options:
-* Run "instiki --help"
+* Run "ruby instiki --help"
 
 ===History:
  * See CHANGELOG
 
-===Migrating Instiki 0.10.2 storage to Instiki-AR database
-1. Install Instiki-AR and check that it works (you should be able to create a web, edit and save a HomePage)
+===Migrating Instiki 0.10.2 storage to Instiki 0.11.0 database
+1. Install Instiki 0.11 and check that it works (you should be able to create a web, edit and save a HomePage)
 2. Execute 
       ruby script\import_storage \
           -t /full/path/to/instiki0.10/storage \
           -i /full/path/to/instiki0.10/installation \
           -d sqlite (or mysql, or postgres, depending on what you use) \
           -o instiki_import.sql
-   for example: 
+   for example (Windows):
    ruby script\import_storage -t c:\instiki-0.10.2\storage\2500 -i c:\instiki-0.10.2 -d sqlite -o instiki_import.sql
 3. This will produce instiki_import.sql file in the current working directory. 
    Open it in a text editor and inspect carefully.
@@ -77,11 +81,19 @@ The most common migration problem is this:
 If you open All Pages screen and see a lot of orphaned pages, 
 you forgot to run ruby script\reset_references after importing the data.
 
-===Download latest from: 
+===Upgrading from Instiki-AR Beta 1
+Beta 2 uses database to store HTTP sessions data. Also, there are some indexes renamed or added.
+Otherwise, there are no schema changes, table structure is the same as in Beta 1.
+Therefore, create a new development database, edit config/database.yml as appropriate, execute 'rake db_schema_import',
+export data (but not structure!) from Beta 1 database, import it into the new one, check that Beta 2 development 
+environment works with imported data, copy the development database (both data AND structure this time) to production.
+Future releases will use Rails Migrations, so the upgrade will be somewhat less of a hassle.
+
+===Download the latest release from:
 * http://rubyforge.org/project/showfiles.php?group_id=186
 
-===Visit the official Instiki wiki:
-* http://www.instiki.org
+===Visit the "official" Instiki wiki:
+* http://instiki.org
 
 ===License:
 * same as Ruby's
@@ -89,7 +101,7 @@ you forgot to run ruby script\reset_references after importing the data.
 ---
 Authors::
 
-Versions 0.1 to 0.9.1:: David Heinemeier Hansson
+Versions 0.0 to 0.9.1:: David Heinemeier Hansson
 Email::  david@loudthinking.com
 Weblog:: http://www.loudthinking.com
 

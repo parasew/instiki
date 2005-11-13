@@ -22,6 +22,9 @@ ActiveRecord::Schema.define() do
     t.column "author", :string, :limit => 60
     t.column "ip", :string, :limit => 60
   end
+  add_index "revisions", ["page_id"]
+  add_index "revisions", ["created_at"]
+  add_index "revisions", ["author"]
 
   create_table "sessions", :force => true do |t|
     t.column "session_id", :string
@@ -59,5 +62,7 @@ ActiveRecord::Schema.define() do
     t.column "referenced_name", :string, :limit => 60, :null => false
     t.column "link_type", :string, :limit => 1, :null => false
   end
+  add_index "wiki_references", ["page_id"]
+  add_index "wiki_references", ["referenced_name"]
 
 end
