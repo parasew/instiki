@@ -82,7 +82,7 @@ If you open All Pages screen and see a lot of orphaned pages,
 you forgot to run ruby script\reset_references after importing the data.
 
 ===Upgrading from Instiki-AR Beta 1
-Beta 2 uses database to store HTTP sessions data. Also, there are some indexes renamed or added.
+In Beta 2 two new tables are added: sessions and wiki_files. Also, there are some indexes renamed or added.
 Otherwise, there are no schema changes, table structure is the same as in Beta 1.
 Therefore, create a new development database, edit config/database.yml as appropriate, execute 'rake db_schema_import',
 export data (but not structure!) from Beta 1 database, import it into the new one, check that Beta 2 development 
