@@ -2,7 +2,7 @@
    SQL-based backend (ActiveRecord)
    Fixed --daemon option
    Replaced internal link generator with routing
-   Upgraded to Rails 0.14.2
+   Upgraded to Rails 0.14.3
    Re-enabled file uploads
    Removed gem and native OS X distributions
 
