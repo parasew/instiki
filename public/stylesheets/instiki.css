@@ -152,13 +152,14 @@ ol.setup li {
 }
 
 #error {
-  color: #8b0000;
+  color: #900;
   font-style: italic;
+  font-weight: bold;
   width: 600px;
 }
 
 #info {
-  color: #006400;
+  color: #060;
   font-style: italic;
   width: 600px;
 }

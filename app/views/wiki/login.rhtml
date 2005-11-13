@@ -4,8 +4,17 @@
 <%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
     { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post'})
 %>
-    <b>Password</b><br />
-    <input type="password" name="password" id="password" default="yes" />
+    <p>
+    This web is password-protected. Please enter the password.
+    <% if @web.published? %>
+      If you don't have the password, you can view this wiki as a <%= link_to 'read-only version', :action => 'published', :id => 'HomePage' %>.
+    <% end %>
+    </p>
+    <p>
+    <b>Password: </b>
+    <input type="password" name="password" id="password" />
+    <input type="submit" value="Login" default="yes" />
+    </p>
 <%= end_form_tag %>
 </p>
 
