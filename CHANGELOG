@@ -1,9 +1,10 @@
- * instiki-ar:
+ * TRUNK:
    SQL-based backend (ActiveRecord)
-   Replaced internal link generator with routing
    Fixed --daemon option
+   Replaced internal link generator with routing
    Upgraded to Rails 0.14.2
    Re-enabled file uploads
+   Removed gem and native OS X distributions
 
  * 0.10.2:
           Upgraded to Rails 0.13.1
