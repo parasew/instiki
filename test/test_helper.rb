@@ -156,15 +156,13 @@ class StubUrlGenerator < AbstractUrlGenerator
   end
 end
 
-if defined? $validate_xml_in_assert_success and $validate_xml_in_assert_success == true
-  module Test
-    module Unit
-      module Assertions
-        def assert_success(bypass_body_parsing = false)
-          assert_response :success
-          unless bypass_body_parsing  
-            assert_nothing_raised(@response.body) { REXML::Document.new(@response.body) }  
-          end
+module Test
+  module Unit
+    module Assertions
+      def assert_success(bypass_body_parsing = false)
+        assert_response :success
+        unless bypass_body_parsing  
+          assert_nothing_raised(@response.body) { REXML::Document.new(@response.body) }  
         end
       end
     end
