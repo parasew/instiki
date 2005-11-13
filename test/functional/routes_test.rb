@@ -33,10 +33,8 @@ class RoutesTest < Test::Unit::TestCase
         :controller => 'wiki', :web => 'web', :action => 'show', 
         :id => 'HomePage?arg1=value1&arg2=value2')
     
-    assert_routing('web/file/abc.zip', 
+    assert_routing('web/files/abc.zip',
         :web => 'web', :controller => 'file', :action => 'file', :id => 'abc.zip')
-    assert_routing('web/pic/abc.jpg', 
-        :web => 'web', :controller => 'file', :action => 'pic', :id => 'abc.jpg')
     assert_routing('web/import', :web => 'web', :controller => 'file', :action => 'import')
     # default option is wiki
     assert_recognizes({:controller => 'wiki', :web => 'unknown_path', :action => 'index', }, 

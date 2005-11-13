@@ -21,10 +21,6 @@ class Wiki
     end
   end
 
-  def file_yard(web)
-    web.file_yard
-  end
-
   def edit_web(old_address, new_address, name, markup, color, additional_style, safe_mode = false, 
       password = nil, published = false, brackets_only = false, count_pages = false, 
       allow_uploads = true, max_upload_size = nil)

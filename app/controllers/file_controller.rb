@@ -7,41 +7,32 @@ class FileController < ApplicationController
   before_filter :check_allow_uploads
 
   def file
-    check_path
     if @params['file']
       # form supplied
-      file_yard.upload_file(@file_name, @params['file'])
-      flash[:info] = "File '#{@file_name}' successfully uploaded"
-      return_to_last_remembered
-    elsif file_yard.has_file?(@file_name)
-      send_file(file_yard.file_path(@file_name))
-    else
-      logger.debug("File not found: #{file_yard.files_path}/#{@file_name}")
-      # go to the template, which is a file upload form
+      new_file = upload_file(@file_name, @params['file'])
+      if new_file.valid?
+        flash[:info] = "File '#{@file_name}' successfully uploaded"
+        return_to_last_remembered
+      else
+        # FIXME handle validation errors more gracefully
+        flash[:errors] = new_file.errors.to_s
+      end
+    else 
+      # no form supplied, this is a request to download the file
+      file = WikiFile.find_by_file_name(@file_name)
+      if file 
+        send_data(file.content, :filename => @file_name, :type => content_type_header(@file_name))
+      end
     end
+    # if it's neither a supplied form for upload, nor a request for a known file, 
+    # display the file/file.rhtml template (which happens to be an upload form)
   end
 
   def cancel_upload
     return_to_last_remembered
   end
   
-  def pic
-    check_path
-    if @params['file']
-      # form supplied
-      file_yard.upload_file(@file_name, @params['file'])
-      flash[:info] = "Image '#{@file_name}' successfully uploaded"
-      return_to_last_remembered
-    elsif file_yard.has_file?(@file_name)
-      send_file(file_yard.file_path(@file_name))
-    else
-      logger.debug("Image not found: #{file_yard.files_path}/#{@file_name}")
-      render_action 'file'
-    end
-  end
-
   def import
-    check_authorization
     if @params['file']
       @problems = []
       import_file_name = "#{@web.address}-import-#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.zip"
@@ -62,25 +53,16 @@ class FileController < ApplicationController
   protected
 
   def check_allow_uploads
-    unless @web.allow_uploads?
+    if @web.allow_uploads?
+      return true
+    else
       render :status => 403, :text => 'File uploads are blocked by the webmaster' 
       return false
     end
   end
 
-
   private 
   
-  def check_path
-    raise Instiki::ValidationError.new("Invalid path: no file name") unless @file_name
-    raise Instiki::ValidationError.new("Invalid path: no web name") unless @web_name
-    raise Instiki::ValidationError.new("Invalid path: unknown web name") unless @web
-  end
-  
-  def file_yard
-    @wiki.file_yard(@web)
-  end
-
   def import_from_archive(archive)
     logger.info "Importing pages from #{archive}"
     zip = Zip::ZipInputStream.open(archive)

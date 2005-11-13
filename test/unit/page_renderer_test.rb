@@ -277,9 +277,10 @@ class PageRendererTest < Test::Unit::TestCase
   end
   
   def test_link_to_pic
-    FileUtils.mkdir_p "#{RAILS_ROOT}/storage/test/wiki1"
-    FileUtils.rm(Dir["#{RAILS_ROOT}/storage/test/wiki1/*"])
-    @wiki.file_yard(@web).upload_file('square.jpg', StringIO.new(''))
+    WikiFile.delete_all
+    require 'fileutils'
+    FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
+    @web.wiki_files.create(:file_name => 'square.jpg', :description => 'Square', :content => 'never mind')
     assert_markup_parsed_as(
       '<p><img alt="Square" src="../pic/square.jpg" /></p>',
       '[[square.jpg|Square:pic]]')
@@ -305,8 +306,6 @@ class PageRendererTest < Test::Unit::TestCase
   	  '[[With:Colon]]')
   end
   
-  # TODO Remove the leading underscores from this test when upgrading to RedCloth 3.0.1; 
-  # also add a test for the "Unhappy Face" problem (another interesting RedCloth bug)
   def test_list_with_tildas
     list_with_tildas = <<-EOL
       * "a":~b

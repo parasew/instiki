@@ -15,8 +15,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect 'web_list', :controller => 'wiki', :action => 'web_list'
 
   connect_to_web map, ':web/edit_web', :controller => 'admin', :action => 'edit_web'
-  connect_to_web map, ':web/file/:id', :controller => 'file', :action => 'file'
-  connect_to_web map, ':web/pic/:id', :controller => 'file', :action => 'pic'
+  connect_to_web map, ':web/files/:id', :controller => 'file', :action => 'file'
   connect_to_web map, ':web/import/:id', :controller => 'file', :action => 'import'
   connect_to_web map, ':web/login', :controller => 'wiki', :action => 'login'
   connect_to_web map, ':web/web_list', :controller => 'wiki', :action => 'web_list'

@@ -1,5 +1,6 @@
 class Web < ActiveRecord::Base
   has_many :pages
+  has_many :wiki_files
 
   def wiki
     Wiki.new
@@ -40,8 +41,8 @@ class Web < ActiveRecord::Base
     Page.count(['web_id = ? AND name = ?', id, name]) > 0
   end
 
-  def has_file?(name)
-    wiki.file_yard(self).has_file?(name)
+  def has_file?(file_name)
+    WikiFile.find_by_file_name(file_name) != nil
   end
 
   def markup
@@ -97,6 +98,7 @@ class Web < ActiveRecord::Base
     
   protected
     before_save :sanitize_markup
+    after_save :create_files_directory
     before_validation :validate_address
     validates_uniqueness_of :address
     validates_length_of :color, :in => 3..6
@@ -109,6 +111,35 @@ class Web < ActiveRecord::Base
       unless address == CGI.escape(address)
         self.errors.add(:address, 'should contain only valid URI characters')
         raise Instiki::ValidationError.new("#{self.class.human_attribute_name('address')} #{errors.on(:address)}")
+      end
+    end
+    
+    def create_files_directory
+      return unless allow_uploads == 1
+      dummy_file = self.wiki_files.build(:file_name => '0', :description => '0', :content => '0')
+      dir = File.dirname(dummy_file.content_path)
+      begin
+        require 'fileutils'
+        FileUtils.mkdir_p dir
+        dummy_file.save
+        dummy_file.destroy
+      rescue => e
+        logger.error("Failed create files directory for #{self.address}: #{e}")
+        raise "Instiki could not create directory to store uploaded files. " +
+              "Please make sure that Instiki is allowed to create directory " +
+              "#{File.expand_path(dir)} and add files to it."
+      end
+    end
+    
+    def default_web?
+      defined? DEFAULT_WEB and self.address == DEFAULT_WEB
+    end
+    
+    def files_path
+      if default_web?
+        "#{RAILS_ROOT}/public/#{self.address}/files"
+      else
+        "#{RAILS_ROOT}/public/files"
       end
     end
 end

@@ -22,9 +22,10 @@ ActiveRecord::Schema.define() do
     t.column "author", :string, :limit => 60
     t.column "ip", :string, :limit => 60
   end
-  add_index "revisions", ["page_id"]
-  add_index "revisions", ["created_at"]
-  add_index "revisions", ["author"]
+
+  add_index "revisions", ["page_id"], :name => "revisions_page_id_index"
+  add_index "revisions", ["created_at"], :name => "revisions_created_at_index"
+  add_index "revisions", ["author"], :name => "revisions_author_index"
 
   create_table "sessions", :force => true do |t|
     t.column "session_id", :string
@@ -55,6 +56,14 @@ ActiveRecord::Schema.define() do
     t.column "brackets_only", :integer, :default => 0
   end
 
+  create_table "wiki_files", :force => true do |t|
+    t.column "created_at", :datetime, :null => false
+    t.column "updated_at", :datetime, :null => false
+    t.column "web_id", :integer, :null => false
+    t.column "file_name", :string, :null => false
+    t.column "description", :string, :null => false
+  end
+
   create_table "wiki_references", :force => true do |t|
     t.column "created_at", :datetime, :null => false
     t.column "updated_at", :datetime, :null => false
@@ -62,7 +71,8 @@ ActiveRecord::Schema.define() do
     t.column "referenced_name", :string, :limit => 60, :null => false
     t.column "link_type", :string, :limit => 1, :null => false
   end
-  add_index "wiki_references", ["page_id"]
-  add_index "wiki_references", ["referenced_name"]
+
+  add_index "wiki_references", ["page_id"], :name => "wiki_references_page_id_index"
+  add_index "wiki_references", ["referenced_name"], :name => "wiki_references_referenced_name_index"
 
 end

@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
     @web_name = @params['web']
     @wiki = wiki
     if @web_name
-      @web = @wiki.webs[@web_name] 
+      @web = @wiki.webs[@web_name]
       if @web.nil?
         render :status => 404, :text => "Unknown web '#{@web_name}'"
         return false
@@ -53,8 +53,12 @@ class ApplicationController < ActionController::Base
     '.zip' => 'application/zip'
   } unless defined? FILE_TYPES
 
+  def content_type_header(file)
+    FILE_TYPES[File.extname(file)] || 'application/octet-stream'
+  end
+  
   def send_file(file, options = {})
-    options[:type] ||= (FILE_TYPES[File.extname(file)] || 'application/octet-stream')
+    options[:type] = content_type_header(file)
     options[:stream] = false
     super(file, options)
   end
