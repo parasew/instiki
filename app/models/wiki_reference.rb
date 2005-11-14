@@ -5,9 +5,11 @@ class WikiReference < ActiveRecord::Base
   INCLUDED_PAGE = 'I'
   CATEGORY = 'C'
   AUTHOR = 'A'
+  FILE = 'F'
+  WANTED_FILE = 'E'
 
   belongs_to :page
-  validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, INCLUDED_PAGE, CATEGORY, AUTHOR]
+  validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, INCLUDED_PAGE, CATEGORY, AUTHOR, FILE, WANTED_FILE]
 
   # FIXME all finders below MUST restrict their results to pages belonging to a particular web
 
@@ -37,9 +39,10 @@ class WikiReference < ActiveRecord::Base
   end
 
   def self.pages_in_category(category)
-    query = 'SELECT name FROM pages JOIN wiki_references ON pages.id = wiki_references.page_id ' +
+    query = 
+        'SELECT name FROM pages JOIN wiki_references ON pages.id = wiki_references.page_id ' +
         'WHERE wiki_references.referenced_name = ? ' +
-        "AND wiki_references.link_type = '#{CATEGORY}'"
+        "AND wiki_references.link_type = '#{CATEGORY}'" +
     names = connection.select_all(sanitize_sql([query, category])).map { |row| row['name'] }
   end
   
@@ -48,8 +51,12 @@ class WikiReference < ActiveRecord::Base
     connection.select_all(query).map { |row| row['referenced_name'] }
   end
 
-  def wiki_link?
+  def wiki_word?
     linked_page? or wanted_page?
+  end
+
+  def wiki_link?
+    linked_page? or wanted_page? or file? or wanted_file?
   end
 
   def linked_page?
@@ -62,6 +69,14 @@ class WikiReference < ActiveRecord::Base
 
   def included_page?
     link_type == INCLUDED_PAGE
+  end
+  
+  def file?
+    link_type == FILE
+  end
+  
+  def wanted_file?
+    link_type == WANTED_FILE
   end
 
 end

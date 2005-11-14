@@ -11,7 +11,7 @@
 <% end %>
 
 <ul>
-  <% @pages_by_name.each do |page| %>
+  <% @pages_in_category.each do |page| %>
     <li>
       <%= link_to_existing_page page, truncate(page.plain_name, 35) %>
     </li>
@@ -19,7 +19,7 @@
 
 <% if @web.count_pages? %>
   <% total_chars = @pages_in_category.characters %>
-  <p><small>All content: <%= total_chars %> chars / <%= sprintf("%-.1f", (total_chars / 2275 )) %> pages</small></p>
+  <p><small>All content: <%= total_chars %> chars / approx. <%= sprintf("%-.1f", (total_chars / 2275 )) %> printed pages</small></p>
 <% end %>
 </div>
 

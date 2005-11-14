@@ -66,11 +66,16 @@ class PageRenderer
 
   # Returns an array of all the WikiWords present in the content of this revision.
   def wiki_words
-    unless @wiki_words_cache
-      wiki_chunks = display_content.find_chunks(WikiChunk::WikiLink)
-      @wiki_words_cache = wiki_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
-    end
-    @wiki_words_cache
+    @wiki_words_cache ||= find_wiki_words(display_content) 
+  end
+
+  def find_wiki_words(rendering_result)
+    wiki_links = rendering_result.find_chunks(WikiChunk::WikiLink)
+    # Exclude backslash-escaped wiki words, such as \WikiWord, as well as links to files 
+    # and pictures, such as [[foo.txt:file]] or [[foo.jpg:pic]]
+    wiki_links.delete_if { |link| link.escaped? or [:pic, :file].include?(link.link_type) }
+    # convert to the list of unique page names
+    wiki_links.map { |link| ( link.page_name ) }.uniq
   end
 
   # Returns an array of all the WikiWords present in the content of this revision.
@@ -88,12 +93,8 @@ class PageRenderer
   private
   
   def render(options = {})
-
     rendering_result = WikiContent.new(@revision, @@url_generator, options).render!
-    
-    if options[:update_references]
-      update_references(rendering_result)
-    end
+    update_references(rendering_result) if options[:update_references]
     rendering_result
   end
   
@@ -101,9 +102,10 @@ class PageRenderer
     WikiReference.delete_all ['page_id = ?', @revision.page_id]
 
     references = @revision.page.wiki_references
-        
-    wiki_word_chunks = rendering_result.find_chunks(WikiChunk::WikiLink)
-    wiki_words = wiki_word_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
+
+    wiki_words = find_wiki_words(rendering_result)
+    # TODO it may be desirable to save links to files and pictures as WikiReference objects
+    # present version doesn't do it
     
     wiki_words.each do |referenced_name|
       # Links to self are always considered linked

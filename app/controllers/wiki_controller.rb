@@ -115,7 +115,6 @@ class WikiController < ApplicationController
 
   def list
     parse_category
-    @pages_by_name = @pages_in_category.by_name
     @page_names_that_are_wanted = @pages_in_category.wanted_pages
     @pages_that_are_orphaned = @pages_in_category.orphaned_pages
   end
@@ -334,15 +333,15 @@ class WikiController < ApplicationController
   end
 
   def parse_category
-    @category = @params['category']
     @categories = WikiReference.list_categories.sort
-    page_names_in_category = WikiReference.pages_in_category(@category)
-    if (page_names_in_category.empty?)
+    @category = @params['category']
+    if @category
+      @set_name = "category '#{@category}'"
+      @pages_in_category = WikiReference.pages_in_category(@category).map { |page_name| @web.page(page_name) }.by_name
+    else
+      # no category specified, return all pages of the web
       @pages_in_category = @web.select_all.by_name
       @set_name = 'the web'
-    else 
-      @pages_in_category = @web.select { |page| page_names_in_category.include?(page.name) }.by_name
-      @set_name = "category '#{@category}'"
     end
   end
 
