@@ -42,7 +42,7 @@ class WikiReference < ActiveRecord::Base
     query = 
         'SELECT name FROM pages JOIN wiki_references ON pages.id = wiki_references.page_id ' +
         'WHERE wiki_references.referenced_name = ? ' +
-        "AND wiki_references.link_type = '#{CATEGORY}'" +
+        "AND wiki_references.link_type = '#{CATEGORY}'"
     names = connection.select_all(sanitize_sql([query, category])).map { |row| row['name'] }
   end
   

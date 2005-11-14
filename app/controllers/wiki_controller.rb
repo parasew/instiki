@@ -337,7 +337,8 @@ class WikiController < ApplicationController
     @category = @params['category']
     if @category
       @set_name = "category '#{@category}'"
-      @pages_in_category = WikiReference.pages_in_category(@category).map { |page_name| @web.page(page_name) }.by_name
+      pages = WikiReference.pages_in_category(@category).sort.map { |page_name| @web.page(page_name) }
+      @pages_in_category = PageSet.new(@web, pages)
     else
       # no category specified, return all pages of the web
       @pages_in_category = @web.select_all.by_name
