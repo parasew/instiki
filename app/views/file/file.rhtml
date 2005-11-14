@@ -1,19 +1,32 @@
 <%
-  @title = "Upload #{@file_name}"
+  @title = "Upload #{h @file_name}"
   @hide_navigation = false
 %>
 
-<p>
+<%= error_messages_for 'file' %>
+
 <%= form_tag({:controller => 'file', :web => @web_name, :action => 'file'}, {:multipart => true}) %>
-  <p>
-    File to upload:
+  <%= hidden_field 'file', 'file_name' %>
+  <div class="inputFieldWithPrompt">
+    <b>Content of <%= h @file_name %> to upload <small>(required)</small>:</b>
     <br/>
-    <input type="file" name="file" size="40" />
-  </p>
-  <p>
-    <input type="submit" value="Update" /> as 
-    <input type="text" name="author" id="authorName" value="<%= @author %>" 
-        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
-  </p>
+    <input type="file" name="file[content]" size="40" />
+    <br/>
+    <small>
+    Please note that the file you are uploadng will be named <%= h @file_name %> on the wiki - 
+    regardless of how it is named on your computer. To change the wiki name of the file, please go 
+    <%= link_to :back %> and edit the wiki page that refers to the file.
+    </small>
+  </div>
+  <div class="inputFieldWithPrompt">
+    <b>Description <small>(optional)</small>:</b>
+    <br/>
+    <%= text_field "file", "description", "size" => 40 %>
+  </div>
+  <div>
+    <input type="submit" value="Upload" /> as 
+    <%= text_field_tag :author, @author, 
+            :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
+            :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
+  </div>
 <%= end_form_tag %>
-</p>

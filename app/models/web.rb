@@ -6,10 +6,6 @@ class Web < ActiveRecord::Base
     Wiki.new
   end
   
-  def file_yard
-    @file_yard ||= FileYard.new("#{Wiki.storage_path}/#{address}", max_upload_size)
-  end
-  
   def settings_changed?(markup, safe_mode, brackets_only)
     self.markup != markup || 
     self.safe_mode != safe_mode || 
@@ -84,6 +80,23 @@ class Web < ActiveRecord::Base
     address
   end
   
+  def create_files_directory
+    return unless allow_uploads == 1
+    dummy_file = self.wiki_files.build(:file_name => '0', :description => '0', :content => '0')
+    dir = File.dirname(dummy_file.content_path)
+    begin
+      require 'fileutils'
+      FileUtils.mkdir_p dir
+      dummy_file.save
+      dummy_file.destroy
+    rescue => e
+      logger.error("Failed create files directory for #{self.address}: #{e}")
+      raise "Instiki could not create directory to store uploaded files. " +
+            "Please make sure that Instiki is allowed to create directory " +
+            "#{File.expand_path(dir)} and add files to it."
+    end
+  end
+  
   private
 
     # Returns an array of all the wiki words in any current revision
@@ -114,32 +127,15 @@ class Web < ActiveRecord::Base
       end
     end
     
-    def create_files_directory
-      return unless allow_uploads == 1
-      dummy_file = self.wiki_files.build(:file_name => '0', :description => '0', :content => '0')
-      dir = File.dirname(dummy_file.content_path)
-      begin
-        require 'fileutils'
-        FileUtils.mkdir_p dir
-        dummy_file.save
-        dummy_file.destroy
-      rescue => e
-        logger.error("Failed create files directory for #{self.address}: #{e}")
-        raise "Instiki could not create directory to store uploaded files. " +
-              "Please make sure that Instiki is allowed to create directory " +
-              "#{File.expand_path(dir)} and add files to it."
-      end
-    end
-    
     def default_web?
       defined? DEFAULT_WEB and self.address == DEFAULT_WEB
     end
     
     def files_path
       if default_web?
-        "#{RAILS_ROOT}/public/#{self.address}/files"
-      else
         "#{RAILS_ROOT}/public/files"
+      else
+        "#{RAILS_ROOT}/public/#{self.address}/files"
       end
     end
 end

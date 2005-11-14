@@ -1,31 +1,12 @@
-#Container {
-	float: none;
-	margin: 0 auto;
-	text-align: center;
-}
-
-#Content {
-	margin: 0;
-	padding: 5px;
-	text-align: left;
-	border-top: none;
-	float: left;
-}
-
 body { background-color: #fff; color: #333; }
+body, p, ol, ul, td { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 13px; line-height: 18px; }
 
-body, p, ol, ul, td {
-	font-family: verdana, arial, helvetica, sans-serif;
-	font-size:   13px;
-	line-height: 18px;
-}
+#Container { float: none; margin: 0 auto; text-align: center; }
+#Content { margin: 0; padding: 5px; text-align: left; border-top: none; float: left; }
 
 a { color: #000; }
 a:visited { color: #666; }
-a:hover { 
-  color: #fff; 
-  background-color:#000; 
-}
+a:hover { color: #fff; background-color:#000; }
 
 .newWikiWord { background-color: #eee; }
 .newWikiWord a:hover { background-color: white; }
@@ -35,208 +16,72 @@ h1 { font-size: 28px }
 h2 { font-size: 19px }
 h3 { font-size: 16px }
 
-h1#pageName {
-  margin: 5px 0 0;
-  padding: 0;
-  line-height: 28px;
-}
-
-h1#pageName small {
-  color: #444;
-  line-height: 10px;
-  font-size: 10px;
-  padding: 0;
-}
+h1#pageName { margin: 5px 0 0; padding: 0; line-height: 28px; }
+h1#pageName small { color: #444; line-height: 10px; font-size: 10px; padding: 0; }
 
 a.nav, a.nav:link, a.nav:visited { color: #000; }
 a.nav:hover { color: #fff; background-color:#000; }
 
 li { margin-bottom: 7px }
 
-.navigation {
-  margin-top: 5px;
-  font-size : 12px;
-  color: #999;
-}
-
+.navigation { margin-top: 5px; font-size : 12px; color: #999; }
 .navigation a:hover { color: #fff; background-color:#000; }
-
-.navigation a {
-  font-size: 11px;
-  color: black;
-  font-weight: bold;
-}
-
-.navigation small a {
-  font-weight: normal;
-  font-size: 11px;
-}
+.navigation a { font-size: 11px; color: black; font-weight: bold; }
+.navigation small a { font-weight: normal; font-size: 11px; }
   
-.navOn{
-  font-size: 11px;
-  color: #444;
-  font-weight: bold;
-  text-decoration: none;
-}
+.navOn{ font-size: 11px; color: #444; font-weight: bold; text-decoration: none; }
 
-.help {
-  font-family: verdana, arial, helvetica, sans-serif;
-  font-size: 11px;
-}
+.help { font-family: verdana, arial, helvetica, sans-serif; font-size: 11px; }
 
-.inputBox {
-  font-family: verdana, arial, helvetica, sans-serif;
-  font-size: 11px;
-  background-color: #eee;
-  padding: 5px;
-  margin-bottom: 20px;
-}
+.inputBox { font-family: verdana, arial, helvetica, sans-serif; font-size: 11px; background-color: #eee; padding: 5px; margin-bottom: 20px; }
 
-blockquote {
-  display: block;
-  margin: 0px 0px 20px 0px;
-  padding: 0px 30px;
-  font-size:11px;
-  line-height:17px;
-  font-style: italic;  
-}
+blockquote { display: block; margin: 0px 0px 20px 0px; padding: 0px 30px; font-size:11px; line-height:17px; font-style: italic; }
 
-pre {
-  background-color: #eee;
-  padding: 10px;
-  font-size: 11px;
-  overflow: auto;
-}
+pre { background-color: #eee; padding: 10px; font-size: 11px; overflow: auto; }
 
-ol.setup {
-  font-size: 19px;
-  font-family: georgia, verdana, sans-serif;
-  padding-left: 25px;
-}
+ol.setup { font-size: 19px; font-family: georgia, verdana, sans-serif; padding-left: 25px; }
+ol.setup li { margin-bottom: 20px }
 
-ol.setup li {
-  margin-bottom: 20px
-}
+.byline { font-size: 10px; font-style: italic; margin-bottom: 10px; color: #999; }
 
-.byline {
-  font-size: 10px;
-  font-style: italic;  
-  margin-bottom: 10px;
-  color: #999;
-}
+.references { font-size: 10px; }
 
-.references {
-  font-size: 10px;
-}
+.diffdel, del.diffmod { background: pink; }
+.diffins, ins.diffmod { background: lightgreen; }
 
-.diffdel, del.diffmod {
-  background: pink;
-}
+#footer { height: 14px; padding: .25em 0; }
+#footer p { font-size: 10px; color: gray; font-style: italic; margin: 0; float: right; text-align: right; }
 
-.diffins, ins.diffmod {
-  background: lightgreen;
-}
+div.inputFieldWithPrompt { margin: 0.75em 0; }
 
-#footer {
-  height: 14px;
-  padding: .25em 0;
-}
 
-#footer p {
-  font-size: 10px;
-  color: gray;
-  font-style: italic;
-  margin: 0;
-  float: right;
-  text-align: right;
-}
+div.errorExplanation { color: #900; font-style: italic; font-weight: bold; margin: 1.5em 0; padding: 1em; background: #FFA; }
+div.errorExplanation h2 { display: none; }
+div.errorExplanation p { padding: 0; margin: 0; border: none; }
+div.errorExplanation ul { padding: 0; margin: 0.5em 0 0 2em; border: none; }
+div.errorExplanation li { padding 0; margin: 0; border: none; }
+div.fieldWithErrors input { border: 1px solid #900; }
 
-#error {
-  color: #900;
-  font-style: italic;
-  font-weight: bold;
-  width: 600px;
-}
 
-#info {
-  color: #060;
-  font-style: italic;
-  width: 600px;
-}
 
-#TextileHelp table {
-  margin-bottom: 0;
-}
+#info { color: #060; font-style: italic; width: 600px; }
+#TextileHelp table { margin-bottom: 0; }
+#TextileHelp table+h3 { margin-top: 11px; }
+#TextileHelp table td { font-size: 11px; padding: 3px; vertical-align: top; border-top: 1px dotted #ccc; }
+#TextileHelp table td.arrow { padding-right: 5px; padding-left: 10px; color: #999; }
+#TextileHelp table td.label { font-weight: bold; white-space: nowrap; font-size: 10px; padding-right: 15px; color: #000; }
+#TextileHelp h3 { font-size: 11px; font-weight: bold; font-weight: normal; margin: 0 0 5px 0; padding: 5px 0 0 0; }
+#TextileHelp p { font-size: 10px; }
 
-#TextileHelp table+h3 {
-  margin-top: 11px;
-}
+.rightHandSide { float: right; width: 147px; margin-left: 10px; padding-left: 20px; border-left: 1px dotted #ccc; }
+.rightHandSide p { font-size: 10px; }
 
-#TextileHelp table td {
-  font-size: 11px;
-  padding: 3px;
-  vertical-align: top;
-  border-top: 1px dotted #ccc;
-}
+.newsList { margin-top: 20px; }
+.newsList p { margin-bottom:30px; }
 
-#TextileHelp table td.arrow {
-  padding-right: 5px;
-  padding-left: 10px;
-  color: #999;
-}
-
-#TextileHelp table td.label {
-  font-weight: bold;
-  white-space: nowrap;
-  font-size: 10px;
-  padding-right: 15px;
-  color: #000;
-}
-
-#TextileHelp h3 {
-  font-size: 11px;
-  font-weight: bold;
-  font-weight: normal;
-  margin: 0 0 5px 0;
-  padding: 5px 0 0 0;
-}
-
-#TextileHelp p {
-  font-size: 10px;
-}
-
-.rightHandSide {
-  float: right;
-  width: 147px;
-  margin-left: 10px;
-  padding-left: 20px;
-  border-left: 1px dotted #ccc;
-}
-
-.rightHandSide p {
-  font-size: 10px;
-}
- 
-.newsList {
-  margin-top: 20px;
-}
-
-.newsList p {
-  margin-bottom:30px
-}
-
-td {border:thin solid grey;}
-table {
-   border:  double black;
-   border-collapse: collapse;
-}
-
-.byline {
-  padding-top: 15px;
-}
+table { border:  double black; border-collapse: collapse; }
+td { border:thin solid grey; }
+.byline { padding-top: 15px; }
 
 /* Affects the display of "category: ..." */
-.property {
-  color: grey;
-  font-size: 10px;
-}
+.property { color: grey; font-size: 10px; }

@@ -9,23 +9,26 @@ class FileController < ApplicationController
   def file
     if @params['file']
       # form supplied
-      new_file = upload_file(@file_name, @params['file'])
+      new_file = @web.wiki_files.create(@params['file'])
       if new_file.valid?
         flash[:info] = "File '#{@file_name}' successfully uploaded"
         return_to_last_remembered
       else
-        # FIXME handle validation errors more gracefully
-        flash[:errors] = new_file.errors.to_s
+        # pass the file with errors back into the form
+        @file = new_file
+        render
       end
-    else 
+    else
+      (render(:status => 404, :text => 'Unspecified file name') and return) unless @file_name
       # no form supplied, this is a request to download the file
       file = WikiFile.find_by_file_name(@file_name)
       if file 
         send_data(file.content, :filename => @file_name, :type => content_type_header(@file_name))
+      else
+        @file = WikiFile.new(:file_name => @file_name)
+        render
       end
     end
-    # if it's neither a supplied form for upload, nor a request for a known file, 
-    # display the file/file.rhtml template (which happens to be an upload form)
   end
 
   def cancel_upload
@@ -41,7 +44,7 @@ class FileController < ApplicationController
       if @problems.empty?
         flash[:info] = 'Import successfully finished'
       else
-        flash[:error] = "Import finished, but some pages were not imported:<li>" + 
+        flash[:error] = 'Import finished, but some pages were not imported:<li>' + 
             @problems.join('</li><li>') + '</li>'
       end
       return_to_last_remembered
@@ -59,6 +62,11 @@ class FileController < ApplicationController
       render :status => 403, :text => 'File uploads are blocked by the webmaster' 
       return false
     end
+  end
+  
+  def connect_to_model
+    super
+    @file_name = @params['id']
   end
 
   private 

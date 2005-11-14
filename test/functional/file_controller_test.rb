@@ -16,6 +16,7 @@ class FileControllerTest < Test::Unit::TestCase
     @request = ActionController::TestRequest.new
     @response = ActionController::TestResponse.new
     @web = webs(:test_wiki)
+    @wiki = Wiki.new
     WikiFile.delete_all
     require 'fileutils'
     FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
@@ -61,37 +62,40 @@ class FileControllerTest < Test::Unit::TestCase
     assert_equal pic, r.body
   end
   
-#  def test_pic_unknown_pic
-#    r = process 'pic', 'web' => 'wiki1', 'id' => 'non-existant.gif'
-#    
-#    assert_success
-#    assert_rendered_file 'file/file'
-#  end
-#
-#  def test_pic_upload_end_to_end
-#    # edit and re-render home page so that it has an "unknown file" link to 'rails-e2e.gif'
-#    @wiki.revise_page('wiki1', 'HomePage', '[[rails-e2e.gif:pic]]', Time.now, 'AnonymousBrave')
-#    assert_equal "<p><span class=\"newWikiWord\">rails-e2e.gif<a href=\"../pic/rails-e2e.gif\">" +
-#        "?</a></span></p>", 
-#        @home.display_content
-#  
-#    # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
-#    r = process 'pic', 'web' => 'wiki1', 'id' => 'rails-e2e.gif'
-#    assert_success
-#    assert_rendered_file 'file/file'
-#
-#    # User uploads the picture
-#    picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
-#    r = process 'pic', 'web' => 'wiki1', 'id' => 'rails-e2e.gif', 'file' => StringIO.new(picture)
-#    assert_redirect_url '/'
-#    assert @wiki.file_yard(@web).has_file?('rails-e2e.gif')
-#    assert_equal(picture, File.read("#{RAILS_ROOT}/storage/test/wiki1/rails-e2e.gif"))
-#    
-#    # this should refresh the page display content (cached)
-#    assert_equal "<p><img alt=\"rails-e2e.gif\" src=\"../pic/rails-e2e.gif\" /></p>", 
-#        @home.display_content
-#  end
-#
+  def test_pic_unknown_pic
+    r = get :file, :web => 'wiki1', :id => 'non-existant.gif'
+    
+    assert_success
+    assert_rendered_file 'file/file'
+  end
+
+  def test_pic_upload_end_to_end
+    # edit and re-render home page so that it has an "unknown file" link to 'rails-e2e.gif'
+    PageRenderer.setup_url_generator(StubUrlGenerator.new)
+    renderer = PageRenderer.new
+    @wiki.revise_page('wiki1', 'HomePage', '[[rails-e2e.gif:pic]]', 
+        Time.now, 'AnonymousBrave', renderer)
+    assert_equal "<p><span class=\"newWikiWord\">rails-e2e.gif<a href=\"../file/rails-e2e.gif\">" +
+        "?</a></span></p>",
+        renderer.display_content
+  
+    # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
+    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
+    assert_success
+    assert_rendered_file 'file/file'
+
+    # User uploads the picture
+    picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
+    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif', :file => StringIO.new(picture)
+    assert_redirect_url '/'
+    assert @web.has_file?('rails-e2e.gif')
+    assert_equal(picture, File.read("#{RAILS_ROOT}/public/file/rails-e2e.gif"))
+    
+    # this should refresh the page display content (cached)
+    assert_equal "<p><img alt=\"rails-e2e.gif\" src=\"../pic/rails-e2e.gif\" /></p>", 
+        @home.display_content
+  end
+
 #  def test_pic_upload_end_to_end
 #    # edit and re-render home page so that it has an "unknown file" link to 'rails-e2e.gif'
 #    @wiki.revise_page('wiki1', 'HomePage', '[[instiki-e2e.txt:file]]', Time.now, 'AnonymousBrave',

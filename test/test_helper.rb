@@ -150,8 +150,8 @@ class StubUrlGenerator < AbstractUrlGenerator
       if known_pic then %{<img alt="#{text}" src="#{link}" />}
       else %{<span class="newWikiWord">#{text}</span>} end
     else 
-      if known_pic then %{<img alt="#{text}" src="../pic/#{link}" />}
-      else %{<span class="newWikiWord">#{text}<a href="../pic/#{link}">?</a></span>} end
+      if known_pic then %{<img alt="#{text}" src="../file/#{link}" />}
+      else %{<span class="newWikiWord">#{text}<a href="../file/#{link}">?</a></span>} end
     end
   end
 end

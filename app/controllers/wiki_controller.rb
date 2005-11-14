@@ -272,9 +272,16 @@ class WikiController < ApplicationController
     @tex_content = RedClothForTex.new(@page.content).to_tex
   end
 
+  protected
+  
+  def connect_to_model
+    super
+    @page_name = @params['id']
+    @page = @wiki.read_page(@web_name, @page_name) if @page_name
+  end
 
   private
-    
+
   def convert_tex_to_pdf(tex_path)
     # TODO remove earlier PDF files with the same prefix
     # TODO handle gracefully situation where pdflatex is not available

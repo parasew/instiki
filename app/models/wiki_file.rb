@@ -4,9 +4,9 @@ class WikiFile < ActiveRecord::Base
   before_save :write_content_to_file
   before_destroy :delete_content_file        
   
-  validates_presence_of %w( web file_name description )
+  validates_presence_of %w( web file_name )
   validates_length_of :file_name, :within=>1..50
-  validates_length_of :description, :within=>1..255
+  validates_length_of :description, :maximum=>255
 
   def self.find_by_file_name(file_name)
     find(:first, :conditions => ['file_name = ?', file_name])
@@ -34,7 +34,11 @@ class WikiFile < ActiveRecord::Base
   end
   
   def content=(content)
-    @content = content
+    if content.respond_to? :read
+      @content = content.read
+    else
+      @content = content
+    end
   end
   
   def content
@@ -46,6 +50,7 @@ class WikiFile < ActiveRecord::Base
   end
   
   def write_content_to_file
+    web.create_files_directory unless File.exists?(web.files_path)
     File.open(self.content_path, 'wb') { |f| f.write(@content) }
   end
   
@@ -53,5 +58,7 @@ class WikiFile < ActiveRecord::Base
     require 'fileutils'
     FileUtils.rm_f(content_path) if File.exists?(content_path)
   end
+  
+  
   
 end

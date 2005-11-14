@@ -38,8 +38,6 @@ class ApplicationController < ActionController::Base
         return false
       end
     end
-    @page_name = @file_name = @params['id']
-    @page = @wiki.read_page(@web_name, @page_name) unless @page_name.nil?
     @author = cookies['author'] || 'AnonymousCoward'
   end
 

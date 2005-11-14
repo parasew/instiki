@@ -47,14 +47,14 @@ class UrlGenerator < AbstractUrlGenerator
       end
     when :publish
       if known_file 
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'published', 
+        href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
             :id => name
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
     else 
-      href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'file', 
+      href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
           :id => name
       if known_file
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
@@ -108,7 +108,7 @@ class UrlGenerator < AbstractUrlGenerator
         %{<span class="newWikiWord">#{text}</span>} 
       end
     else 
-      href = @controller.url_for @controller => 'file', :web => web_address, :action => 'pic', 
+      href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
           :id => name
       if known_pic 
         %{<img alt="#{text}" src="#{href}" />}
