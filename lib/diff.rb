@@ -32,27 +32,101 @@ module Enumerable
   end
 end
 
+class Object
+  def nil_or_empty?
+    nil? or empty?
+  end
+end
+
 module Diff
 
+  module Utilities
+    def explode(sequence)
+      sequence.is_a?(String) ? sequence.split(//) : sequence
+    end
+
+    def newline?(char)
+      %W(\n \r).include? char
+    end
+
+    def tab?(char)
+      "\t" == char
+    end
+
+    # XXX Could be more robust but unrecognized tags cause an infinite loop so
+    # better to be permissive
+    def open_tag?(char)
+      char =~ /\A<[^>]+>/
+    end
+
+    # See comment for open_tag?
+    def close_tag?(char)
+      char =~ %r!\A</[^>]+>!
+    end
+
+    def end_of_tag?(char)
+      char == '>'
+    end
+
+    def start_of_tag?(char)
+      char == '<'
+    end
+
+    def html2list(x, use_brackets = false)
+      mode = :char
+      cur  = ''
+      out  = []
+      
+      explode(x).each do |char|
+        case mode
+        when :tag
+          if end_of_tag? char
+            cur += use_brackets ? ']' : '>'
+            out.push cur
+            cur, mode  = '', :char
+          else
+            cur += char
+          end
+        when :char
+          if start_of_tag? char
+            out.push cur
+            cur  = use_brackets ? '[' : '<'
+            mode = :tag
+          elsif /\s/.match char
+            out.push cur + char
+            cur = ''
+          else
+            cur += char
+          end
+        end
+      end
+      
+      out.push(cur)
+      out.delete '' 
+      out.map {|elt| newline?(elt) ? elt : elt.chomp}
+    end
+  end
+
   class SequenceMatcher
-    def initialize(a=[''], b=[''], isjunk=nil, byline=false)
-      a = (!byline and a.kind_of? String) ? a.split(//) : a
-      b = (!byline and b.kind_of? String) ? b.split(//) : b
-      @isjunk = isjunk || proc {}
-      set_seqs a, b
+    include Utilities
+
+    def initialize(a = [''], b = [''], isjunk = nil, byline = false)
+      a, b = explode(a), explode(b) unless byline 
+      @isjunk = isjunk || Proc.new {}
+      set_sequences a, b
     end
 
-    def set_seqs(a, b)
-      set_seq_a a
-      set_seq_b b
+    def set_sequences(a, b)
+      set_sequence_a a
+      set_sequence_b b
     end
 
-    def set_seq_a(a)
+    def set_sequence_a(a)
       @a = a
       @matching_blocks = @opcodes = nil
     end
 
-    def set_seq_b(b)
+    def set_sequence_b(b)
       @b = b
       @matching_blocks = @opcodes = nil
       chain_b
@@ -60,28 +134,26 @@ module Diff
 
     def chain_b
       @fullbcount = nil
-      @b2j = {}
-      pophash = {}
+      @b2j     = {}
+      pophash  = {}
       junkdict = {}
       
-      @b.each_with_index do |elt, i|
+      @b.each_with_index do |elt, idx|
         if @b2j.has_key? elt
           indices = @b2j[elt]
           if @b.length >= 200 and indices.length * 100 > @b.length
             pophash[elt] = 1
             indices.clear
           else
-            indices.push i
+            indices.push idx
           end
         else
-          @b2j[elt] = [i]
+          @b2j[elt] = [idx]
         end
       end
         
       pophash.each_key { |elt| @b2j.delete elt }
       
-      junkdict = {}
-        
       unless @isjunk.nil?
         [pophash, @b2j].each do |d|
           d.each_key do |elt|
@@ -93,24 +165,20 @@ module Diff
         end
       end
       
-      @isbjunk = junkdict.method(:has_key?)
+      @isbjunk    = junkdict.method(:has_key?)
       @isbpopular = junkdict.method(:has_key?)
     end
     
-    def find_longest_match(alo, ahi, blo, bhi)
-      besti, bestj, bestsize = alo, blo, 0
+    def find_longest_match(a_low, a_high, b_low, b_high)
+      besti, bestj, bestsize = a_low, b_low, 0
       
       j2len = {}
       
-      (alo..ahi).step do |i|
+      (a_low..a_high).step do |i|
         newj2len = {}
         (@b2j[@a[i]] || []).each do |j|
-          if j < blo
-            next
-          end
-          if j >= bhi
-            break
-          end
+          next  if j < b_low
+          break if j >= b_high
           
           k = newj2len[j] = (j2len[j - 1] || 0) + 1
           if k > bestsize
@@ -120,26 +188,21 @@ module Diff
         j2len = newj2len
       end
       
-      while besti > alo and bestj > blo and
-          not @isbjunk.call(@b[bestj-1]) and
-          @a[besti-1] == @b[bestj-1]
-        besti, bestj, bestsize = besti-1, bestj-1, bestsize+1
+      while besti > a_low and bestj > b_low and not @isbjunk.call(@b[bestj - 1]) and @a[besti - 1] == @b[bestj - 1]
+        besti, bestj, bestsize = besti - 1, bestj - 1, bestsize + 1
       end
       
-      while besti+bestsize < ahi and bestj+bestsize < bhi and
-          not @isbjunk.call(@b[bestj+bestsize]) and
-          @a[besti+bestsize] == @b[bestj+bestsize]
+      while besti + bestsize < a_high and bestj + bestsize < b_high and
+          not @isbjunk.call(@b[bestj + bestsize]) and
+          @a[besti + bestsize] == @b[bestj + bestsize]
         bestsize += 1
       end
       
-      while besti > alo and bestj > blo and
-          @isbjunk.call(@b[bestj-1]) and
-          @a[besti-1] == @b[bestj-1]
-        besti, bestj, bestsize = besti-1, bestj-1, bestsize+1
+      while besti > a_low and bestj > b_low and @isbjunk.call(@b[bestj - 1]) and @a[besti - 1] == @b[bestj - 1]
+        besti, bestj, bestsize = besti - 1, bestj - 1, bestsize + 1
       end
       
-      while besti+bestsize < ahi and bestj+bestsize < bhi and
-          @isbjunk.call(@b[bestj+bestsize]) and
+      while besti + bestsize < a_high and bestj + bestsize < b_high and @isbjunk.call(@b[bestj+bestsize]) and
           @a[besti+bestsize] == @b[bestj+bestsize]
         bestsize += 1
       end
@@ -148,32 +211,27 @@ module Diff
     end
     
     def get_matching_blocks
-      return @matching_blocks unless @matching_blocks.nil? or 
-        @matching_blocks.empty?
+      return @matching_blocks unless @matching_blocks.nil_or_empty?
       
       @matching_blocks = []
-      la, lb = @a.length, @b.length
-      match_block_helper(0, la, 0, lb, @matching_blocks)
-      @matching_blocks.push [la, lb, 0]
+      size_of_a, size_of_b = @a.size, @b.size
+      match_block_helper(0, size_of_a, 0, size_of_b, @matching_blocks)
+      @matching_blocks.push [size_of_a, size_of_b, 0]
     end
     
-    def match_block_helper(alo, ahi, blo, bhi, answer)
-      i, j, k = x = find_longest_match(alo, ahi, blo, bhi)
-      if not k.zero?
-        if alo < i and blo < j
-          match_block_helper(alo, i, blo, j, answer)
-        end
+    def match_block_helper(a_low, a_high, b_low, b_high, answer)
+      i, j, k = x = find_longest_match(a_low, a_high, b_low, b_high)
+      unless k.zero?
+        match_block_helper(a_low, i, b_low, j, answer) if a_low < i and b_low < j
         answer.push x
-        if i + k < ahi and j + k < bhi
-          match_block_helper(i + k, ahi, j + k, bhi, answer)
+        if i + k < a_high and j + k < b_high
+          match_block_helper(i + k, a_high, j + k, b_high, answer)
         end
       end
     end
     
     def get_opcodes
-      unless @opcodes.nil? or @opcodes.empty?
-        return @opcodes
-      end
+      return @opcodes unless @opcodes.nil_or_empty?
 
       i = j = 0
       @opcodes = answer = []
@@ -187,31 +245,29 @@ module Diff
               end
 
         answer.push [tag, i, ai, j, bj] if tag
-        
         i, j = ai + size, bj + size
-        
         answer.push [:equal, ai, i, bj, j] unless size.zero?
-        
       end
-      return answer
+      answer
     end
 
     # XXX: untested
-    def get_grouped_opcodes(n=3)
+    def get_grouped_opcodes(n = 3)
       codes = get_opcodes
-      if codes[0][0] == :equal
-        tag, i1, i2, j1, j2 = codes[0]
+      if codes.first.first == :equal
+        tag, i1, i2, j1, j2 = codes.first
         codes[0] = tag, [i1, i2 - n].max, i2, [j1, j2-n].max, j2
       end
       
-      if codes[-1][0] == :equal
-        tag, i1, i2, j1, j2 = codes[-1]
+      if codes.last.first == :equal
+        tag, i1, i2, j1, j2 = codes.last
         codes[-1] = tag, i1, min(i2, i1+n), j1, min(j2, j1+n)
       end
+
       nn = n + n
       group = []
       codes.each do |tag, i1, i2, j1, j2|
-        if tag == :equal and i2-i1 > nn
+        if tag == :equal and i2 - i1 > nn
           group.push [tag, i1, [i2, i1 + n].min, j1, [j2, j1 + n].min]
           yield group
           group = []
@@ -219,226 +275,184 @@ module Diff
           group.push [tag, i1, i2, j1 ,j2]
         end
       end
-      if group and group.length != 1 and group[0][0] == :equal
-        yield group
-      end
+      yield group if group and group.size != 1 and group.first.first == :equal
     end
 
     def ratio
       matches = get_matching_blocks.reduce(0) do |sum, triple|
-        sum + triple[-1]
+        sum + triple.last
       end
-      Diff.calculate_ratio(matches, @a.length + @b.length)
+      Diff.calculate_ratio(matches, @a.size + @b.size)
     end
 
     def quick_ratio
-      if @fullbcount.nil? or @fullbcount.empty?
+      if @fullbcount.nil_or_empty?
         @fullbcount = {}
         @b.each do |elt|
           @fullbcount[elt] = (@fullbcount[elt] || 0) + 1
         end
       end
       
-      avail = {}
+      avail   = {}
       matches = 0
       @a.each do |elt|
-        if avail.has_key? elt
-          numb = avail[elt]
-        else
-          numb = @fullbcount[elt] || 0
-        end
+        numb       = avail.has_key?(elt) ? avail[elt] : (@fullbcount[elt] || 0)
         avail[elt] = numb - 1
-        if numb > 0
-          matches += 1
-        end
+        matches   += 1 if numb > 0
       end
-      Diff.calculate_ratio matches, @a.length + @b.length
+      Diff.calculate_ratio matches, @a.size + @b.size
     end
 
     def real_quick_ratio
-      la, lb = @a.length, @b.length
-      Diff.calculate_ratio([la, lb].min, la + lb)
+      size_of_a, size_of_b = @a.size, @b.size
+      Diff.calculate_ratio([size_of_a, size_of_b].min, size_of_a + size_of_b)
     end
 
     protected :chain_b, :match_block_helper
   end # end class SequenceMatcher
 
-  def self.calculate_ratio(matches, length)
-    return 1.0 if length.zero?
-    2.0 * matches / length
-  end
-
-  # XXX: untested
-  def self.get_close_matches(word, possibilities, n=3, cutoff=0.6)
-    unless n > 0
-      raise "n must be > 0: #{n}"
-    end
-    unless 0.0 <= cutoff and cutoff <= 1.0
-      raise "cutoff must be in (0.0..1.0): #{cutoff}"
+  class << self
+    def calculate_ratio(matches, length)
+      return 1.0 if length.zero?
+      2.0 * matches / length
     end
 
-    result = []
-    s = SequenceMatcher.new
-    s.set_seq_b word
-    possibilities.each do |x|
-      s.set_seq_a x
-      if s.real_quick_ratio >= cutoff and
-          s.quick_ratio >= cutoff and
-          s.ratio >= cutoff
-        result.push [s.ratio, x]
+    # XXX: untested
+    def get_close_matches(word, possibilities, n = 3, cutoff = 0.6)
+      raise "n must be > 0: #{n}" unless n > 0
+      raise "cutoff must be in (0.0..1.0): #{cutoff}" unless cutoff.between 0.0..1.0
+
+      result = []
+      sequence_matcher = Diff::SequenceMatcher.new
+      sequence_matcher.set_sequence_b word
+      possibilities.each do |possibility|
+        sequence_matcher.set_sequence_a possibility
+        if sequence_matcher.real_quick_ratio >= cutoff and
+           sequence_matcher.quick_ratio >= cutoff      and
+           sequence_matcher.ratio >= cutoff
+          result.push [sequence_matcher.ratio, possibility]
+        end
       end
+      
+      unless result.nil_or_empty?
+        result.sort
+        result.reverse!
+        result = result[-n..-1]
+      end
+      result.map {|score, x| x }
     end
-    
-    unless result.nil? or result.empty?
-      result.sort
-      result.reverse!
-      result = result[-n..-1]
-    end
-    result.collect { |score, x| x }
-  end
 
-  def self.count_leading(line, ch)
-    i, n = 0, line.length
-    while i < n and line[i].chr == ch
-      i += 1
+    def count_leading(line, ch)
+      count, size = 0, line.size
+      count += 1 while count < size and line[count].chr == ch
+      count
     end
-    i
   end
 end
-
 
 module HTMLDiff
   include Diff
   class Builder
     VALID_METHODS = [:replace, :insert, :delete, :equal]
     def initialize(a, b)
-      @a = a
-      @b = b
+      @a, @b   = a, b
       @content = []
     end
 
     def do_op(opcode)
       @opcode = opcode
-      op = @opcode[0]
-      VALID_METHODS.include?(op) or raise(NameError, "Invalid opcode #{op}")
-      self.method(op).call
+      op      = @opcode.first
+      raise NameError, "Invalid opcode '#{op}'" unless VALID_METHODS.include? op
+      send op
     end
 
     def result
-      @content.join('')
+      @content.join
     end
 
-    #this methods have to be called via do_op(opcode) so that @opcode is set properly
+    # These methods have to be called via do_op(opcode) so that @opcode is set properly
     private
 
-    def replace
-      delete("diffmod")
-      insert("diffmod")
-    end
-    
-    def insert(tagclass="diffins")
-      op_helper("ins", tagclass, @b[@opcode[3]...@opcode[4]])
-    end
-    
-    def delete(tagclass="diffdel")
-       op_helper("del", tagclass, @a[@opcode[1]...@opcode[2]])
-    end
-    
-    def equal
-      @content += @b[@opcode[3]...@opcode[4]]
-    end
-  
-    # using this as op_helper would be equivalent to the first version of diff.rb by Bill Atkins
-    def op_helper_simple(tagname, tagclass, to_add)
-      @content << "<#{tagname} class=\"#{tagclass}\">" 
-      @content += to_add
-      @content << "</#{tagname}>"
-    end
-    
-    # this tries to put <p> tags or newline chars before the opening diff tags (<ins> or <del>)
-    # or after the ending diff tags
-    # as a result the diff tags should be the "more inside" possible.
-    # this seems to work nice with html containing only paragraphs
-    # but not sure it works if there are other tags (div, span ... ? ) around
-    def op_helper(tagname, tagclass, to_add)
-      @content << to_add.shift while ( HTMLDiff.is_newline(to_add.first) or 
-                                         HTMLDiff.is_p_close_tag(to_add.first) or
-                                         HTMLDiff.is_p_open_tag(to_add.first) )
-      @content << "<#{tagname} class=\"#{tagclass}\">" 
-      @content += to_add
-      last_tags = []
-      last_tags.unshift(@content.pop) while ( HTMLDiff.is_newline(@content.last) or 
-                                         HTMLDiff.is_p_close_tag(@content.last) or
-                                         HTMLDiff.is_p_open_tag(@content.last) )
-      last_tags.unshift "</#{tagname}>"
-      @content += last_tags
-      remove_empty_diff(tagname, tagclass)
-    end
-
-    def remove_empty_diff(tagname, tagclass)
-      if @content[-2] == "<#{tagname} class=\"#{tagclass}\">" and @content[-1] == "</#{tagname}>" then
-        @content.pop
-        @content.pop
+      def replace
+        delete('diffmod')
+        insert('diffmod')
       end
-    end
-
-  end
-  
-  def self.is_newline(x)
-    (x == "\n") or (x == "\r") or (x == "\t")
-  end
-
-  def self.is_p_open_tag(x)
-    x =~ /\A<(p|li|ul|ol|dir|dt|dl)/
-  end
-
-  def self.is_p_close_tag(x)
-    x =~ %r!\A</(p|li|ul|ol|dir|dt|dl)!
-  end
-
-  def self.diff(a, b)
-    a = html2list(a)
-    b = html2list(b)
-
-    out = Builder.new(a, b)
-    s = SequenceMatcher.new(a, b)
-
-    s.get_opcodes.each do |opcode|
-      out.do_op(opcode)
-    end
-
-    out.result 
-  end
-  
-  def self.html2list(x)
-    mode = :char
-    cur = ''
-    out = []
+      
+      def insert(tagclass = 'diffins')
+        op_helper('ins', tagclass, @b[@opcode[3]...@opcode[4]])
+      end
+      
+      def delete(tagclass = 'diffdel')
+         op_helper('del', tagclass, @a[@opcode[1]...@opcode[2]])
+      end
+      
+      def equal
+        @content += @b[@opcode[3]...@opcode[4]]
+      end
     
-    x.split('').each do |c|
-      if mode == :tag
-        cur += c
-        if c == '>'
-          out.push(cur)
-          cur = ''
-          mode = :char
+      # Using this as op_helper would be equivalent to the first version of diff.rb by Bill Atkins
+      def op_helper_simple(tagname, tagclass, to_add)
+        @content << %(<#{tagname} class="#{tagclass}">) << to_add << %(</#{tagname}>)
+      end
+      
+      # Tries to put <p> tags or newline chars before the opening diff tags (<ins> or <del>)
+      # or after the ending diff tags.
+      # As a result the diff tags should be the "most inside" possible.
+      def op_helper(tagname, tagclass, to_add)
+        predicate_methods = [:tab?, :newline?, :close_tag?, :open_tag?]
+        content_to_skip   = Proc.new do |item| 
+          predicate_methods.any? {|predicate| HTMLDiff.send(predicate, item)}
         end
-      elsif mode == :char
-        if c == '<'
-          out.push cur
-          cur = c
-          mode = :tag
-        elsif c =~ /\s/
-          out.push cur + c
-          cur = ''
+
+        unless to_add.any? {|element| content_to_skip.call element}
+          @content << wrap_text(to_add, tagname, tagclass)
         else
-          cur += c
+          loop do
+            @content << to_add and break if to_add.all? {|element| content_to_skip.call element}
+            # We are outside of a diff tag
+            @content << to_add.shift while content_to_skip.call to_add.first 
+            @content << %(<#{tagname} class="#{tagclass}">) 
+            # We are inside a diff tag
+            @content << to_add.shift until content_to_skip.call to_add.first
+            @content << %(</#{tagname}>)
+          end
         end
+        #remove_empty_diff(tagname, tagclass)
       end
-    end
 
-    out.push cur
-    out.find_all { |x| x != '' }
+      def wrap_text(text, tagname, tagclass)
+        %(<#{tagname} class="#{tagclass}">#{text}</#{tagname}>)
+      end
+
+      def remove_empty_diff(tagname, tagclass)
+        @content = @content[0...-2] if last_elements_empty_diff?(@content, tagname, tagclass)
+      end
+
+      def last_elements_empty_diff?(content, tagname, tagclass)
+        content[-2] == %(<#{tagname} class="#{tagclass}">) and content.last == %(</#{tagname}>)
+      end
   end
   
+  class << self
+    include Diff::Utilities
+
+    def diff(a, b)
+      a, b = html2list(explode(a)), html2list(explode(b))
+
+      out              = Builder.new(a, b)
+      sequence_matcher = Diff::SequenceMatcher.new(a, b)
+
+      sequence_matcher.get_opcodes.each {|opcode| out.do_op(opcode)}
+
+      out.result 
+    end
+  end 
 end
+
+if __FILE__ == $0                                                               
+  if ARGV.size == 2                                                             
+    puts HTMLDiff.diff(IO.read(ARGV.pop), IO.read(ARGV.pop))                    
+  else                                                                          
+    puts "Usage: html_diff file1 file2"                                         
+  end                                                                           
+end 
