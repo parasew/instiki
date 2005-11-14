@@ -4,7 +4,7 @@
   @hide_navigation = true
 %>
 
-<div id="MarkupHelp" style="float: right; width: 250px; margin-top: 5px">
+<div id="MarkupHelp">
   <%= render("#{@web.markup}_help") %>
   <%= render 'wiki_words_help' %>
 </div>
@@ -14,7 +14,7 @@
 %>
 
 <p>
-    <textarea name="content" id="content" style="width: 450px; height: 500px"><%= h(@flash[:content] || @page.content) %></textarea>
+    <textarea name="content" id="content" style="width: 70%; height: 500px"><%= h(@flash[:content] || @page.content) %></textarea>
 </p>
 <p>
     <input type="submit" value="Submit" accesskey="s"/> as 

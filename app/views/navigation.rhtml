@@ -8,25 +8,21 @@ def list_item(text, link_options, description, accesskey = nil)
 end
 %>
 
-<%= form_tag({ :controller => 'wiki', :action => 'search', :web => @web.address},
-             {'id' => 'navigationForm', 'class' => 'navigation', 'method' => 'get'})
-%>
-
+<div class="navigation">
   <% if @action_name != 'published' then %>
     <%= list_item 'Home Page', {:action => 'show', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
     <%= list_item 'All Pages', {:action => 'list'}, 'Alphabetically sorted list of pages', 'A' %> | 
-    <%= list_item 'Recently Revised', {:action =>'recently_revised'}, 
-                  'Pages sorted by when they were last changed', 'U' 
-    %> |
+    <%= list_item 'Recently Revised', {:action =>'recently_revised'}, 'Pages sorted by when they were last changed', 'U' %> |
     <%= list_item 'Authors', {:action => 'authors'}, 'Who wrote what' %> | 
     <%= list_item 'Feeds', {:action => 'feeds'}, 'Subscribe to changes by RSS' %> | 
-    <%= list_item 'Export', {:action => 'export'}, 
-                  'Download a zip with all the pages in this wiki', 'X' 
-    %> |
-    <input type="text" id="searchField" name="query" style="font-size: 10px" value="Search" 
-           onfocus="if (this.value == 'Search' ) this.value = '' " />
+    <%= list_item 'Export', {:action => 'export'}, 'Download a zip with all the pages in this wiki', 'X' %> |
+    <%= form_tag({ :controller => 'wiki', :action => 'search', :web => @web.address},
+                 {'id' => 'navigationSearchForm', 'method' => 'get'}) %>
+      <input type="text" id="searchField" name="query" value="Search"
+             onfocus="this.value == 'Search' ? this.value = '' : true"
+             onblur="this.value == '' ? this.value = 'Search' : true" />
+    <%= end_form_tag %>
   <% else %>
   	<%= list_item 'Home Page', {:action => 'published', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
   <% end%>
-
-<%= end_form_tag %>
+</div>

@@ -20,10 +20,6 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, #TextileHelp h3 { 
       color: #<%= @web ? @web.color : "393" %>; 
     }
-
-    #Container, #Content {
-      width: <%= @content_width || "600" %>px;
-    }
     <%= File.read(RAILS_ROOT + '/public/stylesheets/instiki.css') if @inline_style %>
   </style>
 
@@ -55,11 +51,11 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <% end %>
   </h1>
 
-<% if @flash[:info] %> <div id="info">
-    <hr/><p><%= escape_preserving_linefeeds @flash[:info] %></p><hr/></div>
-<% end %>
-
 <%= render 'navigation' unless @web.nil? || @hide_navigation %>
+
+<% if @flash[:info] %>
+  <div class="info"><%= escape_preserving_linefeeds @flash[:info] %></div>
+<% end %>
 
 <% if @error or @flash[:error] %> 
     <div class="errorExplanation"><%= escape_preserving_linefeeds(@error || @flash[:error]) %></div>
@@ -69,9 +65,8 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 
 <% if @show_footer %>
     <div id="footer">
-    <p>This site is running on <a href="http://instiki.org/">Instiki</a></p>
-    <br/>
-    <p>Powered by <a href="http://rubyonrails.com/">Ruby on Rails</a></p>
+    <div>This site is running on <a href="http://instiki.org/">Instiki</a></div>
+    <div>Powered by <a href="http://rubyonrails.com/">Ruby on Rails</a></div>
     </div>
 <% end %>
 

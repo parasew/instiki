@@ -11,16 +11,16 @@
     Ex: the address "rails" gives URLs like <i>/rails/show/HomePage</i>.
   </div>
 
-  <div class="inputBox, disableAutoComplete">
-    Name: <input type="text" id="name" name="name" value="<%= @web.name %>" 
+  <div class="inputBox">
+    Name: <input type="text" id="name" name="name" class="disableAutoComplete" value="<%= @web.name %>" 
                  onChange="proposeAddress();" /> &nbsp;&nbsp;
-    Address: <input type="text" id="address" name="address" value="<%= @web.address %>" 
+    Address: <input type="text" class="disableAutoComplete" id="address" name="address" value="<%= @web.address %>" 
                     onChange="cleanAddress();" />
-    <i>(Letters and digits only)</i>
+    <small><em>(Letters and digits only)</em></small>
   </div>
 
   <h2 style="margin-bottom: 3px">Specialize</h2>
-  <div class="inputBox, disableAutoComplete">
+  <div class="inputBox">
     Markup:
     <select name="markup">
       <%= html_options({'Textile' => :textile, 'Markdown' => :markdown, 'Mixed' => :mixed, 
@@ -37,21 +37,21 @@
     <br/>
     <p>
     <small>
-      <input type="checkbox" name="safe_mode" <%= 'checked="on"' if @web.safe_mode %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="safe_mode" <%= 'checked="on"' if @web.safe_mode %> /> 
       Safe mode
       <em>- strip HTML tags and stylesheet options from the content of all pages</em>
       <br/>
-      <input type="checkbox" name="brackets_only" <%= 'checked="on"' if @web.brackets_only %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="brackets_only" <%= 'checked="on"' if @web.brackets_only %> /> 
       Brackets only 
       <em>- require all wiki words to be as [[wiki word]], WikiWord links won't be created</em>
       <br/>
-      <input type="checkbox" name="count_pages" <%= 'checked="on"' if @web.count_pages %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="count_pages" <%= 'checked="on"' if @web.count_pages %> /> 
       Count pages
       <br/>
 
-      <input type="checkbox" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads %> /> 
       Allow uploads of no more than 
-      <input type="text" name="max_upload_size" value="<%= @web.max_upload_size %>" 
+      <input type="text" class="disableAutoComplete" name="max_upload_size" value="<%= @web.max_upload_size %>" 
              width="20" /> 
       kbytes
       <em>- 
@@ -69,7 +69,7 @@
     instiki.css. Hint: View HTML source of a page you want to style to find ID names on individual 
     tags.</em></small>
     <br/>
-    <textarea id="additionalStyle" 
+    <textarea id="additionalStyle" class="disableAutoComplete"
       style="display: none; margin-top: 10px; margin-bottom: 5px; width: 560px; height: 200px" 
       name="additional_style"><%= @web.additional_style %>
     </textarea>
@@ -95,7 +95,7 @@
     The published version is accessible through URLs like /wiki/published/HomePage.
   </div>
   <div class="inputBox">
-    <input type="checkbox" name="published" <%= 'checked="on"' if @web.published %> /> 
+    <input type="checkbox" name="published" class="disableAutoComplete" <%= 'checked="on"' if @web.published %> /> 
     Publish this web
   </div>
 
@@ -124,7 +124,7 @@
   <p align="right">
     <small>
       Clean up by entering system password
-      <input type="password" id="system_password_orphaned" name="system_password_orphaned" />
+      <input type="password" id="system_password_orphaned" class="disableAutoComplete" name="system_password_orphaned" />
       and
       <input type="submit" value="Delete Orphan Pages" />
     </small>
