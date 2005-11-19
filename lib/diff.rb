@@ -82,8 +82,13 @@ module Diff
         when :tag
           if end_of_tag? char
             cur += use_brackets ? ']' : '>'
-            out.push cur
-            cur, mode  = '', :char
+            case cur
+            when '<pre>' then mode = :pre
+            when '<code>' then mode = :code
+            else 
+              out.push cur
+              cur, mode  = '', :char
+            end
           else
             cur += char
           end
@@ -95,6 +100,22 @@ module Diff
           elsif /\s/.match char
             out.push cur + char
             cur = ''
+          else
+            cur += char
+          end
+        when :pre
+          if end_of_tag?(char) and cur =~ %r!</pre$!
+            cur += '>'
+            out.push cur
+            cur, mode  = '', :char
+          else
+            cur += char
+          end
+        when :code
+          if end_of_tag?(char) and cur =~ %r!</code$!
+            cur += '>'
+            out.push cur
+            cur, mode  = '', :char
           else
             cur += char
           end
@@ -361,7 +382,7 @@ module HTMLDiff
 
     def do_op(opcode)
       @opcode = opcode
-      op      = @opcode.first
+      op = @opcode.first
       raise NameError, "Invalid opcode '#{op}'" unless VALID_METHODS.include? op
       send op
     end
@@ -437,14 +458,14 @@ module HTMLDiff
     include Diff::Utilities
 
     def diff(a, b)
-      a, b = html2list(explode(a)), html2list(explode(b))
+      a = html2list(explode(a))
+      b = html2list(explode(b))
+      
+      out = Builder.new(a, b)
 
-      out              = Builder.new(a, b)
       sequence_matcher = Diff::SequenceMatcher.new(a, b)
-
       sequence_matcher.get_opcodes.each {|opcode| out.do_op(opcode)}
-
-      out.result 
+      out.result
     end
   end 
 end
