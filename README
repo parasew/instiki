@@ -27,7 +27,7 @@ to install (until somebody sends a patch to properly package Instiki for all tho
 5. Install SQLite 3 driver for Ruby from http://sqlite-ruby.rubyforge.org/
 6. Install Rake from http://rake.rubyforge.org/
 7. Execute rm -f db/*.db
-8. Execute 'rake db_schema_import'
+8. Execute 'rake migrate'
 9. Make an embarrassed sigh (as I do while writing this)
 10. Run 'instiki' again
 11. Pat yourself on the shoulder for being such a talented geek
@@ -77,22 +77,20 @@ to install (until somebody sends a patch to properly package Instiki for all tho
 6. Restart Instiki
 7. Go over some pages, especially those with a lot of complex markup, and see if anything is broken.
 
-The most common migration problem is this: 
-If you open All Pages screen and see a lot of orphaned pages, 
+The most common migration problem is this: if you open All Pages and see a lot of orphaned pages, 
 you forgot to run ruby script\reset_references after importing the data.
 
 ===Upgrading from Instiki-AR Beta 1
-In Beta 2 two new tables are added: sessions and wiki_files. Also, there are some indexes renamed or added.
-Otherwise, there are no schema changes, table structure is the same as in Beta 1.
-Therefore:
-1. Create a new development database.
-2. Edit config/database.yml as appropriate.
-3. Execute 'rake db_schema_import'.
-4. Export data (but not structure!) from Beta 1 database.
-5. Import it into the new one.
-6. Check that Beta 2 development environment works with imported data, and finally
-7. Copy the development database (both data AND structure this time) to production.
-Future releases will use Rails Migrations, so the upgrade will be somewhat less of a hassle.
+In Beta 2, we switch to ActiveRecord:Migrations. Therefore:
+1. Back up your production database.
+2. Open command-line session to your database and execute: 
+  create table schema_info (version integer(11)); 
+  insert into schema_info (version) values (1);
+3. Go back to the shell, change directory to the new Instiki and execute "rake migrate".
+
+Step 2 creates a table that tells to ActiveRecord:Migrations that the current version 
+of this database is 1 (corresponding to Beta 1), and step 3 makes it up-to-date with
+the current version of Instiki.
 
 ===Download the latest release from:
 * http://rubyforge.org/project/showfiles.php?group_id=186
