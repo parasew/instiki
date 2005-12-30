@@ -86,51 +86,11 @@ class FileControllerTest < Test::Unit::TestCase
 
     # User uploads the picture
     picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
-    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif', :file => StringIO.new(picture)
-    assert_redirect_url '/'
+    r = post :file, :web => 'wiki1', 
+             :file => {:file_name => 'rails-e2e.gif',  :content => StringIO.new(picture)}
+    assert_redirected_to({})
     assert @web.has_file?('rails-e2e.gif')
-    assert_equal(picture, File.read("#{RAILS_ROOT}/public/file/rails-e2e.gif"))
-    
-    # this should refresh the page display content (cached)
-    assert_equal "<p><img alt=\"rails-e2e.gif\" src=\"../pic/rails-e2e.gif\" /></p>", 
-        @home.display_content
+    assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)
   end
-
-#  def test_pic_upload_end_to_end
-#    # edit and re-render home page so that it has an "unknown file" link to 'rails-e2e.gif'
-#    @wiki.revise_page('wiki1', 'HomePage', '[[instiki-e2e.txt:file]]', Time.now, 'AnonymousBrave',
-#        test_renderer)
-#    assert_equal "<p><span class=\"newWikiWord\">instiki-e2e.txt" +
-#        "<a href=\"../file/instiki-e2e.txt\">?</a></span></p>", 
-#        test_renderer(@home.revisions.last).display_content
-#
-#    # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
-#    r = process 'file', 'web' => 'wiki1', 'id' => 'instiki-e2e.txt'
-#    assert_success
-#    assert_rendered_file 'file/file'
-#
-#    # User uploads the picture
-#    file = "abcdefgh\n123"
-#    r = process 'file', 'web' => 'wiki1', 'id' => 'instiki-e2e.txt', 'file' => StringIO.new(file)
-#    assert_redirected_to :controller => 'wiki', :action => 'show', :web => 'wiki1', :id => 'HomePage'
-#    assert @wiki.file_yard(@web).has_file?('instiki-e2e.txt')
-#    assert_equal(file, File.read("#{RAILS_ROOT}/storage/test/wiki1/instiki-e2e.txt"))
-#    
-#    # this should refresh the page display content (cached)
-#    @home = Page.find(@home.id)
-#    assert_equal "<p><a class=\"existingWikiWord\" href=\"../file/instiki-e2e.txt\">" +
-#        "instiki-e2e.txt</a></p>", 
-#        test_renderer(@home.revisions.last).display_content
-#  end
-#
-#  def test_uploads_blocking
-#    set_web_property :allow_uploads, true
-#    process 'file', 'web' => 'wiki1', 'id' => 'filename'
-#    assert_success
-#
-#    set_web_property :allow_uploads, false
-#    process 'file', 'web' => 'wiki1', 'id' => 'filename'
-#    assert_response 403
-#  end
 
 end
