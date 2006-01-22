@@ -37,19 +37,19 @@
     <br/>
     <p>
     <small>
-      <input type="checkbox" class="disableAutoComplete" name="safe_mode" <%= 'checked="on"' if @web.safe_mode %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="safe_mode" <%= 'checked="on"' if @web.safe_mode? %> /> 
       Safe mode
       <em>- strip HTML tags and stylesheet options from the content of all pages</em>
       <br/>
-      <input type="checkbox" class="disableAutoComplete" name="brackets_only" <%= 'checked="on"' if @web.brackets_only %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="brackets_only" <%= 'checked="on"' if @web.brackets_only? %> /> 
       Brackets only 
       <em>- require all wiki words to be as [[wiki word]], WikiWord links won't be created</em>
       <br/>
-      <input type="checkbox" class="disableAutoComplete" name="count_pages" <%= 'checked="on"' if @web.count_pages %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="count_pages" <%= 'checked="on"' if @web.count_pages? %> /> 
       Count pages
       <br/>
 
-      <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads? %> /> 
       Allow uploads of no more than 
       <input type="text" class="disableAutoComplete" name="max_upload_size" value="<%= @web.max_upload_size %>" 
              width="20" /> 
@@ -95,7 +95,7 @@
     The published version is accessible through URLs like /wiki/published/HomePage.
   </div>
   <div class="inputBox">
-    <input type="checkbox" name="published" class="disableAutoComplete" <%= 'checked="on"' if @web.published %> /> 
+    <input type="checkbox" name="published" class="disableAutoComplete" <%= 'checked="on"' if @web.published? %> /> 
     Publish this web
   </div>
 
