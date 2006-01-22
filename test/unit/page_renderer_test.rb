@@ -265,9 +265,8 @@ class PageRendererTest < Test::Unit::TestCase
     Revision.create(:page => @page, :content => 'What a red and lovely morning today', 
         :author => Author.new('DavidHeinemeierHansson'), :revised_at => Time.now)
 
-    assert_equal "<p>What a <del class=\"diffmod\">blue </del><ins class=\"diffmod\">red " +
-        "</ins>and lovely <del class=\"diffmod\">morning</del><ins class=\"diffmod\">morning " +
-        "today</ins></p>", test_renderer(@page.revisions.last).display_diff
+    assert_equal "<p>What a <del class=\"diffmod\">blue</del><ins class=\"diffmod\">red" +
+        "</ins> and lovely morning<ins class=\"diffins\"> today</ins></p>", test_renderer(@page.revisions.last).display_diff
   end
   
   def test_link_to_file

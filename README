@@ -50,7 +50,8 @@ to install (until somebody sends a patch to properly package Instiki for all tho
 * Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
 * Color diffs: Track changes through revisions
 * Definitely can run on SQLite and MySQL
-* May be able to run on Postgres, Oracle, DB2 and SqlServer (if you try this )
+* May be able to run on Postgres, Oracle, DB2 and SqlServer. If you try this, and it works 
+  (or, it doesn't, but you make it work) please write about it on Instiki.org.
 
 ===Command-line options:
 * Run "ruby instiki --help"
