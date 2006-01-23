@@ -84,6 +84,7 @@ ADDITIONAL_LOAD_PATHS = %w(
   app/models 
   lib 
   vendor/madeleine-0.7.1/lib
+  vendor/RedCloth-3.0.3/lib
   vendor/RedCloth-3.0.4/lib
   vendor/rubyzip-0.5.8/lib
 ).map { |dir| "#{File.expand_path(File.join(INSTIKI_ROOT, dir))}"
