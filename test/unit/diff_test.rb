@@ -90,4 +90,10 @@ class DiffTest < Test::Unit::TestCase
         diff(a, b))
   end
   
+  def test_html_diff_with_tags
+    a = ""
+    b = "<div>foo</div>"
+    assert_equal '<div><ins class="diffins">foo</ins></div>', diff(a, b)
+  end
+  
 end

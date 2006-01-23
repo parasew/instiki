@@ -1,11 +1,12 @@
  * TRUNK:
    SQL-based backend (ActiveRecord)
    File uploads (finally)
-   Upgraded to Rails 0.14.3 (also know as 1.0 RC 4)
+   Upgraded to Rails 1.0.0
    Replaced internal link generator with routing
    Fixed --daemon option
    Removed Rubygem and native OS X distributions
-   More accurate "See Changes" 
+   Improved HTML diff
+   More accurate "See Changes"
 
  * 0.10.2:
           Upgraded to Rails 0.13.1

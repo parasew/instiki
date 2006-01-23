@@ -4,6 +4,8 @@ require 'diff'
 
 class PageRenderer
 
+  include HTMLDiff
+
   def self.setup_url_generator(url_generator)
     @@url_generator = url_generator
   end
@@ -40,7 +42,7 @@ class PageRenderer
     previous_revision = @revision.page.previous_revision(@revision)
     if previous_revision
       rendered_previous_revision = WikiContent.new(previous_revision, @@url_generator).render!
-      HTMLDiff.diff(rendered_previous_revision, display_content) 
+      diff(rendered_previous_revision, display_content) 
     else
       display_content
     end

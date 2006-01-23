@@ -23,7 +23,7 @@ module HTMLDiff
     def build
       split_inputs_to_words
       index_new_words
-      operations.each {|opcode| perform_operation(opcode)}
+      operations.each {|op| perform_operation(op) }
       return @content.join
     end
 
@@ -40,7 +40,13 @@ module HTMLDiff
     def operations
       position_in_old = position_in_new = 0
       operations = []
-      matching_blocks.each do |match|
+      
+      matches = matching_blocks
+      # an empty match at the end forces the loop below to handle the unmatched tails
+      # I'm sure it can be done more gracefully, but not at 23:52
+      matches << Match.new(@old_words.length, @new_words.length, 0)
+      
+      matches.each_with_index do |match, i|
         match_starts_at_current_position_in_old = (position_in_old == match.start_in_old)
         match_starts_at_current_position_in_new = (position_in_new == match.start_in_new)
         
@@ -72,6 +78,7 @@ module HTMLDiff
         position_in_old = match.end_in_old
         position_in_new = match.end_in_new
       end
+      
       operations
     end
 
@@ -167,22 +174,40 @@ module HTMLDiff
       opening_tag?(item) or closing_tag?(item)
     end
 
-    # Tries to enclose diff tags (<ins> or <del>) within <p> tags
-    # As a result the diff tags should be the "most inside" possible.
-    def insert_tag(tagname, cssclass, words)
-      unless words.any? { |word| tag?(word) }
-        @content << wrap_text(words.join, tagname, cssclass)
-      else
-        loop do
-          break if words.empty?
-          @content << words and break if words.all? { |word| tag?(word) }
-          # We are outside of a diff tag
-          @content << words.shift while not words.empty? and tag?(words.first)
-          @content << %(<#{tagname} class="#{cssclass}">) 
-          # We are inside a diff tag
-          @content << words.shift until words.empty? or tag?(words.first)
-          @content << %(</#{tagname}>)
+    def extract_consecutive_words(words, &condition)
+      index_of_first_tag = nil
+      words.each_with_index do |word, i| 
+        if !condition.call(word)
+          index_of_first_tag = i
+          break
         end
+      end
+      if index_of_first_tag
+        return words.slice!(0...index_of_first_tag)
+      else
+        return words.slice!(0..words.length)
+      end
+    end
+
+    # This method encloses words within a specified tag (ins or del), and adds this into @content, 
+    # with a twist: if there are words contain tags, it actually creates multiple ins or del, 
+    # so that they don't include any ins or del. This handles cases like
+    # old: '<p>a</p>'
+    # new: '<p>ab</p><p>c</b>'
+    # diff result: '<p>a<ins>b</ins></p><p><ins>c</ins></p>'
+    # this still doesn't guarantee valid HTML (hint: think about diffing a text containing ins or
+    # del tags), but handles correctly more cases than earlier version.
+    # 
+    # PS: Spare a thought for people who write HTML browsers. They live in this ... every day.
+
+    def insert_tag(tagname, cssclass, words)
+      loop do
+        break if words.empty?
+        non_tags = extract_consecutive_words(words) { |word| not tag?(word) }
+        @content << wrap_text(non_tags.join, tagname, cssclass) unless non_tags.empty?
+
+        break if words.empty?
+        @content += extract_consecutive_words(words) { |word| tag?(word) }
       end
     end
 
