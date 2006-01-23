@@ -169,6 +169,7 @@ class ApplicationController < ActionController::Base
   end
 
   def authorized?
+    @web.nil? or
     @web.password.nil? or
     cookies['web_address'] == @web.password or
     password_check(@params['password'])
