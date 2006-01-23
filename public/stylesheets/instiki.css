@@ -1,5 +1,5 @@
 body { background-color: white; color: #333; }
-body, p, ol, ul, td { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 100%; line-height: 1.3em; }
+body, p, ol, ul, td { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 90%; line-height: 1.3em; }
 
 #Container { float: none; margin: 0 15%; text-align: center; }
 #Content { margin: 0; padding: 0.3em; text-align: left; border-top: none; float: left; width: 100%; }
