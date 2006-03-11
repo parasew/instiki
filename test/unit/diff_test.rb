@@ -72,11 +72,15 @@ class DiffTest < Test::Unit::TestCase
 
   def test_html_diff_with_multiple_paragraphs
     a = "<p>this was the original string</p>"
-    b = "<p>this is</p>\r\n<p>the new string</p>\r\n<p>around the world</p>"
+    b = "<p>this is</p>\r\n<p> the new string</p>\r\n<p>around the world</p>"
+
+    # Some of this expected result is accidental to implementation. 
+    # At least it's well-formed and more or less correct.
     assert_equal(
-        "<p>this <del class=\"diffmod\">was</del><ins class=\"diffmod\">is</ins></p>\r\n<p> the " +
-        "<del class=\"diffmod\">original </del>" + 
-        "<ins class=\"diffmod\">new </ins>string</p>\r\n" +
+        "<p>this <del class=\"diffmod\">was</del><ins class=\"diffmod\">is</ins></p>"+
+        "<ins class=\"diffmod\">\r\n</ins><p> the " +
+        "<del class=\"diffmod\">original</del><ins class=\"diffmod\">new</ins>" +
+        " string</p><ins class=\"diffins\">\r\n</ins>" +
         "<p><ins class=\"diffins\">around the world</ins></p>",
         diff(a, b))
   end
@@ -96,4 +100,11 @@ class DiffTest < Test::Unit::TestCase
     assert_equal '<div><ins class="diffins">foo</ins></div>', diff(a, b)
   end
   
+  def test_diff_for_tag_change
+    a = "<a>x</a>"
+    b = "<b>x</b>"
+    # FIXME sad, but true - this case produces an invalid XML. If handle this you can, strong your foo is.
+    assert_equal '<a><b>x</a></b>', diff(a, b)
+  end
+
 end

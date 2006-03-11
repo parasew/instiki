@@ -23,7 +23,7 @@ module HTMLDiff
     def build
       split_inputs_to_words
       index_new_words
-      operations.each {|op| perform_operation(op) }
+      operations.each { |op| perform_operation(op) }
       return @content.join
     end
 
@@ -33,8 +33,8 @@ module HTMLDiff
     end
 
     def index_new_words
-      @word_indices = {}
-      @new_words.each_with_index { |word, i| (@word_indices[word] ||= []) << i }
+      @word_indices = Hash.new { |h, word| h[word] = [] }
+      @new_words.each_with_index { |word, i| @word_indices[word] << i }
     end
 
     def operations
@@ -70,10 +70,12 @@ module HTMLDiff
                   position_in_new, match.start_in_new)
           operations << operation_upto_match_positions
         end
-        match_operation = Operation.new(:equal, 
-            match.start_in_old, match.end_in_old, 
-            match.start_in_new, match.end_in_new)
-        operations << match_operation
+        if match.size != 0
+          match_operation = Operation.new(:equal, 
+              match.start_in_old, match.end_in_old, 
+              match.start_in_new, match.end_in_new)
+          operations << match_operation
+        end
 
         position_in_old = match.end_in_old
         position_in_new = match.end_in_new
@@ -87,7 +89,7 @@ module HTMLDiff
       recursively_find_matching_blocks(0, @old_words.size, 0, @new_words.size, matching_blocks)
       matching_blocks
     end
-    
+
     def recursively_find_matching_blocks(start_in_old, end_in_old, start_in_new, end_in_new, matching_blocks)
       match = find_match(start_in_old, end_in_old, start_in_new, end_in_new)
       if match
@@ -104,41 +106,63 @@ module HTMLDiff
     end
 
     def find_match(start_in_old, end_in_old, start_in_new, end_in_new)
-      besti, bestj, bestsize = start_in_old, start_in_new, 0
+
+      best_match_in_old = start_in_old
+      best_match_in_new = start_in_new
+      best_match_size = 0
       
-      j2len = {}
+      match_length_at = Hash.new { |h, index| h[index] = 0 }
       
-      (start_in_old..end_in_old).step do |i|
-        newj2len = {}
-        (@word_indices[@old_words[i]] || []).each do |j|
-          next  if j < start_in_new
-          break if j >= end_in_new
-          
-          k = newj2len[j] = (j2len[j - 1] || 0) + 1
-          if k > bestsize
-            besti, bestj, bestsize = i - k + 1, j - k + 1, k
+      start_in_old.upto(end_in_old - 1) do |index_in_old|
+
+        new_match_length_at = Hash.new { |h, index| h[index] = 0 }
+
+        @word_indices[@old_words[index_in_old]].each do |index_in_new|
+          next  if index_in_new < start_in_new
+          break if index_in_new >= end_in_new
+
+          new_match_length = match_length_at[index_in_new - 1] + 1
+          new_match_length_at[index_in_new] = new_match_length
+
+          if new_match_length > best_match_size
+            best_match_in_old = index_in_old - new_match_length + 1
+            best_match_in_new = index_in_new - new_match_length + 1
+            best_match_size = new_match_length
           end
         end
-        j2len = newj2len
+        match_length_at = new_match_length_at
       end
-      
-      while besti > start_in_old and bestj > start_in_new and @old_words[besti - 1] == @new_words[bestj - 1]
-        besti, bestj, bestsize = besti - 1, bestj - 1, bestsize + 1
+
+#      best_match_in_old, best_match_in_new, best_match_size = add_matching_words_left(
+#          best_match_in_old, best_match_in_new, best_match_size, start_in_old, start_in_new)
+#      best_match_in_old, best_match_in_new, match_size = add_matching_words_right(
+#          best_match_in_old, best_match_in_new, best_match_size, end_in_old, end_in_new)
+
+      return (best_match_size != 0 ? Match.new(best_match_in_old, best_match_in_new, best_match_size) : nil)
+    end
+
+    def add_matching_words_left(match_in_old, match_in_new, match_size, start_in_old, start_in_new)
+      while match_in_old > start_in_old and 
+            match_in_new > start_in_new and 
+            @old_words[match_in_old - 1] == @new_words[match_in_new - 1]
+        match_in_old -= 1
+        match_in_new -= 1
+        match_size += 1
       end
-      
-      while besti + bestsize < end_in_old and bestj + bestsize < end_in_new and
-          @old_words[besti + bestsize] == @new_words[bestj + bestsize]
-        bestsize += 1
+      [match_in_old, match_in_new, match_size]
+    end
+
+    def add_matching_words_right(match_in_old, match_in_new, match_size, end_in_old, end_in_new)
+      while match_in_old + match_size < end_in_old and 
+            match_in_new + match_size < end_in_new and
+            @old_words[match_in_old + match_size] == @new_words[match_in_new + match_size]
+        match_size += 1
       end
-      
-      if bestsize == 0 
-        return nil
-      else 
-        return Match.new(besti, bestj, bestsize)
-      end
+      [match_in_old, match_in_new, match_size]
     end
     
     VALID_METHODS = [:replace, :insert, :delete, :equal]
+
     def perform_operation(operation)
       @operation = operation
       self.send operation.action, operation
@@ -158,7 +182,7 @@ module HTMLDiff
     end
     
     def equal(operation)
-      # no tags to insert, simply copy the matching words from onbe of the versions
+      # no tags to insert, simply copy the matching words from one of the versions
       @content += @new_words[operation.start_in_new...operation.end_in_new]
     end
   
@@ -196,9 +220,9 @@ module HTMLDiff
     # new: '<p>ab</p><p>c</b>'
     # diff result: '<p>a<ins>b</ins></p><p><ins>c</ins></p>'
     # this still doesn't guarantee valid HTML (hint: think about diffing a text containing ins or
-    # del tags), but handles correctly more cases than earlier version.
+    # del tags), but handles correctly more cases than the earlier version.
     # 
-    # PS: Spare a thought for people who write HTML browsers. They live in this ... every day.
+    # P.S.: Spare a thought for people who write HTML browsers. They live in this ... every day.
 
     def insert_tag(tagname, cssclass, words)
       loop do
@@ -288,5 +312,5 @@ module HTMLDiff
   def diff(a, b)
     DiffBuilder.new(a, b).build
   end
-  
+
 end

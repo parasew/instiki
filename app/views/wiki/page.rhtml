@@ -7,20 +7,6 @@
   <%= @renderer.display_content %>
 </div>
 
-
-<% if @page.revisions.length > 1 %>
-  <div id="changes" style="display: none">
-    <p style="background: #eee; padding: 3px; border: 1px solid silver">
-      <small>
-        Showing changes from revision #<%= @page.revisions.size - 2 %> to #<%= @page.revisions.size - 1 %>:
-        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>
-      </small>
-    </p>
-
-    <%= @renderer.display_diff %>
-  </div>
-<% end %>
-
 <div class="byline">
   <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 
   by <%= author_link(@page) %>
@@ -60,12 +46,10 @@
   <% end %>
 
   <% if @page.revisions.length > 1 %>
-    <span id="show_changes">
-      | <a href="#" name="see_changes" onClick="toggleChanges(); return false;">See changes</a>
-    </span>
-    <span id="hide_changes" name="hide_changes" style="display: none">
-      | <a href="#" onClick="toggleChanges(); return false;">Hide changes</a>
-    </span>
+    <%= link_to('See changes', 
+          {:web => @web.address, :action => 'changes', :id => @page.name},
+          {:class => 'navlink', :accesskey => 'C', :name => 'see_changes'})
+    %>
   <% end %>
 
   <small>
@@ -85,19 +69,3 @@
 
   <%= render :partial => 'inbound_links' %>
 </div>
-
-<script language="Javascript" type="text/Javascript">
-  function toggleChanges() {
-    if (document.getElementById("changes").style.display == "none") {
-      document.getElementById("changes").style.display  = "block";
-      document.getElementById("revision").style.display = "none";
-      document.getElementById("show_changes").style.display  = "none";
-      document.getElementById("hide_changes").style.display = "inline";
-    } else {
-      document.getElementById("changes").style.display  = "none";
-      document.getElementById("revision").style.display = "block";
-      document.getElementById("show_changes").style.display  = "inline";
-      document.getElementById("hide_changes").style.display = "none";
-    }
-  }
-</script>

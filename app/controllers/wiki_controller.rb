@@ -49,6 +49,10 @@ class WikiController < ApplicationController
     @authors = @page_names_by_author.keys.sort
   end
   
+  def changes
+    raise "Not implemented yet"
+  end
+  
   def export_html
     stylesheet = File.read(File.join(RAILS_ROOT, 'public', 'stylesheets', 'instiki.css'))
     export_pages_as_zip('html') do |page| 
