@@ -96,6 +96,7 @@ ADDITIONAL_LOAD_PATHS.reverse.each { |dir| $:.unshift(dir) if File.directory?(di
 require 'webrick'
 require 'wiki_service'
 
+# substitute an extremely expensive method with something cheap.
 class Revision
   alias :__display_content :display_content
   def display_content
@@ -113,19 +114,23 @@ def sql_insert(table, hash)
   columns = hash.keys
 
   values = columns.map { |column| hash[column] }
-  values = values.map do |val|
-    if val.nil?
+  values = values.map do |value|
+    if value.nil?
       'NULL'
     else
+      if (value == false or value == true) and OPTIONS[:database] == 'mysql'
+        value = value ? '1' : '0'
+      end
+      
       case OPTIONS[:database]
       when 'mysql', 'postgres'
-        escaped_value = val.to_s.gsub("'", "\\\\'")
+        value = value.to_s.gsub("'", "\\\\'")
       when 'sqlite'
-        escaped_value = val.to_s.gsub("'", "''")
+        value = value.to_s.gsub("'", "''")
       else 
-       raise "Unsupported database option #{OPTIONS[:database]}"
+        raise "Unsupported database option #{OPTIONS[:database]}"
       end
-      "'#{escaped_value.gsub("\r\n", "\n")}'"
+      "'#{value.gsub("\r\n", "\n")}'"
     end
   end
   
@@ -160,9 +165,13 @@ WikiService.storage_path = OPTIONS[:storage]
 wiki = WikiService.instance
 
 File.open(OPTIONS[:outfile], 'w') { |outfile|
+
+  outfile.puts "BEGIN;"
   delete_all(outfile)
+  outfile.puts "COMMIT;"
 
   wiki.webs.each_pair do |web_name, web|
+    outfile.puts "BEGIN;"
     outfile.puts sql_insert(:webs, {
       :id               => next_id(:web),
       :name             => web.name,
@@ -180,7 +189,8 @@ File.open(OPTIONS[:outfile], 'w') { |outfile|
       :created_at       => web.pages.values.map { |p| p.revisions.first.created_at }.min.ansi,
       :updated_at       => web.pages.values.map { |p| p.revisions.last.created_at }.max.ansi
     })
-
+    outfile.puts "COMMIT;"
+    
     puts "Web #{web_name} has #{web.pages.keys.size} pages"
     web.pages.each_pair do |page_name, page|
 
