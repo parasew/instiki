@@ -122,6 +122,11 @@ class WikiController < ApplicationController
   def recently_revised
     parse_category
     @pages_by_revision = @pages_in_category.by_revision
+    @pages_by_day = Hash.new { |h, day| h[day] = [] }
+    @pages_by_revision.each do |page| 
+      day = Date.new(page.revised_at.year, page.revised_at.month, page.revised_at.day)
+      @pages_by_day[day] << page
+    end
   end
 
   def rss_with_content

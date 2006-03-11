@@ -2,17 +2,10 @@
 
 <%= categories_menu %>
 
-<% unless @pages_by_revision.empty? %>
-  <% revision_date = @pages_by_revision.first.revised_at %>
-  <h3><%= format_date(revision_date, include_time = false) %></h3>
+<% @pages_by_day.keys.sort.reverse.each do |day| %>
+  <h3><%= format_date(day, include_time = false) %></h3>
   <ul>
-  <% for page in @pages_by_revision %>
-    <% if page.revised_at < revision_date %>
-      <% revision_date = page.revised_at %>
-      </ul>
-      <h3><%= format_date(revision_date, include_time = false) %></h3>
-      <ul>
-    <% end %>
+  <% for page in @pages_by_day[day] %>
     <li>
       <%= link_to_existing_page page %>
       <div class="byline" style="margin-bottom: 0px">
@@ -24,4 +17,3 @@
   <% end %>
   </ul>
 <% end %>
-	

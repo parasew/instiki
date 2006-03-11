@@ -220,7 +220,9 @@ class WikiControllerTest < Test::Unit::TestCase
 
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     assert_nil r.template_objects['category']
-    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way)], r.template_objects['pages_in_category']
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), 
+                  @oak, pages(:smart_engine), pages(:that_way)], 
+                 r.template_objects['pages_in_category']
   end
 
 
@@ -298,7 +300,19 @@ class WikiControllerTest < Test::Unit::TestCase
     
     assert_equal %w(animals trees), r.template_objects['categories']
     assert_nil r.template_objects['category']
-    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way)], r.template_objects['pages_in_category']
+    all_pages = @elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), 
+                @oak, pages(:smart_engine), pages(:that_way)
+    assert_equal all_pages, r.template_objects['pages_in_category']
+    
+    pages_by_day = r.template_objects['pages_by_day']
+    assert_not_nil pages_by_day
+    pages_by_day_size = pages_by_day.keys.inject(0) { |sum, day| sum + pages_by_day[day].size }
+    assert_equal all_pages.size, pages_by_day_size
+    all_pages.each do |page| 
+      day = Date.new(page.revised_at.year, page.revised_at.month, page.revised_at.day)
+      assert pages_by_day[day].include?(page)
+    end
+    
     assert_equal 'the web', r.template_objects['set_name']
   end
   
