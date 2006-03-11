@@ -5,12 +5,13 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 <head>
   <title>
     <% if @page and (@page.name == 'HomePage') and (%w( show published print ).include?(@action_name)) %>
-      <%= @web.name %>
+      <%= h @web.name %>
     <% elsif @web %>
-      <%= @title %> in <%= @web.name %>
+      <%= @title %> in <%= h @web.name %>
     <% else %>
       <%= @title %>
     <% end %>
+    <%= @show_diff ? ' (changes)' : '' %>
   </title>
 
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -42,7 +43,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 <div id="Content">
   <h1 id="pageName">
     <% if @page and (@page.name == 'HomePage') and %w( show published print ).include?(@action_name) %>
-      <%= @web.name %>
+      <%= h(@web.name) + (@show_diff ? ' (changes)' : '') %>
     <% elsif @web %>
       <small><%= @web.name %></small><br />
       <%= @title %>

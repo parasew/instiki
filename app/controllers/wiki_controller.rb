@@ -49,10 +49,6 @@ class WikiController < ApplicationController
     @authors = @page_names_by_author.keys.sort
   end
   
-  def changes
-    raise "Not implemented yet"
-  end
-  
   def export_html
     stylesheet = File.read(File.join(RAILS_ROOT, 'public', 'stylesheets', 'instiki.css'))
     export_pages_as_zip('html') do |page| 
@@ -212,6 +208,7 @@ class WikiController < ApplicationController
   
   def revision
     get_page_and_revision
+    @show_diff = (@params[:mode] == 'diff')
     @renderer = PageRenderer.new(@revision)
   end
 
@@ -250,6 +247,7 @@ class WikiController < ApplicationController
     if @page
       begin
         @renderer = PageRenderer.new(@page.revisions.last)
+        @show_diff = (@params[:mode] == 'diff')
         render_action 'page'
       # TODO this rescue should differentiate between errors due to rendering and errors in 
       # the application itself (for application errors, it's better not to rescue the error at all)

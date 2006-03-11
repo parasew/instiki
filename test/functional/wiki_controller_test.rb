@@ -613,7 +613,6 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_response :missing
   end
 
-
   def test_tex
     r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
     assert_success

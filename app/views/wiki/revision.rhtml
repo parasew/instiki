@@ -1,20 +1,11 @@
-<% @title = "#{@page.plain_name} (Rev ##{@revision_number})" %>
+<% 
+  @title = "#{@page.plain_name} (Rev ##{@revision_number}#{@show_diff ? ', changes' : ''})"
+%>
+
 
 <div id="revision">
-  <%= @renderer.display_content %>
+  <%= @show_diff ? @renderer.display_diff : @renderer.display_content %>
 </div>
-
-<div id="changes" style="display: none">
-  <p style="background: #eee; padding: 3px; border: 1px solid silver">
-    <small>
-      Showing changes from revision #<%= @revision_number - 1 %> to #<%= @revision_number %>:
-      <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>
-    </small>
-  </p>
-
-  <%= @renderer.display_diff %>
-</div>
-
 
 <div class="byline">
   <%= "Revision from #{format_date(@revision.revised_at)} by" %>
@@ -58,12 +49,12 @@
   %>
 
   <% if @revision_number > 0 %>
-    <span id="show_changes">
-      | <a href="#" onClick="toggleChanges(); return false;">See changes</a>
-    </span>
-    <span id="hide_changes" style="display: none">
-      | <a href="#" onClick="toggleChanges(); return false;">Hide changes</a>
-    </span>
+    |
+    <%= link_to(@show_diff ? 'Hide changes' : 'See changes', 
+          {:web => @web.address, :action => 'revision', :id => @page.name, 
+           :rev => @revision_number, :mode => (@show_diff ? nil : 'diff') },
+          {:class => 'navlink', :accesskey => 'C', :name => 'see_changes'})
+    %>
   <% end %>
 
   | 

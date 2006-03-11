@@ -1,10 +1,11 @@
 <% 
-  @title = @page.plain_name 
+  @title = @page.plain_name
+  @title += ' (changes)' if @show_diff 
   @show_footer = true
 %>
 
 <div id="revision">
-  <%= @renderer.display_content %>
+  <%= @show_diff ? @renderer.display_diff : @renderer.display_content %>
 </div>
 
 <div class="byline">
@@ -43,12 +44,11 @@
           {:class => 'navlink', :accesskey => 'R', :name => 'to_previous_revision'})
     %>
     <small>(<%= @page.revisions.length - 1 %> revisions)</small>
-  <% end %>
-
-  <% if @page.revisions.length > 1 %>
-    <%= link_to('See changes', 
-          {:web => @web.address, :action => 'changes', :id => @page.name},
-          {:class => 'navlink', :accesskey => 'C', :name => 'see_changes'})
+    |
+    <%= link_to(@show_diff ? 'Hide changes' : 'See changes',
+          { :web => @web.address, :action => 'show', :id => @page.name, 
+            :mode => (@show_diff ? nil : 'diff') },
+          { :class => 'navlink', :accesskey => 'C', :name => 'see_changes' })
     %>
   <% end %>
 
