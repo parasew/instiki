@@ -49,6 +49,11 @@ module WikiChunk
       not @textile_link_suffix.nil?
     end
 
+    # replace any sequence of whitespace characters with a single space
+    def normalize_whitespace(line)
+      line.gsub(/\s+/, ' ')
+    end
+  
   end
 
   # This chunk matches a WikiWord. WikiWords can be escaped
@@ -103,8 +108,8 @@ module WikiChunk
 
     def initialize(match_data, content)
       super
-      @textile_link_suffix, @page_name = match_data[1..2]
-      @link_text = @page_name
+      @textile_link_suffix = match_data[1]
+      @link_text = @page_name = normalize_whitespace(match_data[2])
       separate_link_type
       separate_alias
       @unmask_text = @content.page_link(@page_name, @link_text, @link_type)
@@ -126,11 +131,13 @@ module WikiChunk
     def separate_alias
       alias_match = ALIAS_SEPARATION.match(@page_name)
       if alias_match
-        @page_name, @link_text = alias_match[1..2]
+        @page_name = normalize_whitespace(alias_match[1])
+        @link_text = alias_match[2]
       end
       # note that [[filename|link text:file]] is also supported
     end  
   
   end
+
   
 end

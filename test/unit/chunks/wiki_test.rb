@@ -39,7 +39,7 @@ class WikiTest < Test::Unit::TestCase
         :page_name => 'Sperberg-McQueen')
     match(WikiChunk::Link, 
         'This is a [[  Sperberg  McQueen ]] link with spaces inside and around it', 
-        :page_name => 'Sperberg  McQueen')
+        :page_name => 'Sperberg McQueen')
   end
 
   def test_complex_brackets
