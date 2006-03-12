@@ -51,13 +51,25 @@ class ApplicationController < ActionController::Base
     '.zip' => 'application/zip'
   } unless defined? FILE_TYPES
 
-  def content_type_header(file)
-    FILE_TYPES[File.extname(file)] || 'application/octet-stream'
+  DISPOSITION = {
+    'application/octet-stream' => 'attachment',
+    'image/gif'                => 'inline',
+    'image/jpeg'               => 'inline',
+    'application/pdf'          => 'inline',
+    'image/png'                => 'inline',
+    'text/plain'               => 'inline',
+    'application/zip'          => 'attachment'
+  } unless defined? DISPOSITION
+ 
+  def determine_file_options_for(file_name, original_options = {})
+    original_options[:type] ||= (FILE_TYPES[File.extname(file_name)] or 'application/octet-stream')
+    original_options[:disposition] ||= (DISPOSITION[original_options[:type]] or 'attachment')
+    original_options[:stream] ||= false
+    original_options
   end
   
   def send_file(file, options = {})
-    options[:type] = content_type_header(file)
-    options[:stream] = false
+    determine_file_options_for(file, options)
     super(file, options)
   end
 

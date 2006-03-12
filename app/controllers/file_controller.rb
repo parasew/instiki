@@ -19,11 +19,11 @@ class FileController < ApplicationController
         render
       end
     else
-      (render(:status => 404, :text => 'Unspecified file name') and return) unless @file_name
+      render(:status => 404, :text => 'Unspecified file name') and return unless @file_name
       # no form supplied, this is a request to download the file
       file = WikiFile.find_by_file_name(@file_name)
       if file 
-        send_data(file.content, :filename => @file_name, :type => content_type_header(@file_name))
+        send_data(file.content, determine_file_options_for(@file_name, :filename => @file_name))
       else
         @file = WikiFile.new(:file_name => @file_name)
         render
