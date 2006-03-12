@@ -1,9 +1,6 @@
 $: << File.dirname(__FILE__) + "../../lib"
 
-require 'redcloth'
-require 'bluecloth_tweaked'
-require 'rdocsupport'
-require 'chunks/chunk'
+require_dependency 'chunks/chunk'
 
 # The markup engines are Chunks that call the one of RedCloth
 # or RDoc to convert text. This markup occurs when the chunk is required
@@ -28,6 +25,7 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
+      require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
@@ -37,12 +35,14 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask
+      require_dependency 'bluecloth_tweaked'
       BlueCloth.new(@content, @content.options[:engine_opts]).to_html
     end
   end
 
   class Mixed < AbstractEngine
     def mask
+      require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
@@ -52,6 +52,7 @@ module Engines
 
   class RDoc < AbstractEngine
     def mask
+      require_dependency 'rdocsupport'
       RDocSupport::RDocFormatter.new(@content).to_html
     end
   end
