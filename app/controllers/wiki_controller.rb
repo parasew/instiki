@@ -224,15 +224,18 @@ class WikiController < ApplicationController
   def save
     render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
 
-    cookies['author'] = { :value => @params['author'], :expires => Time.utc(2030) }
+    author_name = @params['author']
+    author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
+    cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
+    
     begin
       if @page
         wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip), PageRenderer.new)
+            Author.new(author_name, remote_ip), PageRenderer.new)
         @page.unlock
       else
         wiki.write_page(@web_name, @page_name, @params['content'], Time.now, 
-            Author.new(@params['author'], remote_ip), PageRenderer.new)
+            Author.new(author_name, remote_ip), PageRenderer.new)
       end
       redirect_to_page @page_name
     rescue => e
@@ -336,7 +339,7 @@ class WikiController < ApplicationController
 
   def get_page_and_revision
     @revision_number = @params['rev'].to_i
-    @revision = @page.revisions[@revision_number]
+    @revision = @page.revisions[@revision_number - 1]
   end
 
   def parse_category

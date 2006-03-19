@@ -360,7 +360,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
 
   def test_revision
-    r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '0'
+    r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '1'
 
     assert_success
     assert_equal @home, r.template_objects['page']
@@ -371,7 +371,7 @@ class WikiControllerTest < Test::Unit::TestCase
   def test_rollback
     # rollback shows a form where a revision can be edited.
     # its assigns the same as or revision
-    r = process 'rollback', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '0'
+    r = process 'rollback', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '1'
 
     assert_success
     assert_equal @home, r.template_objects['page']
@@ -563,6 +563,19 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal revisions_before, revisions_after
     @home = Page.find(@home.id)
     assert !@home.locked?(Time.now), 'HomePage should be unlocked if an edit was unsuccessful'
+  end
+
+  def test_save_blank_author
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
+      'author' => ''
+    new_page = @wiki.read_page('wiki1', 'NewPage')
+    assert_equal 'AnonymousCoward', new_page.author
+
+    r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page', 
+      'author' => '   '
+
+    another_page = @wiki.read_page('wiki1', 'AnotherPage')
+    assert_equal 'AnonymousCoward', another_page.author
   end
 
 

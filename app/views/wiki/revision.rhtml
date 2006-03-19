@@ -4,7 +4,17 @@
 
 
 <div id="revision">
-  <%= @show_diff ? @renderer.display_diff : @renderer.display_content %>
+  <% if @show_diff %>
+    <p style="background: #eee; padding: 3px; border: 1px solid silver">  
+      <small>  
+        Showing changes from revision #<%= @revision_number - 1 %> to #<%= @revision_number %>:  
+        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>  
+      </small>  
+    </p>
+    <%= @renderer.display_diff %>
+  <% else %>
+    <%= @renderer.display_content %>
+  <% end %>
 </div>
 
 <div class="byline">
@@ -13,73 +23,6 @@
 </div>
 
 <div class="navigation">
-
-  <% if @revision_number < @page.revisions.length - 1 %>
-    <% if @revision_number < @page.revisions.length - 2 %>
-      <%= link_to('Forward in time',
-              {:web => @web.address, :action => 'revision', :id => @page.name, 
-               :rev => @revision_number + 1},
-              {:class => 'navlink', :name => 'to_next_revision'})
-      %>
-    <% else %>
-      <%= link_to('Forward in time',
-              {:web => @web.address, :action => 'show', :id => @page.name},
-              {:class => 'navlink', :name => 'to_next_revision'})
-      %>
-    <% end %>
-    <small>(<%= @revision.page.revisions.length - @revision_number - 1 %> more)</small>
-  <% end %>
-
-  <% if @revision_number > 0 && @revision_number < @page.revisions.size - 1 %>
-    |
-  <% end %>
-
-  <% if @revision_number > 0 %>
-    <%= link_to('Back in time',
-          {:web => @web.address, :action => 'revision', :id => @page.name, 
-           :rev => @revision_number - 1},
-          {:class => 'navlink', :name => 'to_previous_revision'})
-    %>
-    <small>(<%= @revision_number %> more)</small>
-  <% end %>
-
-  | 
-  <%= link_to('See current', {:web => @web.address, :action => 'show', :id => @page.name},
-          {:class => 'navlink', :name => 'to_current_revision'})
-  %>
-
-  <% if @revision_number > 0 %>
-    |
-    <%= link_to(@show_diff ? 'Hide changes' : 'See changes', 
-          {:web => @web.address, :action => 'revision', :id => @page.name, 
-           :rev => @revision_number, :mode => (@show_diff ? nil : 'diff') },
-          {:class => 'navlink', :accesskey => 'C', :name => 'see_changes'})
-    %>
-  <% end %>
-
-  | 
-  
-  <%= link_to('Rollback', 
-        {:web => @web.address, :action => 'rollback', :id => @page.name, :rev => @revision_number},
-        {:class => 'navlink', :name => 'rollback'})
-  %>
-
+  <%= navigation_menu_for_revision.join(' | ') %>
   <%= render :partial => 'inbound_links' %>
-  
 </div>
-
-<script language="Javascript">
-  function toggleChanges() {
-    if (document.getElementById("changes").style.display == "none") {
-      document.getElementById("changes").style.display  = "block";
-      document.getElementById("revision").style.display = "none";
-      document.getElementById("show_changes").style.display  = "none";
-      document.getElementById("hide_changes").style.display = "inline";
-    } else {
-      document.getElementById("changes").style.display  = "none";
-      document.getElementById("revision").style.display = "block";
-      document.getElementById("show_changes").style.display  = "inline";
-      document.getElementById("hide_changes").style.display = "none";
-    }
-  }
-</script>

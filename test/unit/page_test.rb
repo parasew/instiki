@@ -111,7 +111,6 @@ class PageTest < Test::Unit::TestCase
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
   end
 
-
   def test_rollback
     @page.revise("spot two", Time.now, "David", test_renderer)
     @page.revise("spot three", Time.now + 2000, "David", test_renderer)

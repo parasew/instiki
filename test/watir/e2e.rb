@@ -98,22 +98,21 @@ class E2EInstikiTest < Test::Unit::TestCase
     assert_match Regexp.new('Revised on ' + date_pattern + ' by Author\?'), ie.text
 
     link_to_previous_revision = ie.link(:name, 'to_previous_revision')
-    assert_equal url(:revision, 'TestEditPage', 0), link_to_previous_revision.href
+    assert_equal url(:revision, 'TestEditPage', 1), link_to_previous_revision.href
     assert_equal 'Back in time', link_to_previous_revision.text
-    assert_match /Edit \| Back in time \(1 revisions\) \| See changes/, ie.text
+    assert_match /Edit \| Back in time \(1 revision\) \| See changes/, ie.text
     
     # another anonymous revision
     enter_markup('TestEditPage', 'Test Edit Page, revision 3')
     assert_match /Test Edit Page, revision 3/, ie.text
-    assert_match /Edit \| Back in time \(2 revisions\) \| See changes \| Hide changes /, ie.text
+    assert_match /Edit \| Back in time \(2 revisions\) \| See changes /, ie.text
   end
 
   def test_00040_traversing_revisions
-    ie.goto url(:revision, 'TestEditPage', 1)
+    ie.goto url(:revision, 'TestEditPage', 2)
     assert_match /Test Edit Page, revision 2/, ie.text
     assert_match(Regexp.new(
-        'Forward in time \(1 more\) \| Back in time \(1 more\) \| ' +
-        'See current \| See changes \| Hide changes \| Rollback'),
+        'Forward in time \(to current\) \| Back in time \(1 more\) \| See current \| See changes \| Rollback'),
         ie.text)
 
     ie.link(:name, 'to_previous_revision').click
@@ -128,10 +127,10 @@ class E2EInstikiTest < Test::Unit::TestCase
   end
 
   def test_00050_rollback
-    ie.goto url(:revision, 'TestEditPage', 1)
+    ie.goto url(:revision, 'TestEditPage', 2)
     assert_match /Test Edit Page, revision 2/, ie.text
     ie.link(:name, 'rollback').click
-    assert_equal url(:rollback, 'TestEditPage', 1), ie.url
+    assert_equal url(:rollback, 'TestEditPage', 2), ie.url
     assert_equal 'Test Edit Page, revision 2', ie.text_field(:name, 'content').value
     
     ie.text_field(:name, 'content').set('Test Edit Page, revision 2, rolled back')
@@ -143,13 +142,12 @@ class E2EInstikiTest < Test::Unit::TestCase
 
   def test_0060_see_changes
     ie.goto url(:show, 'TestEditPage')
-    assert ie.html.include?('<P>Test Edit Page, revision <DEL class=diffmod>2</DEL>' + 
-        '<INS class=diffmod>2, rolled back</INS></P>')
+
     assert_match /Test Edit Page, revision 2, rolled back/, ie.text
 
     ie.link(:text, 'See changes').click
 
-    assert_match /Showing changes from revision #1 to #2: Added \| Removed/, ie.text
+    assert_match /Showing changes from revision #2 to #3: Added \| Removed/, ie.text
     assert_match /Test Edit Page, revision 22, rolled back/, ie.text
     
     ie.link(:text, 'Hide changes').click
@@ -166,13 +164,19 @@ class E2EInstikiTest < Test::Unit::TestCase
 
     page_links = ie.links.map { |l| l.text }
     expected_page_links = ['Another Wiki Page', 'Home Page', 'Test Edit Page', '?', 
-        'Another Wiki Page', 'Test Edit Page'] 
+                           'Another Wiki Page', 'Test Edit Page']
     assert_equal expected_page_links, page_links[-6..-1]
-    links_sequence = 'All Pages.*Another Wiki Page.*Home Page.*Test Edit Page.*' + 
+    links_sequence = 
+        'All Pages.*Another Wiki Page.*Home Page.*Test Edit Page.*' + 
         'Wanted Pages.*Non Existant Page\? wanted by Another Wiki Page.*'+
         'Orphaned Pages.*Test Edit Page.*'
     assert_match Regexp.new(links_sequence, Regexp::MULTILINE), ie.text
     # and before that, we have the tail of the main menu
+
+
+require 'breakpoint'; breakpoint
+
+
     assert_equal 'Export', page_links[-7]
   end
 
@@ -332,7 +336,7 @@ class InstikiController
   def self.clear_database
     ENV['RAILS_ENV'] = 'development'
     require INSTIKI_ROOT + '/config/environment.rb'
-    [Revision, Page, Web, System].each { |entity| entity.delete_all }
+    [WikiReference, Revision, Page, WikiFile, Web, System].each { |entity| entity.delete_all }
   end
 
   def initialize(pid)

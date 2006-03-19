@@ -5,7 +5,17 @@
 %>
 
 <div id="revision">
-  <%= @show_diff ? @renderer.display_diff : @renderer.display_content %>
+  <% if @show_diff %>
+    <p style="background: #eee; padding: 3px; border: 1px solid silver">  
+      <small>  
+        Showing changes from revision #<%= @page.revisions.size - 1 %> to #<%= @page.revisions.size %>:  
+        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>  
+      </small>  
+    </p>
+    <%= @renderer.display_diff %>
+  <% else %>
+    <%= @renderer.display_content %>
+  <% end %>
 </div>
 
 <div class="byline">
@@ -19,39 +29,9 @@
 </div>
 
 <div class="navigation">
-  <% if @page.name == "HomePage" %>
-    <%= link_to('Edit Page', 
-          {:web => @web.address, :action => 'edit', :id => @page.name}, 
-          {:class => 'navlink', :accesskey => 'E', :name => 'edit'})
-    %>
-    | 
-    <%= link_to('Edit Web', 
-            {:web => @web.address, :action => 'edit_web'}, 
-            {:class => 'navlink', :name => 'edit_web'})
-    %>
-  <% else %>
-    <%= link_to('Edit', 
-          {:web => @web.address, :action => 'edit', :id => @page.name}, 
-          {:class => 'navlink', :accesskey => 'E', :name => 'edit'})
-    %>
-  <% end %>
 
-  <% if @page.revisions.length > 1 %>
-    | 
-    <%= link_to('Back in time', 
-          {:web => @web.address, :action => 'revision', :id => @page.name, 
-           :rev => @page.revisions.length - 2},
-          {:class => 'navlink', :accesskey => 'R', :name => 'to_previous_revision'})
-    %>
-    <small>(<%= @page.revisions.length - 1 %> revisions)</small>
-    |
-    <%= link_to(@show_diff ? 'Hide changes' : 'See changes',
-          { :web => @web.address, :action => 'show', :id => @page.name, 
-            :mode => (@show_diff ? nil : 'diff') },
-          { :class => 'navlink', :accesskey => 'C', :name => 'see_changes' })
-    %>
-  <% end %>
-
+  <%= navigation_menu_for_page.join(' | ') %>
+  
   <small>
     | Views: 
     <%= link_to('Print',
