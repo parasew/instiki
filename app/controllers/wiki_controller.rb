@@ -229,6 +229,7 @@ class WikiController < ApplicationController
     cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
+      filter_spam(@params['content'])
       if @page
         wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
@@ -402,6 +403,22 @@ class WikiController < ApplicationController
   
   def truncate(text, length = 30, truncate_string = '...')
     if text.length > length then text[0..(length - 3)] + truncate_string else text end
+  end
+  
+  def filter_spam(content)
+    @@spam_patterns ||= load_spam_patterns
+    @@spam_patterns.each do |pattern| 
+      raise "Your edit was blocked by spam filtering" if content =~ pattern
+    end
+  end
+  
+  def load_spam_patterns
+    spam_patterns_file = "#{RAILS_ROOT}/config/spam_patterns.txt"
+    if File.exists?(spam_patterns_file)
+      File.readlines(spam_patterns_file).inject([]) { |patterns, line| patterns << Regexp.new(line.chomp, Regexp::IGNORECASE) } 
+    else
+      []
+    end
   end
   
 end
