@@ -17,7 +17,7 @@ end
     <%= list_item 'Feeds', {:action => 'feeds'}, 'Subscribe to changes by RSS' %> | 
     <%= list_item 'Export', {:action => 'export'}, 'Download a zip with all the pages in this wiki', 'X' %> |
     <%= form_tag({ :controller => 'wiki', :action => 'search', :web => @web.address},
-                 {'id' => 'navigationSearchForm', 'method' => 'get'}) %>
+                 {'id' => 'navigationSearchForm', 'method' => 'get', 'accept-charset' => 'utf-8' }) %>
       <input type="text" id="searchField" name="query" value="Search"
              onfocus="this.value == 'Search' ? this.value = '' : true"
              onblur="this.value == '' ? this.value = 'Search' : true" />

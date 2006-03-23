@@ -9,8 +9,9 @@
   <%= render 'wiki_words_help' %>
 </div>
 
-<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name},
-             {'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();'})
+<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
+             { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();',
+               'accept-charset' => 'utf-8' })
 %>
 
 <p>

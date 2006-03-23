@@ -5,8 +5,10 @@
   so different subjects or projects can write about different <i>MuppetShows</i>.
 </p>
 
-<%= form_tag({ :controller => 'admin', :action => 'create_web'},
-             {'id' => 'setup', 'method' => 'post', 'onSubmit' => 'cleanAddress(); return validateSetup()'})
+<%= form_tag({ :controller => 'admin', :action => 'create_web' },
+             { 'id' => 'setup', 'method' => 'post', 
+               'onSubmit' => 'cleanAddress(); return validateSetup()',
+               'accept-charset' => 'utf-8' })
 %>
 
 <ol class="setup">

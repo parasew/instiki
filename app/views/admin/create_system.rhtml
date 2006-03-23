@@ -6,8 +6,9 @@
   you'll need to do a brief one-time setup.
 </p>
 
-<%= form_tag({ :controller => 'admin', :action => 'create_system'},
-             {'id' => 'setup', 'method' => 'post', 'onSubmit' => 'return validateSetup()'})
+<%= form_tag({ :controller => 'admin', :action => 'create_system' },
+             { 'id' => 'setup', 'method' => 'post', 'onSubmit' => 'return validateSetup()', 
+               'accept-charset' => 'utf-8' })
 %>
 <ol class="setup">
   <li>

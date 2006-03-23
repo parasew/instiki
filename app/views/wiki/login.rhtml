@@ -2,7 +2,7 @@
 
 <p>
 <%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
-    { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post'})
+    { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' })
 %>
     <p>
     This web is password-protected. Please enter the password.
