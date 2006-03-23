@@ -2,7 +2,7 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
-  before_filter :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
+  before_filter :fetch_model_data, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
   after_filter :remember_location, :teardown_url_generator
 
   # For injecting a different wiki model implementation. Intended for use in tests
@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   end
 
   protected
-  
+
   def check_authorization
     if in_a_web? and authorization_needed? and not authorized?
       redirect_to :controller => 'wiki', :action => 'login', :web => @web_name
@@ -27,18 +27,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def connect_to_model
+  def fetch_model_data
     @action_name = @params['action'] || 'index'
     @web_name = @params['web']
     @wiki = wiki
+    @author = cookies['author'] || 'AnonymousCoward'
     if @web_name
       @web = @wiki.webs[@web_name]
       if @web.nil?
-        render :status => 404, :text => "Unknown web '#{@web_name}'"
-        return false
+        render(:status => 404, :text => "Unknown web '#{@web_name}'")
+        return false 
       end
     end
-    @author = cookies['author'] || 'AnonymousCoward'
   end
 
   FILE_TYPES = {

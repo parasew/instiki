@@ -28,7 +28,7 @@ class Wiki
     if not (web = Web.find_by_address(old_address))
       raise Instiki::ValidationError.new("Web with address '#{old_address}' does not exist")
     end
-    
+
     web.update_attributes(:address => new_address, :name => name, :markup => markup, :color => color, 
       :additional_style => additional_style, :safe_mode => safe_mode, :password => password, :published => published,
       :brackets_only => brackets_only, :count_pages => count_pages, :allow_uploads => allow_uploads, :max_upload_size => max_upload_size)

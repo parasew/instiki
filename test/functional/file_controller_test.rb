@@ -93,4 +93,22 @@ class FileControllerTest < Test::Unit::TestCase
     assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)
   end
 
+  def test_import
+    r = post :import, :web => 'wiki1', :file => uploaded_file("#{RAILS_ROOT}/test/fixtures/exported_markup.zip")
+    assert_redirect
+    assert @web.has_page?('ImportedPage')
+  end
+
+  def uploaded_file(path, content_type="application/octet-stream", filename=nil)
+    filename ||= File.basename(path)
+    t = Tempfile.new(filename)
+    FileUtils.copy_file(path, t.path)
+    (class << t; self; end;).class_eval do
+      alias local_path path
+      define_method(:original_filename) { filename }
+      define_method(:content_type) { content_type }
+    end
+    return t
+  end
+
 end

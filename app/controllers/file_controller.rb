@@ -1,5 +1,7 @@
 # Controller responsible for serving files and pictures.
 
+require 'zip/zip'
+
 class FileController < ApplicationController
 
   layout 'default'
@@ -19,7 +21,6 @@ class FileController < ApplicationController
         render
       end
     else
-      render(:status => 404, :text => 'Unspecified file name') and return unless @file_name
       # no form supplied, this is a request to download the file
       file = WikiFile.find_by_file_name(@file_name)
       if file 
@@ -39,8 +40,7 @@ class FileController < ApplicationController
     if @params['file']
       @problems = []
       import_file_name = "#{@web.address}-import-#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.zip"
-      file_yard.upload_file(import_file_name, @params['file'])
-      import_from_archive(file_yard.file_path(import_file_name))
+      import_from_archive(@params['file'].path)
       if @problems.empty?
         flash[:info] = 'Import successfully finished'
       else
@@ -56,6 +56,7 @@ class FileController < ApplicationController
   protected
 
   def check_allow_uploads
+    render(:status => 404, :text => "Web #{@params['web'].inspect} not found") and return false unless @web
     if @web.allow_uploads?
       return true
     else
@@ -65,8 +66,7 @@ class FileController < ApplicationController
   end
   
   def connect_to_model
-    super
-    @file_name = @params['id']
+    super and @file_name = @params['id']
   end
 
   private 
@@ -87,10 +87,10 @@ class FileController < ApplicationController
             next
           else
             logger.info "Page '#{page_name}' already exists. Adding a new revision to it."
-            wiki.revise_page(@web.address, page_name, page_content, Time.now, @author)
+            wiki.revise_page(@web.address, page_name, page_content, Time.now, @author, PageRenderer.new)
           end
         else
-          wiki.write_page(@web.address, page_name, page_content, Time.now, @author)
+          wiki.write_page(@web.address, page_name, page_content, Time.now, @author, PageRenderer.new)
         end
       rescue => e
         logger.error(e)
