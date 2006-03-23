@@ -27,7 +27,7 @@ to install (until somebody sends a patch to properly package Instiki for all tho
 5. Install SQLite 3 driver for Ruby from http://sqlite-ruby.rubyforge.org/
 6. Install Rake from http://rake.rubyforge.org/
 7. Execute rm -f db/*.db
-8. Execute 'rake migrate'
+8. Execute 'rake environment RAILS_ENV=production migrate'
 9. Make an embarrassed sigh (as I do while writing this)
 10. Run 'instiki' again
 11. Pat yourself on the shoulder for being such a talented geek
