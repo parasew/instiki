@@ -19,7 +19,7 @@ class WebTest < Test::Unit::TestCase
     assert_equal 0, @web.select { |page| page.content =~ /none/i }.length
   end
   
-  def test_references
+  def test_002_references
     add_sample_pages
     assert_equal 1, @web.select.pages_that_reference('EverBeenHated').length
     assert_equal 0, @web.select.pages_that_reference('EverBeenInLove').length
@@ -69,7 +69,7 @@ class WebTest < Test::Unit::TestCase
     assert_equal [home], @web.select.pages_that_link_to('AnotherPage')
   end
 
-  def test_orphaned_pages
+  def test_001_orphaned_pages
     add_sample_pages
     home = @web.add_page('HomePage', 
         'This is a home page, it should not be an orphan',

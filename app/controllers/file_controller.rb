@@ -9,6 +9,7 @@ class FileController < ApplicationController
   before_filter :check_allow_uploads
 
   def file
+    @file_name = params['id']
     if @params['file']
       # form supplied
       new_file = @web.wiki_files.create(@params['file'])
@@ -65,10 +66,6 @@ class FileController < ApplicationController
     end
   end
   
-  def connect_to_model
-    super and @file_name = @params['id']
-  end
-
   private 
   
   def import_from_archive(archive)

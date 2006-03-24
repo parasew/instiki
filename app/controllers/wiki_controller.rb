@@ -5,6 +5,7 @@ require 'zip/zip'
 
 class WikiController < ApplicationController
 
+  before_filter :load_page
   caches_action :show, :published, :authors, :recently_revised, :list
   cache_sweeper :revision_sweeper
 
@@ -284,8 +285,7 @@ class WikiController < ApplicationController
 
   protected
   
-  def connect_to_model
-    super
+  def load_page
     @page_name = @params['id']
     @page = @wiki.read_page(@web_name, @page_name) if @page_name
   end

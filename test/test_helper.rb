@@ -13,10 +13,8 @@ require 'breakpoint'
 require 'wiki_content'
 require 'url_generator'
 
-# Uncomment these and hang on, because the tests will be FAST
-#Test::Unit::TestCase.pre_loaded_fixtures = false
-#Test::Unit::TestCase.use_transactional_fixtures = true
-
+Test::Unit::TestCase.pre_loaded_fixtures = false
+Test::Unit::TestCase.use_transactional_fixtures = true
 Test::Unit::TestCase.use_instantiated_fixtures = false
 Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + "/fixtures/"
 
