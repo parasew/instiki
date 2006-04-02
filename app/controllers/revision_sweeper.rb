@@ -23,10 +23,16 @@ class RevisionSweeper < ActionController::Caching::Sweeper
           :action => %w(show published), :id => page_name
     end
 
-    expire_action :controller => 'wiki', :web => web.address,
-        :action => %w(authors recently_revised list)
-    expire_fragment :controller => 'wiki', :web => web.address,
-        :action => %w(rss_with_headlines rss_with_content)
+    categories = WikiReference.find(:all, :conditions => "link_type = 'C'")
+    %w(recently_revised list).each do |action|
+      expire_action :controller => 'wiki', :web => web.address, :action => action
+      categories.each do |category|
+        expire_action :controller => 'wiki', :web => web.address, :action => action, :category => category.referenced_name
+      end
+    end
+
+    expire_action :controller => 'wiki', :web => web.address, :action => 'authors'
+    expire_fragment :controller => 'wiki', :web => web.address, :action => %w(rss_with_headlines rss_with_content)
   end
 
 end
