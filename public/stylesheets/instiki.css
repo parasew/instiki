@@ -35,7 +35,7 @@ form#navigationSearchForm input { font-size: 80%; }
 .navigation a { color: #000; font-weight: bold; }
 .navigation small a { font-weight: normal; font-size: 90%; }
 
-.navOn { font-size: 11px; color: #444; font-weight: bold; text-decoration: none; }
+.navOn { color: #444; font-weight: bold; text-decoration: none; }
 
 div.help { font-family: verdana, arial, helvetica, sans-serif; font-size: 70%; }
 
