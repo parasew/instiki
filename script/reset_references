@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 ENV['RAILS_ENV'] = ARGV.first || 'development'
 
 $stderr.puts "Loading Rails for #{ENV['RAILS_ENV']} environment..."
