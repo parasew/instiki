@@ -4,7 +4,7 @@ body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 80%; line-
 #Container { float: none; margin: 0 15%; text-align: center; }
 #Content { margin: 0; padding: 0.3em; text-align: left; border-top: none; float: left; width: 100%; }
 
-a { color: black; }
+a { color: #000; }
 a:visited { color: #666; }
 a:hover { color: white; background-color:#000; }
 
@@ -16,23 +16,23 @@ h3 { font-size: 120%; }
 h1#pageName { margin: 0.2em 0 0; line-height: 1em; padding: 0; }
 h1#pageName small { color: #444; font-size: 35%; line-height: 1em; padding: 0; }
 
-a.nav, a.nav:link, a.nav:visited { color: black; }
-a.nav:hover { color: white; background-color: black; }
+a.nav, a.nav:link, a.nav:visited { color: #000; }
+a.nav:hover { color: white; background-color: #000; }
 
-table { border:  double black; border-collapse: collapse; }
-td { border: thin solid grey; }
+table { border: double black; border-collapse: collapse; }
+td { border: thin solid #888; }
 
 li { margin-bottom: 0.5em; }
 
 .newWikiWord { background-color: #BFBFBF; }
-.newWikiWord a:hover { background-color: white; }
+.newWikiWord a:hover { background-color: #FFF; }
 
 form#navigationSearchForm { display: inline; }
 form#navigationSearchForm input { font-size: 80%; }
 
 .navigation { margin-top: 0.3em; font-size : 90%; color: #999; }
-.navigation a:hover { color: white; background-color: black; text-decoration: none; }
-.navigation a { font-size: 80%; color: black; font-weight: bold; }
+.navigation a:hover { color: white; background-color: #000; text-decoration: none; }
+.navigation a { font-size: 80%; color: #000; font-weight: bold; }
 .navigation small a { font-weight: normal; font-size: 90%; }
 
 .navOn { font-size: 11px; color: #444; font-weight: bold; text-decoration: none; }
@@ -49,8 +49,8 @@ ol.setup { font-size: 110%; font-family: georgia, verdana, sans-serif; padding-l
 
 .byline { padding-top: 1em; font-size: 60%; font-style: italic; margin-bottom: 1em; color: #999; }
 
-.diffdel, del.diffmod { background: pink; }
-.diffins, ins.diffmod { background: lightgreen; }
+.diffdel, del.diffmod { background-color: #FAA;}
+.diffins, ins.diffmod { background-color: #AFA;}
 
 #footer { font-size: 60%; line-height: 1.2em; color: #999; font-style: italic; text-align: right; padding-top: 2em; }
 #footer a:link, #footer a:visited { color: #888; font-style: italic; }
@@ -61,7 +61,7 @@ div.errorExplanation { color: #900; background-color: #FFA; font-style: italic; 
 div.errorExplanation h2 { display: none; }
 div.errorExplanation p { padding: 0; margin: 0; border: none; }
 div.errorExplanation ul { padding: 0; margin: 0.5em 0 0 2em; border: none; }
-div.errorExplanation li { padding 0; margin: 0; border: none; }
+div.errorExplanation li { padding: 0; margin: 0; border: none; }
 div.fieldWithErrors input { border: 1px solid #900; }
 div.info { color: #060; background-color: #BFBFBF; padding: 0.5em; margin-top: 0.5em; font-weight: bold; width: 100%; }
 
@@ -71,7 +71,7 @@ div#MarkupHelp table { margin-bottom: 0; border-top: 3px solid #999; border-left
 div#MarkupHelp td { font-size: 80%; padding: 0.2em; margin: 0; border: 1px solid #999; border-width: 1px 0 1px 0; 
   vertical-align: top; white-space: nowrap; }
 div#MarkupHelp td.arrow { padding-right: 5px; padding: 0 0.75em; color: #999; }
-div#MarkupHelp h3 { font-size: 90%; font-weight: bold; font-weight: normal; margin: 0 0 5px 0; padding: 5px 0 0 0; }
+div#MarkupHelp h3 { font-size: 90%; font-weight: bold; margin: 0 0 5px 0; padding: 5px 0 0 0; }
 div#MarkupHelp p { font-size: 70%; }
 
 div.rightHandSide { float: right; width: 25%; margin-left: 0.7em; padding-left: 1.5em; border-left: 1px dotted #ccc; font-size: 80%; }
