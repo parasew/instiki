@@ -1,4 +1,9 @@
+require_dependency 'cache_sweeping_helper'
+
 class RevisionSweeper < ActionController::Caching::Sweeper
+
+  include CacheSweepingHelper
+  
   observe Revision, Page
   
   def after_save(record)
@@ -16,23 +21,9 @@ class RevisionSweeper < ActionController::Caching::Sweeper
   private
   
   def expire_caches(page)
-    web = page.web
-
-    ([page.name] + WikiReference.pages_that_reference(page.name)).uniq.each do |page_name|
-      expire_action :controller => 'wiki', :web => web.address,
-          :action => %w(show published), :id => page_name
-    end
-
-    categories = WikiReference.find(:all, :conditions => "link_type = 'C'")
-    %w(recently_revised list).each do |action|
-      expire_action :controller => 'wiki', :web => web.address, :action => action
-      categories.each do |category|
-        expire_action :controller => 'wiki', :web => web.address, :action => action, :category => category.referenced_name
-      end
-    end
-
-    expire_action :controller => 'wiki', :web => web.address, :action => 'authors'
-    expire_fragment :controller => 'wiki', :web => web.address, :action => %w(rss_with_headlines rss_with_content)
+    expire_cached_summary_pages(page.web)
+    pages_to_expire = ([page.name] + WikiReference.pages_that_reference(page.name)).uniq
+    pages_to_expire.each { |page_name| expire_cached_page(page.web, page_name) }
   end
 
 end

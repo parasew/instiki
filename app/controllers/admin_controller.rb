@@ -3,6 +3,7 @@ require 'application'
 class AdminController < ApplicationController
 
   layout 'default'
+  cache_sweeper :web_sweeper
 
   def create_system
     if @wiki.setup?
