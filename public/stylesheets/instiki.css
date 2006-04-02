@@ -1,5 +1,5 @@
 body { background-color: white; color: #333; }
-body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 80%; line-height: 1.3em; }
+body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 90%; line-height: 1.3em; }
 
 #Container { float: none; margin: 0 15%; text-align: center; }
 #Content { margin: 0; padding: 0.3em; text-align: left; border-top: none; float: left; width: 100%; }
@@ -16,8 +16,8 @@ h3 { font-size: 120%; }
 h1#pageName { margin: 0.2em 0 0; line-height: 1em; padding: 0; }
 h1#pageName small { color: #444; font-size: 35%; line-height: 1em; padding: 0; }
 
-a.nav, a.nav:link, a.nav:visited { color: #000; }
-a.nav:hover { color: white; background-color: #000; }
+a.nav, a.nav:link, a.nav:visited { color: #000; background-color: #FFF; }
+a.nav:hover { color: #FFF; background-color: #000; }
 
 table { border: double black; border-collapse: collapse; }
 td { border: thin solid #888; }
@@ -32,14 +32,14 @@ form#navigationSearchForm input { font-size: 80%; }
 
 .navigation { margin-top: 0.3em; font-size : 90%; color: #999; }
 .navigation a:hover { color: white; background-color: #000; text-decoration: none; }
-.navigation a { font-size: 80%; color: #000; font-weight: bold; }
+.navigation a { color: #000; font-weight: bold; }
 .navigation small a { font-weight: normal; font-size: 90%; }
 
 .navOn { font-size: 11px; color: #444; font-weight: bold; text-decoration: none; }
 
-.help { font-family: verdana, arial, helvetica, sans-serif; font-size: 70%; }
+div.help { font-family: verdana, arial, helvetica, sans-serif; font-size: 70%; }
 
-.inputBox { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; background-color: #EEE; padding: 0.3em; margin-bottom: 1.5em; }
+div.inputBox { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; background-color: #EEE; padding: 0.3em; margin-bottom: 1.5em; }
 
 blockquote { display: block; font-size: 90%; margin: 0 0 1.5em 0; padding: 0 2.5em; line-height: 1.5em; font-style: italic; }
 
@@ -64,6 +64,10 @@ div.errorExplanation ul { padding: 0; margin: 0.5em 0 0 2em; border: none; }
 div.errorExplanation li { padding: 0; margin: 0; border: none; }
 div.fieldWithErrors input { border: 1px solid #900; }
 div.info { color: #060; background-color: #BFBFBF; padding: 0.5em; margin-top: 0.5em; font-weight: bold; width: 100%; }
+
+div#editFormButtons { margin: 0.5em 0 0 0; }
+div#editFormButtons span { white-space: nowrap; }
+div#editForm textarea#content { width: 70%; height: 400px; }
 
 div#MarkupHelp { float: right; width: 25%; margin-top: 0.5em; }
 div#MarkupHelp table { margin-bottom: 0; border-top: 3px solid #999; border-left: 3px solid #999; 

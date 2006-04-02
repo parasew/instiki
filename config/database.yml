@@ -1,6 +1,7 @@
 development:
   adapter: mysql
   host: localhost
+  socket: /var/run/mysqld/mysqld.sock
   database: instiki_dev
   username: root
   password:
@@ -8,6 +9,7 @@ development:
 test:
   adapter: mysql
   host: localhost
+  socket: /var/run/mysqld/mysqld.sock
   database: instiki_test
   username: root
   password:

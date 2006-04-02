@@ -4,28 +4,26 @@
   @hide_navigation = true
 %>
 
-<div id="MarkupHelp" style="float: right; width: 250px; margin-top: 5px">
+<div id="MarkupHelp">
   <%= render("#{@web.markup}_help") %>
   <%= render 'wiki_words_help' %>
 </div>
 
-<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
-             { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();',
-               'accept-charset' => 'utf-8' })
-%>
+<div id="editForm">
+	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
+	        { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();', 'accept-charset' => 'utf-8' }) %>
+	
+	    <textarea name="content" id="content"><%= h(@flash[:content] || '') %></textarea>
+		<div id="editFormButtons">
+		    <input type="submit" value="Submit" accesskey="s"/> as 
+		    <%= text_field_tag :author, @author, 
+		        :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
+		        :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %> 
+        </div>
+	<%= end_form_tag %>
+</div>
 
-<p>
-    <textarea name="content" id="content" style="width: 450px; height: 500px"><%= h(@flash[:content] || '') %></textarea>
-</p>
-<p>
-    <input type="submit" value="Submit" accesskey="s"/> as 
-    <%= text_field_tag :author, @author, 
-        :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
-        :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %> 
-</p>
-<%= end_form_tag %>
-
-<script language="JavaScript1.2">
+<script type="text/javascript">
 function cleanAuthorName() {
   if (document.getElementById('authorName').value == "") {
     document.getElementById('authorName').value = 'AnonymousCoward';

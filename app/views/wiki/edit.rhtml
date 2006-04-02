@@ -9,28 +9,28 @@
   <%= render 'wiki_words_help' %>
 </div>
 
-<%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
-             { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName()',
-               'accept-charset' => 'utf-8' })
-%>
+<div id="editForm">
+	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
+	             { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName()',
+	               'accept-charset' => 'utf-8' }) %>
+	
+		<textarea name="content" id="content"><%= h(@flash[:content] || @page.content) %></textarea>
+		<div id="editFormButtons">
+			<input type="submit" value="Submit" accesskey="s"/> as 
+			<%= text_field_tag :author, @author, 
+			        :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
+			        :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
+			| 
+			<span>
+				<%= link_to('Cancel', {:web => @web.address, :action => 'cancel_edit', :id => @page.name},
+				      {:accesskey => 'c'}) %> 
+                <small>(unlocks page)</small>
+			</span>
+		</div>
+	<%= end_form_tag %>
+</div>
 
-<p>
-    <textarea name="content" id="content" style="width: 70%; height: 500px"><%= h(@flash[:content] || @page.content) %></textarea>
-</p>
-<p>
-    <input type="submit" value="Submit" accesskey="s"/> as 
-    <%= text_field_tag :author, @author, 
-            :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
-            :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
-    | 
-    <%= link_to('Cancel', {:web => @web.address, :action => 'cancel_edit', :id => @page.name},
-          {:accesskey => 'c'})
-    %>
-    <small>(unlocks page)</small>
-</p>
-<%= end_form_tag %>
-
-<script language="JavaScript1.2">
+<script type="text/javascript">
 function cleanAuthorName() {
   if (document.getElementById('authorName').value == "") {
     document.getElementById('authorName').value = 'AnonymousCoward';

@@ -2,8 +2,7 @@
 
 <p>
 <%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
-    { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' })
-%>
+    { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' }) %>
     <p>
     This web is password-protected. Please enter the password.
     <% if @web.published? %>
@@ -18,6 +17,6 @@
 <%= end_form_tag %>
 </p>
 
-<script language="JavaScript">
-  document.forms["loginForm"].elements["password"].focus();
+<script type="text/javascript">
+    document.forms["loginForm"].elements["password"].focus();
 </script>
