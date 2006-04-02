@@ -1,4 +1,8 @@
- * TRUNK:
+* TRUNK:
+   Stylesheet tweaks
+   Linux packaging
+
+ * 0.11.0:
    SQL-based backend (ActiveRecord)
    File uploads (finally)
    Upgraded to Rails 1.0.0
@@ -91,7 +95,7 @@
           Added LaTeX/PDF integration on Textile installations with pdflatex installed on system (EXPERIMENTAL)
           Use the home page as a table of contents with a unordered list to control sections
           Added limit of 15 to the number of pages included in RSS feed
-          Moved static parts of stylesheet to separate file [Lau TŒrnskov]
+          Moved static parts of stylesheet to separate file [Lau T?rnskov]
           Fixed better semantics for revision movement [Ryan Singer]
           Fixed color diffs to work much better [Xen/Mertz/Atkins]
           Fixed performance problems for All Pages list [Dennis Mertz]
@@ -136,13 +140,13 @@
             (http://c2.com/cgi/wiki?WikiWikiClones, /show/HomePage, cgi.pl?show=WikiWord without escaping)
           Accessing an unexisting page redirects to a different url (/new/PageName)
           Increased snapshot time to just once a day (cuts down on disk storage requirements)
-          Made RDoc support work better with 1.8.1 [Mauricio Fern‡ndez]
+          Made RDoc support work better with 1.8.1 [Mauricio Fern?ndez]
           Added convinient redirect from /wiki/ to /wiki/show/HomePage
           Fixed BlueCloth bug with backticks at start of line
           Updated to RedCloth 2.0.7 (and linked to the new Textile reference)
           
  * 0.7.0:
-          Added Markdown (BlueCloth) and RDoc [Mauricio Fern‡ndez] as command-line markup choices
+          Added Markdown (BlueCloth) and RDoc [Mauricio Fern?ndez] as command-line markup choices
           Added wanted and orphan page lists to All pages (only show up if there's actually orphan or wanted pages)
           Added ISO-8859-1 as XML encoding in RSS feeds (makes FeedReader among others happy for special entities)
           Added proper links in the RSS feed (but the body links are still relative, which NNW and others doesn't grok)

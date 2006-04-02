@@ -1,6 +1,7 @@
-#!/usr/bin/env ruby
+#!/bin/sh
 
-# Executable file for a gem
-# must be same as ./instiki.rb
+cd $(dirname $0)
 
-load File.dirname(__FILE__) + '/script/server'
+export LD_LIBRARY_PATH=./lib/native/linux-x86:$LD_LIBRARY_PATH
+ruby script/server
+
