@@ -30,14 +30,14 @@ class Beta1Schema < ActiveRecord::Migration
       t.column "address", :string, :limit => 60, :default => "", :null => false
       t.column "password", :string, :limit => 60
       t.column "additional_style", :string
-      t.column "allow_uploads", :integer, :limit => 4, :default => 1
-      t.column "published", :integer, :limit => 4, :default => 0
-      t.column "count_pages", :integer, :limit => 4, :default => 0
+      t.column "allow_uploads", :integer, :default => 1
+      t.column "published", :integer, :default => 0
+      t.column "count_pages", :integer, :default => 0
       t.column "markup", :string, :limit => 50, :default => "textile"
       t.column "color", :string, :limit => 6, :default => "008B26"
       t.column "max_upload_size", :integer, :default => 100
-      t.column "safe_mode", :integer, :limit => 4, :default => 0
-      t.column "brackets_only", :integer, :limit => 4, :default => 0
+      t.column "safe_mode", :integer, :default => 0
+      t.column "brackets_only", :integer, :default => 0
     end
   
     create_table "wiki_references", :force => true do |t|
