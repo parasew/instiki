@@ -205,11 +205,11 @@ class WikiController < ApplicationController
       return 
     end
 
-    page_name = @page_name || 'HomePage'
-    page = wiki.read_page(@web_name, page_name)
-    render(:text => "Page '#{page_name}' not found", :status => 404) and return unless page
+    @page_name ||= 'HomePage'
+    @page ||= wiki.read_page(@web_name, @page_name)
+    render(:text => "Page '#{@page_name}' not found", :status => 404) and return unless @page
     
-    @renderer = PageRenderer.new(page.revisions.last)
+    @renderer = PageRenderer.new(@page.revisions.last)
   end
   
   def revision

@@ -293,6 +293,15 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_response :missing
   end
 
+  def test_published_should_render_homepage_if_no_page_specified
+    set_web_property :published, true
+    
+    r = process('published', 'web' => 'wiki1')
+    
+    assert_success
+    assert_equal @home, r.template_objects['page']
+  end
+
 
   def test_recently_revised
     r = process('recently_revised', 'web' => 'wiki1')
