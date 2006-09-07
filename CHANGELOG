@@ -2,6 +2,7 @@
    Stylesheet tweaks
    Linux packaging
    Fixed bug that failed to expire cached diff view of a page
+   Fixed rendering of WikiLinks in included pages in published or export mode
 
  * 0.11.0:
    SQL-based backend (ActiveRecord)
