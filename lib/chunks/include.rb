@@ -15,12 +15,13 @@ class Include < WikiChunk::WikiReference
   def initialize(match_data, content)
     super
     @page_name = match_data[1].strip
-    @unmask_text = get_unmask_text_avoiding_recursion_loops
+    rendering_mode = content.options[:mode] || :show
+    @unmask_text = get_unmask_text_avoiding_recursion_loops(rendering_mode)
   end
 
   private
   
-  def get_unmask_text_avoiding_recursion_loops
+  def get_unmask_text_avoiding_recursion_loops(rendering_mode)
     if refpage
       # TODO This way of instantiating a renderer is ugly.
       renderer = PageRenderer.new(refpage.current_revision)
@@ -30,7 +31,13 @@ class Include < WikiChunk::WikiReference
         return "<em>Recursive include detected; #{@page_name} --> #{@content.page_name} " + 
                "--> #{@page_name}</em>\n"
       else
-        included_content = renderer.display_content
+        included_content =
+          case rendering_mode
+          when :show then renderer.display_content
+          when :publish then renderer.display_published
+          when :export then renderer.display_content_for_export
+          else raise "Unsupported rendering mode #{@mode.inspect}"
+          end
         @content.merge_chunks(included_content)
         return included_content.pre_rendered
       end

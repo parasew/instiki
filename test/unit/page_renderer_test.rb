@@ -355,6 +355,18 @@ class PageRendererTest < Test::Unit::TestCase
     assert_equal 'NewPageCategory', references[0].referenced_name
     assert_equal WikiReference::CATEGORY, references[0].link_type
   end
+  
+  def test_rendering_included_page_under_different_modes
+    included = @web.add_page('Included', 'link to HomePage', Time.now, 'AnAuthor', test_renderer)
+    main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', test_renderer)
+    
+    assert_equal '<p>link to <a class="existingWikiWord" href="../show/HomePage">Home Page</a></p>', 
+                 test_renderer(main).display_content
+    assert_equal '<p>link to <a class="existingWikiWord" href="../published/HomePage">Home Page</a></p>',
+                 test_renderer(main).display_published
+    assert_equal '<p>link to <a class="existingWikiWord" href="HomePage.html">Home Page</a></p>', 
+                 test_renderer(main).display_content_for_export
+  end
 
   private
 
