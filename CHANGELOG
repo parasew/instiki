@@ -1,6 +1,7 @@
 * TRUNK:
    Stylesheet tweaks
    Linux packaging
+   Fixed bug that failed to expire cached diff view of a page
 
  * 0.11.0:
    SQL-based backend (ActiveRecord)
