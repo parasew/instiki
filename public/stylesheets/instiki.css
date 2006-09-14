@@ -24,7 +24,7 @@ td { border: thin solid #888; }
 
 li { margin-bottom: 0.5em; }
 
-.newWikiWord { background-color: #BFBFBF; }
+.newWikiWord { background-color: #DDD; }
 .newWikiWord a:hover { background-color: #FFF; }
 
 form#navigationSearchForm { display: inline; }
@@ -63,7 +63,7 @@ div.errorExplanation p { padding: 0; margin: 0; border: none; }
 div.errorExplanation ul { padding: 0; margin: 0.5em 0 0 2em; border: none; }
 div.errorExplanation li { padding: 0; margin: 0; border: none; }
 div.fieldWithErrors input { border: 1px solid #900; }
-div.info { color: #060; background-color: #BFBFBF; padding: 0.5em; margin-top: 0.5em; font-weight: bold; width: 100%; }
+div.info { color: #060; background-color: #DDD; padding: 0.5em; margin-top: 0.5em; font-weight: bold; width: 100%; }
 
 div#editFormButtons { margin: 0.5em 0 0 0; }
 div#editFormButtons span { white-space: nowrap; }
