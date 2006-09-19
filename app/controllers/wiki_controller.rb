@@ -339,7 +339,11 @@ class WikiController < ApplicationController
   end
 
   def get_page_and_revision
-    @revision_number = @params['rev'].to_i
+    if @params['rev']
+      @revision_number = @params['rev'].to_i
+    else
+      @revision_number = @page.revisions.length
+    end
     @revision = @page.revisions[@revision_number - 1]
   end
 
