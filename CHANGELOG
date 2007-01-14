@@ -1,4 +1,5 @@
 * TRUNK:
+   Rails 1.2 tested
    Stylesheet tweaks
    Linux packaging
    Fixed bug that failed to expire cached diff view of a page
