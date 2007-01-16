@@ -1,18 +1,21 @@
 <% @title = "Wiki webs" %>
 
-<ul>
+
 <% @webs.each do |web| %>
-  <li>
-    <% if web.published %>
-      <%= link_to_page 'HomePage', web, web.name, :mode => 'publish' %>
-      (read-only) /
-      <%= link_to_page 'HomePage', web, 'editable version', :mode => 'show' %> (requires login)
-    <% else %>
-      <%= link_to_page 'HomePage', web, web.name, :mode => 'show' %>
+  
+	<% if web.password %> <div style="padding: 4px; background-image:	url(/images/bg_protected.gif)">
+	<% else %> <div style="padding: 4px;"> <% end %>
+	<span>
+	<%= link_to_page 'HomePage', web, web.name, :mode => 'show' %>
+    <% if web.published? %>
+     (<%= link_to_page 'HomePage', web, 'published version', :mode => 'publish' %>)
     <% end %>
+
     <div class="byline" style="margin-bottom: 0px">
       <%= web.pages.length %> pages by <%= web.authors.length %> authors
     </div>
-  </li>
+
+  </span>
+  </div><br>
 <% end %>
 </ul>
