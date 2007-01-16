@@ -109,12 +109,13 @@ module SQLite3
       @statement_factory = options[:statement_factory] || Statement
 
       result, @handle = @driver.open( file_name, utf16 )
-      Error.check( result, nil, "could not open database" )
+      Error.check( result, self, "could not open database" )
 
       @closed = false
       @results_as_hash = options.fetch(:results_as_hash,false)
       @type_translation = options.fetch(:type_translation,false)
       @translator = nil
+      @transaction_active = false
     end
 
     # Return +true+ if the string is a valid (ie, parsable) SQL statement, and
@@ -436,7 +437,7 @@ module SQLite3
     # begin
       if block
         proxy = AggregateDefinitionProxy.new
-        proxy.instance_eval &block
+        proxy.instance_eval(&block)
         step ||= proxy.step_callback
         finalize ||= proxy.finalize_callback
       end
@@ -591,7 +592,7 @@ module SQLite3
         abort = false
         begin
           yield self
-        rescue Exception
+        rescue ::Object
           abort = true
           raise
         ensure

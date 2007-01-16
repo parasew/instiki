@@ -66,6 +66,7 @@ module SQLite3
       @db = db
       @driver = @db.driver
       @closed = false
+      @results = @columns = nil
       result, @handle, @remainder = @driver.prepare( @db.handle, sql )
       Error.check( result, @db )
     end
@@ -115,8 +116,11 @@ module SQLite3
     # See also #bind_params.
     def bind_param( param, value )
       must_be_open!
+      reset! if active?
       if Fixnum === param
         case value
+          when Bignum then
+            @driver.bind_int64( @handle, param, value )
           when Integer then
             @driver.bind_int( @handle, param, value )
           when Numeric then
@@ -129,8 +133,9 @@ module SQLite3
             @driver.bind_text( @handle, param, value )
         end
       else
-        index = @driver.bind_parameter_index(
-          @handle, param.to_s )
+        param = param.to_s
+        param = ":#{param}" unless param[0] == ?:
+        index = @driver.bind_parameter_index( @handle, param )
         raise Exception, "no such bind parameter '#{param}'" if index == 0
         bind_param index, value
       end
@@ -152,9 +157,9 @@ module SQLite3
     # See also #bind_params, #execute!.
     def execute( *bind_vars )
       must_be_open!
-      @driver.reset( @handle ) if @results
+      reset! if active?
 
-      bind_params *bind_vars unless bind_vars.empty?
+      bind_params(*bind_vars) unless bind_vars.empty?
       @results = ResultSet.new( @db, self )
 
       if block_given?
@@ -189,6 +194,19 @@ module SQLite3
         end
       end
       rows
+    end
+
+    # Resets the statement. This is typically done internally, though it might
+    # occassionally be necessary to manually reset the statement.
+    def reset!(clear_result=true)
+      @driver.reset(@handle)
+      @results = nil if clear_result
+    end
+
+    # Returns true if the statement is currently active, meaning it has an
+    # open result set.
+    def active?
+      not @results.nil?
     end
 
     # Return an array of the column names for this statement. Note that this
