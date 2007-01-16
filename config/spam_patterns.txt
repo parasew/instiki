@@ -1,0 +1,97 @@
+.*\[\/link\]
+.*\[\/url\]
+51wisdom
+acupuncturealliance
+acyclovir
+Adipex
+adultfriend
+airline
+allegra
+ampicill
+anafranil
+atenolol
+attacke\.ch
+autocorp
+awardspace
+blogspot\.com
+bravehost\.com
+butalbital
+buy cheap
+buy computer
+buy-online
+calling-phone-cards
+casino
+celexa
+cialis
+computer-exchange\.com
+Cool website!
+debt\s*consolidation
+diazepam
+display:\s*none
+domaindlx\.com
+equity\s*loan
+Erectol
+Feel free to visit my page
+fortunecity
+fuck
+funpic\.de
+gambling
+Good job man
+gucci
+guestbook
+hamburger
+hold-em
+holdem
+home\s*loan
+hoodia
+http://[A-Za-z0-9_\.]+\.cn
+hydrocodone
+I am really excited
+I really like your site
+igotfree
+ketoconazole
+lust cartoon
+mijneigenweblog
+Mortage
+my homepage
+myspace
+naked
+netfirms\.com
+nice site
+overflow:\s*auto
+paxil
+pbwiki\.com
+penis
+Phentermine
+phpbbforfree
+pochta\.ru
+poker
+porn
+prohosting
+protonix
+rapidforum
+replica
+ringtone
+rolex
+serotonin
+singtaotor
+slot\s*machin
+soma
+super site
+texas
+thepussies
+tits
+Tramadol
+versace
+viagra
+vuitton
+websamba\.com
+xanax
+xoomer
+xrumer
+Your site is great!
+zoloft
+\.iwarp\.
+\.tripod\.com
+\[link\=
+\[url\=
