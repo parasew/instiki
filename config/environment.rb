@@ -21,11 +21,13 @@ Rails::Initializer.run do |config|
   config.active_record.schema_format = :ruby
 
   config.load_paths << "#{RAILS_ROOT}/vendor/sqlite3-ruby"
+  config.load_paths << "#{RAILS_ROOT}/vendor/dnsbl_check"
 end
 
 # Instiki-specific configuration below
 require_dependency 'instiki_errors'
 
+# TODO: remove this for Rails 1.2
 # Enable UTF-8 support
 $KCODE = 'u'
 require 'jcode'
