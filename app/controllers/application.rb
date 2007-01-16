@@ -1,8 +1,8 @@
 # The filters added to this controller will be run for all controllers in the application.
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
-
-  before_filter :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
+#  require 'dnsbl_check'
+  before_filter :dnsbl_check, :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
   after_filter :remember_location, :teardown_url_generator
 
   # For injecting a different wiki model implementation. Intended for use in tests
