@@ -306,7 +306,7 @@ class WikiController < ApplicationController
 
   def export_page_to_tex(file_path)
     tex
-    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => nil)) }
+    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => false)) }
   end
 
   def export_pages_as_zip(file_type, &block)
@@ -424,5 +424,6 @@ class WikiController < ApplicationController
       []
     end
   end
+
   
 end
