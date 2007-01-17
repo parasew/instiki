@@ -1,5 +1,15 @@
 module IOExtras  #:nodoc:
 
+  CHUNK_SIZE = 32768
+
+  RANGE_ALL = 0..-1
+
+  def self.copy_stream(ostream, istream)
+    s = ''
+    ostream.write(istream.read(CHUNK_SIZE, s)) until istream.eof? 
+  end
+
+
   # Implements kind_of? in order to pretend to be an IO object
   module FakeIO
     def kind_of?(object)
@@ -21,6 +31,34 @@ module IOExtras  #:nodoc:
     end
 
     attr_accessor :lineno
+
+    def read(numberOfBytes = nil, buf = nil)
+      tbuf = nil
+
+      if @outputBuffer.length > 0
+        if numberOfBytes <= @outputBuffer.length
+          tbuf = @outputBuffer.slice!(0, numberOfBytes)
+        else
+          numberOfBytes -= @outputBuffer.length if (numberOfBytes)
+          rbuf = sysread(numberOfBytes, buf)
+          tbuf = @outputBuffer
+          tbuf << rbuf if (rbuf)
+          @outputBuffer = ""
+        end
+      else
+        tbuf = sysread(numberOfBytes, buf)
+      end
+
+      return nil unless (tbuf)
+
+      if buf
+        buf.replace(tbuf)
+      else
+        buf = tbuf
+      end
+
+      buf
+    end
 
     def readlines(aSepString = $/)
       retVal = []
