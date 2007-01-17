@@ -20,8 +20,7 @@ Rails::Initializer.run do |config|
   # (enables use of different database adapters for development and test environments)
   config.active_record.schema_format = :ruby
 
-  config.load_paths << "#{RAILS_ROOT}/vendor/sqlite3-ruby"
-  config.load_paths << "#{RAILS_ROOT}/vendor/dnsbl_check"
+  config.load_paths << "#{RAILS_ROOT}/vendor/plugins/sqlite3-ruby"
 end
 
 # Instiki-specific configuration below
