@@ -19,7 +19,7 @@ module ApplicationHelper
     container = container.to_a if Hash === container
   
     html_options = container.inject([]) do |options, element| 
-      if element.respond_to?(:first) && element.respond_to?(:last)
+      if element.is_a? Array
         if element.last != selected
           options << "<option value=\"#{element.last}\">#{element.first}</option>"
         else
