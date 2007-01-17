@@ -25,8 +25,3 @@ end
 
 # Instiki-specific configuration below
 require_dependency 'instiki_errors'
-
-# TODO: remove this for Rails 1.2
-# Enable UTF-8 support
-$KCODE = 'u'
-require 'jcode'
