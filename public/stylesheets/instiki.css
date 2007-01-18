@@ -155,10 +155,10 @@ padding-left:1.5em;
 
 .byline {
 color:#999;
-font-size:60%;
+font-size:65%;
 font-style:italic;
 margin-bottom:1em;
-padding-top:1em;
+padding-top:1px;
 }
 
 .diffdel,del.diffmod {

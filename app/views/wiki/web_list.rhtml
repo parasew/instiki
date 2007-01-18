@@ -12,7 +12,12 @@
     <% end %>
 
     <div class="byline" style="margin-bottom: 0px">
-      <%= web.pages.length %> page<% if web.pages.length != 1 %>s<% end %>  by <%= web.authors.length %> author<% if web.authors.length != 1 %>s<% end %>
+		<%= web.pages.length %> page<% if web.pages.length != 1 %>s<% end %>  by <%= web.authors.length %> author<% if web.authors.length != 1 %>s<% end %>
+		- Last Update: <%= web.last_page.nil? ? format_date(web.created_at) : format_date(web.last_page.revised_at) %><br/>
+		<% if ! web.last_page.nil? %> 
+			Last Document: <%= link_to_page(web.last_page.name,web) %> 
+			<%= web.last_page.revisions? ? "Revised" : "Created" %> by <%= author_link(web.last_page) %> (<%= web.last_page.current_revision.ip %>)
+		<% end %>
     </div>
   </span>
   </div><br>

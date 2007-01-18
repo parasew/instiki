@@ -1,203 +1,270 @@
-* TRUNK:
-   Rails 1.2 tested
-   Stylesheet tweaks
-   Linux packaging
-   Fixed bug that failed to expire cached diff view of a page
-   Fixed rendering of WikiLinks in included pages in published or export mode
+ * TRUNK:
 
+ - ANTISPAM: 
+   - updated and included spam_patterns.txt
+   - included dnsbl_check - DNS Blackhole Lists check
+     [thanks to joost from http://www.spacebabies.nl ]
+
+ - BUGFIXES:
+   - fix PDF output not to contain garbage chars [Jesse Newland]
+   - fixed the pages and authors display for single webs 
+   - web list does not show a link to a published version if it has none
+     [Jesse Newland]
+   - Fixed bug that failed to expire cached diff view of a page
+   - Fixed rendering of WikiLinks in included pages in published or export 
+     mode
+   - lots of small bugfixes and changes
+
+ - UPDATES:
+   - Rails 1.2 tested and packaged with instiki
+   - updated RubyZip to 0.9.1
+   - updated RedCloth to 3.0.4
+   - updated packaged sqlite3-ruby to 1.2.0
+
+ - FEATURES:
+   - Stylesheet tweaks
+   - visual display if webs are pass-protected (div background)
+   - Linux packaging
+
+------------------------------------------------------------------------------
  * 0.11.0:
-   SQL-based backend (ActiveRecord)
-   File uploads (finally)
-   Upgraded to Rails 1.0.0
-   Replaced internal link generator with routing
-   Fixed --daemon option
-   Removed Rubygem and native OS X distributions
-   Improved HTML diff
-   More accurate "See Changes"
-
+   - SQL-based backend (ActiveRecord)
+   - File uploads (finally)
+   - Upgraded to Rails 1.0.0
+   - Replaced internal link generator with routing
+   - Fixed --daemon option
+   - Removed Rubygem and native OS X distributions
+   - Improved HTML diff
+   - More accurate "See Changes"
+------------------------------------------------------------------------------
  * 0.10.2:
-          Upgraded to Rails 0.13.1
-          Fixed HTML export
-          Added layout=no option to the export_html action (it exports page contents processed 
-          by the markup engine, but without the default layout - so that they can be wrapped in 
-          some other layout)
-          <nowiki> tag can span several lines (before it was applied when both opening and closing 
-          tags were on the same line only)
-          Resolved the "endless redirection loop" condition and otherwise improved handling of 
-          errors in the rendering engines
-          Fixed rendering of Markdown hyperlinks such as [Text](http://something.com/foo)
-
+   - Upgraded to Rails 0.13.1
+   - Fixed HTML export
+   - Added layout=no option to the export_html action (it exports page
+     contents processed by the markup engine, but without the default layout -
+     so that they can be wrapped in some other layout)
+   - <nowiki> tag can span several lines (before it was applied when both 
+     opening and closing tags were on the same line only)
+   - Resolved the "endless redirection loop" condition and otherwise improved 
+     handling of errors in the rendering engines
+   - Fixed rendering of Markdown hyperlinks such as   
+     [Text](http://something.com/foo)
+------------------------------------------------------------------------------
  * 0.10.1:
-          Upgraded Rails to 0.12.0
-          Upgraded rubyzip to version 0.5.8
-          BlueCloth is back (RedCloth didn't do pure Markdown well enough)
-          Handling of line breaks in Textile is as in 0.9 (inserts <br/> tag)
-          Fixed HTML export (to enclose the output in <html> tags, include the stylesheet etc)
-          Corrected some compatibility issues with storages from earlier Instiki versions
-          Some other bug fixes
-
+   - Upgraded Rails to 0.12.0
+   - Upgraded rubyzip to version 0.5.8
+   - BlueCloth is back (RedCloth didn't do pure Markdown well enough)
+   - Handling of line breaks in Textile is as in 0.9 (inserts <br/> tag)
+   - Fixed HTML export (to enclose the output in <html> tags, include the
+     stylesheet etc)
+   - Corrected some compatibility issues with storages from earlier Instiki
+     versions
+   - Some other bug fixes
+------------------------------------------------------------------------------
  * 0.10.0:
-          Ported to ActionPack
-          RedCloth 3.0.3
-          BlueCloth is phased out, Markdown is rendered by RedCloth
-          Mix markup option understands both Textile and Markdown on the same page
-          Instiki can serve static content (such as HTML or plain-text files) from ./public 
-          directory
-          Much friendlier admin interface
-          Wiki link syntax doesn't conflict with Textile hyperlink syntax. Therefore
-          "textile link":LinkToSomePlace will not look insane.
-          RSS feeds accept query parameters, sush as 
-          http://localhost:2500/wiki/rss_with_headlines?start=2005-02-18&end=2005-02-19&limit=10
-          RSS feed with page contents for a password-protected web behaves as follows:
-            if the web is published, RSS feed links to the published version of the web
-            otherwise, the feed is not available
-          Madeleine will check every hour if there are new commands in the log or 24 hours have 
-          passed since last snapshot, and take snapshot if either of these conditions is true
-          Madeleine will also not log read-only operations, resulting in a better performance
-          Wiki extracts (to HTML and plain text) will leave only the last extract file in ./storage
-          Wiki search handles multibyte (UTF-8) characters correctly
-          Local hyperlinks in published pages point to published pages [Michael DeHaan]
-          Fixed a bug that sometimes caused all past revisions of a page to be "forgotten" on 
-          restart
-          Fixed parsing of URIs with a port number (http://someplace.org:8080)
-          Instiki will not fork itself on a *nix, unless explicitly asked to
-          Instiki can bind to IPs other than 127.0.0.1 (command-line option)
-          Revisions that do not change anything on the page are rejected
-          Automated tests for all controller actions
-          category: lines are presented as links to "All Pages" for relevant categories
-          Search looks at page titles, as well as content
-          Multiple other usability enhancements and bug fixes
-
+   - Ported to ActionPack
+   - RedCloth 3.0.3
+   - BlueCloth is phased out, Markdown is rendered by RedCloth
+   - Mix markup option understands both Textile and Markdown on the same page
+   - Instiki can serve static content (such as HTML or plain-text files) from
+     ./public directory
+   - Much friendlier admin interface
+   - Wiki link syntax doesn't conflict with Textile hyperlink syntax.
+     Therefore "textile link":LinkToSomePlace will not look insane.
+   - RSS feeds accept query parameters, such as
+     http://localhost:2500/wiki/rss_with_headlines?start=2005-02-18&end=2005-02-19&limit=10
+   - RSS feed with page contents for a password-protected web behaves as 
+     follows: if the web is published, RSS feed links to the published version 
+     of the web. otherwise, the feed is not available
+     Madeleine will check every hour if there are new commands in the log or
+     24 hours have passed since last snapshot, and take snapshot if either of
+     these conditions is true. Madeleine will also not log read-only
+     operations, resulting in a better performance
+   - Wiki extracts (to HTML and plain text) will leave only the last extract
+     file in ./storage
+   - Wiki search handles multibyte (UTF-8) characters correctly
+   - Local hyperlinks in published pages point to published pages [Michael 
+     DeHaan]
+   - Fixed a bug that sometimes caused all past revisions of a page to be 
+     "forgotten" on restart
+   - Fixed parsing of URIs with a port number (http://someplace.org:8080)
+   - Instiki will not fork itself on a *nix, unless explicitly asked to
+   - Instiki can bind to IPs other than 127.0.0.1 (command-line option)
+   - Revisions that do not change anything on the page are rejected
+   - Automated tests for all controller actions
+   - category: lines are presented as links to "All Pages" for relevant 
+     categories
+   - Search looks at page titles, as well as content
+   - Multiple other usability enhancements and bug fixes
+------------------------------------------------------------------------------
  * 0.9.2:
-          Rollback takes the user to an edit form. The form has to be submitted for the change to 
-          take place.
-          Changed to use inline style on published pages
-          Fixed "forward in time" on the last revision before current page
-          Instiki won't log bogus error messages when creating a new Wiki
-          Fixed deprecation warning for Object.id (introduced in Ruby 1.8.2)
-          Madeleine upgraded to 0.7.1
-          Madeleine snapshots are compressed
-          Packaged as a gem
-          
+   - Rollback takes the user to an edit form. The form has to be submitted for
+     the change to take place.
+   - Changed to use inline style on published pages
+   - Fixed "forward in time" on the last revision before current page
+   - Instiki won't log bogus error messages when creating a new Wiki
+   - Fixed deprecation warning for Object.id (introduced in Ruby 1.8.2)
+   - Madeleine upgraded to 0.7.1
+   - Madeleine snapshots are compressed
+   - Packaged as a gem
+------------------------------------------------------------------------------          
  * 0.9.1:
-          Added performance improvements for updating existing pages
-          Fixed IP logging and RSS feeds behind proxies [With help from Guan Yang]
-          Fixed default storage directory (borked running on Windows) [Spotted by Curt Hibbs]
-          
+   - Added performance improvements for updating existing pages
+   - Fixed IP logging and RSS feeds behind proxies [With help from Guan Yang]
+   - Fixed default storage directory (borked running on Windows)
+     [Spotted by Curt Hibbs]
+------------------------------------------------------------------------------          
  * 0.9.0:
-          Added aliased links such as [[HomePage|that nice home page]] [Mark Reid]
-          Added include other page content with [[!include TableOfContents]] [Mark Reid]
-          Added delete orphan pages from the Edit Web screen [by inspiration from Simon Arnaud]
-          Added logging of IP address for authors (who's behind the rollback wars)
-          Added Categories pages through backlinks (use "categories: news, instiki" on start of line) [Mark Reid]
-          Added option to use bracket-style wiki links only (and hence ban WikiWords)
-          Added command-line option to specify different storage path
-          Added print view without navigation
-          Added character and page (2275 characters including spaces) counter (important for student papers)
-          Off by default, activate it on the Edit Web screen
-          Added LaTeX/PDF integration on Textile installations with pdflatex installed on system (EXPERIMENTAL)
-          Use the home page as a table of contents with a unordered list to control sections
-          Added limit of 15 to the number of pages included in RSS feed
-          Moved static parts of stylesheet to separate file [Lau T?rnskov]
-          Fixed better semantics for revision movement [Ryan Singer]
-          Fixed color diffs to work much better [Xen/Mertz/Atkins]
-          Fixed performance problems for All Pages list [Dennis Mertz]
-          Fixed lots of rendering bugs [Mark Reid]
-          Upgraded to RedCloth 2.0.11 [integrating the fine work of Dennis Mertz]
-          
+   - Added aliased links such as [[HomePage|that nice home page]] [Mark Reid]
+   - Added include other page content with [[!include TableOfContents]]
+     [Mark Reid]
+   - Added delete orphan pages from the Edit Web screen [by inspiration from
+     Simon Arnaud]
+   - Added logging of IP address for authors (who's behind the rollback wars)
+   - Added Categories pages through backlinks (use "categories: news, instiki"
+     on start of line) [Mark Reid]
+   - Added option to use bracket-style wiki links only (and hence ban
+     WikiWords)
+   - Added command-line option to specify different storage path
+   - Added print view without navigation
+   - Added character and page (2275 characters including spaces) counter 
+     (important for student papers)
+   - Off by default, activate it on the Edit Web screen
+   - Added LaTeX/PDF integration on Textile installations with pdflatex 
+     installed on system (EXPERIMENTAL)
+   - Use the home page as a table of contents with a unordered list to control 
+     sections
+   - Added limit of 15 to the number of pages included in RSS feed
+   - Moved static parts of stylesheet to separate file [Lau T?rnskov]
+   - Fixed better semantics for revision movement [Ryan Singer]
+   - Fixed color diffs to work much better [Xen/Mertz/Atkins]
+   - Fixed performance problems for All Pages list [Dennis Mertz]
+   - Fixed lots of rendering bugs [Mark Reid]
+   - Upgraded to RedCloth 2.0.11 [integrating the fine work of Dennis Mertz]
+------------------------------------------------------------------------------          
  * 0.8.9:
-          Added color diffs to see changes between revisions [Bill Atkins]
-              They're aren't quite perfect yet as new paragraphs split the <ins> tags (hence 0.8.9, not 0.9.0)
-          Added redirect to edit if content of page generates an error
-              (so the page doesn't become unusable on bugs in the markup engines)
-          Fixed update Web with different address bug [Denis Metz]
-          Fixed a bunch of wiki word rendering issues by doing wiki word detection and replacment at once
-          Upgraded to BlueCloth 0.0.3b (should fix loads of problems on Markdown wikis)
-          
+   - Added color diffs to see changes between revisions [Bill Atkins]
+     They're aren't quite perfect yet as new paragraphs split the <ins> tags 
+     (hence 0.8.9, not 0.9.0)
+   - Added redirect to edit if content of page generates an error
+     (so the page doesn't become unusable on bugs in the markup engines)
+   - Fixed update Web with different address bug [Denis Metz]
+   - Fixed a bunch of wiki word rendering issues by doing wiki word detection
+     and replacment at once
+   - Upgraded to BlueCloth 0.0.3b (should fix loads of problems on Markdown
+     wikis)
+------------------------------------------------------------------------------          
  * 0.8.5:
-          Instiki can now serve as a CMS by running a password-protected web with a published front
-          Added version check at startup (Instiki needs Ruby 1.8.1)
-          
+   - Instiki can now serve as a CMS by running a password-protected web with a 
+     published front
+   - Added version check at startup (Instiki needs Ruby 1.8.1)
+------------------------------------------------------------------------------          
  * 0.8.1:
-          Actually included RedCloth 2.0.7 in the release
-          
+   - Actually included RedCloth 2.0.7 in the release
+------------------------------------------------------------------------------          
  * 0.8.0:
-          NOTE: Single-web wikis created in versions prior to 0.8.0 have "instiki" as their system password
-          Accepts wiki words in bracket style. Ex: [[wiki word]], [[c]],  [[We could'nt have done it!]]
-          Accepts camel-case wiki words in all latin, greek, cyrillian, and armenian unicode characters
-             Many thanks to Guan Yang for building the higher- and lower-case lookup tables
-             And thanks to Simon Arnaud for the initial patch that got the work started
-          Changed charset to UTF-8
-          Cut down on command-line options and replaced them with an per-web config screen
-          Added option to extend the stylesheet on a per-web basis to tweak the look in details
-          Added simple color options for variety
-          Added option to add/remove password protection on each web
-          Added the wiki name of the author locking a given page (instead of just "someone")
-          Removed single/multi-web distinction -- all Instikis are now multi-web
-          Load libraries from an unshifted load path, so that old installed libraries doesn't clash [Emiel van de Laar]
-          Keeps the author cookie forever, so you don't have to enter your name again and again
-          Fixed XHTML so it validates [Bruce D'Arcus]
-          Authors are no longer listed under orphan pages
-          Added export to markup (great for backups, potentially for switching wiki engine)
-          Don't link wiki words that proceeds from either /, = or ?
-            (http://c2.com/cgi/wiki?WikiWikiClones, /show/HomePage, cgi.pl?show=WikiWord without escaping)
-          Accessing an unexisting page redirects to a different url (/new/PageName)
-          Increased snapshot time to just once a day (cuts down on disk storage requirements)
-          Made RDoc support work better with 1.8.1 [Mauricio Fern?ndez]
-          Added convinient redirect from /wiki/ to /wiki/show/HomePage
-          Fixed BlueCloth bug with backticks at start of line
-          Updated to RedCloth 2.0.7 (and linked to the new Textile reference)
-          
+   - NOTE: Single-web wikis created in versions prior to 0.8.0 have "instiki"
+     as their system password
+   - Accepts wiki words in bracket style.
+     Examples: [[wiki word]], [[c]], [[We could'nt have done it!]]
+   - Accepts camel-case wiki words in all latin, greek, cyrillian, and
+     armenian unicode characters
+   - Many thanks to Guan Yang for building the higher- and lower-case lookup 
+     tables. And thanks to Simon Arnaud for the initial patch that got the 
+     work started
+   - Changed charset to UTF-8
+   - Cut down on command-line options and replaced them with an per-web config 
+     screen
+   - Added option to extend the stylesheet on a per-web basis to tweak the 
+     look in details
+   - Added simple color options for variety
+   - Added option to add/remove password protection on each web
+   - Added the wiki name of the author locking a given page (instead of just 
+     "someone")
+   - Removed single/multi-web distinction -- all Instikis are now multi-web
+   - Load libraries from an unshifted load path, so that old installed 
+     libraries doesn't clash [Emiel van de Laar]
+   - Keeps the author cookie forever, so you don't have to enter your name 
+     again and again
+   - Fixed XHTML so it validates [Bruce D'Arcus]
+   - Authors are no longer listed under orphan pages
+   - Added export to markup (great for backups, potentially for switching wiki 
+     engine)
+   - Don't link wiki words that proceeds from either /, = or ?
+     (http://c2.com/cgi/wiki?WikiWikiClones,
+     /show/HomePage, cgi.pl?show=WikiWord without escaping)
+   - Accessing an unexisting page redirects to a different url (/new/PageName)
+   - Increased snapshot time to just once a day (cuts down on disk storage
+     requirements)
+   - Made RDoc support work better with 1.8.1 [Mauricio Fern?ndez]
+   - Added convinient redirect from /wiki/ to /wiki/show/HomePage
+   - Fixed BlueCloth bug with backticks at start of line
+   - Updated to RedCloth 2.0.7 (and linked to the new Textile reference)
+------------------------------------------------------------------------------          
  * 0.7.0:
-          Added Markdown (BlueCloth) and RDoc [Mauricio Fern?ndez] as command-line markup choices
-          Added wanted and orphan page lists to All pages (only show up if there's actually orphan or wanted pages)
-          Added ISO-8859-1 as XML encoding in RSS feeds (makes FeedReader among others happy for special entities)
-          Added proper links in the RSS feed (but the body links are still relative, which NNW and others doesn't grok)
-          Added access keys: E => Edit, H => HomePage, A => All Pages, U => Recently Revised, X => Export
-          Added password-login through URL (so you can subscribe to feed on a protected web)
-          Added web passwords to the feed links for protected webs, so they work without manual login
-          Added the web name in small letters above all pages within a web
-          Polished authors and recently revised 
-          Updated to RedCloth 2.0.6
-          Changed content type for RSS feeds to text/xml (makes Mozilla Aggreg8 happy)
-          Changed searching to be case insensitive
-          Changed HomePage to display the name of the web instead
-          Changed exported HTML pages to be valid XHTML (which can be preprocessed by XSLT)
-          Fixed broken recently revised
-          
+   - Added Markdown (BlueCloth) and RDoc [Mauricio Fern?ndez] as command-line 
+     markup choices
+   - Added wanted and orphan page lists to All pages (only show up if there's 
+     actually orphan or wanted pages)
+   - Added ISO-8859-1 as XML encoding in RSS feeds (makes FeedReader among 
+     others happy for special entities)
+   - Added proper links in the RSS feed (but the body links are still 
+     relative, which NNW and others doesn't grok)
+   - Added access keys: E => Edit, H => HomePage, A => All Pages,
+     U => Recently Revised, X => Export
+   - Added password-login through URL (so you can subscribe to feed on a 
+     protected web)
+   - Added web passwords to the feed links for protected webs, so they work 
+     without manual login
+   - Added the web name in small letters above all pages within a web
+   - Polished authors and recently revised 
+   - Updated to RedCloth 2.0.6
+   - Changed content type for RSS feeds to text/xml (makes Mozilla Aggreg8
+     happy)
+   - Changed searching to be case insensitive
+   - Changed HomePage to display the name of the web instead
+   - Changed exported HTML pages to be valid XHTML (which can be preprocessed
+     by XSLT)
+   - Fixed broken recently revised
+------------------------------------------------------------------------------          
  * 0.6.0:
-          Fixed Windows compatibility [Florian]
-          Fixed bug that would prevent Madeleine from taking snapshots in Daemon mode
-          Added export entire web as HTML in a zip file
-          Added RSS feeds
-          Added proper getops support for the growing number of options [Florian]
-          Added safe mode that forbids style options in RedCloth [Florian]
-          Updated RedCloth to 2.0.5
-          
+   - Fixed Windows compatibility [Florian]
+   - Fixed bug that would prevent Madeleine from taking snapshots in Daemon
+     mode
+   - Added export entire web as HTML in a zip file
+   - Added RSS feeds
+   - Added proper getops support for the growing number of options [Florian]
+   - Added safe mode that forbids style options in RedCloth [Florian]
+   - Updated RedCloth to 2.0.5
+------------------------------------------------------------------------------          
  * 0.5.0:
-          NOTE: 0.5.0 is NOT compatible with databases from earlier versions
-          Added revisions
-          Added multiple webs
-          Added password protection for webs on multi-web setups
-          Added the notion of authors (that are saved in a cookie)
-          Added command-line option for not running as a Daemon on Unix
-          
+   - NOTE: 0.5.0 is NOT compatible with databases from earlier versions
+   - Added revisions
+   - Added multiple webs
+   - Added password protection for webs on multi-web setups
+   - Added the notion of authors (that are saved in a cookie)
+   - Added command-line option for not running as a Daemon on Unix
+------------------------------------------------------------------------------          
  * 0.3.1:
-          Added option to escape wiki words with \ 
-          
+   - Added option to escape wiki words with \ 
+------------------------------------------------------------------------------          
  * 0.3.0:
-          Brought all files into common style (including Textile help on the edit page)
-          Added page locking (if someone already is editing a page there's a warning)
-          Added daemon abilities on Unix (keep Instiki running after you close the terminal)
-          Made port 2500 the default port, so Instiki can be launched by dobbelt-click
-          Added Textile cache to speed-up rendering of large pages
-          Made WikiWords look like "Wiki Words"
-          Updated RedCloth to 2.0.4
-          
+   - Brought all files into common style (including Textile help on the edit
+     page)
+   - Added page locking (if someone already is editing a page there's a 
+     warning)
+   - Added daemon abilities on Unix (keep Instiki running after you close the 
+     terminal)
+   - Made port 2500 the default port, so Instiki can be launched by
+     dobbelt-click
+   - Added Textile cache to speed-up rendering of large pages
+   - Made WikiWords look like "Wiki Words"
+   - Updated RedCloth to 2.0.4
+------------------------------------------------------------------------------          
  * 0.2.5:
-          Upgraded to RedCloth 2.0.2 and Madeleine 0.6.1, which means the
-          Windows problems are gone. Also fixed a problem with wikiwords
-          that used part of other wikiwords.
-          
+   - Upgraded to RedCloth 2.0.2 and Madeleine 0.6.1, which means the
+   - Windows problems are gone. Also fixed a problem with wikiwords
+   - that used part of other wikiwords.
+------------------------------------------------------------------------------       
  * 0.2.0:
-          First public release
+   - First public release

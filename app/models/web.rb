@@ -34,6 +34,10 @@ class Web < ActiveRecord::Base
   def page(name)
     pages.find(:first, :conditions => ['name = ?', name])
   end
+  
+  def last_page
+    return Page.find(:first, :order => 'id desc', :conditions => ['web_id = ?', self.id])
+  end
 
   def has_page?(name)
     Page.count(['web_id = ? AND name = ?', id, name]) > 0
