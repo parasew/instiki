@@ -1,10 +1,10 @@
 <% @title = "Wiki webs" %>
-
+<br/>
 
 <% @webs.each do |web| %>
   
-	<% if web.password %> <div style="padding: 4px; background-image:	url(/images/bg_protected.gif)">
-	<% else %> <div style="padding: 4px;"> <% end %>
+	<% if web.password %> <div class="web_protected">
+	<% else %> <div class="web_normal"> <% end %>
 	<span>
 	<%= link_to_page 'HomePage', web, web.name, :mode => 'show' %>
     <% if web.published? %>
@@ -12,9 +12,8 @@
     <% end %>
 
     <div class="byline" style="margin-bottom: 0px">
-      <%= web.pages.length %> pages by <%= web.authors.length %> authors
+      <%= web.pages.length %> page<% if web.pages.length != 1 %>s<% end %>  by <%= web.authors.length %> author<% if web.authors.length != 1 %>s<% end %>
     </div>
-
   </span>
   </div><br>
 <% end %>

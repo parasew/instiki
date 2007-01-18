@@ -1,87 +1,320 @@
-body { background-color: white; color: #333; }
-body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 90%; line-height: 1.3em; }
+body {
+background-color:#FFF;
+color:#333;
+font-family:Verdana, Arial, Helvetica, sans-serif;
+font-size:90%;
+line-height:1.3em;
+}
 
-#Container { float: none; margin: 0 15%; text-align: center; }
-#Content { margin: 0; padding: 0.3em; text-align: left; border-top: none; float: left; width: 100%; }
+#Container {
+float:none;
+margin:0 15%;
+text-align:center;
+}
 
-a { color: #000; }
-a:visited { color: #666; }
-a:hover { color: white; background-color:#000; }
+#Content {
+border-top:none;
+float:left;
+margin:0;
+padding:0.3em;
+text-align:left;
+width:100%;
+}
 
-h1, h2, h3 { color: #333; font-family: georgia, verdana, sans-serif; }
-h1 { font-size: 200%; }
-h2 { font-size: 130%; }
-h3 { font-size: 120%; }
+a:visited {
+color:#666;
+}
 
-h1#pageName { margin: 0.2em 0 0; line-height: 1em; padding: 0; }
-h1#pageName small { color: #444; font-size: 35%; line-height: 1em; padding: 0; }
+h1,h2,h3 {
+color:#333;
+font-family:georgia, verdana, sans-serif;
+}
 
-a.nav, a.nav:link, a.nav:visited { color: #000; background-color: #FFF; }
-a.nav:hover { color: #FFF; background-color: #000; }
+h1 {
+font-size:200%;
+}
 
-table { border: double black; border-collapse: collapse; }
-td { border: thin solid #888; }
+h2 {
+font-size:130%;
+}
 
-li { margin-bottom: 0.5em; }
+h3 {
+font-size:120%;
+}
 
-.newWikiWord { background-color: #DDD; }
-.newWikiWord a:hover { background-color: #FFF; }
+h1#pageName {
+line-height:1em;
+margin:0.2em 0 0;
+padding:0;
+}
 
-form#navigationSearchForm { display: inline; }
-form#navigationSearchForm input { font-size: 80%; }
+h1#pageName small {
+color:#444;
+font-size:35%;
+line-height:1em;
+padding:0;
+}
 
-.navigation { margin-top: 0.3em; font-size : 90%; color: #999; }
-.navigation a:hover { color: white; background-color: #000; text-decoration: none; }
-.navigation a { color: #000; font-weight: bold; }
-.navigation small a { font-weight: normal; font-size: 90%; }
+a.nav,a.nav:link,a.nav:visited {
+background-color:#FFF;
+color:#000;
+}
 
-.navOn { color: #444; font-weight: bold; text-decoration: none; }
+table {
+border:double #000;
+border-collapse:collapse;
+}
 
-div.help { font-family: verdana, arial, helvetica, sans-serif; font-size: 70%; }
+td {
+border:thin solid #888;
+}
 
-div.inputBox { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; background-color: #EEE; padding: 0.3em; margin-bottom: 1.5em; }
+li {
+margin-bottom:0.5em;
+}
 
-blockquote { display: block; font-size: 90%; margin: 0 0 1.5em 0; padding: 0 2.5em; line-height: 1.5em; font-style: italic; }
+.newWikiWord {
+background-color:#DDD;
+}
 
-pre { font-size: 90%; padding: 1em; overflow: auto; background-color: #DDD; }
+.newWikiWord a:hover {
+background-color:#FFF;
+}
 
-ol.setup { font-size: 110%; font-family: georgia, verdana, sans-serif; padding-left: 1.5em; margin-top: 1em; }
+form#navigationSearchForm {
+display:inline;
+}
 
-.byline { padding-top: 1em; font-size: 60%; font-style: italic; margin-bottom: 1em; color: #999; }
+form#navigationSearchForm input {
+font-size:80%;
+}
 
-.diffdel, del.diffmod { background-color: #FAA;}
-.diffins, ins.diffmod { background-color: #AFA;}
+.navigation {
+color:#999;
+font-size:90%;
+margin-top:0.3em;
+}
 
-#footer { font-size: 60%; line-height: 1.2em; color: #999; font-style: italic; text-align: right; padding-top: 2em; }
-#footer a:link, #footer a:visited { color: #888; font-style: italic; }
+.navigation a:hover {
+background-color:#000;
+color:#FFF;
+text-decoration:none;
+}
 
-div.inputFieldWithPrompt { margin: 0.75em 0; }
+.navigation a {
+color:#000;
+font-weight:bold;
+}
 
-div.errorExplanation { color: #900; background-color: #FFA; font-style: italic; font-weight: bold; margin: 1.5em 0; padding: 1em; width: 100%; }
-div.errorExplanation h2 { display: none; }
-div.errorExplanation p { padding: 0; margin: 0; border: none; }
-div.errorExplanation ul { padding: 0; margin: 0.5em 0 0 2em; border: none; }
-div.errorExplanation li { padding: 0; margin: 0; border: none; }
-div.fieldWithErrors input { border: 1px solid #900; }
-div.info { color: #060; background-color: #DDD; padding: 0.5em; margin-top: 0.5em; font-weight: bold; width: 100%; }
+.navigation small a {
+font-size:90%;
+font-weight:normal;
+}
 
-div#editFormButtons { margin: 0.5em 0 0 0; }
-div#editFormButtons span { white-space: nowrap; }
-div#editForm textarea#content { width: 70%; height: 400px; }
+.navOn {
+color:#444;
+font-weight:bold;
+text-decoration:none;
+}
 
-div#MarkupHelp { float: right; width: 25%; margin-top: 0.5em; }
-div#MarkupHelp table { margin-bottom: 0; border-top: 3px solid #999; border-left: 3px solid #999; 
-    border-right: 3px solid #BBB; border-bottom: 3px solid #BBB}
-div#MarkupHelp td { font-size: 80%; padding: 0.2em; margin: 0; border: 1px solid #999; border-width: 1px 0 1px 0; 
-  vertical-align: top; white-space: nowrap; }
-div#MarkupHelp td.arrow { padding-right: 5px; padding: 0 0.75em; color: #999; }
-div#MarkupHelp h3 { font-size: 90%; font-weight: bold; margin: 0 0 5px 0; padding: 5px 0 0 0; }
-div#MarkupHelp p { font-size: 70%; }
+div.help {
+font-family:verdana, arial, helvetica, sans-serif;
+font-size:70%;
+}
 
-div.rightHandSide { float: right; width: 25%; margin-left: 0.7em; padding-left: 1.5em; border-left: 1px dotted #ccc; font-size: 80%; }
+div.inputBox {
+background-color:#EEE;
+font-family:verdana, arial, helvetica, sans-serif;
+font-size:80%;
+margin-bottom:1.5em;
+padding:0.3em;
+}
 
-.newsList { margin-top: 1.5em; }
-.newsList p { margin-bottom: 2.5em; }
+blockquote {
+display:block;
+font-size:90%;
+font-style:italic;
+line-height:1.5em;
+margin:0 0 1.5em;
+padding:0 2.5em;
+}
 
-/* Affects the display of "category: ..." */
-.property { color: #999; font-size: 80%; }
+pre {
+background-color:#DDD;
+font-size:90%;
+overflow:auto;
+padding:1em;
+}
+
+ol.setup {
+font-family:georgia, verdana, sans-serif;
+font-size:110%;
+margin-top:1em;
+padding-left:1.5em;
+}
+
+.byline {
+color:#999;
+font-size:60%;
+font-style:italic;
+margin-bottom:1em;
+padding-top:1em;
+}
+
+.diffdel,del.diffmod {
+background-color:#FAA;
+}
+
+.diffins,ins.diffmod {
+background-color:#AFA;
+}
+
+#footer {
+color:#999;
+font-size:60%;
+font-style:italic;
+line-height:1.2em;
+padding-top:2em;
+text-align:right;
+}
+
+#footer a:link,#footer a:visited {
+color:#888;
+font-style:italic;
+}
+
+div.web_normal {
+	padding:4px;
+}
+
+div.web_protected {
+	padding:4px;
+	background-color:#DDD;
+}
+
+div.inputFieldWithPrompt {
+margin:0.75em 0;
+}
+
+div.errorExplanation {
+background-color:#FFA;
+color:#900;
+font-style:italic;
+font-weight:bold;
+margin:1.5em 0;
+padding:1em;
+width:100%;
+}
+
+div.errorExplanation h2 {
+display:none;
+}
+
+div.errorExplanation ul {
+border:none;
+margin:0.5em 0 0 2em;
+padding:0;
+}
+
+div.fieldWithErrors input {
+border:1px solid #900;
+}
+
+div.info {
+background-color:#DDD;
+color:#060;
+font-weight:bold;
+margin-top:0.5em;
+padding:0.5em;
+width:100%;
+}
+
+div#editFormButtons {
+margin:0.5em 0 0;
+}
+
+div#editFormButtons span {
+white-space:nowrap;
+}
+
+div#editForm textarea#content {
+height:400px;
+width:70%;
+}
+
+div#MarkupHelp {
+float:right;
+margin-top:0.5em;
+width:25%;
+}
+
+div#MarkupHelp table {
+border-bottom:3px solid #BBB;
+border-left:3px solid #999;
+border-right:3px solid #BBB;
+border-top:3px solid #999;
+margin-bottom:0;
+}
+
+div#MarkupHelp td {
+border:1px solid #999;
+border-width:1px 0;
+font-size:80%;
+margin:0;
+padding:0.2em;
+vertical-align:top;
+white-space:nowrap;
+}
+
+div#MarkupHelp td.arrow {
+color:#999;
+padding:0 0.75em;
+}
+
+div#MarkupHelp h3 {
+font-size:90%;
+font-weight:bold;
+margin:0 0 5px;
+padding:5px 0 0;
+}
+
+div#MarkupHelp p {
+font-size:70%;
+}
+
+div.rightHandSide {
+border-left:1px dotted #ccc;
+float:right;
+font-size:80%;
+margin-left:0.7em;
+padding-left:1.5em;
+width:25%;
+}
+
+.newsList {
+margin-top:1.5em;
+}
+
+.newsList p {
+margin-bottom:2.5em;
+}
+
+.property {
+color:#999;
+font-size:80%;
+}
+
+a,li span {
+color:#000;
+}
+
+a:hover,a.nav:hover {
+background-color:#000;
+color:#FFF;
+}
+
+div.errorExplanation p,div.errorExplanation li {
+border:none;
+margin:0;
+padding:0;
+}

@@ -22,7 +22,9 @@ class Web < ActiveRecord::Base
         'SELECT DISTINCT r.author AS author ' + 
         'FROM revisions r ' +
         'JOIN pages p ON p.id = r.page_id ' +
-        'ORDER by 1').collect { |row| row['author'] }
+        'WHERE p.web_id = ' + self.id.to_s +
+        'ORDER by 1 '
+        ).collect { |row| row['author'] }        
   end
 
   def categories
