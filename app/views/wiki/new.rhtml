@@ -1,0 +1,33 @@
+<% 
+  @title = "Creating #{WikiWords.separate(@page_name)}"
+  @content_width = 720
+  @hide_navigation = true
+%>
+
+<div id="MarkupHelp">
+  <%= render("#{@web.markup}_help") %>
+  <%= render 'wiki_words_help' %>
+</div>
+
+<div id="editForm">
+	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
+	        { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();', 'accept-charset' => 'utf-8' }) %>
+	
+	    <textarea name="content" id="content"><%= h(@flash[:content] || '') %></textarea>
+		<div id="editFormButtons">
+		    <input type="submit" value="Submit" accesskey="s"/> as 
+		    <%= text_field_tag :author, @author, 
+		        :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
+		        :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %> 
+        </div>
+	<%= end_form_tag %>
+</div>
+
+<script type="text/javascript">
+function cleanAuthorName() {
+  if (document.getElementById('authorName').value == "") {
+    document.getElementById('authorName').value = 'AnonymousCoward';
+  }
+}
+document.forms["editForm"].elements["content"].focus();
+</script>

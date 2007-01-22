@@ -1,0 +1,39 @@
+<% 
+  @title = "Rollback to #{@page.plain_name} Rev ##{@revision_number}"
+  @content_width = 720
+  @hide_navigation = true
+%>
+
+<%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{@params["msg"]}</small></p>" if @params["msg"] %>
+
+<div id="MarkupHelp">
+  <%= render("#{@web.markup}_help") %>
+  <%= render 'wiki_words_help' %>
+</div>
+
+<div id="editForm">
+	<%= form_tag({:web => @web.address, :action => 'save', :id => @page.name},
+	      { :id => 'editForm', :method => 'post', :onSubmit => 'cleanAuthorName();', 
+	        'accept-charset' => 'utf-8' }) %>
+        <textarea name="content" id="content"><%= @revision.content %></textarea>
+		<div id="editFormButtons">
+	        <input type="submit" value="Update" accesskey="u" /> as 
+		    <input type="text" name="author" id="authorName" value="<%= @author %>" 
+		        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
+		    | 
+			<span>
+				<%= link_to('Cancel', {:web => @web.address, :action => 'cancel_edit', :id => @page.name},
+				      {:accesskey => 'c'}) %> 
+                <small>(unlocks page)</small>
+			</span>
+	    </div>
+	<%= end_form_tag %>
+</div>
+
+<script type="text/javascript">
+function cleanAuthorName() {
+  if (document.getElementById('authorName').value == "") {
+    document.getElementById('authorName').value = 'AnonymousCoward';
+  }
+}
+</script>

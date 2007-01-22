@@ -1,0 +1,23 @@
+<% @title = "#{@page.plain_name} is locked" %>
+
+<p>
+  <%= link_to_page(@page.locked_by) %>
+  <% if @page.lock_duration(Time.now) == 0 %>
+    just started editing this page.
+  <% else %>
+    has been editing this page for <%= @page.lock_duration(Time.now) %> minutes.
+  <% end %>
+</p>
+
+<p>
+  <%= link_to 'Edit the page anyway',
+        {:web => @web_name, :action => 'edit', :id => @page.name, :params => {'break_lock' => '1'} },
+        {:accesskey => 'E'}
+  %>
+
+  <%= link_to 'Cancel',
+        {:web => @web_name, :action => 'show', :id => @page.name},
+        {:accesskey => 'C'}
+  %>
+
+</p>

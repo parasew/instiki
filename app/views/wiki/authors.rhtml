@@ -1,0 +1,11 @@
+<% @title = 'Authors' %>
+
+<ul id="authorList">
+  <% for author in @authors %>
+    <li>
+      <%= link_to_page author %>
+      co- or authored:
+      <%= @page_names_by_author[author].collect { |page_name| link_to_page(page_name) }.sort.join ', ' %>
+    </li>
+  <% end %>
+</ul>

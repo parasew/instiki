@@ -1,0 +1,14 @@
+<% @title = "Feeds" %>
+
+<p>You can subscribe to this wiki by RSS and get either just the headlines of the pages that change or the entire page.</p> 
+
+<ul id="feedsList">
+  <li>
+    <% if @rss_with_content_allowed %>
+      <%= link_to 'Full content (RSS 2.0)', :web => @web.address, :action => :rss_with_content %>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to 'Headlines (RSS 2.0)', :web => @web.address, :action => :rss_with_headlines %>
+  </li>
+</ul>

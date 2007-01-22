@@ -1,0 +1,28 @@
+<% 
+  @title = "#{@page.plain_name} (Rev ##{@revision_number}#{@show_diff ? ', changes' : ''})"
+%>
+
+
+<div id="revision">
+  <% if @show_diff %>
+    <p style="background: #eee; padding: 3px; border: 1px solid silver">  
+      <small>  
+        Showing changes from revision #<%= @revision_number - 1 %> to #<%= @revision_number %>:  
+        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>  
+      </small>  
+    </p>
+    <%= @renderer.display_diff %>
+  <% else %>
+    <%= @renderer.display_content %>
+  <% end %>
+</div>
+
+<div class="byline">
+  <%= "Revision from #{format_date(@revision.revised_at)} by" %>
+  <%= link_to_page @revision.author %>
+</div>
+
+<div class="navigation">
+  <%= navigation_menu_for_revision.join(' | ') %>
+  <%= render :partial => 'inbound_links' %>
+</div>

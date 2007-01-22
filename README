@@ -1,0 +1,113 @@
+===What is Instiki?
+
+Admitted, it's YetAnotherWikiClone[http://c2.com/cgi/wiki?WikiWikiClones], but with a strong focus
+on simplicity of installation and running:
+
+Step 1. Download
+Step 2. Run "instiki"
+
+If you are on Windows:
+"Step 3. Chuckle... "There's no step three!" (TM)"
+
+You're now running a perfectly suitable wiki on port 2500 
+that'll present you with one-step setup, followed by a textarea for the home page
+on http://localhost:2500
+
+Instiki lowers the barriers of interest for when you might consider
+using a wiki. It's so simple to get running that you'll find yourself
+using it for anything -- taking notes, brainstorming, organizing a 
+gathering.
+
+Having said all that, if you are not on Windows, in this version of Instiki it is a somewhat different story.
+Since the author has no Linux or Mac at hand, and Instiki is moving to a SQL-based backend, this is what it takes 
+to install (until somebody sends a patch to properly package Instiki for all those other platforms):
+
+3. Kill "instiki"
+4. Install SQLite 3 database engine from http://www.sqlite.org/
+5. Install SQLite 3 driver for Ruby from http://sqlite-ruby.rubyforge.org/
+6. Install Rake from http://rake.rubyforge.org/
+7. Execute rm -f db/*.db
+8. Execute 'rake environment RAILS_ENV=production migrate'
+9. Make an embarrassed sigh (as I do while writing this)
+10. Run 'instiki' again
+11. Pat yourself on the shoulder for being such a talented geek
+12. At least, there is no step twelve! (TM)
+
+===Features:
+* Regular expression search: Find deep stuff really fast
+* Revisions: Follow the changes on every page from birth. Rollback to an earlier rev
+* Export to HTML or markup in a zip: Take the entire wiki with you home or for reference
+* RSS feeds to track recently revised pages
+* Multiple webs: Create separate wikis with their own namespace
+* Password-protected webs: Keep it private
+* Authors: Each revision is associated with an author, so you can see who changed what
+* Reference tracker: Which other pages are pointing to the current?
+* Speed: Using Madelein[http://madeleine.sourceforge.net] for persistence (all pages are in memory)
+* Three markup choices: Textile[http://www.textism.com/tools/textile] 
+  (default / RedCloth[http://www.whytheluckystiff.net/ruby/redcloth]), 
+  Markdown (BlueCloth[http://bluecloth.rubyforge.org]), and RDoc[http://rdoc.sourceforge.net/doc]
+* Embedded webserver: Through WEBrick[http://www.webrick.org]
+* Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
+* Color diffs: Track changes through revisions
+* Definitely can run on SQLite and MySQL
+* May be able to run on Postgres, Oracle, DB2 and SqlServer. If you try this, and it works 
+  (or, it doesn't, but you make it work) please write about it on Instiki.org.
+
+===Command-line options:
+* Run "ruby instiki --help"
+
+===History:
+ * See CHANGELOG
+
+===Migrating Instiki 0.10.2 storage to Instiki 0.11.0 database
+1. Install Instiki 0.11 and check that it works (you should be able to create a web, edit and save a HomePage)
+2. Execute 
+      ruby script\import_storage \
+          -t /full/path/to/instiki0.10/storage \
+          -i /full/path/to/instiki0.10/installation \
+          -d sqlite (or mysql, or postgres, depending on what you use) \
+          -o instiki_import.sql
+   for example (Windows):
+   ruby script\import_storage -t c:\instiki-0.10.2\storage\2500 -i c:\instiki-0.10.2 -d sqlite -o instiki_import.sql
+3. This will produce instiki_import.sql file in the current working directory. 
+   Open it in a text editor and inspect carefully.
+4. Connect to your production database (e.g., 'sqlite3 db\prod.db'), 
+   and have it execute instiki_import.sql (e.g., '.read instiki_import.sql')
+5. Execute ruby script\reset_references 
+   (this script parses all pages for crosslinks between them, so it may take a few minutes)
+6. Restart Instiki
+7. Go over some pages, especially those with a lot of complex markup, and see if anything is broken.
+
+The most common migration problem is this: if you open All Pages and see a lot of orphaned pages, 
+you forgot to run ruby script\reset_references after importing the data.
+
+===Upgrading from Instiki-AR Beta 1
+In Beta 2, we switch to ActiveRecord:Migrations. Therefore:
+1. Back up your production database.
+2. Open command-line session to your database and execute: 
+  create table schema_info (version integer(11)); 
+  insert into schema_info (version) values (1);
+3. Go back to the shell, change directory to the new Instiki and execute "rake migrate".
+
+Step 2 creates a table that tells to ActiveRecord:Migrations that the current version 
+of this database is 1 (corresponding to Beta 1), and step 3 makes it up-to-date with
+the current version of Instiki.
+
+===Download the latest release from:
+* http://rubyforge.org/project/showfiles.php?group_id=186
+
+===Visit the "official" Instiki wiki:
+* http://instiki.org
+
+===License:
+* same as Ruby's
+
+---
+Authors::
+
+Versions 0.0 to 0.9.1:: David Heinemeier Hansson
+Email::  david@loudthinking.com
+Weblog:: http://www.loudthinking.com
+
+From 0.9.2 onwards:: Alexey Verkhovsky
+Email:: alex@verk.info

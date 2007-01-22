@@ -1,0 +1,79 @@
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>
+    <% if @page and (@page.name == 'HomePage') and (%w( show published print ).include?(@action_name)) %>
+      <%= h @web.name %>
+    <% elsif @web %>
+      <%= @title %> in <%= h @web.name %>
+    <% else %>
+      <%= @title %>
+    <% end %>
+    <%= @show_diff ? ' (changes)' : '' %>
+  </title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="robots" content="<%= @robots_metatag_value %>" />
+  
+  <style type="text/css">
+    h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, #TextileHelp h3 { 
+      color: #<%= @web ? @web.color : "393" %>; 
+    }
+    <%= File.read(RAILS_ROOT + '/public/stylesheets/instiki.css') if @inline_style %>
+  </style>
+
+  <%= stylesheet_link_tag 'instiki' unless @inline_style %>
+
+  <style type="text/css">
+    <%= @style_additions %>
+    <%= @web ? @web.additional_style : '' %>
+  </style>
+
+  <% if @web %>
+  	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_headlines') %>
+  	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_content') %>
+  <% end %>
+</head>
+
+<body>
+
+<div id="Container">
+<div id="Content">
+  <h1 id="pageName">
+    <% if @page and (@page.name == 'HomePage') and %w( show published print ).include?(@action_name) %>
+      <%= h(@web.name) + (@show_diff ? ' (changes)' : '') %>
+    <% elsif @web %>
+      <small><%= @web.name %></small><br />
+      <%= @title %>
+    <% else %>
+      <%= @title %>
+    <% end %>
+  </h1>
+
+<%= render 'navigation' unless @web.nil? || @hide_navigation %>
+
+<% if @flash[:info] %>
+  <div class="info"><%= escape_preserving_linefeeds @flash[:info] %></div>
+<% end %>
+
+<% if @error or @flash[:error] %> 
+    <div class="errorExplanation"><%= escape_preserving_linefeeds(@error || @flash[:error]) %></div>
+<% end %>
+
+<%= @content_for_layout %>
+
+<% if @show_footer %>
+    <div id="footer">
+    <div>This site is running on <a href="http://instiki.org/">Instiki</a></div>
+    <div>Powered by <a href="http://rubyonrails.com/">Ruby on Rails</a></div>
+    </div>
+<% end %>
+
+</div> <!-- Content -->
+
+</div> <!-- Container -->
+
+</body>
+</html>

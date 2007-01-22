@@ -1,0 +1,19 @@
+<% @title = "Recently Revised" %>
+
+<%= categories_menu %>
+
+<% @pages_by_day.keys.sort.reverse.each do |day| %>
+  <h3><%= format_date(day, include_time = false) %></h3>
+  <ul>
+  <% for page in @pages_by_day[day] %>
+    <li>
+      <%= link_to_existing_page page %>
+      <div class="byline" style="margin-bottom: 0px">
+        by <%= link_to_page(page.author) %>
+        at <%= format_date(page.revised_at) %>
+        <%= "from #{page.author.ip}" if page.author.respond_to?(:ip) %>
+      </div>
+    </li>
+  <% end %>
+  </ul>
+<% end %>
