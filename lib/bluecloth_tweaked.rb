@@ -1112,7 +1112,7 @@ class BlueCloth < String
 
 	### Return a copy of +str+ with angle brackets and ampersands HTML-encoded.
 	def encode_html( str )
-		str.gsub( /&(?!#?[x]?(?:[0-9a-f]+|\w{1,8});)/i, "&amp;" ).
+		str.gsub( /&(?!#?[x]?(?:[0-9a-f]+|\w+);)/i, "&amp;" ).
 			gsub( %r{<(?![a-z/?\$!])}i, "&lt;" )
 	end
 

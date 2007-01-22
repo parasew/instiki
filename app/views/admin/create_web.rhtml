@@ -7,7 +7,7 @@
 
 <%= form_tag({ :controller => 'admin', :action => 'create_web' },
              { 'id' => 'setup', 'method' => 'post', 
-               'onSubmit' => 'cleanAddress(); return validateSetup()',
+               'onsubmit' => 'cleanAddress(); return validateSetup()',
                'accept-charset' => 'utf-8' })
 %>
 
@@ -21,9 +21,9 @@
       The address can only consist of letters and digits.
     </div>
     <div class="inputBox">
-      Name: <input type="text" id="web_name" name="name" onChange="proposeAddress();" />
+      Name: <input type="text" id="web_name" name="name" onchange="proposeAddress();" />
       &nbsp;&nbsp;
-      Address: <input type="text" id="web_address" name="address" onChange="cleanAddress();" />
+      Address: <input type="text" id="web_address" name="address" onchange="cleanAddress();" />
     </div>
   </li>
 </ol>

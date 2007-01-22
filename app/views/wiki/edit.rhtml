@@ -11,7 +11,7 @@
 
 <div id="editForm">
 	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
-	             { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName()',
+	             { 'id' => 'editForm', 'method' => 'post', 'onsubmit' => 'cleanAuthorName()',
 	               'accept-charset' => 'utf-8' }) %>
 	
 		<textarea name="content" id="content"><%= h(@flash[:content] || @page.content) %></textarea>

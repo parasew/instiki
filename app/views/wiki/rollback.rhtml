@@ -13,13 +13,13 @@
 
 <div id="editForm">
 	<%= form_tag({:web => @web.address, :action => 'save', :id => @page.name},
-	      { :id => 'editForm', :method => 'post', :onSubmit => 'cleanAuthorName();', 
+	      { :id => 'editForm', :method => 'post', :onsubmit => 'cleanAuthorName();', 
 	        'accept-charset' => 'utf-8' }) %>
         <textarea name="content" id="content"><%= @revision.content %></textarea>
 		<div id="editFormButtons">
 	        <input type="submit" value="Update" accesskey="u" /> as 
 		    <input type="text" name="author" id="authorName" value="<%= @author %>" 
-		        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
+		        onclick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
 		    | 
 			<span>
 				<%= link_to('Cancel', {:web => @web.address, :action => 'cancel_edit', :id => @page.name},

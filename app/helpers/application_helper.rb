@@ -23,7 +23,7 @@ module ApplicationHelper
         if element.last != selected
           options << "<option value=\"#{element.last}\">#{element.first}</option>"
         else
-          options << "<option value=\"#{element.last}\" selected>#{element.first}</option>"
+          options << "<option value=\"#{element.last}\" selected=\"selected\">#{element.first}</option>"
         end
       else
         options << ((element != selected) ? "<option>#{element}</option>" : "<option selected>#{element}</option>")

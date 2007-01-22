@@ -318,3 +318,8 @@ border:none;
 margin:0;
 padding:0;
 }
+
+merror {display:inline;font-size:1em;}
+math[display=block] {overflow:auto;}
+math { white-space: nowrap }
+.maruku-eq-number {float:right}

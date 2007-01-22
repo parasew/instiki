@@ -40,6 +40,14 @@ module Engines
     end
   end
 
+  class MarkdownMML < AbstractEngine
+    def mask
+      require_dependency 'maruku'
+      require_dependency 'maruku/ext/math'
+      Maruku.new(@content.delete("\r")).to_html
+    end
+  end
+
   class Mixed < AbstractEngine
     def mask
       require_dependency 'redcloth'
@@ -57,6 +65,6 @@ module Engines
     end
   end
 
-  MAP = { :textile => Textile, :markdown => Markdown, :mixed => Mixed, :rdoc => RDoc }
+  MAP = { :textile => Textile, :markdown => Markdown, :markdownMML => MarkdownMML, :mixed => Mixed, :rdoc => RDoc }
   MAP.default = Textile
 end

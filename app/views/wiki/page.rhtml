@@ -37,7 +37,7 @@
     <%= link_to('Print',
             { :web => @web.address, :action => 'print', :id => @page.name },
             { :accesskey => 'p', :name => 'view_print' }) %>
-  <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile %>
+  <% if defined? RedClothForTex and RedClothForTex.available? and @web.markup == :textile or @web.markup == :markdownMML %>
     | 
     <%= link_to 'TeX', {:web => @web.address, :action => 'tex', :id => @page.name}, 
             {:name => 'view_tex'} %>

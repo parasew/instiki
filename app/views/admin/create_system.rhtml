@@ -7,7 +7,7 @@
 </p>
 
 <%= form_tag({ :controller => 'admin', :action => 'create_system' },
-             { 'id' => 'setup', 'method' => 'post', 'onSubmit' => 'return validateSetup()', 
+             { 'id' => 'setup', 'method' => 'post', 'onsubmit' => 'return validateSetup()', 
                'accept-charset' => 'utf-8' })
 %>
 <ol class="setup">
@@ -22,9 +22,9 @@
     </div>
     <div class="inputBox">
       Name: <input type="text" id="web_name" name="web_name" value="Wiki" 
-            onChange="proposeAddress();" onClick="this.value == 'Wiki' ? this.value = '' : true" /> 
+            onchange="proposeAddress();" onclick="this.value == 'Wiki' ? this.value = '' : true" /> 
       &nbsp;&nbsp;
-      Address: <input type="text" id="web_address" name="web_address" onChange="cleanAddress();"
+      Address: <input type="text" id="web_address" name="web_address" onchange="cleanAddress();"
                value="wiki" />
     </div>
   </li>

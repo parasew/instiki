@@ -9,7 +9,7 @@ class WikiController < ApplicationController
   caches_action :show, :published, :authors, :recently_revised, :list
   cache_sweeper :revision_sweeper
 
-  layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex,  :export_tex, :export_html]
+  layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex, :pdf, :export_tex, :export_html]
 
   def index
     if @web_name
@@ -280,7 +280,11 @@ class WikiController < ApplicationController
   end
 
   def tex
+    if @web.markup == :markdownMML
+      @tex_content = Maruku.new(@page.content).to_latex
+    else
     @tex_content = RedClothForTex.new(@page.content).to_tex
+  end
   end
 
   protected
@@ -305,8 +309,12 @@ class WikiController < ApplicationController
   end
 
   def export_page_to_tex(file_path)
-    tex
-    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => false)) }
+    if @web.markup == :markdownMML
+      @tex_content = Maruku.new(@page.content).to_latex
+    else
+      @tex_content = RedClothForTex.new(@page.content).to_tex
+    end
+    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => 'tex')) }
   end
 
   def export_pages_as_zip(file_type, &block)
@@ -396,7 +404,11 @@ class WikiController < ApplicationController
 
   def render_tex_web
     @web.select.by_name.inject({}) do |tex_web, page|
+      if  @web.markup == :markdownMML
+        tex_web[page.name] = Maruku.new(page.content).to_latex
+      else
       tex_web[page.name] = RedClothForTex.new(page.content).to_tex
+      end
       tex_web
     end
   end

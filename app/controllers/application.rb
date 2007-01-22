@@ -48,6 +48,7 @@ class ApplicationController < ActionController::Base
     '.pdf' => 'application/pdf',
     '.png' => 'image/png',
     '.txt' => 'text/plain',
+    '.tex' => 'text/plain',
     '.zip' => 'application/zip'
   } unless defined? FILE_TYPES
 
@@ -114,7 +115,7 @@ class ApplicationController < ActionController::Base
 
   def rescue_action_in_public(exception)
     render :status => 500, :text => <<-EOL
-      <html><body>
+      <html xmlns="http://www.w3.org/1999/xhtml"><body>
         <h2>Internal Error</h2>
         <p>An application error occurred while processing your request.</p>
         <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n -->
@@ -145,8 +146,10 @@ class ApplicationController < ActionController::Base
   def set_content_type_header
     if %w(rss_with_content rss_with_headlines).include?(action_name)
       @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
+    elsif %w(tex).include?(action_name)
+      @response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
     else
-      @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+      @response.headers['Content-Type'] = 'application/xhtml+xml; charset=UTF-8'
     end
   end
 

@@ -13,7 +13,7 @@
   <p>
     <input type="submit" value="Update" /> as 
     <input type="text" name="author" id="authorName" value="<%= @author %>" 
-        onClick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
+        onclick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
 	<% if @page %>
       | <%= link_to 'Cancel', :web => @web.address, :action => 'file'%> <small>(unlocks page)</small>
     <% end %>

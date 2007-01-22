@@ -2,7 +2,7 @@
 
 <%= form_tag({ :controller => 'admin', :action => 'edit_web', :web => @web.address },
              { 'id' => 'setup', 'method' => 'post', 
-               'onSubmit' => 'cleanAddress(); return validateSetup()',
+               'onsubmit' => 'cleanAddress(); return validateSetup()',
                'accept-charset' => 'utf-8' })
 %>
 
@@ -15,9 +15,9 @@
 
   <div class="inputBox">
     Name: <input type="text" id="name" name="name" class="disableAutoComplete" value="<%= @web.name %>" 
-                 onChange="proposeAddress();" /> &nbsp;&nbsp;
+                 onchange="proposeAddress();" /> &nbsp;&nbsp;
     Address: <input type="text" class="disableAutoComplete" id="address" name="address" value="<%= @web.address %>" 
-                    onChange="cleanAddress();" />
+                    onchange="cleanAddress();" />
     <small><em>(Letters and digits only)</em></small>
   </div>
 
@@ -25,7 +25,7 @@
   <div class="inputBox">
     Markup:
     <select name="markup">
-      <%= html_options({'Textile' => :textile, 'Markdown' => :markdown, 'Mixed' => :mixed, 
+      <%= html_options({'Textile' => :textile, 'Markdown' => :markdown, 'Markdown+itex2MML' => :markdownMML, 'Mixed' => :mixed, 
               'RDoc' => :rdoc }, @web.markup) %>
     </select>
 
@@ -64,7 +64,7 @@
     </p>
 
     <a href="#" 
-       onClick="document.getElementById('additionalStyle').style.display='block';return false;">
+       onclick="document.getElementById('additionalStyle').style.display='block';return false;">
     Stylesheet tweaks &gt;&gt;</a>
     <small><em>
     - add or change styles used by this web; styles defined here take precedence over 
@@ -120,7 +120,7 @@
 
 <%= form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages'},
         { :id => 'remove_orphaned_pages', 
-          :onSubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned').value)",
+          :onsubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned').value)",
           'accept-charset' => 'utf-8' }) 
 %>
   <p align="right">
