@@ -308,7 +308,7 @@ a,li span {
 color:#000;
 }
 
-a:hover,a.nav:hover {
+a:hover,a.nav:hover, a:hover math {
 background-color:#000;
 color:#FFF;
 }

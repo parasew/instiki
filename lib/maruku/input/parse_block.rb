@@ -59,6 +59,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				when :ial
 					m =  InlineAttributeList.match src.shift_line
 					content = m[1] ||  "" 
+#					puts "Content: #{content.inspect}"
 					src2 = CharSource.new(content, src)
 					interpret_extension(src2, output, [nil])
 				when :ald
@@ -468,7 +469,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		end
 		
 		id = match[1]; url = match[2]; title = match[3]; 
-		id = id.strip.downcase
+		id = id.strip.downcase.gsub(' ','_')
 		
 		hash = self.refs[id] = {:url=>url,:title=>title}
 		

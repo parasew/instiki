@@ -1,5 +1,6 @@
 module MaRuKu; module Out; module HTML
-	def convert_to_mathml_ritex(tex)
+
+	def convert_to_mathml_ritex(kind, tex)
 		begin
 			if not $ritex_parser
 				require 'ritex'
@@ -20,15 +21,4 @@ module MaRuKu; module Out; module HTML
 		nil
 	end
 	
-	def to_html_inline_math_ritex
-		tex = self.math
-		mathml = convert_to_mathml_ritex(tex)
-		return mathml || []
-	end
-	
-	def to_html_equation_ritex
-		tex = self.math
-		mathml = convert_to_mathml_ritex(tex)
-		return mathml || []
-	end
 end end end

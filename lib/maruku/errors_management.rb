@@ -70,13 +70,13 @@ module Errors
 	def create_frame(s)
 		n = 75
 		"\n" +
-		" "+"_"*n << "\n"<<
-		"| Maruku tells you:\n" << 
-		"+"+"-"*n +"\n"+
-		add_tabs(s,1,'| ') << "\n" <<
-		"+" << "-"*n << "\n" <<
-		add_tabs(caller[0, 5].join("\n"),1,'!') << "\n" <<
-		"\\" << "_"*n << "\n"
+		" "+"_"*n + "\n"+
+		"| Maruku tells you:\n" +
+		"+" + ("-"*n) +"\n"+
+		add_tabs(s,1,'| ') + "\n" +
+		"+" + ("-"*n) + "\n" +
+		add_tabs(caller[0, 5].join("\n"),1,'!') + "\n" +
+		"\\" + ("_"*n) + "\n"
 	end
 
 	def describe_error(s,src,con)

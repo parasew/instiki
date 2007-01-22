@@ -1,14 +1,16 @@
 
 module MaRuKu; module Out; module HTML
 
-	def convert_to_mathml_itex2mml(tex, method)
+	def convert_to_mathml_itex2mml(kind, tex)
 		begin
 			if not $itex2mml_parser
 				require 'itextomml'
 				$itex2mml_parser =  Itex2MML::Parser.new
 			end
 			
-			mathml =  $itex2mml_parser.send(method, tex)
+			itex_method = {:equation=>:block_filter,:inline=>:inline_filter}
+			
+			mathml =  $itex2mml_parser.send(itex_method[kind], tex)
 			doc = Document.new(mathml, {:respect_whitespace =>:all}).root
 			return doc
 		rescue LoadError => e
@@ -22,14 +24,6 @@ module MaRuKu; module Out; module HTML
 				"\n\n #{e.inspect}"
 		end
 		nil
-	end
-	
-	def to_html_inline_math_itex2mml
-		convert_to_mathml_itex2mml(self.math, :inline_filter) 
-	end
-	
-	def to_html_equation_itex2mml
-		convert_to_mathml_itex2mml(self.math, :block_filter)
 	end
 
 end end end

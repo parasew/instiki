@@ -20,7 +20,7 @@
 
 
 require 'maruku'
-require 'bluecloth'
+#require 'bluecloth'
 
 
 data = $stdin.read
@@ -35,7 +35,7 @@ methods =
 [
 	
 	[Maruku,    :to_html],
-	[BlueCloth, :to_html],
+#	[BlueCloth, :to_html],
 	[Maruku,    :to_latex]
 	
 ]

@@ -20,6 +20,7 @@
 
 
 require 'maruku'
+require 'maruku/ext/math'
 
 module MaRuKu; module Tests
 	# 5 accented letters in italian, encoded as UTF-8
@@ -149,8 +150,10 @@ module MaRuKu; module Tests
 		# links of the form [text][ref]
 		["\\[a]",  ["[a]"], 'Escaping 1'],
 		["\\[a\\]", ["[a]"], 'Escaping 2'],
-		["[a]",   ["a"],   'Not a link'],
-		["[a][]",   [ md_link(["a"],'')], 'Empty link'],
+# This is valid in the new Markdown version
+#		["[a]",   ["a"],   'Not a link'],
+		["[a]",   [ md_link(["a"],'')], 'Empty link'],
+		["[a][]", ],
 		["[a][]b",   [ md_link(["a"],''),'b'], 'Empty link'],
 		["[a\\]][]", [ md_link(["a]"],'')], 'Escape inside link'],
 		
@@ -256,11 +259,12 @@ module MaRuKu; module Tests
 		['[bar](/url/ "Title with "quotes" inside")', 
 			[md_im_link(["bar"],'/url/', 'Title with "quotes" inside')],
 			"Link with quotes"],
-		
-		['$20,000 and $30,000', ['$20,000 and $30,000'], 'Math: spaces'],
+
+# We dropped this idea		
+#		['$20,000 and $30,000', ['$20,000 and $30,000'], 'Math: spaces'],
 		['$20,000$', [md_inline_math('20,000')]],
-		['$ 20,000$', ['$ 20,000$']],
-		['$20,000 $ $20,000$', ['$20,000 $ ', md_inline_math('20,000')]],
+#		['$ 20,000$', ['$ 20,000$']],
+#		['$20,000 $ $20,000$', ['$20,000 $ ', md_inline_math('20,000')]],
 		["#{Maruku8}", [Maruku8], "Reading UTF-8"],
 		["#{AccIta1}", [AccIta8], "Converting ISO-8859-1 to UTF-8", 
 			{:encoding => 'iso-8859-1'}],

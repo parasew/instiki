@@ -78,7 +78,10 @@ You have to have these fonts installed -- and this can be a pain.
 
 If `latex_cjk` is specified, this is added to the preamble:
 
+<?mrk puts "ciao" ?> 
+
 <?mrk md_codeblock(Maruku::MDDocument::Latex_preamble_enc_cjk) ?>
+
 
 while the default is to add this:
 

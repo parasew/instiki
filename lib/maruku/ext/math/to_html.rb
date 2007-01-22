@@ -1,33 +1,37 @@
 
 =begin maruku_doc
+Extension: math
 Attribute: html_math_engine
 Scope: document, element
 Output: html
-Summary: Select the rendering engine for math.
+Summary: Select the rendering engine for MathML.
 Default: <?mrk Globals[:html_math_engine].to_s ?>
 
 Select the rendering engine for math.
 
-If you want to use your engine `foo`, then set:
+If you want to use your custom engine `foo`, then set:
 
 	HTML math engine: foo
 {:lang=markdown}
 
 and then implement two functions:
 
-	def to_html_inline_math_foo
-		# You can: either return a REXML::Element
-		#    return Element.new 'div'    
-		# or return an empty array on error
-		#    return []  
-		# or have a string parsed by REXML:
-		tex = self.math
-		tex.gsub!('&','&amp;')
-		mathml = "<code>#{tex}</code>"
-		return Document.new(mathml).root
+	def convert_to_mathml_foo(kind, tex)
+		...
 	end
+=end
 
-	def to_html_equation_foo
+=begin maruku_doc
+Extension: math
+Attribute: html_png_engine
+Scope: document, element
+Output: html
+Summary: Select the rendering engine for math.
+Default: <?mrk Globals[:html_math_engine].to_s ?>
+
+Same thing as `html_math_engine`, only for PNG output.
+
+	def convert_to_png_foo(kind, tex)
 		# same thing
 		...
 	end
@@ -37,16 +41,6 @@ and then implement two functions:
 
 module MaRuKu; module Out; module HTML
 
-	def to_html_inline_math
-		s = get_setting(:html_math_engine)
-		method = "to_html_inline_math_#{s}".to_sym
-		if self.respond_to? method
-			self.send method ||  to_html_equation_none
-		else 
-			puts "A method called #{method} should be defined."
-			return []
-		end
-	end
 
 	def add_class_to(el, cl)
 		el.attributes['class'] = 
@@ -57,34 +51,111 @@ module MaRuKu; module Out; module HTML
 		end
 	end
 	
-	def to_html_equation
-		s = get_setting(:html_math_engine)
-		method = "to_html_equation_#{s}".to_sym
+	# Creates an xml Mathml document of self.math
+	def render_mathml(kind, tex)
+		engine = get_setting(:html_math_engine)
+		method = "convert_to_mathml_#{engine}".to_sym
 		if self.respond_to? method
-			mathml = self.send(method) || to_html_equation_none
-			div = create_html_element 'div'
-			add_class_to(div, 'maruku-equation')
-				if self.label # then numerate
-					span = Element.new 'span'
-					span.attributes['class'] = 'maruku-eq-number'
-					num = self.num
-					span << Text.new("(#{num})")
-					div << span
-					div.attributes['id'] = "eq:#{self.label}"
-				end
-				div << mathml
-				
-				source_div = Element.new 'div'
-					add_class_to(source_div, 'maruku-eq-tex')
-					code = to_html_equation_none	
-					code.attributes['style'] = 'display: none'
-				source_div << code
-				div << source_div
-			div
+			mathml = self.send(method, kind, tex) 
+			return mathml || convert_to_mathml_none(kind, tex)
 		else 
 			puts "A method called #{method} should be defined."
-			return []
+			return convert_to_mathml_none(kind, tex)
 		end
+	end
+
+	# Creates an xml Mathml document of self.math
+	def render_png(kind, tex)
+		engine = get_setting(:html_png_engine)
+		method = "convert_to_png_#{engine}".to_sym
+		if self.respond_to? method
+			return self.send(method, kind, tex) 
+		else 
+			puts "A method called #{method} should be defined."
+			return nil
+		end
+	end
+	
+	def pixels_per_ex
+		if not $pixels_per_ex 
+			x = render_png(:inline, "x")
+			$pixels_per_ex  = x.height # + x.depth
+		end
+		$pixels_per_ex
+	end
+		
+	def adjust_png(png, use_depth)
+		src = png.src
+		
+		height_in_px = png.height
+		depth_in_px = png.depth
+		height_in_ex = height_in_px / pixels_per_ex
+		depth_in_ex = depth_in_px / pixels_per_ex
+		total_height_in_ex = height_in_ex + depth_in_ex
+		style = "" 
+		style += "vertical-align: -#{depth_in_ex}ex;" if use_depth
+		style += "height: #{total_height_in_ex}ex;"
+		img = Element.new 'img'
+		img.attributes['src'] = src
+		img.attributes['style'] = style
+		img.attributes['alt'] = "equation"
+		img
+	end
+	
+	def to_html_inline_math
+		mathml  = render_mathml(:inline, self.math)
+		png = render_png(:inline, self.math)
+
+		span = create_html_element 'span'
+		add_class_to(span, 'maruku-inline')
+			
+			if mathml
+				add_class_to(mathml, 'maruku-mathml')
+				span << mathml 
+			end
+	
+			if png
+				img = adjust_png(png, use_depth=true)
+				add_class_to(img, 'maruku-png')
+				span << img
+			end
+		span
+		
+	end
+
+	def to_html_equation
+		mathml  = render_mathml(:equation, self.math)
+		png = render_png(:equation, self.math)
+		
+		div = create_html_element 'div'
+		add_class_to(div, 'maruku-equation')
+			if self.label # then numerate
+				span = Element.new 'span'
+				span.attributes['class'] = 'maruku-eq-number'
+				num = self.num
+				span << Text.new("(#{num})")
+				div << span
+				div.attributes['id'] = "eq:#{self.label}"
+			end
+			
+			if mathml
+				add_class_to(mathml, 'maruku-mathml')
+				div << mathml 
+			end
+			
+			if png
+				img = adjust_png(png, use_depth=false)
+				add_class_to(img, 'maruku-png')
+				div << img
+			end
+			
+			source_div = Element.new 'div'
+				add_class_to(source_div, 'maruku-eq-tex')
+				code = convert_to_mathml_none(:equation, self.math)	
+				code.attributes['style'] = 'display: none'
+			source_div << code
+			div << source_div
+		div
 	end
 	
 	def to_html_eqref
@@ -97,7 +168,7 @@ module MaRuKu; module Out; module HTML
 			a
 		else
 			maruku_error "Cannot find equation #{self.eqid.inspect}"
-			Text.new "(#{self.eqid})"
+			Text.new "(eq:#{self.eqid})"
 		end
 	end
 

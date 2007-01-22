@@ -45,8 +45,11 @@ module MaRuKu;
 			push [key, val] 
 		end
 		def push_ref(ref_id);       
+			
 			raise "Bad :ref #{ref_id.inspect}" if not ref_id
-			push [:ref, ref_id] 
+			push [:ref, ref_id+""] 
+
+#			p "Now ", self ########################################
 		end
 		def push_class(val);        
 			raise "Bad :id #{val.inspect}" if not val
@@ -81,6 +84,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			[ "a =b", :throw, "No whitespace before `=`." ], 
 			[ "a= b", :throw, "No whitespace after `=`." ], 
 
+			[ "a b", [[:ref, 'a'],[:ref, 'b']], "More than one ref" ], 
 			[ "a b c", [[:ref, 'a'],[:ref, 'b'],[:ref, 'c']], "More than one ref" ], 
 			[ "hello notfound", [[:ref, 'hello'],[:ref, 'notfound']]], 
 
@@ -129,6 +133,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 
 	# returns nil or an AttributeList
 	def read_attribute_list(src, con, break_on_chars)
+		
 		separators = break_on_chars + [?=,?\ ,?\t]
 		escaped = Maruku::EscapedCharInQuotes
 			

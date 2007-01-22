@@ -30,6 +30,12 @@ Globals = {
 	:code_background_color => '#fef',
 	:code_show_spaces => false,
 	:html_math_engine => 'itex2mml', #ritex, itex2mml, none
+	
+	:html_png_engine => 'none',
+	:html_png_dir => 'pngs',
+	:html_png_url => 'pngs/',
+	:html_png_resolution => 200,
+	
 	:html_use_syntax => false,
 	:on_error => :warning
 }

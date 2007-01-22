@@ -21,9 +21,6 @@
 
 require 'rexml/document'
 
-require 'rubygems'
-require 'syntax'
-require 'syntax/convertors/html'
 
 
 class String
@@ -341,6 +338,12 @@ generated file.
 		element = 
 		if use_syntax && lang
 			begin
+				if not $syntax_loaded
+					require 'rubygems'
+					require 'syntax'
+					require 'syntax/convertors/html'
+					$syntax_loaded = true
+				end
 				convertor = Syntax::Convertors::HTML.for_syntax lang
 				
 				# eliminate trailing newlines otherwise Syntax crashes
@@ -351,6 +354,10 @@ generated file.
 				pre = Document.new(html, {:respect_whitespace =>:all}).root
 				pre.attributes['class'] = lang
 				pre
+			rescue LoadError => e
+				maruku_error "Could not load package 'syntax'.\n"+
+					"Please install it, for example using 'gem install syntax'."
+				to_html_code_using_pre(source)	
 			rescue Object => e
 				maruku_error"Error while using the syntax library for code:\n#{source.inspect}"+
 				 "Lang is #{lang} object is: \n"+
@@ -422,7 +429,8 @@ generated file.
 		id = self.ref_id
 		# if empty, use text
 		if id.size == 0
-			id = children.to_s.downcase
+			id = children.to_s.downcase.gsub(' ','_')
+			
 		end
 		
 		if ref = @doc.refs[id]
@@ -431,7 +439,8 @@ generated file.
 			a.attributes['href'] = url if url
 			a.attributes['title'] = title if title
 		else
-			maruku_error"Could not find ref_id = #{id.inspect} for #{self.inspect}"
+			maruku_error "Could not find ref_id = #{id.inspect} for #{self.inspect}\n"+
+				"Available refs are #{@doc.refs.keys.inspect}"
 			tell_user "Not creating a link for ref_id = #{id.inspect}."
 			return wrap_as_element('span')
 		end
