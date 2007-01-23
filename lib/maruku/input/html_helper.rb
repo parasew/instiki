@@ -29,12 +29,13 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		include MaRuKu::Strings
 		
 		Tag = %r{^<(/)?(\w+)\s*([^>]*)>}m
+		PartialTag = %r{^<.*}m
+
 		EverythingElse = %r{^[^<]+}m
 		CommentStart = %r{^<!--}x
 		CommentEnd = %r{^.*-->}
 		TO_SANITIZE = ['img','hr'] 
 		
-#		attr_accessor :inside_comment
 		attr_reader :rest
 		
 		def initialize 
@@ -42,72 +43,61 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			@tag_stack = []
 			@m = nil
 			@already = ""
-			@inside_comment = false
+			self.state = :inside_element
 		end
+
+		attr_accessor :state # :inside_element, :inside_tag, :inside_comment,
 		
 		def eat_this(line)
 			@rest = line  + @rest
 			things_read = 0
 			until @rest.empty?
-				if @inside_comment
-					if @m = CommentEnd.match(@rest)
-						@inside_comment = false
-						@already += @m.pre_match + @m.to_s
-						@rest = @m.post_match
-					elsif @m = EverythingElse.match(@rest)
-						@already += @m.pre_match + @m.to_s
-						@rest = @m.post_match
-					end
-				else
-					if @m = CommentStart.match(@rest)
-						things_read += 1
-						@inside_comment = true
-						@already += @m.pre_match + @m.to_s
-						@rest = @m.post_match
-					elsif @m = Tag.match(@rest)
-						things_read += 1
-						@already += @m.pre_match
-						@rest = @m.post_match
-					
-						is_closing = !!@m[1]
-						tag = @m[2]
-						attributes = @m[3]
-						
-						is_single = false
-						if attributes =~ /\A(.*)\/\Z/
-							attributes = $1
-							is_single = true
+				case self.state
+					when :inside_comment
+						if @m = CommentEnd.match(@rest)
+							@already += @m.pre_match + @m.to_s
+							@rest = @m.post_match
+							self.state = :inside_element
+						else 
+							@already += @rest 
+							@rest = ""
+							self.state = :inside_comment
 						end
-					
-						if TO_SANITIZE.include? tag 
-							attributes.strip!
-					#		puts "Attributes: #{attributes.inspect}"
-							if attributes.size > 0
-								@already +=  '<%s %s />' % [tag, attributes]
-							else
-								@already +=  '<%s />' % [tag]
-							end
-						elsif is_closing
-							@already += @m.to_s
-							if @tag_stack.empty?
-								error "Malformed: closing tag #{tag.inspect} "+
-								      "in empty list"
-							end 
-							if @tag_stack.last != tag
-								error "Malformed: tag <#{tag}> "+
-								      "closes <#{@tag_stack.last}>"
-							end
-							@tag_stack.pop
-						elsif not is_single
-							@tag_stack.push tag
-							@already += @m.to_s
+					when :inside_element 
+						if @m = CommentStart.match(@rest)
+							things_read += 1
+							@already += @m.pre_match + @m.to_s
+							@rest = @m.post_match
+							self.state = :inside_comment
+						elsif @m = Tag.match(@rest) then
+							things_read += 1
+							handle_tag
+							self.state = :inside_element
+						elsif @m = PartialTag.match(@rest) then
+							@already += @m.pre_match 
+							@rest = @m.post_match
+							@partial_tag = @m.to_s
+							self.state = :inside_tag
+						elsif @m = EverythingElse.match(@rest)
+							@already += @m.pre_match + @m.to_s
+							@rest = @m.post_match
+							self.state = :inside_element
+						else
+							error "Malformed HTML: not complete: #{@rest.inspect}"
 						end
-					elsif @m = EverythingElse.match(@rest)
-						@already += @m.pre_match + @m.to_s
-						@rest = @m.post_match
+					when :inside_tag
+						if @m = /^[^>]*>/.match(@rest) then
+							@partial_tag += @m.to_s
+							@rest = @partial_tag + @m.post_match
+							@partial_tag = nil
+							self.state = :inside_element
+						else
+							@partial_tag += @rest
+							@rest = ""
+							self.state = :inside_tag
+						end
 					else
-						error "Malformed HTML: not complete: #{@rest.inspect}"
-					end
+						raise "Bug bug: state = #{self.state.inspect}"
 				end # not inside comment
 				
 #				puts inspect
@@ -116,12 +106,53 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			end
 		end
 
+		def handle_tag()
+			@already += @m.pre_match
+			@rest = @m.post_match
 
+			is_closing = !!@m[1]
+			tag = @m[2]
+			attributes = @m[3]
+
+		
+			is_single = false
+			if attributes =~ /\A(.*)\/\Z/
+				attributes = $1
+				is_single = true
+			end
+
+#			puts "READ TAG #{@m.to_s.inspect} tag = #{tag} closing? #{is_closing} single = #{is_single}"
+	
+			if TO_SANITIZE.include? tag 
+				attributes.strip!
+		#		puts "Attributes: #{attributes.inspect}"
+				if attributes.size > 0
+					@already +=  '<%s %s />' % [tag, attributes]
+				else
+					@already +=  '<%s />' % [tag]
+				end
+			elsif is_closing
+				@already += @m.to_s
+				if @tag_stack.empty?
+					error "Malformed: closing tag #{tag.inspect} "+
+					      "in empty list"
+				end 
+				if @tag_stack.last != tag
+					error "Malformed: tag <#{tag}> "+
+					      "closes <#{@tag_stack.last}>"
+				end
+				@tag_stack.pop
+			else 
+				@already += @m.to_s
+				
+				@tag_stack.push(tag) unless is_single
+			end
+		end
 		def error(s)
 			raise Exception, "Error: #{s} \n"+ inspect, caller
 		end
 
-		def inspect; "HTML READER\n comment=#{@inside_comment} "+
+		def inspect; "HTML READER\n state=#{self.state} "+
 			"match=#{@m.to_s.inspect}\n"+
 			"Tag stack = #{@tag_stack.inspect} \n"+
 			"Before:\n"+
@@ -137,7 +168,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		end
 		
 		def is_finished?
-			not @inside_comment and @tag_stack.empty?
+			(self.state == :inside_element)  and @tag_stack.empty?
 		end
 	end # html helper 
 

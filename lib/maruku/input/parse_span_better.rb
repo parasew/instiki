@@ -557,6 +557,11 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		when ?[ # link ref
 			ref_id = read_ref_id(src,con)
 			if ref_id
+				if ref_id.size == 0
+					ref_id =  children.to_s.downcase.gsub(' ','_')
+				else
+					ref_id = ref_id.downcase
+				end	
 				con.push_element md_link(children, ref_id)
 			else 
 				maruku_error "Could not read ref_id", src, con
@@ -566,7 +571,8 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 				return
 			end
 		else # empty [link]
-			con.push_element md_link(children, "")
+			id = children.to_s.downcase.gsub(' ','_')
+			con.push_element md_link(children, id)
 		end
 	end # read link
 

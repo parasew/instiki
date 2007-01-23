@@ -44,11 +44,12 @@ module MaRuKu; module Strings
 		return :definition       if l =~ Definition
 		# I had a bug with emails and urls at the beginning of the 
 		# line that were mistaken for raw_html
-		return :text     if l=~EMailAddress or l=~ URL
+		return :text if l=~ /^#{EMailAddress}/
+		return :text if l=~ /^<http:/
 		# raw html is like PHP Markdown Extra: at most three spaces before
 		return :xml_instr if l =~ %r{^\s*<\?}
 		return :raw_html if l =~ %r{^[ ]?[ ]?[ ]?</?\s*\w+}
-		return :raw_html if l =~ %r{[ ]{0,3}<\!\-\-}
+		return :raw_html if l =~ %r{^[ ]?[ ]?[ ]?<\!\-\-}
 		return :ulist    if l =~ /^\s?([\*\-\+])\s+.*\w+/
 		return :olist    if l =~ /^\s?\d+\..*\w+/
 		return :header1  if l =~ /^(=)+/ 
@@ -137,5 +138,4 @@ module MaRuKu; module Strings
 
 
 	EMailAddress = /<([^:]+@[^:]+)>/
-	URL = /^<http:/
 end end

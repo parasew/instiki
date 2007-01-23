@@ -152,10 +152,10 @@ module MaRuKu; module Tests
 		["\\[a\\]", ["[a]"], 'Escaping 2'],
 # This is valid in the new Markdown version
 #		["[a]",   ["a"],   'Not a link'],
-		["[a]",   [ md_link(["a"],'')], 'Empty link'],
+		["[a]",   [ md_link(["a"],'a')], 'Empty link'],
 		["[a][]", ],
-		["[a][]b",   [ md_link(["a"],''),'b'], 'Empty link'],
-		["[a\\]][]", [ md_link(["a]"],'')], 'Escape inside link'],
+		["[a][]b",   [ md_link(["a"],'a'),'b'], 'Empty link'],
+		["[a\\]][]", [ md_link(["a]"],'a]')], 'Escape inside link'],
 		
 		["[a",  :throw,   'Link not closed'],
 		["[a][",  :throw,   'Ref not closed'],

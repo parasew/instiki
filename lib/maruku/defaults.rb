@@ -23,8 +23,10 @@ module MaRuKu
 	
 Globals = {
 	:unsafe_features => false,
+	:on_error => :warning,
 	
-	:debug_keep_ials => false,
+	
+	:use_numbered_headers => false,
 	
 	:maruku_signature => false,
 	:code_background_color => '#fef',
@@ -37,7 +39,12 @@ Globals = {
 	:html_png_resolution => 200,
 	
 	:html_use_syntax => false,
-	:on_error => :warning
+	
+	:latex_use_listings => false,
+	:latex_cjk => false,
+	
+	:debug_keep_ials => false,
+	
 }
 
 class MDElement

@@ -88,7 +88,7 @@ while the default is to add this:
 <?mrk md_codeblock(Maruku::MDDocument::Latex_preamble_enc_utf8) ?>
 
 =end
-		encoding = @doc.attributes[:latex_cjk] ? 
+		encoding = get_setting(:latex_cjk) ? 
 			Latex_preamble_enc_cjk : Latex_preamble_enc_utf8
 
 =begin maruku_doc
@@ -190,9 +190,31 @@ Admissible formats:
 		end
 	end
 	
+=begin maruku_doc
+Attribute: code_show_spaces
+Scope: global, document, element
+
+If `true`, shows spaces and tabs in code blocks.
+
+Example:
+
+		 One space
+		  Two spaces
+			 	Tab, space, tab
+					Tab, tab, tab and all is green!
+	{:code_show_spaces code_background_color=#ffeedd}
+{:markdown}
 	
-	def to_latex_code;
-		raw_code = self.raw_code
+That will produce:
+
+	 One space
+	  Two spaces
+		 	Tab, space, tab
+				Tab, tab, tab and all is green!
+{:code_show_spaces code_background_color=#ffeedd}
+
+=end
+	
 =begin maruku_doc
 Attribute: latex_use_listings
 Scope: document
@@ -213,21 +235,24 @@ Otherwise, a standard `verbatim` environment is used.
 
 	Please refer to the documentation of the `listings` package for
 	supported languages.
-	
+
 	If a language is not supported, the `listings` package will emit
 	a warning during the compilation. Just press enter and nothing
 	wrong will happen.
 
 *	If the `code_show_spaces` is specified, than spaces and tabs will
 	be shown using the macro:
-	
+
 		\lstset{showspaces=true,showtabs=true}
-	
+
 *	The background color is given by `code_background_color`.
 
 =end
+
+	def to_latex_code;
+		raw_code = self.raw_code
 		
-		if @doc.attributes[:latex_use_listings]
+		if get_setting(:latex_use_listings)
 			@doc.latex_require_package('listings')
 				
 			s = "\\lstset{columns=fixed,frame=shadowbox}"
@@ -314,7 +339,7 @@ Otherwise, a standard `verbatim` environment is used.
 \\end{#{name}}\n"	
 	end
 	
-	SAFE_CHARS = Set.new([?\ ] + (?a..?z).to_a + (?A..?Z).to_a)
+	SAFE_CHARS = Set.new((?a..?z).to_a + (?A..?Z).to_a)
 	# the ultimate escaping
 	# (is much better than using \verb)
 	def latex_escape(source)
@@ -345,7 +370,6 @@ Otherwise, a standard `verbatim` environment is used.
 	end
 
 	def to_latex_immediate_link
-		a =  create_html_element 'a'
 		url = self.url
 		text = url.gsub(/^mailto:/,'') # don't show mailto
 #			gsub('~','$\sim$')
@@ -372,11 +396,6 @@ Otherwise, a standard `verbatim` environment is used.
 	
 	def to_latex_link
 		id = self.ref_id
-		# if empty, use text
-		if id.size == 0
-			id = children.to_s.downcase
-		end
-		
 		ref = @doc.refs[id]
 		if not ref
 			$stderr.puts "Could not find id = '#{id}'"

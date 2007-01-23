@@ -21,8 +21,6 @@
 
 require 'rexml/document'
 
-
-
 class String
 	# A string is rendered into HTML by creating
 	# a REXML::Text node. REXML takes care of all the encoding.
@@ -101,6 +99,52 @@ xhtml11_mathml2_svg11 =
 	
 	def xml_newline() Text.new("\n") end
 		
+
+=begin maruku_doc
+Attribute: title
+Scope: document
+
+Sets the title of the document.
+If a title is not specified, the first header will be used.
+
+These should be equivalent:
+
+	Title: my document
+
+	Content
+
+and
+
+	my document
+	===========
+
+	Content
+
+In both cases, the title is set to "my document".
+=end
+
+=begin maruku_doc
+Attribute: subject
+Scope: document
+
+Synonim for `title`.
+=end
+
+
+=begin maruku_doc
+Attribute: css
+Scope: document
+Output: HTML
+Summary: Activates CSS stylesheets for HTML.
+
+`css` should be a space-separated list of urls.
+
+Example:
+	
+	CSS: style.css math.css
+
+=end
+
 	# Render to a complete HTML document (returns a REXML document tree)
 	def to_html_document_tree
 		doc = Document.new(nil,{:respect_whitespace =>:all})
@@ -121,6 +165,7 @@ xhtml11_mathml2_svg11 =
 #			me.attributes['content'] = 'text/html;charset=utf-8'	
 			me.attributes['content'] = 'application/xhtml+xml;charset=utf-8'	
 		
+
 			# Create title element
 			doc_title = self.attributes[:title] || self.attributes[:subject] || ""
 			title = Element.new 'title', head
@@ -243,6 +288,34 @@ xhtml11_mathml2_svg11 =
 		m
 	end
 	
+=begin maruku_doc
+Attribute: id
+Scope: element
+Output: LaTeX, HTML
+
+It is copied as a standard HTML attribute.
+
+Moreover, it used as a label name for hyperlinks in both HTML and
+in PDF.
+
+=end
+
+=begin maruku_doc
+Attribute: class
+Scope: element
+Output: HTML
+
+It is copied as a standard HTML attribute.
+=end
+
+=begin maruku_doc
+Attribute: style
+Scope: element
+Output: HTML
+
+It is copied as a standard HTML attribute.
+=end
+	
 	StandardAttributes = [:id, :style, :class]
 	def create_html_element(name, attributes_to_copy=[])
 		m = Element.new name
@@ -272,9 +345,20 @@ xhtml11_mathml2_svg11 =
 	def to_html_strong;    wrap_as_element('strong')           end
 	def to_html_emphasis;  wrap_as_element('em')               end
 
+=begin maruku_doc
+Attribute: use_numbered_headers
+Scope: document
+Summary: Activates the numbering of headers.
+
+If `true`, section headers will be numbered.
+
+In LaTeX export, the numbering of headers is managed
+by Maruku, to have the same results in both HTML and LaTeX.
+=end
+
 	# nil if not applicable, else string
 	def section_number
-		return nil if not @doc.attributes[:use_numbered_headers]
+		return nil if not get_setting(:use_numbered_headers)
 		
 		n = @attributes[:section_number]
 		if n && (not n.empty?)
@@ -315,14 +399,35 @@ xhtml11_mathml2_svg11 =
 		
 =begin maruku_doc
 Attribute: html_use_syntax
-Scope: document
-Output: html
+Scope: global, document, element
+Output: HTML
 Summary: Enables the use of the `syntax` package.
 Related: lang, code_lang
-Default: <?mrk Globals[:html_use_syntax].to_s ?>
+Default: <?mrk md_code(Globals[:html_use_syntax].to_s) ?>
 
-If false, Maruku does not append a signature to the
-generated file.
+If true, the `syntax` package is used. It supports the `ruby` and `xml`
+languages. Remember to set the `lang` attribute of the code block.
+
+Examples:
+
+		require 'maruku'
+	{:lang=ruby html_use_syntax=true}
+
+and 
+	
+		<div style="text-align:center">Div</div>
+	{:lang=html html_use_syntax=true}
+
+produces:
+
+	require 'maruku'
+{:lang=ruby html_use_syntax=true}
+
+and
+
+	<div style="text-align:center">Div</div>
+{:lang=html html_use_syntax=true}
+
 =end
 
 	def to_html_code; 
@@ -378,6 +483,26 @@ generated file.
 		element
 	end
 	
+=begin maruku_doc
+Attribute: code_background_color
+Scope: global, document, element
+Summary: Background color for code blocks.
+
+The format is either a named color (`green`, `red`) or a CSS color
+of the form `#ff00ff`. 
+
+* for **HTML output**, the value is put straight in the `background-color` CSS 
+  property of the block.
+
+* for **LaTeX output**, if it is a named color, it must be a color accepted
+  by the LaTeX `color` packages. If it is of the form `#ff00ff`, Maruku
+  defines a color using the `\color[rgb]{r,g,b}` macro. 
+
+  For example, for `#0000ff`, the macro is called as: `\color[rgb]{0,0,1}`.
+
+=end
+	
+	
 	def to_html_code_using_pre(source)
 		pre = create_html_element  'pre'
 		code = Element.new 'code', pre
@@ -427,11 +552,6 @@ generated file.
 	def to_html_link
 		a =  wrap_as_element 'a'
 		id = self.ref_id
-		# if empty, use text
-		if id.size == 0
-			id = children.to_s.downcase.gsub(' ','_')
-			
-		end
 		
 		if ref = @doc.refs[id]
 			url = ref[:url]
