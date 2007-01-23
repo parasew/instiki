@@ -1,11 +1,8 @@
-.*\[\/link\]
-.*\[\/url\]
 51wisdom
 acupuncturealliance
 acyclovir
 Adipex
 adultfriend
-airline
 allegra
 ampicill
 anafranil
@@ -13,7 +10,6 @@ atenolol
 attacke\.ch
 autocorp
 awardspace
-blogspot\.com
 bravehost\.com
 butalbital
 buy cheap
@@ -44,7 +40,6 @@ hold-em
 holdem
 home\s*loan
 hoodia
-http://[A-Za-z0-9_\.]+\.cn
 hydrocodone
 I am really excited
 I really like your site
@@ -53,7 +48,6 @@ ketoconazole
 lust cartoon
 mijneigenweblog
 Mortage
-my homepage
 myspace
 naked
 netfirms\.com
@@ -70,7 +64,6 @@ porn
 prohosting
 protonix
 rapidforum
-replica
 ringtone
 rolex
 serotonin
@@ -78,7 +71,6 @@ singtaotor
 slot\s*machin
 soma
 super site
-texas
 thepussies
 tits
 Tramadol
@@ -93,5 +85,3 @@ Your site is great!
 zoloft
 \.iwarp\.
 \.tripod\.com
-\[link\=
-\[url\=
