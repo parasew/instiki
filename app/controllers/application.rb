@@ -148,7 +148,7 @@ class ApplicationController < ActionController::Base
       @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
     elsif %w(tex).include?(action_name)
       @response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-    elsif Mime::Type.parse(@request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)
+    elsif Mime::Type.parse(@request.env["HTTP_ACCEPT"]).include?(Mime::XHTML) or @request.env["USER_AGENT"] =~ /MathPlayer/
       @response.headers['Content-Type'] = 'application/xhtml+xml; charset=UTF-8'
     else
       @response.headers['Content-Type'] = 'text/html; charset=UTF-8'

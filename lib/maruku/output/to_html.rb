@@ -394,7 +394,9 @@ by Maruku, to have the same results in both HTML and LaTeX.
 	def source2html(source)
 		source = source.gsub(/&/,'&amp;')
 		source = Text.normalize(source)
-		Text.new(source, true, nil, false )
+		source = source.gsub(/\&apos;/,'&#39;') # IE bug
+		source = source.gsub(/'/,'&#39;') # IE bug
+		Text.new(source, true, nil, true )
 	end
 		
 =begin maruku_doc
@@ -437,7 +439,6 @@ and
 
 		lang = 'xml' if lang=='html'
 
-
 		use_syntax = get_setting :html_use_syntax
 		
 		element = 
@@ -455,9 +456,17 @@ and
 				source = source.gsub(/\n*\Z/,'')
 				
 				html = convertor.convert( source )
-			
-				pre = Document.new(html, {:respect_whitespace =>:all}).root
-				pre.attributes['class'] = lang
+				html = html.gsub(/\&apos;/,'&#39;') # IE bug
+				html = html.gsub(/'/,'&#39;') # IE bug
+	#			html = html.gsub(/&/,'&amp;') 
+				
+				code = Document.new(html, {:respect_whitespace =>:all}).root
+				code.name = 'code'
+				code.attributes['class'] = lang
+				code.attributes['lang'] = lang
+				
+				pre = Element.new 'pre'
+				pre << code
 				pre
 			rescue LoadError => e
 				maruku_error "Could not load package 'syntax'.\n"+
@@ -480,7 +489,7 @@ and
 		if color != Globals[:code_background_color]
 			element.attributes['style'] = "background-color: #{color};"
 		end
-		element
+		add_ws element
 	end
 	
 =begin maruku_doc
@@ -523,6 +532,10 @@ of the form `#ff00ff`.
 
 		text = Text.new(s, respect_ws=true, parent=nil, raw=true )
 		
+		if lang = self.attributes[:lang]
+			code.attributes['lang'] = lang
+			code.attributes['class'] = lang
+		end
 		code << text
 		pre
 	end
@@ -540,12 +553,40 @@ of the form `#ff00ff`.
 		pre
 	end
 
+	def add_class_to(el, cl)
+		el.attributes['class'] = 
+		if already = el.attributes['class']
+			already + " " + cl
+		else
+			cl
+		end
+	end
+
+	def add_class_to_link(a)
+		return # not ready yet
+		
+		url = a.attributes['href']
+		return if not url
+		
+		if url =~ /^#/
+			add_class_to(a, 'maruku-link-samedoc')
+		elsif url =~ /^http:/
+			add_class_to(a, 'maruku-link-external')
+		else
+			add_class_to(a, 'maruku-link-local')
+		end
+	
+#		puts a.attributes['class']
+	end
+	
+	
 	def to_html_immediate_link
 		a =  create_html_element 'a'
 		url = self.url
 		text = url.gsub(/^mailto:/,'') # don't show mailto
 		a << Text.new(text)
 		a.attributes['href'] = url
+		add_class_to_link(a)
 		a
 	end
 	
@@ -564,6 +605,8 @@ of the form `#ff00ff`.
 			tell_user "Not creating a link for ref_id = #{id.inspect}."
 			return wrap_as_element('span')
 		end
+
+#		add_class_to_link(a)
 		return a
 	end
 	
@@ -623,7 +666,7 @@ of the form `#ff00ff`.
 		else
 			maruku_error"Could not find id = #{id.inspect} for\n #{self.inspect}"
 			tell_user "Could not create image with ref_id = #{id.inspect};"+
-				 +" Using SPAN element as replacement."
+				 " Using SPAN element as replacement."
 				return wrap_as_element('span')
 		end
 		return a

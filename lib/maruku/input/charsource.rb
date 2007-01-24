@@ -205,8 +205,9 @@ class CharSourceStrscan
 	include SpanLevelParser
 	include MaRuKu::Strings
 	
-	def initialize(s)
+	def initialize(s, parent=nil)
 		@s = StringScanner.new(s)
+		@parent = parent
 	end
 	
 	# Return current char as a FixNum (or nil).
@@ -273,9 +274,9 @@ end
 
 
 class CharSourceDebug
-	def initialize(s)
-		@a = CharSourceManual.new(s)
-		@b = CharSourceStrscan.new(s)
+	def initialize(s, parent)
+		@a = CharSourceManual.new(s, parent)
+		@b = CharSourceStrscan.new(s, parent)
 	end
 	
 	def method_missing(methodname, *args)

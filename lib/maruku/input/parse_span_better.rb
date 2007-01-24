@@ -278,10 +278,10 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	end
 
 	def extension_meta(src, con, break_on_chars)
-		if m = src.read_regexp(/(\w)+\:/)
+		if m = src.read_regexp(/([^:]+):/)
 			name = m[1]
-			content = m[2]
 			al = read_attribute_list(src, con, break_on_chars)
+#			puts "#{name}=#{al.inspect}"
 			self.doc.ald[name] = al
 		 	con.push md_ald(name, al)
 		else
@@ -624,6 +624,11 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			con.push_element md_im_image(alt_text, url, title)
 		when ?[ # link ref
 			ref_id = read_ref_id(src,con)
+			if ref_id.size == 0
+				ref_id =  alt_text.to_s.downcase.gsub(' ','_')
+			else
+				ref_id = ref_id.downcase
+			end
 			con.push_element md_image(alt_text, ref_id)
 		else # no stuff
 			con.push_elements children

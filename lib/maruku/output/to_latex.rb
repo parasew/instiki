@@ -506,11 +506,15 @@ Otherwise, a standard `verbatim` environment is used.
 		id = self.ref_id
 		ref = @doc.refs[id]
 		if not ref
-			$stderr.puts "Could not find id = '#{id}'"
+			maruku_error "Could not find ref #{id.inspect} for image.\n"+
+				"Available are: #{@docs.refs.keys.inspect}"
+#			$stderr.puts "Could not find id = '#{id}'"
 			""
 		else
 			url = ref[:url]
-			"{\\bf Images not supported yet (#{latex_escape(url)})}"
+			$stderr.puts "Images not supported yet (#{url})"
+			# "{\\bf Images not supported yet (#{latex_escape(url)})}"
+			""
 		end
 
 	end

@@ -127,6 +127,7 @@ Disabled by default because of security concerns.
 						result[:unresolved_references] << " #{v}"
 					end
 					
+				#	$stderr.puts "Unresolved reference #{v.inspect} (avail: #{self.ald.keys.inspect})"
 					result[v.to_sym] = true
 				end
 			else

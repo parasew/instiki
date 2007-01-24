@@ -67,8 +67,8 @@ module MaRuKu; module Out; module Latex
 	
 	# create hash @@entity_to_latex
 	def Latex.init_entity_table
-		$stderr.write "Creating entity table.."
-		$stderr.flush
+#		$stderr.write "Creating entity table.."
+#		$stderr.flush
 		doc = Document.new XML_TABLE
 		doc.elements.each("//char") do |c| 
 			num =  c.attributes['num'].to_i
@@ -92,7 +92,7 @@ module MaRuKu; module Out; module Latex
 			ENTITY_TABLE[num] = e
 			ENTITY_TABLE[name] = e
 		end
-		$stderr.puts "..done."
+#		$stderr.puts "..done."
 	end
 	
 	ENTITY_TABLE = {}

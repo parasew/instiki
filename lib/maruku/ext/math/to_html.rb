@@ -42,14 +42,6 @@ Same thing as `html_math_engine`, only for PNG output.
 module MaRuKu; module Out; module HTML
 
 
-	def add_class_to(el, cl)
-		el.attributes['class'] = 
-		if already = el.attributes['class']
-			already + " " + cl
-		else
-			cl
-		end
-	end
 	
 	# Creates an xml Mathml document of self.math
 	def render_mathml(kind, tex)
