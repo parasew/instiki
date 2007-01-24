@@ -631,7 +631,8 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			end
 			con.push_element md_image(alt_text, ref_id)
 		else # no stuff
-			con.push_elements children
+			ref_id =  alt_text.to_s.downcase.gsub(' ','_')
+			con.push_element md_image(alt_text, ref_id)
 		end
 	end # read link
 

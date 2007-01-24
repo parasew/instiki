@@ -53,7 +53,6 @@ class LineSource
 	end
 	
 	def describe
-		#s = "At line ##{@lines_index} of #{@lines.size}:\n"
 		s = "At line #{original_line_number(@lines_index)}\n"
 		
 		context = 3 # lines
@@ -63,8 +62,8 @@ class LineSource
 		for i in from..to
 			prefix = (i == @lines_index) ? '--> ' : '    ';
 			l = @lines[i]
-			s += "%10s %4s|#{l}" %
-				[@lines[i].md_type.to_s, prefix]
+			s += "%10s %4s|%s" %
+				[@lines[i].md_type.to_s, prefix, l]
 				
 			s += "|\n"
 		end
