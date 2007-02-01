@@ -7,18 +7,17 @@ line-height:1.3em;
 }
 
 #Container {
-float:none;
-margin:0 15%;
+margin:0 10px;
 text-align:center;
 }
 
 #Content {
 border-top:none;
-float:left;
-margin:0;
+margin:auto;
 padding:0.3em;
 text-align:left;
 width:100%;
+max-width:55em;
 }
 
 a:visited {
