@@ -148,7 +148,7 @@ class ApplicationController < ActionController::Base
       @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
     elsif %w(tex).include?(action_name)
       @response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-    elsif Mime::Type.parse(@request.env["HTTP_ACCEPT"]).include?(Mime::XHTML) or @request.env["USER_AGENT"] =~ /MathPlayer/
+    elsif @request.env['HTTP_USER_AGENT'] =~ /MathPlayer|Validator/ or Mime::Type.parse(@request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)
       @response.headers['Content-Type'] = 'application/xhtml+xml; charset=UTF-8'
     else
       @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
@@ -198,10 +198,11 @@ module Mime
   # Fix HTML
   #HTML  = Type.new "text/html", :html, %w( application/xhtml+xml )
   HTML  = Type.new "text/html", :html
-  
+
   # Add XHTML
   XHTML  = Type.new "application/xhtml+xml", :xhtml
   
-  # Fix xhtml lookup
+  # Fix xhtml and html lookups
+  LOOKUP["text/html"]             = HTML
   LOOKUP["application/xhtml+xml"] = XHTML
 end

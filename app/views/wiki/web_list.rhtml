@@ -1,11 +1,11 @@
 <% @title = "Wiki webs" %>
-<br/>
 
+<ul>
 <% @webs.each do |web| %>
   
+<li>
 	<% if web.password %> <div class="web_protected">
 	<% else %> <div class="web_normal"> <% end %>
-	<span>
 	<%= link_to_page 'HomePage', web, web.name, :mode => 'show' %>
     <% if web.published? %>
      (<%= link_to_page 'HomePage', web, 'published version', :mode => 'publish' %>)
@@ -19,7 +19,7 @@
 			<%= web.last_page.revisions? ? "Revised" : "Created" %> by <%= author_link(web.last_page) %> (<%= web.last_page.current_revision.ip %>)
 		<% end %>
     </div>
-  </span>
-  </div><br>
+  </div>
+</li>
 <% end %>
 </ul>
