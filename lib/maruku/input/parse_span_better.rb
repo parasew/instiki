@@ -278,7 +278,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	end
 
 	def extension_meta(src, con, break_on_chars)
-		if m = src.read_regexp(/([^:]+):/)
+		if m = src.read_regexp(/(\w+):/)
 			name = m[1]
 			al = read_attribute_list(src, con, break_on_chars)
 #			puts "#{name}=#{al.inspect}"
