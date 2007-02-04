@@ -162,10 +162,16 @@ padding-top:1px;
 
 .diffdel,del.diffmod, .diffdel *, del.diffmod * {
 background-color:#FAA;
+text-decoration:strike-through;
 }
 
 .diffins,ins.diffmod, .diffins *, ins.diffmod * {
 background-color:#AFA;
+text-decoration:underline;
+}
+
+.diffmod, .diffmod * {
+border: 2px solid #FE0;
 }
 
 #footer {

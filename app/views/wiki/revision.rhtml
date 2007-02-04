@@ -8,14 +8,14 @@
     <p style="background: #eee; padding: 3px; border: 1px solid silver">  
       <small>  
         Showing changes from revision #<%= @revision_number - 1 %> to #<%= @revision_number %>:  
-        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>  
+        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del> | <del class="diffmod">Chan</del><ins class="diffmod">ged</ins> 
       </small>  
     </p>
     <%= @renderer.display_diff %>
   <% else %>
     <%= @renderer.display_content %>
   <% end %>
-</div>
+</div> <!-- Revision -->
 
 <div class="byline">
   <%= "Revision from #{format_date(@revision.revised_at)} by" %>

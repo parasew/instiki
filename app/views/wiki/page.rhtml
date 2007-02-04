@@ -9,7 +9,7 @@
     <p style="background: #eee; padding: 3px; border: 1px solid silver">  
       <small>  
         Showing changes from revision #<%= @page.revisions.size - 1 %> to #<%= @page.revisions.size %>:  
-        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del>  
+        <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del> | <del class="diffmod">Chan</del><ins class="diffmod">ged</ins>  
       </small>  
     </p>
     <%= @renderer.display_diff %>
