@@ -42,6 +42,15 @@ class DiffTest < Test::Unit::TestCase
         diff(a, b))
   end
 
+  def test_html_diff_deleting_a_paragraph
+    a = "<p>this is a paragraph</p>\n<p>this is a second paragraph</p>\n<p>this is a third paragraph</p>"
+    b = "<p>this is a paragraph</p>\n<p>this is a third paragraph</p>"
+    assert_equal(
+         "<div><p>this is a paragraph</p>\n<del class='diffdel'><p>this is a second paragraph</p></del>" +
+         "<del class='diffdel'>\n</del><p>this is a third paragraph</p></div>",
+        diff(a, b))
+  end
+
   def test_split_paragraph_into_two
      a = "<p>foo bar</p>"
      b = "<p>foo</p><p>bar</p>"
@@ -87,7 +96,7 @@ class DiffTest < Test::Unit::TestCase
   def test_diff_for_tag_change
     a = "<a>x</a>"
     b = "<b>x</b>"
-    # FIXME sad, but true - this case produces an invalid XML. If handle this you can, strong your foo is.
+    # FIXME. xhtmldiff fails to detect any change here
     assert_equal "<div><del class='diffdel'><a>x</a></del><ins class='diffins'><b>x</b></ins></div>", diff(a, b)
   end
 
