@@ -160,11 +160,11 @@ margin-bottom:1em;
 padding-top:1px;
 }
 
-.diffdel,del.diffmod {
+.diffdel,del.diffmod, .diffdel *, del.diffmod * {
 background-color:#FAA;
 }
 
-.diffins,ins.diffmod {
+.diffins,ins.diffmod, .diffins *, ins.diffmod * {
 background-color:#AFA;
 }
 
