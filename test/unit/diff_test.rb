@@ -1,110 +1,94 @@
 #!/usr/bin/env ruby
 
 require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
-require 'diff'
+require 'xhtmldiff'
 
 class DiffTest < Test::Unit::TestCase
 
-  include HTMLDiff
-
   def setup
-    @builder = DiffBuilder.new('old', 'new')
+
   end
 
-  def test_start_of_tag
-    assert @builder.start_of_tag?('<')
-    assert(!@builder.start_of_tag?('>'))
-    assert(!@builder.start_of_tag?('a'))
-  end
-
-  def test_end_of_tag
-    assert @builder.end_of_tag?('>')
-    assert(!@builder.end_of_tag?('<'))
-    assert(!@builder.end_of_tag?('a'))
-  end
-
-  def test_whitespace
-    assert @builder.whitespace?(" ")
-    assert @builder.whitespace?("\n")
-    assert @builder.whitespace?("\r")
-    assert(!@builder.whitespace?("a"))
-  end
-
-  def test_convert_html_to_list_of_words_simple
-    assert_equal(
-        ['the', ' ', 'original', ' ', 'text'],
-        @builder.convert_html_to_list_of_words('the original text'))
-  end
-
-  def test_convert_html_to_list_of_words_should_separate_endlines
-    assert_equal(
-        ['a', "\n", 'b', "\r", 'c'],
-        @builder.convert_html_to_list_of_words("a\nb\rc"))
-  end
-
-  def test_convert_html_to_list_of_words_should_not_compress_whitespace
-    assert_equal(
-        ['a', ' ', 'b', '  ', 'c', "\r \n ", 'd'],
-        @builder.convert_html_to_list_of_words("a b  c\r \n d"))
-  end
-
-  def test_convert_html_to_list_of_words_should_handle_tags_well
-    assert_equal(
-        ['<p>', 'foo', ' ', 'bar', '</p>'],
-        @builder.convert_html_to_list_of_words("<p>foo bar</p>"))
-  end
-  
-  def test_convert_html_to_list_of_words_interesting
-    assert_equal(
-        ['<p>', 'this', ' ', 'is', '</p>', "\r\n", '<p>', 'the', ' ', 'new', ' ', 'string', 
-         '</p>', "\r\n", '<p>', 'around', ' ', 'the', ' ', 'world', '</p>'],
-        @builder.convert_html_to_list_of_words(
-            "<p>this is</p>\r\n<p>the new string</p>\r\n<p>around the world</p>"))
+  def diff(a,b)
+    diff_doc = REXML::Document.new
+    diff_doc << (div = REXML::Element.new 'div' )
+    hd = XHTMLDiff.new(div)
+    parsed_a = REXML::HashableElementDelegator.new(
+           REXML::XPath.first(REXML::Document.new("<div>"+a+"</div>"), '/div'))
+    parsed_b = REXML::HashableElementDelegator.new(
+           REXML::XPath.first(REXML::Document.new("<div>"+b+"</div>"), '/div'))
+    Diff::LCS.traverse_balanced(parsed_a, parsed_b, hd)
+    diffs = ''
+    diff_doc.write(diffs, -1, true, true)
+    diffs
   end
 
   def test_html_diff_simple
     a = 'this was the original string'
     b = 'this is the new string'
-    assert_equal('this <del class="diffmod">was</del><ins class="diffmod">is</ins> the ' +
-           '<del class="diffmod">original</del><ins class="diffmod">new</ins> string',
-           diff(a, b))
+    assert_equal("<div><span> this<del class='diffmod'> was</del><ins class='diffmod'> is</ins> the" +
+           "<del class='diffmod'> original</del><ins class='diffmod'> new</ins> string</span></div>",
+          diff(a, b))
   end
 
   def test_html_diff_with_multiple_paragraphs
     a = "<p>this was the original string</p>"
-    b = "<p>this is</p>\r\n<p> the new string</p>\r\n<p>around the world</p>"
-
-    # Some of this expected result is accidental to implementation. 
-    # At least it's well-formed and more or less correct.
+    b = "<p>this is</p>\n<p> the new string</p>\n<p>around the world</p>"
     assert_equal(
-        "<p>this <del class=\"diffmod\">was</del><ins class=\"diffmod\">is</ins></p>"+
-        "<ins class=\"diffmod\">\r\n</ins><p> the " +
-        "<del class=\"diffmod\">original</del><ins class=\"diffmod\">new</ins>" +
-        " string</p><ins class=\"diffins\">\r\n</ins>" +
-        "<p><ins class=\"diffins\">around the world</ins></p>",
+        "<div><p><span> this<del class='diffmod'> was</del><ins class='diffmod'> is</ins>" +
+        "<del class='diffdel'> the</del><del class='diffdel'> original</del><del class='diffdel'> string</del></span></p>" +
+        "<ins class='diffins'>\n</ins><ins class='diffins'><p> the new string</p></ins>" +
+        "<ins class='diffins'>\n</ins><ins class='diffins'><p>around the world</p></ins></div>",
         diff(a, b))
+  end
+
+  def test_split_paragraph_into_two
+     a = "<p>foo bar</p>"
+     b = "<p>foo</p><p>bar</p>"
+     assert_equal(
+       "<div><p><span> foo<del class='diffdel'> bar</del></span></p>" +
+       "<ins class='diffins'><p>bar</p></ins></div>",
+      diff(a,b))
+  end
+
+  def test_join_two_paragraphs_into_one
+     a = "<p>foo</p><p>bar</p>"
+     b = "<p>foo bar</p>"
+     assert_equal(
+       "<div><p><span> foo<ins class='diffins'> bar</ins></span></p>" +
+       "<del class='diffdel'><p>bar</p></del></div>",
+      diff(a,b))
+  end
+
+  def test_add_inline_element
+     a = "<p>foo bar</p>"
+     b = "<p>foo <b>bar</b></p>"
+     assert_equal(
+        "<div><p><span> foo<del class='diffdel'> bar</del></span>" +
+        "<ins class='diffins'><b>bar</b></ins></p></div>",
+       diff(a,b))
   end
 
   # FIXME this test fails (ticket #67, http://dev.instiki.org/ticket/67)
   def test_html_diff_preserves_endlines_in_pre
-    a = "<pre>\na\nb\nc\n</pre>"
-    b = "<pre>\n</pre>"
+    a = "<pre>a\nb\nc\n</pre>"
+    b = "<pre>a\n</pre>"
     assert_equal(
-        "<pre>\n<del class=\"diffdel\">a\nb\nc\n</del></pre>",
+        "<div><pre><span> a\n<del class='diffdel'>b\nc\n</del></span></pre></div>",
         diff(a, b))
   end
   
   def test_html_diff_with_tags
     a = ""
     b = "<div>foo</div>"
-    assert_equal '<div><ins class="diffins">foo</ins></div>', diff(a, b)
+    assert_equal "<div><ins class='diffins'><div>foo</div></ins></div>", diff(a, b)
   end
   
   def test_diff_for_tag_change
     a = "<a>x</a>"
     b = "<b>x</b>"
     # FIXME sad, but true - this case produces an invalid XML. If handle this you can, strong your foo is.
-    assert_equal '<a><b>x</a></b>', diff(a, b)
+    assert_equal "<div><del class='diffdel'><a>x</a></del><ins class='diffins'><b>x</b></ins></div>", diff(a, b)
   end
 
 end
