@@ -762,7 +762,8 @@ of the form `#ff00ff`.
 			i += num_columns
 		end
 		
-		table = create_html_element 'table'
+		table = create_html_element 'table', 
+			[:summary, :width, :frame, :rules, :border, :cellspacing, :cellpadding]
 			thead = Element.new 'thead'
 			tr = Element.new 'tr'
 				array_to_html(head).each do |x| tr<<x end

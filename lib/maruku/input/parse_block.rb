@@ -102,7 +102,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				when :raw_html; e = read_raw_html(src); output << e if e
 
 				when :footnote_text;   output.push read_footnote_text(src)
-				when :ref_definition;  output.push read_ref_definition(src)
+				when :ref_definition;  read_ref_definition(src, output)
 				when :abbreviation;    output.push read_abbreviation(src)
 				when :xml_instr;       read_xml_instruction(src, output)
 				when :metadata;        
@@ -452,7 +452,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 	end
 	
 		
-	def read_ref_definition(src)
+	def read_ref_definition(src, out)	
 		line = src.shift_line
 		
 		# if link is incomplete, shift next line
@@ -465,7 +465,8 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		
 		match = LinkRegex.match(line)
 		if not match
-			error "Link does not respect format: '#{line}'"
+			maruku_error "Link does not respect format: '#{line}'"
+			return
 		end
 		
 		id = match[1]; url = match[2]; title = match[3]; 
@@ -487,7 +488,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		end
 #			puts hash.inspect
 		
-		return md_ref_def(id, url, meta={:title=>title})
+		out.push md_ref_def(id, url, meta={:title=>title})
 	end
 	
 	def read_table(src)

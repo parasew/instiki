@@ -110,7 +110,7 @@ module MaRuKu; module Strings
 	# This regex is taken from BlueCloth sources
 	# Link defs are in the form: ^[id]: \n? url "optional title"
 	LinkRegex = %r{
-		^[ ]*\[([^\]]+)\]:		# id = $1
+		^[ ]{0,3}\[([^\[\]]+)\]:		# id = $1
 		  [ ]*
 		<?(\S+)>?				# url = $2
 		  [ ]*
@@ -122,7 +122,7 @@ module MaRuKu; module Strings
 		)?	# title is optional
 	  }x
 
-	IncompleteLink = %r{^\s*\[(.+)\]:\s*$}
+	IncompleteLink = %r{^[ ]{0,3}\[([^\[\]]+)\]:\s*$}
 
 	HeaderWithId = /^(.*)\{\#([\w_-]+)\}\s*$/
 

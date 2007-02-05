@@ -127,7 +127,6 @@ will produce:
 \\usepackage{hyperref}
 \\usepackage{xspace}
 \\usepackage[usenames,dvipsnames]{color}
-\\usepackage[margin=1in]{geometry}
 \\hypersetup{colorlinks=true,urlcolor=blue}
 
 #{user_preamble}
@@ -550,13 +549,13 @@ Otherwise, a standard `verbatim` environment is used.
 		end
 		
 		# puts a space after commands if needed
-		e.each_index do |i|
-			if e[i] =~ /\\\w+\s*$/ # command
-				if (s=e[i+1]) && s[0] == ?\ # space
-					e[i]  = e[i] + "\\ "
-				end
-			end
-		end
+		# e.each_index do |i|
+		# 	if e[i] =~ /\\\w+\s*$/ # command
+		# 		if (s=e[i+1]) && s[0] == ?\ # space
+		# 			e[i]  = e[i] + "\\ "
+		# 		end
+		# 	end
+		# end
 		
 		e.join(join_char)
 	end

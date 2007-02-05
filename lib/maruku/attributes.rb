@@ -206,10 +206,13 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			elsif after.kind_of? MDElement
 				after.al = e.ial
 			else
-				maruku_error "I don't know who you are referring to:"+
-					" {#{e.ial.to_md}}", src, con
+				maruku_error "It is not clear to me what element this IAL {:#{e.ial.to_md}} \n"+
+				"is referring to. The element before is a #{before.class.to_s}, \n"+
+				"the element after is a #{after.class.to_s}.\n"+
+				"\n before: #{before.inspect}"+
+				"\n after: #{after.inspect}",
+				src, con
 				# xxx dire se c'è empty vicino
-				maruku_recover "Ignoring IAL: {#{e.ial.to_md}}", src, con
 			end
 		end 
 		end

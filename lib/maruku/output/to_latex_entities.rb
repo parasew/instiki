@@ -42,12 +42,12 @@ module MaRuKu; module Out; module Latex
 			@doc.latex_require_package p
 		end
 		
-		if replace =~ /^\\/
-			replace = replace + " "
-		end
+#		if replace =~ /^\\/
+#			replace = replace + " "
+#		end
 		
  		if replace
-			return replace
+			return replace + "{}"
 		else
 			tell_user "Cannot translate entity #{entity_name.inspect} to LaTeX."
 			return entity_name
