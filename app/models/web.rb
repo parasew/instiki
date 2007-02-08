@@ -23,7 +23,7 @@ class Web < ActiveRecord::Base
         'FROM revisions r ' +
         'JOIN pages p ON p.id = r.page_id ' +
         'WHERE p.web_id = ' + self.id.to_s +
-        'ORDER by 1 '
+        ' ORDER by 1 '
         ).collect { |row| row['author'] }        
   end
 
