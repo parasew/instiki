@@ -32,7 +32,7 @@ class WikiControllerTest < Test::Unit::TestCase
   
     get :authenticate, :web => 'wiki1', :password => 'pswd'
     assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
-    assert_equal ['pswd'], @response.cookies['web_address']
+    assert_equal ['pswd'], @response.cookies['wiki1']
   end
 
   def test_authenticate_wrong_password
@@ -40,7 +40,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     r = process('authenticate', 'web' => 'wiki1', 'password' => 'wrong password')
     assert_redirected_to :action => 'login', :web => 'wiki1'
-    assert_nil r.cookies['web_address']
+    assert_nil r.cookies['wiki1']
   end
 
   def test_authors
