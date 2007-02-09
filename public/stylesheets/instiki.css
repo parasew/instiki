@@ -24,7 +24,7 @@ a:visited {
 color:#666;
 }
 
-h1,h2,h3 {
+h1,h2,h3,h4,h5,h6 {
 color:#333;
 font-family:georgia, verdana, sans-serif;
 }
@@ -34,11 +34,19 @@ font-size:200%;
 }
 
 h2 {
-font-size:130%;
+font-size:173%;
 }
 
 h3 {
+font-size:144%;
+}
+
+h4 {
 font-size:120%;
+}
+
+h5,h6 {
+font-size:100%
 }
 
 h1#pageName {

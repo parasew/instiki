@@ -1,13 +1,11 @@
-$:.unshift File.dirname(__FILE__) + "/../lib"
-$:.unshift File.dirname(__FILE__) + "/../builtin/rails_info"
-$:.unshift File.dirname(__FILE__) + "/../../actionpack/lib"
-$:.unshift File.dirname(__FILE__) + "/../../activesupport/lib"
-
-require 'test/unit'
+require "#{File.dirname(__FILE__)}/abstract_unit"
 require 'action_controller'
 require 'action_controller/test_process'
 
-require_dependency 'rails/info_controller'
+module Rails; end
+require 'rails/info'
+require 'rails/info_controller'
+
 class Rails::InfoController < ActionController::Base
   @local_request = false
   class << self

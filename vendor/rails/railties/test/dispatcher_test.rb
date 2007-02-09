@@ -24,28 +24,34 @@ class DispatcherTest < Test::Unit::TestCase
   def setup
     @output = StringIO.new
     ENV['REQUEST_METHOD'] = "GET"
+
+    Dispatcher.send(:preparation_callbacks).clear
+    Dispatcher.send(:preparation_callbacks_run=, false)
+
+    Object.const_set :ApplicationController, nil
   end
 
   def teardown
+    Object.send :remove_const, :ApplicationController
     ENV['REQUEST_METHOD'] = nil
   end
 
   def test_ac_subclasses_cleared_on_reset
     Object.class_eval(ACTION_CONTROLLER_DEF)
-    assert_equal 1, ActionController::Base.subclasses.length
+    assert_subclasses 1, ActionController::Base
     dispatch
 
     GC.start # force the subclass to be collected
-    assert_equal 0, ActionController::Base.subclasses.length
+    assert_subclasses 0, ActionController::Base
   end
 
   def test_am_subclasses_cleared_on_reset
     Object.class_eval(ACTION_MAILER_DEF)
-    assert_equal 1, ActionMailer::Base.subclasses.length
+    assert_subclasses 1, ActionMailer::Base
     dispatch
 
     GC.start # force the subclass to be collected
-    assert_equal 0, ActionMailer::Base.subclasses.length
+    assert_subclasses 0, ActionMailer::Base
   end
 
 
@@ -76,17 +82,60 @@ class DispatcherTest < Test::Unit::TestCase
     [EMPTY_CONTENT, CONTENT_LENGTH_MISMATCH, NONINTEGER_CONTENT_LENGTH].each do |bad_request|
       $stdin = StringIO.new(bad_request)
       output = StringIO.new
-      assert_nothing_raised do
-        Dispatcher.dispatch(nil, ActionController::CgiRequest::DEFAULT_SESSION_OPTIONS, output)
-      end
+      assert_nothing_raised { dispatch output }
       assert_equal "Status: 400 Bad Request\r\n", output.string
     end
   ensure
     $stdin = old_stdin
   end
+  
+  def test_preparation_callbacks
+    old_mechanism = Dependencies.mechanism
+    
+    a = b = c = nil
+    Dispatcher.to_prepare { a = b = c = 1 }
+    Dispatcher.to_prepare { b = c = 2 }
+    Dispatcher.to_prepare { c = 3 }
+    
+    Dispatcher.send :prepare_application
+    
+    assert_equal 1, a
+    assert_equal 2, b
+    assert_equal 3, c
+    
+    # When mechanism is :load, perform the callbacks each request:
+    Dependencies.mechanism = :load
+    a = b = c = nil
+    Dispatcher.send :prepare_application
+    assert_equal 1, a
+    assert_equal 2, b
+    assert_equal 3, c
+    
+    # But when not :load, make sure they are only run once
+    a = b = c = nil
+    Dependencies.mechanism = :not_load
+    Dispatcher.send :prepare_application
+    assert_equal nil, a || b || c
+  ensure
+    Dependencies.mechanism = old_mechanism
+  end
+  
+  def test_to_prepare_with_identifier_replaces
+    a = b = nil
+    Dispatcher.to_prepare(:unique_id) { a = b = 1 }
+    Dispatcher.to_prepare(:unique_id) { a = 2 }
+    
+    Dispatcher.send :prepare_application
+    assert_equal 2, a
+    assert_equal nil, b
+  end
 
   private
-    def dispatch
-      Dispatcher.dispatch(nil, ActionController::CgiRequest::DEFAULT_SESSION_OPTIONS, @output)
+    def dispatch(output = @output)
+      Dispatcher.dispatch(nil, {}, output)
+    end
+
+    def assert_subclasses(howmany, klass, message = klass.subclasses.inspect)
+      assert_equal howmany, klass.subclasses.size, message
     end
 end

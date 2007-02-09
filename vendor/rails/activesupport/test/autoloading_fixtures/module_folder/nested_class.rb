@@ -1,2 +1,4 @@
-class ModuleFolder::NestedClass
+module ModuleFolder
+  class NestedClass
+  end
 end

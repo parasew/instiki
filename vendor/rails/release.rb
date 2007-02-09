@@ -4,7 +4,7 @@ VERSION  = ARGV.first
 PACKAGES = %w( activesupport activerecord actionpack actionmailer actionwebservice )
 
 # Checkout source
-`rm -rf release && svn export http://dev.rubyonrails.org/svn/rails/branches/stable release`
+`rm -rf release && svn export http://dev.rubyonrails.org/svn/rails/branches/1-2-stable release`
 
 # Create Rails packages
 `cd release/railties && rake template=jamis package`
@@ -18,8 +18,8 @@ PACKAGES = %w( activesupport activerecord actionpack actionmailer actionwebservi
 end
 
 # Upload rails tgz/zip
-`rubyforge add_release rails rails 'REL #{VERSION}' release/rails-#{VERSION}.tgz`
-`rubyforge add_release rails rails 'REL #{VERSION}' release/rails-#{VERSION}.zip`
+`rubyforge add_release rails rails 'REL #{VERSION}' rails-#{VERSION}.tgz`
+`rubyforge add_release rails rails 'REL #{VERSION}' rails-#{VERSION}.zip`
 
 # Create SVN tag
 puts "Remeber to create SVN tag"
