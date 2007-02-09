@@ -19,7 +19,7 @@ class WikiReference < ActiveRecord::Base
 
   def self.pages_that_reference(page_name)
     query = 'SELECT name FROM pages JOIN wiki_references ON pages.id = wiki_references.page_id ' +
-        'WHERE wiki_references.referenced_name = ?' +
+        'WHERE wiki_references.referenced_name = ? ' +
         "AND wiki_references.link_type in ('#{LINKED_PAGE}', '#{WANTED_PAGE}', '#{INCLUDED_PAGE}')"
     names = connection.select_all(sanitize_sql([query, page_name])).map { |row| row['name'] }
   end
