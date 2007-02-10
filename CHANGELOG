@@ -22,6 +22,7 @@
    - updated packaged sqlite3-ruby to 1.2.0
 
  - FEATURES:
+   - fix: being logged in on more Webs at once works now [Jaques Distler]
    - Stylesheet tweaks
    - visual display if webs are pass-protected (div background)
    - Linux packaging

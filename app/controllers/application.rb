@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
 
   def password_check(password)
     if password == @web.password
-      cookies['web_address'] = password
+      cookies[CGI.escape(@web_name)] = password
       true
     else
       false
@@ -183,7 +183,7 @@ class ApplicationController < ActionController::Base
   def authorized?
     @web.nil? or
     @web.password.nil? or
-    cookies['web_address'] == @web.password or
+    cookies[CGI.escape(@web_name)] == @web.password or
     password_check(@params['password'])
   end
 
