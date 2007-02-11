@@ -2,7 +2,7 @@
 # Author: Aredridel <aredridel@nbtsc.org>
 # Website: http://theinternetco.net/projects/ruby/xhtmldiff.html
 # Licence: same as Ruby
-# Version: 1.22
+# Version: 1.2.2
 #
 # Tweaks by Jacques Distler <distler@golem.ph.utexas.edu>
 #  -- add classnames to <del> and <ins> elements added by XHTMLDiff,
