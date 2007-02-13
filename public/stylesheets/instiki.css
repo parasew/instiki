@@ -336,3 +336,4 @@ merror {display:inline;font-size:1em;}
 math[display=block] {overflow:auto;}
 math { white-space: nowrap }
 .maruku-eq-number {float:right}
+.blockquotesource {margin-left:1em;}

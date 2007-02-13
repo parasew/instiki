@@ -337,11 +337,11 @@ It is copied as a standard HTML attribute.
 	end
 	
 	
-	def to_html_paragraph; add_ws wrap_as_element('p')                end
+	def to_html_paragraph; add_ws wrap_as_element('p', [:'xml:lang'])                end
 	def to_html_ol;        add_ws wrap_as_element('ol')        end
 	def to_html_li;        add_ws wrap_as_element('li')        end
 	def to_html_li_span;   add_ws wrap_as_element('li')        end
-	def to_html_quote;     add_ws wrap_as_element('blockquote')  end
+	def to_html_quote;     add_ws wrap_as_element('blockquote', [:cite, :'xml:lang'])  end
 	def to_html_strong;    wrap_as_element('strong')           end
 	def to_html_emphasis;  wrap_as_element('em')               end
 
@@ -383,7 +383,7 @@ by Maruku, to have the same results in both HTML and LaTeX.
 	
 	def to_html_header
 		element_name = "h#{self.level}" 
-		h = wrap_as_element element_name
+		h = wrap_as_element(element_name, [:title, :'xml:lang'])
 		
 		if span = render_section_number
 			h.insert_before(h.children.first, span)
