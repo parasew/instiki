@@ -4,6 +4,8 @@
    - updated and included spam_patterns.txt
    - included dnsbl_check - DNS Blackhole Lists check
      [thanks to joost from http://www.spacebabies.nl ]
+   - included the form-spam-protection rails plugin
+     http://form-spam-protection.googlecode.com/svn/form_spam_protection/
 
  - BUGFIXES:
    - fix PDF output not to contain garbage chars [Jesse Newland]
@@ -16,7 +18,7 @@
    - lots of small bugfixes and changes
 
  - UPDATES:
-   - Rails 1.2 tested and packaged with instiki
+   - Rails 1.2.1 tested and packaged with instiki
    - updated RubyZip to 0.9.1
    - updated RedCloth to 3.0.4
    - updated packaged sqlite3-ruby to 1.2.0
