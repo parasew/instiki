@@ -9,7 +9,7 @@ module ActionView
             session[:form_keys] ||= {}
             form_key = Digest::SHA1.hexdigest(self.object_id.to_s + rand.to_s)
             session[:form_keys][form_key] = 0
-            out << enkode(hidden_field_tag('_form_key', form_key))
+            out << domEnkode(form_key)
           end
         end
       end
@@ -52,5 +52,75 @@ module ActionView
     #   alias_method :form_remote_tag_without_spam_protection, :form_remote_tag
     #   alias_method :form_remote_tag, :form_remote_tag_with_spam_protection
     # end
+  end
+end
+
+module ActionView
+  module Helpers
+    module TextHelper
+
+      def domEnkode(form_key, max_length=1024 )
+
+        rnd = 10 + (rand*90).to_i
+
+        kodes = [
+          {
+            'rb' => lambda do |s|
+              s.reverse
+            end,
+            'js' => ";kode=kode.split('').reverse().join('')"
+          },
+          {
+            'rb' => lambda do |s|
+              result = ''
+              s.each_byte { |b|
+                b += 3
+                b-=128 if b>127
+                result += b.chr
+              }
+              result
+            end,
+            'js' => (
+               ";x='';for(i=0;i<kode.length;i++){c=kode.charCodeAt(i)-3;" +
+               "if(c<0)c+=128;x+=String.fromCharCode(c)}kode=x"
+             )
+          },
+          {
+            'rb' => lambda do |s|
+              for i in (0..s.length/2-1)
+                s[i*2],s[i*2+1] = s[i*2+1],s[i*2]
+              end
+              s
+            end,
+            'js' => (
+               ";x='';for(i=0;i<(kode.length-1);i+=2){" +
+               "x+=kode.charAt(i+1)+kode.charAt(i)}" +
+               "kode=x+(i<kode.length?kode.charAt(kode.length-1):'');"
+             )
+          }
+        ]
+
+        kode = "var pos=document;while(pos.lastChild.nodeType==1)pos=pos.lastChild;var hiddenfield=document.createElement('input');hiddenfield.setAttribute('type','hidden');hiddenfield.setAttribute('name','_form_key');hiddenfield.setAttribute('value','"+form_key+"');pos.parentNode.appendChild(hiddenfield);"
+
+        max_length = kode.length+1 unless max_length>kode.length
+
+        result = ''
+
+        while kode.length < max_length
+          idx = (rand*kodes.length).to_i
+          kode = kodes[idx]['rb'].call(kode)
+          kode = "kode=" + js_dbl_quote(kode) + kodes[idx]['js']
+          js = "var kode=\n"+js_wrap_quote(js_dbl_quote(kode),79)
+          js = js+"\n;var i,c,x;while(eval(kode));"
+          js = "function hivelogic_enkoder(){"+js+"}hivelogic_enkoder();"
+          js = '<script type="text/javascript">'+"\n/* <![CDATA[ */\n"+js
+          js = js+"\n/* ]]> */\n</script>\n"
+          result = js unless result.length>max_length
+        end
+
+        result
+
+      end
+    end
   end
 end
