@@ -170,7 +170,7 @@ padding-top:1px;
 
 .diffdel,del.diffmod, .diffdel *, del.diffmod * {
 background-color:#FAA;
-text-decoration:strike-through;
+text-decoration:line-through;
 }
 
 .diffins,ins.diffmod, .diffins *, ins.diffmod * {
@@ -337,3 +337,4 @@ math[display=block] {overflow:auto;}
 math { white-space: nowrap }
 .maruku-eq-number {float:right}
 .blockquotesource {margin-left:1em;}
+fieldset.search {display:inline; border:none;padding:0;margin:0;top:5px;position:relative;}
