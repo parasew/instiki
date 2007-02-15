@@ -215,7 +215,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				if result.kind_of? String
 					raise "Not expected"
 				else
-					output.push *result
+					output.push(*result)
 				end
 			end
 		else
@@ -242,7 +242,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 	end
 	
 	def read_paragraph(src)
-		lines = []
+		lines = [src.shift_line]
 		while src.cur_line 
 			# :olist does not break
 			case t = src.cur_line.md_type
@@ -253,7 +253,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			end
 			break if src.cur_line.strip.size == 0			
 			break if [:header1,:header2].include? src.next_line.md_type
-			break if any_matching_block_extension?(src.cur_line)
+			break if any_matching_block_extension?(src.cur_line) 
 			
 			lines << src.shift_line
 		end
@@ -491,12 +491,11 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		out.push md_ref_def(id, url, meta={:title=>title})
 	end
 	
+	def split_cells(s)
+		s.strip.split('|').select{|x|x.strip.size>0}.map{|x|x.strip}
+	end
+
 	def read_table(src)
-		
-		def split_cells(s)
-			s.strip.split('|').select{|x|x.strip.size>0}.map{|x|x.strip}
-		end
-		
 		head = split_cells(src.shift_line).map{|s| md_el(:head_cell, parse_lines_as_span([s])) }
 			
 		separator=split_cells(src.shift_line)

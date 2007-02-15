@@ -121,7 +121,7 @@ module MaRuKu; module Out; module HTML
 		
 		div = create_html_element 'div'
 		add_class_to(div, 'maruku-equation')
-			if self.label # then numerate
+			if self.label  # then numerate
 				span = Element.new 'span'
 				span.attributes['class'] = 'maruku-eq-number'
 				num = self.num

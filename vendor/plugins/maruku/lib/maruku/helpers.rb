@@ -92,6 +92,8 @@ module Helpers
 			e.instance_variable_set :@parsed_html,
 			 	REXML::Document.new(raw_html)
 		rescue 
+			e.instance_variable_set :@parsed_html, nil
+			
 #			tell_user "Malformed block of HTML:\n"+
 #			add_tabs(raw_html,1,'|')
 #			"  #{raw_html.inspect}\n\n"+ex.inspect

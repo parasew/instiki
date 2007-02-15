@@ -196,10 +196,10 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 				interpret_extension(src, con, [?}])
 				src.ignore_char # }
 			when nil
-				maruku_error ("Unclosed span (waiting for %s"+
+				maruku_error( ("Unclosed span (waiting for %s"+
 				 "#{exit_on_strings.inspect})") % [
 						exit_on_chars ? "#{exit_on_chars.inspect} or" : ""],
-						src,con
+						src,con)
 				break
 			else # normal text
 				con.push_char src.shift_char
@@ -618,8 +618,8 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			src.consume_whitespace
 			closing = src.shift_char # closing )
 			if closing != ?)
-				error ("Unclosed link: '"<<closing<<"'")+
-					" Read url=#{url.inspect} title=#{title.inspect}",src,con
+				error( ("Unclosed link: '"<<closing<<"'")+
+					" Read url=#{url.inspect} title=#{title.inspect}",src,con)
 			end
 			con.push_element md_im_image(alt_text, url, title)
 		when ?[ # link ref

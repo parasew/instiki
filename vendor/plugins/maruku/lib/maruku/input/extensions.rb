@@ -29,19 +29,19 @@ module MaRuKu; module In; module Markdown
 		return false # not special
 	end
 	
-	def self.register_span_extension(args, &block)
+	def self.register_span_extension(args)
 		e = SpanExtension.new
 		e.chars = [*args[:chars]]
 		e.regexp = args[:regexp]
-		e.block = block
+		e.block = args[:handler] || raise("No blocks passed")
 		e.chars.each do |c|
 			(SpanExtensionsTrigger[c] ||= []).push e
 		end
 	end
 
-	def self.register_block_extension(args, &block)
+	def self.register_block_extension(args)
 		regexp = args[:regexp]
-		BlockExtensions[regexp] = block
+		BlockExtensions[regexp] = (args[:handler] || raise("No blocks passed"))
 	end
 
 	# Hash Regexp -> Block
@@ -50,8 +50,10 @@ module MaRuKu; module In; module Markdown
 	def check_block_extensions(src, con, line)
 		BlockExtensions.each do |reg, block|
 			if m = reg.match(line)
+				p m
 				block = BlockExtensions[reg]
-				return true if block.call(doc, src, con)
+				accepted =  block.call(doc, src, con)
+				return true if accepted
 			end
 		end
 		return false # not special

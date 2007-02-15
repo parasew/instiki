@@ -266,8 +266,8 @@ module MaRuKu; module Tests
 #		['$ 20,000$', ['$ 20,000$']],
 #		['$20,000 $ $20,000$', ['$20,000 $ ', md_inline_math('20,000')]],
 		["#{Maruku8}", [Maruku8], "Reading UTF-8"],
-		["#{AccIta1}", [AccIta8], "Converting ISO-8859-1 to UTF-8", 
-			{:encoding => 'iso-8859-1'}],
+#		["#{AccIta1}", [AccIta8], "Converting ISO-8859-1 to UTF-8", 
+#			{:encoding => 'iso-8859-1'}],
 						
 	]
 
@@ -294,6 +294,7 @@ module MaRuKu; module Tests
 		m.attributes[:on_error] = :raise
 		Globals[:debug_keep_ials] = true
 		
+		num_ok = 0
 		good_cases.each do |input, expected, comment|
 				output = nil
 				begin
@@ -309,6 +310,7 @@ module MaRuKu; module Tests
 						raise e if @break_on_first_error 
 					else
 						quiet || print_status(comment,'OK')
+						num_ok += 1
 					end
 				end
 				
@@ -318,6 +320,7 @@ module MaRuKu; module Tests
 						print_status(comment, 'FAILED', s)
 						break if break_on_first_error
 					else
+						num_ok += 1
 						quiet || print_status(comment, 'OK')
 					end
 				else # I expected a raise
@@ -327,8 +330,12 @@ module MaRuKu; module Tests
 						print_status(comment, 'FAILED (no throw)', s)
 						break if break_on_first_error
 					end
-				end
-				
+				end		
+		end  # do 
+		if num_ok != good_cases.size
+			return false
+		else
+			return true
 		end
 	end
 	
@@ -358,6 +365,6 @@ end
 verbose = ARGV.include? 'v'
 break_on_first = ARGV.include? 'b'
 quiet = ARGV.include? 'q'
-Maruku.new.test_span_parser(verbose, break_on_first, quiet)
+ok = Maruku.new.test_span_parser(verbose, break_on_first, quiet)
 
-
+exit (ok ? 0 : 1)

@@ -262,7 +262,7 @@ class CharSourceStrscan
 	end
 	
 	def consume_whitespace
-		@s.scan /\s+/
+		@s.scan(/\s+/)
 		nil
 	end
 	

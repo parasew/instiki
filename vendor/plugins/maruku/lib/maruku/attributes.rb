@@ -192,9 +192,10 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	end
 	
 	
+	# We need a helper
+	def is_ial(e); e.kind_of? MDElement and e.node_type == :ial end
+
 	def merge_ial(elements, src, con)	
-		# We need a helper
-		def is_ial(e); e.kind_of? MDElement and e.node_type == :ial end
 
 		# Apply each IAL to the element before
 		elements.each_with_index do |e, i| 

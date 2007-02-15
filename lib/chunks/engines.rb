@@ -35,8 +35,8 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask
-      require_dependency 'bluecloth_tweaked'
-      BlueCloth.new(@content, @content.options[:engine_opts]).to_html
+      require_dependency 'maruku'
+      Maruku.new(@content.delete("\r"), {:math_enabled => false}).to_html
     end
   end
 
@@ -44,7 +44,7 @@ module Engines
     def mask
       require_dependency 'maruku'
       require_dependency 'maruku/ext/math'
-      Maruku.new(@content.delete("\r")).to_html
+      Maruku.new(@content.delete("\r"), {:math_enabled => true}).to_html
     end
   end
 
