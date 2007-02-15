@@ -44,7 +44,7 @@ module Engines
     def mask
       require_dependency 'maruku'
       require_dependency 'maruku/ext/math'
-      Maruku.new(@content.delete("\r"), {:math_enabled => true}).to_html
+      Maruku.new(@content.delete("\r"), {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html
     end
   end
 
