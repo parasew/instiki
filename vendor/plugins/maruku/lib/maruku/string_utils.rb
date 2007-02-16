@@ -166,7 +166,7 @@ module MaRuKu; module Strings
 			end
 			i+=1
 		end
-		s[i, s.size-1]
+		s[i, s.size]
 	end
 
 	def dbg_describe_ary(a, prefix='')
