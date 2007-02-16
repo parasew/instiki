@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(:version => 2) do
     t.column "allow_uploads", :integer, :default => 1
     t.column "published", :integer, :default => 0
     t.column "count_pages", :integer, :default => 0
-    t.column "markup", :string, :limit => 50, :default => "textile"
+    t.column "markup", :string, :limit => 50, :default => "markdownMML"
     t.column "color", :string, :limit => 6, :default => "008B26"
     t.column "max_upload_size", :integer, :default => 100
     t.column "safe_mode", :integer, :default => 0
