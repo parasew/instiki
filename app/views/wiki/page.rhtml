@@ -41,11 +41,11 @@
     | 
     <%= link_to 'TeX', {:web => @web.address, :action => 'tex', :id => @page.name}, 
             {:id => 'view_tex'} %>
-<!-- Doesn't really work right:
+   <% if OPTIONS[:pdflatex] %>
     | 
     <%= link_to 'PDF', {:web => @web.address, :action => 'pdf', :id => @page.name},
             {:id => 'view_pdf'} %>
--->
+   <% end %>
   <% end %>
   </small>
 
