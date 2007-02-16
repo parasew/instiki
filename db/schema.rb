@@ -5,74 +5,74 @@
 ActiveRecord::Schema.define(:version => 2) do
 
   create_table "pages", :force => true do |t|
-    t.column "created_at", :datetime, :null => false
-    t.column "updated_at", :datetime, :null => false
-    t.column "web_id", :integer, :default => 0, :null => false
-    t.column "locked_by", :string, :limit => 60
-    t.column "name", :string, :limit => 60
-    t.column "locked_at", :datetime
+    t.column "created_at", :datetime,                              :null => false
+    t.column "updated_at", :datetime,                              :null => false
+    t.column "web_id",     :integer,                :default => 0, :null => false
+    t.column "locked_by",  :string,   :limit => 60
+    t.column "name",       :string,   :limit => 60
+    t.column "locked_at",  :datetime
   end
 
   create_table "revisions", :force => true do |t|
-    t.column "created_at", :datetime, :null => false
-    t.column "updated_at", :datetime, :null => false
-    t.column "revised_at", :datetime, :null => false
-    t.column "page_id", :integer, :default => 0, :null => false
-    t.column "content", :text, :default => "", :null => false
-    t.column "author", :string, :limit => 60
-    t.column "ip", :string, :limit => 60
+    t.column "created_at", :datetime,                               :null => false
+    t.column "updated_at", :datetime,                               :null => false
+    t.column "revised_at", :datetime,                               :null => false
+    t.column "page_id",    :integer,                :default => 0,  :null => false
+    t.column "content",    :text,                   :default => "", :null => false
+    t.column "author",     :string,   :limit => 60
+    t.column "ip",         :string,   :limit => 60
   end
 
-  add_index "revisions", ["author"], :name => "revisions_author_index"
-  add_index "revisions", ["created_at"], :name => "revisions_created_at_index"
-  add_index "revisions", ["page_id"], :name => "revisions_page_id_index"
+  add_index "revisions", ["author"], :name => "index_revisions_on_author"
+  add_index "revisions", ["created_at"], :name => "index_revisions_on_created_at"
+  add_index "revisions", ["page_id"], :name => "index_revisions_on_page_id"
 
   create_table "sessions", :force => true do |t|
     t.column "session_id", :string
-    t.column "data", :text
+    t.column "data",       :text
     t.column "updated_at", :datetime
   end
 
-  add_index "sessions", ["session_id"], :name => "sessions_session_id_index"
+  add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
 
   create_table "system", :force => true do |t|
     t.column "password", :string, :limit => 60
   end
 
   create_table "webs", :force => true do |t|
-    t.column "created_at", :datetime, :null => false
-    t.column "updated_at", :datetime, :null => false
-    t.column "name", :string, :limit => 60, :default => "", :null => false
-    t.column "address", :string, :limit => 60, :default => "", :null => false
-    t.column "password", :string, :limit => 60
+    t.column "created_at",       :datetime,                                          :null => false
+    t.column "updated_at",       :datetime,                                          :null => false
+    t.column "name",             :string,   :limit => 60, :default => "",            :null => false
+    t.column "address",          :string,   :limit => 60, :default => "",            :null => false
+    t.column "password",         :string,   :limit => 60
     t.column "additional_style", :string
-    t.column "allow_uploads", :integer, :default => 1
-    t.column "published", :integer, :default => 0
-    t.column "count_pages", :integer, :default => 0
-    t.column "markup", :string, :limit => 50, :default => "markdownMML"
-    t.column "color", :string, :limit => 6, :default => "008B26"
-    t.column "max_upload_size", :integer, :default => 100
-    t.column "safe_mode", :integer, :default => 0
-    t.column "brackets_only", :integer, :default => 0
+    t.column "allow_uploads",    :integer,                :default => 1
+    t.column "published",        :integer,                :default => 0
+    t.column "count_pages",      :integer,                :default => 0
+    t.column "markup",           :string,   :limit => 50, :default => "markdownMML"
+    t.column "color",            :string,   :limit => 6,  :default => "008B26"
+    t.column "max_upload_size",  :integer,                :default => 100
+    t.column "safe_mode",        :integer,                :default => 0
+    t.column "brackets_only",    :integer,                :default => 0
   end
 
   create_table "wiki_files", :force => true do |t|
-    t.column "created_at", :datetime, :null => false
-    t.column "updated_at", :datetime, :null => false
-    t.column "web_id", :integer, :null => false
-    t.column "file_name", :string, :null => false
-    t.column "description", :string, :null => false
+    t.column "created_at",  :datetime, :null => false
+    t.column "updated_at",  :datetime, :null => false
+    t.column "web_id",      :integer,  :null => false
+    t.column "file_name",   :string,   :null => false
+    t.column "description", :string,   :null => false
   end
 
   create_table "wiki_references", :force => true do |t|
-    t.column "created_at", :datetime, :null => false
-    t.column "updated_at", :datetime, :null => false
-    t.column "page_id", :integer, :default => 0, :null => false
-    t.column "referenced_name", :string, :limit => 60, :default => "", :null => false
-    t.column "link_type", :string, :limit => 1, :default => "", :null => false
+    t.column "created_at",      :datetime,                               :null => false
+    t.column "updated_at",      :datetime,                               :null => false
+    t.column "page_id",         :integer,                :default => 0,  :null => false
+    t.column "referenced_name", :string,   :limit => 60, :default => "", :null => false
+    t.column "link_type",       :string,   :limit => 1,  :default => "", :null => false
   end
 
-  add_index "wiki_references", ["referenced_name"], :name => "wiki_references_referenced_name_index"
-  add_index "wiki_references", ["page_id"], :name => "wiki_references_page_id_index"
+  add_index "wiki_references", ["referenced_name"], :name => "index_wiki_references_on_referenced_name"
+  add_index "wiki_references", ["page_id"], :name => "index_wiki_references_on_page_id"
 
 end
