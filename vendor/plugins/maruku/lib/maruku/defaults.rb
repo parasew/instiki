@@ -31,8 +31,10 @@ Globals = {
 	:maruku_signature => false,
 	:code_background_color => '#fef',
 	:code_show_spaces => false,
+	:html_math_output_mathml => true, # also set :html_math_engine
 	:html_math_engine => 'itex2mml', #ritex, itex2mml, none
 	
+	:html_math_output_png => false, 	
 	:html_png_engine => 'none',
 	:html_png_dir => 'pngs',
 	:html_png_url => 'pngs/',
@@ -44,7 +46,7 @@ Globals = {
 	:latex_cjk => false,
 	
 	:debug_keep_ials => false,
-	
+	:doc_prefix => ''
 }
 
 class MDElement

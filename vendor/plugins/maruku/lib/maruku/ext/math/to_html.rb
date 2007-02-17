@@ -95,8 +95,8 @@ module MaRuKu; module Out; module HTML
 	end
 	
 	def to_html_inline_math
-		mathml  = render_mathml(:inline, self.math)
-		png = render_png(:inline, self.math)
+		mathml  = get_setting(:html_math_output_mathml) && render_mathml(:inline, self.math)
+		png = get_setting(:html_math_output_png) &&  render_png(:inline, self.math)
 
 		span = create_html_element 'span'
 		add_class_to(span, 'maruku-inline')
@@ -116,8 +116,8 @@ module MaRuKu; module Out; module HTML
 	end
 
 	def to_html_equation
-		mathml  = render_mathml(:equation, self.math)
-		png = render_png(:equation, self.math)
+		mathml  = get_setting(:html_math_output_mathml) && render_mathml(:equation, self.math)
+		png     = get_setting(:html_math_output_png)    && render_png(:equation, self.math)
 		
 		div = create_html_element 'div'
 		add_class_to(div, 'maruku-equation')

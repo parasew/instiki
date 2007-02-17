@@ -74,28 +74,30 @@ module MaRuKu; module Out; module HTML
 		# REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
 		# containing code.
 		doc.write(xml,indent,transitive=true,ie_hack);
+		
+		Xhtml11_mathml2_svg11 + xml
+	end
+	
 				
-		xhtml10strict  = "
+		Xhtml10strict  = "
 <?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'
 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n"
 		
-		xhtml11strict_mathml2 = '<?xml version="1.0" encoding="utf-8"?>
+	Xhtml11strict_mathml2 = '<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
                "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd" [
   <!ENTITY mathml "http://www.w3.org/1998/Math/MathML">
 ]>
 '
 
-xhtml11_mathml2_svg11 = 
+Xhtml11_mathml2_svg11 = 
 '<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC
     "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"
     "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
 '
-
-		xhtml11_mathml2_svg11 + xml
-	end
+	
 	
 	def xml_newline() Text.new("\n") end
 		
@@ -122,6 +124,14 @@ and
 
 In both cases, the title is set to "my document".
 =end
+
+=begin maruku_doc
+Attribute: doc_prefix
+Scope: document
+
+String to disambiguate footnote links.
+=end
+
 
 =begin maruku_doc
 Attribute: subject
@@ -170,20 +180,9 @@ Example:
 			doc_title = self.attributes[:title] || self.attributes[:subject] || ""
 			title = Element.new 'title', head
 				title << Text.new(doc_title)
-				
+							
+			add_css_to(head)
 			
-			
-			if css_list = self.attributes[:css]
-				css_list.split.each do |css|
-				# <link type="text/css" rel="stylesheet" href="..." />
-				link = Element.new 'link'
-				link.attributes['type'] = 'text/css'
-				link.attributes['rel'] = 'stylesheet'
-				link.attributes['href'] = css
-				head << link 
-				head << xml_newline
-				end
-			end
 		
 		root << xml_newline
 		
@@ -207,6 +206,20 @@ Example:
 		root << body
 		
 		doc
+	end
+
+	def add_css_to(head)
+		if css_list = self.attributes[:css]
+			css_list.split.each do |css|
+			# <link type="text/css" rel="stylesheet" href="..." />
+			link = Element.new 'link'
+			link.attributes['type'] = 'text/css'
+			link.attributes['rel'] = 'stylesheet'
+			link.attributes['href'] = css
+			head << link 
+			head << xml_newline
+			end
+		end
 	end
 	
 	# returns "st","nd","rd" or "th" as appropriate
@@ -247,7 +260,7 @@ Example:
 		div
 	end
 	
-	def render_footnotes
+	def render_footnotes()
 		div = Element.new 'div'
 		div.attributes['class'] = 'footnotes'
 		div <<  Element.new('hr')
@@ -256,10 +269,10 @@ Example:
 				f = self.footnotes[fid]
 				if f
 					li = f.wrap_as_element('li')
-					li.attributes['id'] = "fn:#{num}"
+					li.attributes['id'] = "#{get_setting(:doc_prefix)}fn:#{num}"
 					
 					a = Element.new 'a'
-						a.attributes['href'] = "#fnref:#{num}"
+						a.attributes['href'] = "\##{get_setting(:doc_prefix)}fnref:#{num}"
 						a.attributes['rev'] = 'footnote'
 						a<< Text.new('&#8617;', true, nil, true)
 					li.insert_after(li.children.last, a)
@@ -775,10 +788,10 @@ of the form `#ff00ff`.
 		num = order.size; 
 		
 		sup = Element.new 'sup'
-		sup.attributes['id'] = "fnref:#{num}"
+		sup.attributes['id'] = "#{get_setting(:doc_prefix)}fnref:#{num}"
 			a = Element.new 'a'
 			a << Text.new(num.to_s)
-			a.attributes['href'] = "\#fn:#{num}"
+			a.attributes['href'] = "\##{get_setting(:doc_prefix)}fn:#{num}"
 			a.attributes['rel'] = 'footnote'
 		sup << a
 			

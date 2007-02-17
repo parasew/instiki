@@ -126,8 +126,13 @@ require 'maruku/output/to_latex_entities'
 # Pretty print
 require 'maruku/output/to_markdown'
 
+# S5 slides
+require 'maruku/output/s5/to_s5'
+require 'maruku/output/s5/fancy'
+
 # Exporting to text: strips all formatting (not complete)
 require 'maruku/output/to_s'
 
 # class Maruku is the global interface
 require 'maruku/maruku'
+

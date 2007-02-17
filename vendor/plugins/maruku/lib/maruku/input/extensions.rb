@@ -50,7 +50,6 @@ module MaRuKu; module In; module Markdown
 	def check_block_extensions(src, con, line)
 		BlockExtensions.each do |reg, block|
 			if m = reg.match(line)
-				p m
 				block = BlockExtensions[reg]
 				accepted =  block.call(doc, src, con)
 				return true if accepted

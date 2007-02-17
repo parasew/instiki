@@ -25,7 +25,7 @@ require 'iconv'
 module MaRuKu; module In; module Markdown; module BlockLevelParser
 		
 	def parse_doc(s)
-		
+		# FIXME \r\n => \n
 		meta2 =  parse_email_headers(s)
 		data = meta2[:data]
 		meta2.delete :data
