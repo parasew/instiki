@@ -45,7 +45,7 @@
     <% if @page and (@page.name == 'HomePage') and %w( show published print ).include?(@action_name) %>
       <%= h(@web.name) + (@show_diff ? ' (changes)' : '') %>
     <% elsif @web %>
-      <small><%= @web.name %></small><br />
+      <span class="webName"><%= @web.name %></span><br />
       <%= @title %>
     <% else %>
       <%= @title %>

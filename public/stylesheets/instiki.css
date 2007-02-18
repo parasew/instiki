@@ -2,7 +2,7 @@ body {
 background-color:#FFF;
 color:#333;
 font-family:Verdana, Arial, Helvetica, sans-serif;
-font-size:90%;
+font-size:1em;
 line-height:1.3em;
 }
 
@@ -175,8 +175,15 @@ border: 1px solid silver;
 font-size:.85em;
 }
 
+span.webName {
+font-size:.5em;
+}
+
 span.views, span.linked {
 font-size:.85em;
+}
+.views a, .linked a {
+font-weight: normal
 }
 
 #allPages, #wantedPages {
@@ -186,6 +193,9 @@ width: 280px;
 #allPages {
 margin-right: 30px;
 }
+#allPages h2, #wantedPages h2 {
+font-size: 1.2em;
+} 
 
 .pageType {
 font-size: .75em;
@@ -193,7 +203,7 @@ font-style: italic;
 }
 
 p.pageStats, span.unlock {
-font-size; .85em;
+font-size: .85em;
 }
 
 .diffdel,del.diffmod, .diffdel *, del.diffmod * {
