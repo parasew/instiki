@@ -5,11 +5,9 @@
 
 <div id="revision">
   <% if @show_diff %>
-    <p style="background: #eee; padding: 3px; border: 1px solid silver">  
-      <small>  
+    <p class="show_diff">  
         Showing changes from revision #<%= @revision_number - 1 %> to #<%= @revision_number %>:  
         <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del> | <del class="diffmod">Chan</del><ins class="diffmod">ged</ins> 
-      </small>  
     </p>
     <%= @renderer.display_diff %>
   <% else %>

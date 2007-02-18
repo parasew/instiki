@@ -6,11 +6,9 @@
 
 <div id="revision">
   <% if @show_diff %>
-    <p style="background: #eee; padding: 3px; border: 1px solid silver">  
-      <small>  
+    <p class="show_diff">  
         Showing changes from revision #<%= @page.revisions.size - 1 %> to #<%= @page.revisions.size %>:  
         <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del> | <del class="diffmod">Chan</del><ins class="diffmod">ged</ins>  
-      </small>  
     </p>
     <%= @renderer.display_diff %>
   <% else %>
@@ -32,7 +30,7 @@
 
   <%= navigation_menu_for_page.join(' | ') %>
   
-  <small>
+  <span class="views">
     | Views: 
     <%= link_to('Print',
             { :web => @web.address, :action => 'print', :id => @page.name },
@@ -47,7 +45,7 @@
             {:id => 'view_pdf'} %>
    <% end %>
   <% end %>
-  </small>
+  </span>
 
   <%= render :partial => 'inbound_links' %>
 </div>

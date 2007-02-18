@@ -2,11 +2,11 @@
 
 <%= categories_menu unless @categories.empty? %>
 
-<div id="allPages" style="float: left; width: 280px; margin-right: 30px">
+<div id="allPages">
 <% unless @pages_that_are_orphaned.empty? && @page_names_that_are_wanted.empty? %>
   <h2>
     All Pages
-    <br/><small style="font-size: 12px"><i>All pages in <%= @set_name %> listed alphabetically</i></small>
+    <br/><span class="pageType">All pages in <%= @set_name %> listed alphabetically</span>
   </h2>
 <% end %>
 
@@ -19,18 +19,18 @@
 
 <% if @web.count_pages? %>
   <% total_chars = @pages_in_category.characters %>
-  <p><small>All content: <%= total_chars %> chars / approx. <%= sprintf("%-.1f", (total_chars / 2275 )) %> printed pages</small></p>
+  <p class="pageStats">All content: <%= total_chars %> chars / approx. <%= sprintf("%-.1f", (total_chars / 2275 )) %> printed pages</p>
 <% end %>
 </div>
 
-<div style="float: left; width: 280px">
+<div id="wantedPages">
 <% unless @page_names_that_are_wanted.empty? %>
   <h2>
     Wanted Pages
     <br/>
-    <small style="font-size: 12px">
-      <i>Unexisting pages that other pages in <%= @set_name %> reference</i>
-    </small>
+    <span class="pageType">
+      Nonexistent pages that other pages in <%= @set_name %> reference
+    </span>
   </h2>
 
   <ul style="margin-bottom: 10px">
@@ -50,7 +50,7 @@
 <% unless @pages_that_are_orphaned.empty? %>
   <h2>
     Orphaned Pages
-    <br/><small style="font-size: 12px"><i>Pages in <%= @set_name %> that no other page reference</i></small>
+    <br/><span class="pageType">Pages in <%= @set_name %> that no other page reference</span>
   </h2>
 
   <ul style="margin-bottom: 35px">

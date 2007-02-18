@@ -24,7 +24,7 @@
 			<span>
 				<%= link_to('Cancel', {:web => @web.address, :action => 'cancel_edit', :id => @page.name},
 				      {:accesskey => 'c'}) %> 
-                <small>(unlocks page)</small>
+                <span class="unlock">(unlocks page)</span>
 			</span>
 		</div>
 	<%= end_form_tag %>

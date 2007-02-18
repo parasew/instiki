@@ -168,6 +168,34 @@ margin-bottom:1em;
 padding-top:1px;
 }
 
+p.show_diff {
+background: #eee;
+padding: 3px;
+border: 1px solid silver;
+font-size:.85em;
+}
+
+span.views, span.linked {
+font-size:.85em;
+}
+
+#allPages, #wantedPages {
+float: left;
+width: 280px;
+}
+#allPages {
+margin-right: 30px;
+}
+
+.pageType {
+font-size: .75em;
+font-style: italic;
+}
+
+p.pageStats, span.unlock {
+font-size; .85em;
+}
+
 .diffdel,del.diffmod, .diffdel *, del.diffmod * {
 background-color:#FAA;
 text-decoration:line-through;
