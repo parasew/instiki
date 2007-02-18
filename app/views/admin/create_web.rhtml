@@ -21,9 +21,9 @@
       The address can only consist of letters and digits.
     </div>
     <div class="inputBox">
-      Name: <input type="text" id="web_name" name="name" onchange="proposeAddress();" />
-      &nbsp;&nbsp;
-      Address: <input type="text" id="web_address" name="address" onchange="cleanAddress();" />
+      <label for="web_name">Name:</label> <input type="text" id="web_name" name="name" onchange="proposeAddress();" />
+      &#xa0;&#xa0;
+      <label for="web_address">Address:</label> <input type="text" id="web_address" name="address" onchange="cleanAddress();" />
     </div>
   </li>
 </ol>
@@ -31,7 +31,7 @@
 
 <p align="right">
   <small>
-    Enter system password
+    <label for="system_password">Enter system password</label>
     <input type="password" id="system_password" name="system_password" />
     and
     <input type="submit" value="Create Web" />

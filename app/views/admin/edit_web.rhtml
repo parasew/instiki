@@ -14,65 +14,63 @@
   </div>
 
   <div class="inputBox">
-    Name: <input type="text" id="name" name="name" class="disableAutoComplete" value="<%= @web.name %>" 
-                 onchange="proposeAddress();" /> &nbsp;&nbsp;
-    Address: <input type="text" class="disableAutoComplete" id="address" name="address" value="<%= @web.address %>" 
+    <label for ="name">Name:</label> <input type="text" id="name" name="name" class="disableAutoComplete" value="<%= @web.name %>" 
+                 onchange="proposeAddress();" /> &#xa0;&#xa0;
+    <label for="address">Address:</label> <input type="text" class="disableAutoComplete" id="address" name="address" value="<%= @web.address %>" 
                     onchange="cleanAddress();" />
     <small><em>(Letters and digits only)</em></small>
   </div>
 
   <h2 style="margin-bottom: 3px">Specialize</h2>
   <div class="inputBox">
-    Markup:
-    <select name="markup">
+    <label for="markup">Markup:</label>
+    <select id="markup" name="markup">
       <%= html_options({'Textile' => :textile, 'Markdown' => :markdown, 'Markdown+itex2MML' => :markdownMML, 'Mixed' => :mixed, 
               'RDoc' => :rdoc }, @web.markup) %>
     </select>
 
-    &nbsp;&nbsp;
+    &#xa0;&#xa0;
 
-    Color:
-    <select name="color">
+    <label for="color">Color:</label>
+    <select id="color" name="color">
       <%= html_options({ 'Green' => '008B26', 'Purple' => '504685', 'Red' => 'DA0006', 
                          'Orange' => 'FA6F00', 'Grey' => '8BA2B0' }, @web.color) %>
     </select>
     <br/>
     <p>
-    <small>
-      <input type="checkbox" class="disableAutoComplete" name="safe_mode" <%= 'checked="on"' if @web.safe_mode? %> /> 
-      Safe mode
-      <em>- strip HTML tags and stylesheet options from the content of all pages</em>
+      <input type="checkbox" class="disableAutoComplete" id="safe_mode" name="safe_mode" <%= 'checked="checked"' if @web.safe_mode? %> /> 
+      <label for="safe_mode">Safe mode
+      <em>- strip HTML tags and stylesheet options from the content of all pages</em></label>
       <br/>
-      <input type="checkbox" class="disableAutoComplete" name="brackets_only" <%= 'checked="on"' if @web.brackets_only? %> /> 
-      Brackets only 
-      <em>- require all wiki words to be as [[wiki word]], WikiWord links won't be created</em>
+      <input type="checkbox" class="disableAutoComplete" id="brackets_only" name="brackets_only" <%= 'checked="checked"' if @web.brackets_only? %> /> 
+      <label for="brackets_only">Brackets only 
+      <em>- require all wiki words to be as [[wiki word]], WikiWord links won't be created</em></label>
       <br/>
-      <input type="checkbox" class="disableAutoComplete" name="count_pages" <%= 'checked="on"' if @web.count_pages? %> /> 
-      Count pages
+      <input type="checkbox" class="disableAutoComplete" id="count_pages" name="count_pages" <%= 'checked="checked"' if @web.count_pages? %> /> 
+      <label for="count_pages">Count pages</label>
       <br/>
 
-      <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= 'checked="on"' if @web.allow_uploads? %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= 'checked="checked"' if @web.allow_uploads? %> /> 
       Allow uploads of no more than 
       <input type="text" class="disableAutoComplete" name="max_upload_size" value="<%= @web.max_upload_size %>" 
-             width="20" /> 
+             size="20" /> 
       kbytes
       <em>- 
         allow users to upload pictures and other files and include them on wiki pages
       </em>
       <br/>
-    </small>
     </p>
 
     <a href="#" 
        onclick="document.getElementById('additionalStyle').style.display='block';return false;">
     Stylesheet tweaks &gt;&gt;</a>
-    <small><em>
+    <em>
     - add or change styles used by this web; styles defined here take precedence over 
     instiki.css. Hint: View HTML source of a page you want to style to find ID names on individual 
-    tags.</em></small>
+    tags.</em>
     <br/>
-    <textarea id="additionalStyle" class="disableAutoComplete"
-      style="display: none; margin-top: 10px; margin-bottom: 5px; width: 560px; height: 200px" 
+    <textarea id="additionalStyle" class="disableAutoComplete" cols="50" rows="20"
+      style="display: none; margin-top: 10px; margin-bottom: 5px;" 
       name="additional_style"><%= @web.additional_style %>
     </textarea>
   </div>
@@ -83,10 +81,10 @@
     Setting the password to nothing will remove the password protection.
   </div>
   <div class="inputBox">
-    Password: <input class="disableAutoComplete" type="password" id="password" 
+    <label for="password">Password:</label> <input class="disableAutoComplete" type="password" id="password" 
                      name="password" value="<%= @web.password %>" /> 
-    &nbsp;&nbsp;
-    Verify: <input class="disableAutoComplete" type="password" id="password_check" 
+    &#xa0;&#xa0;
+    <label for="password_check">Verify:</label> <input class="disableAutoComplete" type="password" id="password_check" 
                           value="<%= @web.password %>" name="password_check" />
   </div>
 
@@ -97,20 +95,18 @@
     The published version is accessible through URLs like /wiki/published/HomePage.
   </div>
   <div class="inputBox">
-    <input type="checkbox" name="published" class="disableAutoComplete" <%= 'checked="on"' if @web.published? %> /> 
-    Publish this web
+    <input type="checkbox" id="published" name="published" class="disableAutoComplete" <%= 'checked="checked"' if @web.published? %> /> 
+    <label for="published">Publish this web</label>
   </div>
 
-<p align="right">
-  <small>
-    Enter system password
+<p style="text-align:right;font-size:.85em;">
+    <label for="system_password">Enter system password</label>
     <input type="password" class="disableAutoComplete" id="system_password" 
            name="system_password" />
     and
     <input type="submit" value="Update Web" />
     <br/><br/>
     ...or forget changes and <%= link_to 'create a new web', :action => 'create_web' %>
-  </small>
 </p>
 
 <%= end_form_tag %>
@@ -123,13 +119,11 @@
           :onsubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned').value)",
           'accept-charset' => 'utf-8' }) 
 %>
-  <p align="right">
-    <small>
+  <p  style="text-align:right;font-size:.85em;">
       Clean up by entering system password
       <input type="password" id="system_password_orphaned" class="disableAutoComplete" name="system_password_orphaned" />
       and
       <input type="submit" value="Delete Orphan Pages" />
-    </small>
   </p>
 <%= end_form_tag %>
 

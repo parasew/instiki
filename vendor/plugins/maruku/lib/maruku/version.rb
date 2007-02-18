@@ -19,7 +19,7 @@
 #++
 
 module MaRuKu
-	Version = '0.5.3'
+	Version = '0.5.4'
 	
 	MarukuURL = 'http://maruku.rubyforge.org/'
 	
@@ -27,6 +27,8 @@ module MaRuKu
 	#
 	# Note: it is not guaranteed that if it's false
 	# then no special features will be used.
+	#
+	# So please, ignore it for now.
 	def markdown_extra?
 		true
 	end
