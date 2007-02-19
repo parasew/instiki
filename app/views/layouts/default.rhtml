@@ -66,8 +66,8 @@
 
 <% if @show_footer %>
     <div id="footer">
-    <div>This site is running on <a href="http://instiki.org/">Instiki</a></div>
-    <div>Powered by <a href="http://rubyonrails.com/">Ruby on Rails</a></div>
+    <div>This site is running on <a href="http://instiki.org/">Instiki</a> <%= "#{Instiki::VERSION::STRING}" %></div>
+    <div>Powered by <a href="http://rubyonrails.com/">Ruby on Rails</a>  <%= "#{Rails::VERSION::STRING}" %></div>
     </div>
 <% end %>
 

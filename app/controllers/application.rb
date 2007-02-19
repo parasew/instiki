@@ -207,3 +207,18 @@ module Mime
   LOOKUP["text/html"]             = HTML
   LOOKUP["application/xhtml+xml"] = XHTML
 end
+
+module Instiki
+  module VERSION #:nodoc:
+    MAJOR = 0
+    MINOR = 12
+    TINY  = 0
+    SUFFIX = '(MML+)'
+    PRERELEASE = 'pre' # false
+    if PRERELEASE
+       STRING = [MAJOR, MINOR].join('.') + PRERELEASE + SUFFIX
+    else
+       STRING = [MAJOR, MINOR, TINY].join('.') + SUFFIX
+    end
+  end
+end
