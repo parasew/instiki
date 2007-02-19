@@ -37,11 +37,11 @@ module WikiHelper
       link_to('Forward in time', 
           {:web => @web.address, :action => 'revision', :id => @page.name, :rev => @revision_number + 1},
           {:class => 'navlink', :accesskey => 'F', :id => 'to_next_revision'}) + 
-          " <small>(#{@revision.page.revisions.length - @revision_number} more)</small> "
+          " <span class='revisions'>(#{@revision.page.revisions.length - @revision_number} more)</span> "
     else
         link_to('Forward in time', {:web => @web.address, :action => 'show', :id => @page.name},
             {:class => 'navlink', :accesskey => 'F', :id => 'to_next_revision'}) +
-            " <small> (to current)</small>"
+            " <span class='revisions'>(to current)</span>"
     end
   end
     
@@ -49,7 +49,7 @@ module WikiHelper
     link_to('Back in time',
         {:web => @web.address, :action => 'revision', :id => @page.name, :rev => @revision_number - 1},
         {:class => 'navlink', :id => 'to_previous_revision'}) + 
-        " <small>(#{@revision_number - 1} more)</small>"
+        " <span class='revisions'>(#{@revision_number - 1} more)</span>"
   end
 
   def back_for_page
@@ -57,7 +57,7 @@ module WikiHelper
         {:web => @web.address, :action => 'revision', :id => @page.name, 
         :rev => @page.revisions.length - 1},
         {:class => 'navlink', :accesskey => 'B', :id => 'to_previous_revision'}) +
-        " <small>(#{@page.revisions.length - 1} #{@page.revisions.length - 1 == 1 ? 'revision' : 'revisions'})</small>"
+        " <span class='revisions'>(#{@page.revisions.length - 1} #{@page.revisions.length - 1 == 1 ? 'revision' : 'revisions'})</span>"
   end
   
   def current_revision

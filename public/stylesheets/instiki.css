@@ -21,7 +21,7 @@ max-width:55em;
 }
 
 a:visited {
-color:#666;
+color:#555;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -97,7 +97,7 @@ font-size:80%;
 }
 
 .navigation {
-color:#999;
+color:#555;
 font-size:90%;
 margin-top:0.3em;
 }
@@ -161,8 +161,8 @@ padding-left:1.5em;
 }
 
 .byline {
-color:#999;
-font-size:65%;
+color:#666;
+font-size:.8em;
 font-style:italic;
 margin-bottom:1em;
 padding-top:1px;
@@ -184,6 +184,9 @@ font-size:.85em;
 }
 .views a, .linked a {
 font-weight: normal
+}
+span.revisions {
+font-size:.95em
 }
 
 #allPages, #wantedPages {
@@ -221,8 +224,8 @@ border: 2px solid #FE0;
 }
 
 #footer {
-color:#999;
-font-size:60%;
+color:#666;
+font-size:.75em;
 font-style:italic;
 line-height:1.2em;
 padding-top:2em;
@@ -230,7 +233,7 @@ text-align:right;
 }
 
 #footer a:link,#footer a:visited {
-color:#888;
+color:#777;
 font-style:italic;
 }
 
@@ -318,7 +321,7 @@ white-space:nowrap;
 }
 
 div#MarkupHelp td.arrow {
-color:#999;
+color:#666;
 padding:0 0.75em;
 }
 
@@ -351,7 +354,7 @@ margin-bottom:2.5em;
 }
 
 .property {
-color:#999;
+color:#666;
 font-size:80%;
 }
 
