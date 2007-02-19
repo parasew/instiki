@@ -29,18 +29,16 @@
 </ol>
 
 
-<p align="right">
-  <small>
+<p style="text-align:right;font-size:.85em;">
     <label for="system_password">Enter system password</label>
     <input type="password" id="system_password" name="system_password" />
     and
     <input type="submit" value="Create Web" />
-  </small>
 </p>
 
 <%= end_form_tag %>
 
-<script>
+<script type="text/javascript">
 function proposeAddress() {
   document.getElementById('web_address').value =
     document.getElementById('web_name').value.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
