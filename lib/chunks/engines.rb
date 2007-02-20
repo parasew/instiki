@@ -24,27 +24,38 @@ module Engines
   end
 
   class Textile < AbstractEngine
+    require_dependency 'action_view/helpers/text_helper'
+    include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
-      redcloth.to_html(:textile)
+      html = redcloth.to_html(:textile)
+      sanitize(html)
     end
   end
 
   class Markdown < AbstractEngine
+    require_dependency 'action_view/helpers/text_helper'
+    include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'maruku'
-      Maruku.new(@content.delete("\r"), {:math_enabled => false}).to_html
+      require_dependency 'maruku/ext/math'
+      html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"), {:math_enabled => false}).to_html
+      sanitize(html)
     end
   end
 
   class MarkdownMML < AbstractEngine
+    require_dependency 'action_view/helpers/text_helper'
+    include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'maruku'
       require_dependency 'maruku/ext/math'
-      Maruku.new(@content.delete("\r"), {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html
+      html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html
+      sanitize(html)
     end
   end
 
