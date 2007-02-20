@@ -60,19 +60,25 @@ module Engines
   end
 
   class Mixed < AbstractEngine
+    require_dependency 'action_view/helpers/text_helper'
+    include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
-      redcloth.to_html
+      html = redcloth.to_html
+      sanitize(html)
     end
   end
 
   class RDoc < AbstractEngine
+    require_dependency 'action_view/helpers/text_helper'
+    include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'rdocsupport'
-      RDocSupport::RDocFormatter.new(@content).to_html
+      html = RDocSupport::RDocFormatter.new(@content).to_html
+      sanitize(html)
     end
   end
 
