@@ -152,8 +152,13 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 					con.push_char src.shift_char
 				end
 			when ?&
+				# named references
 				if m = src.read_regexp(/\&([\w\d]+);/)
 					con.push_element md_entity(m[1])
+				# numeric
+				elsif m = src.read_regexp(/\&\#(x)?([\w\d]+);/)
+					num = m[1]  ? m[2].hex : m[2].to_i
+					con.push_element md_entity(num)
 				else
 					con.push_char src.shift_char
 				end
