@@ -23,8 +23,13 @@ module Engines
 
   end
 
+  MY_VERBOTEN_TAGS = %w(form script plaintext object embed applet iframe frameset frame link meta body style html) 
+  MY_VERBOTEN_ATTRS = /^on/i
+
   class Textile < AbstractEngine
     require_dependency 'action_view/helpers/text_helper'
+    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
+    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
     include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'redcloth'
@@ -38,6 +43,8 @@ module Engines
 
   class Markdown < AbstractEngine
     require_dependency 'action_view/helpers/text_helper'
+    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
+    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
     include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'maruku'
@@ -49,6 +56,8 @@ module Engines
 
   class MarkdownMML < AbstractEngine
     require_dependency 'action_view/helpers/text_helper'
+    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
+    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
     include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'maruku'
@@ -61,6 +70,8 @@ module Engines
 
   class Mixed < AbstractEngine
     require_dependency 'action_view/helpers/text_helper'
+    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
+    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
     include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'redcloth'
@@ -74,6 +85,8 @@ module Engines
 
   class RDoc < AbstractEngine
     require_dependency 'action_view/helpers/text_helper'
+    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
+    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
     include ActionView::Helpers::TextHelper
     def mask
       require_dependency 'rdocsupport'
