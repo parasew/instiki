@@ -23,75 +23,62 @@ module Engines
 
   end
 
-  MY_VERBOTEN_TAGS = %w(form script plaintext object embed applet iframe frameset frame link meta body style html) 
-  MY_VERBOTEN_ATTRS = /^on/i
-
   class Textile < AbstractEngine
-    require_dependency 'action_view/helpers/text_helper'
-    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
-    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
-    include ActionView::Helpers::TextHelper
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
       html = redcloth.to_html(:textile)
-      sanitize(html)
+      sanitize_html(html)
     end
   end
 
   class Markdown < AbstractEngine
-    require_dependency 'action_view/helpers/text_helper'
-    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
-    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
-    include ActionView::Helpers::TextHelper
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'maruku'
       require_dependency 'maruku/ext/math'
       html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"), {:math_enabled => false}).to_html
-      sanitize(html)
+      sanitize_html(html)
     end
   end
 
   class MarkdownMML < AbstractEngine
-    require_dependency 'action_view/helpers/text_helper'
-    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
-    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
-    include ActionView::Helpers::TextHelper
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'maruku'
       require_dependency 'maruku/ext/math'
       html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
             {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html
-      sanitize(html)
+      sanitize_html(html)
     end
   end
 
   class Mixed < AbstractEngine
-    require_dependency 'action_view/helpers/text_helper'
-    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
-    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
-    include ActionView::Helpers::TextHelper
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
       html = redcloth.to_html
-      sanitize(html)
+      sanitize_html(html)
     end
   end
 
   class RDoc < AbstractEngine
-    require_dependency 'action_view/helpers/text_helper'
-    ActionView::Helpers::TextHelper::VERBOTEN_TAGS = MY_VERBOTEN_TAGS
-    ActionView::Helpers::TextHelper::VERBOTEN_ATTRS = MY_VERBOTEN_ATTRS
-    include ActionView::Helpers::TextHelper
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'rdocsupport'
       html = RDocSupport::RDocFormatter.new(@content).to_html
-      sanitize(html)
+      sanitize_html(html)
     end
   end
 
