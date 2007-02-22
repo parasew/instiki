@@ -5,6 +5,9 @@ module Sanitize
 #
 # Based heavily on Sam Ruby's code in the Universal FeedParser.
 
+  require 'html/tokenizer'
+  require 'html/node'
+
   acceptable_elements = ['a', 'abbr', 'acronym', 'address', 'area', 'b',
       'big', 'blockquote', 'br', 'button', 'caption', 'center', 'cite',
       'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt',
