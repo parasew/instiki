@@ -104,11 +104,17 @@ module Sanitize
       'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin',
       'stroke-opacity']
 
+  acceptable_protocols = [ 'ed2k', 'ftp', 'http', 'https', 'irc',
+      'mailto', 'news', 'gopher', 'nntp', 'telnet', 'webcal',
+      'xmpp', 'callto', 'feed', 'urn', 'aim', 'rsync', 'tag',
+      'ssh', 'sftp', 'rtsp', 'afs' ]
+
       ALLOWED_ELEMENTS = acceptable_elements + mathml_elements + svg_elements  unless defined?(ALLOWED_ELEMENTS)
       ALLOWED_ATTRIBUTES = acceptable_attributes + mathml_attributes + svg_attributes unless defined?(ALLOWED_ATTRIBUTES)
       ALLOWED_CSS_PROPERTIES = acceptable_css_properties unless defined?(ALLOWED_CSS_PROPERTIES)
       ALLOWED_CSS_KEYWORDS = acceptable_css_keywords unless defined?(ALLOWED_CSS_KEYWORDS)
       ALLOWED_SVG_PROPERTIES = acceptable_svg_properties unless defined?(ALLOWED_SVG_PROPERTIES)
+      ALLOWED_PROTOCOLS = acceptable_protocols unless defined?(ALLOWED_PROTOCOLS)
 
       # Sanitize the +html+, escaping all elements not in ALLOWED_ELEMENTS, and stripping out all
       # attributes not in ALLOWED_ATTRIBUTES. Style attributes are parsed, and a restricted set,
@@ -133,7 +139,9 @@ module Sanitize
                     node.attributes.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
                     %w(href src).each do |attr|
                       val_unescaped = CGI.unescapeHTML(node.attributes[attr].to_s).gsub(/[\000-\040\177-\240]+/,'')
-                      node.attributes.delete attr if val_unescaped =~ /^javascript:/i
+                      if val_unescaped =~ /^\w+:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
+                        node.attributes.delete attr 
+                      end
                     end
                     if node.attributes['style']
                       node.attributes['style'] = sanitize_css(node.attributes['style']) 

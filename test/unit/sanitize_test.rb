@@ -25,9 +25,11 @@ class SanitizeTest < Test::Unit::TestCase
   end
 
   Sanitize::ALLOWED_ATTRIBUTES.each do |attribute_name|
-    define_method "test_should_allow_#{attribute_name}_attribute" do
-      assert_equal "<p #{attribute_name}=\"display: none;\">foo &lt;bad>bar&lt;/bad> baz</p>",
-        sanitize_html("<p #{attribute_name}='display: none;'>foo <bad>bar</bad> baz</p>")
+    if attribute_name != 'style'
+      define_method "test_should_allow_#{attribute_name}_attribute" do
+        assert_equal "<p #{attribute_name}=\"foo\">foo &lt;bad>bar&lt;/bad> baz</p>",
+          sanitize_html("<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>")
+      end
     end
   end
 
@@ -138,6 +140,23 @@ class SanitizeTest < Test::Unit::TestCase
       sanitize_html('<a onclick!#$%&()*~+-_.,:;?@[/|\]^`=alert("XSS")>foo</a>')
     assert_equal "<img />",
       sanitize_html('<img/src="http://ha.ckers.org/xss.js"/>')
+  end
+
+  def test_img_dynsrc_lowsrc
+     assert_equal "<img />",
+       sanitize_html(%(<img dynsrc="javascript:alert('XSS')" />))
+     assert_equal "<img />",
+       sanitize_html(%(<img lowsrc="javascript:alert('XSS')" />))
+  end
+
+  def test_div_background_image_unicode_encoded
+    assert_equal '<div style="">foo</div>',
+      sanitize_html(%(<div style="background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072\0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029'\0029">foo</div>))
+  end
+
+  def test_div_expression
+    assert_equal '<div style="">foo</div>',
+      sanitize_html(%(<div style="width: expression(alert('XSS'));">foo</div>))
   end
 
 end
