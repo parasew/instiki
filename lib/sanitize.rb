@@ -6,7 +6,7 @@ module Sanitize
 # Based heavily on Sam Ruby's code in the Universal FeedParser.
 
   require 'html/tokenizer'
-  require 'html/node'
+  require 'node'
 
   acceptable_elements = ['a', 'abbr', 'acronym', 'address', 'area', 'b',
       'big', 'blockquote', 'br', 'button', 'caption', 'center', 'cite',
@@ -125,14 +125,15 @@ module Sanitize
           new_text = ""
 
           while token = tokenizer.next
-            node = HTML::Node.parse(nil, 0, 0, token, false)
-            new_text << case node
-              when HTML::Tag
+            node = XHTML::Node.parse(nil, 0, 0, token, false)
+            new_text << case node.tag?
+              when true
                 if ALLOWED_ELEMENTS.include?(node.name)
                   if node.closing != :close
                     node.attributes.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
                     %w(href src).each do |attr|
-                      node.attributes.delete attr if node.attributes[attr] =~ /^\s*javascript:/i
+                      val_unescaped = CGI.unescapeHTML(node.attributes[attr].to_s).gsub(/[\000-\040\177-\240]+/,'')
+                      node.attributes.delete attr if val_unescaped =~ /^javascript:/i
                     end
                     if node.attributes['style']
                       node.attributes['style'] = sanitize_css(node.attributes['style']) 
@@ -174,7 +175,7 @@ module Sanitize
               goodval = true
               val.split().each do |keyword|
                 if !ALLOWED_CSS_KEYWORDS.include?(keyword) and 
-                    keyword !~ /^(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)$/
+                   keyword !~ /^(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)$/
                   goodval = false
                 end
               end
