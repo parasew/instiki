@@ -159,4 +159,9 @@ class SanitizeTest < Test::Unit::TestCase
       sanitize_html(%(<div style="width: expression(alert('XSS'));">foo</div>))
   end
 
+  def test_img_vbscript
+     assert_equal '<img />',
+       sanitize_html(%(<img src='vbscript:msgbox("XSS")' />))
+  end
+
 end
