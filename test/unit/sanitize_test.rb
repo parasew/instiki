@@ -40,6 +40,13 @@ class SanitizeTest < Test::Unit::TestCase
     end
   end
 
+  Sanitize::ALLOWED_PROTOCOLS.each do |protocol|
+    define_method "test_should_allow_#{protocol}_uris" do
+      assert_equal "<a href=\"#{protocol}\">foo</a>",
+        sanitize_html(%(<a href="#{protocol}">foo</a>))
+    end
+  end
+
   def test_should_allow_anchors
     assert_equal "<a href=\"foo\">&lt;script>baz&lt;/script></a>",
      sanitize_html("<a href='foo' onclick='bar'><script>baz</script></a>")
@@ -72,7 +79,7 @@ class SanitizeTest < Test::Unit::TestCase
     end
   end
 
-[%(<img src="javascript:alert('XSS');" />), 
+  [%(<img src="javascript:alert('XSS');" />), 
    %(<img src=javascript:alert('XSS') />), 
    %(<img src="JaVaScRiPt:alert('XSS')" />), 
    %(<img src='javascript:alert(&quot;XSS&quot;)' />),
