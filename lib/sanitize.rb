@@ -81,6 +81,8 @@ module Sanitize
        'xlink:show', 'xlink:title', 'xlink:type', 'xml:base', 'xml:lang',
        'xml:space', 'xmlns', 'xmlns:xlink', 'y', 'y1', 'y2', 'zoomAndPan']
 
+  attr_val_is_uri = ['href', 'src', 'action', 'longdesc', 'xlink:href']
+  
   acceptable_css_properties = ['azimuth', 'background-color',
       'border-bottom-color', 'border-collapse', 'border-color',
       'border-left-color', 'border-right-color', 'border-top-color', 'clear',
@@ -115,10 +117,13 @@ module Sanitize
       ALLOWED_CSS_KEYWORDS = acceptable_css_keywords unless defined?(ALLOWED_CSS_KEYWORDS)
       ALLOWED_SVG_PROPERTIES = acceptable_svg_properties unless defined?(ALLOWED_SVG_PROPERTIES)
       ALLOWED_PROTOCOLS = acceptable_protocols unless defined?(ALLOWED_PROTOCOLS)
+      ATTR_VAL_IS_URI = attr_val_is_uri unless defined?(ATTR_VAL_IS_URI)
 
       # Sanitize the +html+, escaping all elements not in ALLOWED_ELEMENTS, and stripping out all
       # attributes not in ALLOWED_ATTRIBUTES. Style attributes are parsed, and a restricted set,
       # specified by ALLOWED_CSS_PROPERTIES and ALLOWED_CSS_KEYWORDS, are allowed through.
+      # attributes in ATTR_VAL_IS_URI are scanned, and only URI schemes specified in
+      # ALLOWED_PROTOCOLS are allowed.
       # You can adjust what gets sanitized, by defining these constant arrays before this Module is loaded. 
       #
       #   sanitize_html('<script> do_nasty_stuff() </script>')
@@ -137,7 +142,7 @@ module Sanitize
                 if ALLOWED_ELEMENTS.include?(node.name)
                   if node.closing != :close
                     node.attributes.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
-                    %w(href src).each do |attr|
+                    ATTR_VAL_IS_URI.each do |attr|
                       val_unescaped = CGI.unescapeHTML(node.attributes[attr].to_s).gsub(/[\000-\040\177-\240]+/,'')
                       if val_unescaped =~ /^\w+:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
                         node.attributes.delete attr 
