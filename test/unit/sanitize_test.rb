@@ -47,9 +47,22 @@ class SanitizeTest < Test::Unit::TestCase
     end
   end
 
+  Sanitize::ALLOWED_PROTOCOLS.each do |protocol|
+    define_method "test_should_allow_uppercase_#{protocol}_uris" do
+      assert_equal "<a href=\"#{protocol.upcase}\">foo</a>",
+        sanitize_html(%(<a href="#{protocol.upcase}">foo</a>))
+    end
+  end
+
   def test_should_allow_anchors
     assert_equal "<a href=\"foo\">&lt;script>baz&lt;/script></a>",
      sanitize_html("<a href='foo' onclick='bar'><script>baz</script></a>")
+  end
+
+  # RFC 3986, sec 4.2
+  def test_allow_colons_in_path_component
+    assert_equal "<a href=\"./this:that\">foo</a>",
+      sanitize_html("<a href=\"./this:that\">foo</a>")
   end
 
   %w(src width height alt).each do |img_attr|

@@ -143,8 +143,8 @@ module Sanitize
                   if node.closing != :close
                     node.attributes.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
                     ATTR_VAL_IS_URI.each do |attr|
-                      val_unescaped = CGI.unescapeHTML(node.attributes[attr].to_s).gsub(/[\000-\040\177-\240]+/,'')
-                      if val_unescaped =~ /^\w+:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
+                      val_unescaped = CGI.unescapeHTML(node.attributes[attr].to_s).gsub(/[\000-\040\177-\240]+/,'').downcase
+                      if val_unescaped =~ /^[+-.\w]+:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
                         node.attributes.delete attr 
                       end
                     end
