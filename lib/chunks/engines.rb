@@ -24,36 +24,48 @@ module Engines
   end
 
   class Textile < AbstractEngine
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
-      redcloth.to_html(:textile)
+      html = redcloth.to_html(:textile)
+      sanitize_html(html)
     end
   end
 
   class Markdown < AbstractEngine
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'bluecloth_tweaked'
-      BlueCloth.new(@content, @content.options[:engine_opts]).to_html
+      html = BlueCloth.new(@content, @content.options[:engine_opts]).to_html
+      sanitize_html(html)
     end
   end
 
   class Mixed < AbstractEngine
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
-      redcloth.to_html
+      html = redcloth.to_html
+      sanitize_html(html)
     end
   end
 
   class RDoc < AbstractEngine
+    require_dependency 'sanitize'
+    include Sanitize
     def mask
       require_dependency 'rdocsupport'
-      RDocSupport::RDocFormatter.new(@content).to_html
+      html = RDocSupport::RDocFormatter.new(@content).to_html
+      sanitize_html(html)
     end
   end
 
