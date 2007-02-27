@@ -30,7 +30,7 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     <%= @style_additions %>
     <%= @web ? @web.additional_style : '' %>
   </style>
-
+  <%= javascript_include_tag :defaults %>
   <% if @web %>
   	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_headlines') %>
   	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_content') %>

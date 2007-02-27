@@ -12,7 +12,7 @@
 <div id="editForm">
 	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
 	        { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName();', 'accept-charset' => 'utf-8' }) %>
-	
+	<div class="hidden"><textarea name="content1" id="content1">iam empty</textarea></div>
 	    <textarea name="content" id="content"><%= h(@flash[:content] || '') %></textarea>
 		<div id="editFormButtons">
 		    <input type="submit" value="Submit" accesskey="s"/> as 

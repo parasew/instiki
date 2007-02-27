@@ -3,7 +3,7 @@
   @content_width = 720
   @hide_navigation = true
 %>
-
+<div>
 <div id="MarkupHelp">
   <%= render("#{@web.markup}_help") %>
   <%= render 'wiki_words_help' %>
@@ -29,7 +29,7 @@
 		</div>
 	<%= end_form_tag %>
 </div>
-
+</div>
 <script type="text/javascript">
 function cleanAuthorName() {
   if (document.getElementById('authorName').value == "") {
