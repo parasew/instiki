@@ -9,7 +9,7 @@ class WikiController < ApplicationController
   caches_action :show, :published, :authors, :recently_revised, :list
   cache_sweeper :revision_sweeper
 
-  layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex, :pdf, :export_tex, :export_html]
+  layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex, :pdf, :s5, :export_tex, :export_html]
 
   def index
     if @web_name
@@ -56,9 +56,7 @@ class WikiController < ApplicationController
 
       renderer = PageRenderer.new(page.revisions.last)
       rendered_page = <<-EOL
-        <!DOCTYPE html
-        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd" >
         <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
           <title>#{page.plain_name} in #{@web.name}</title>
@@ -283,8 +281,14 @@ class WikiController < ApplicationController
     if @web.markup == :markdownMML
       @tex_content = Maruku.new(@page.content).to_latex
     else
-    @tex_content = RedClothForTex.new(@page.content).to_tex
+      @tex_content = RedClothForTex.new(@page.content).to_tex
+    end
   end
+
+  def s5
+    if @web.markup == :markdownMML or @web.markup == :markdown
+      @s5_content = Maruku.new(@page.content).to_s5
+    end
   end
 
   protected
@@ -342,8 +346,13 @@ class WikiController < ApplicationController
   end
 
   def export_web_to_tex(file_path)
+#    if @web.markup == :markdownMML
+#      @tex_content = Maruku.new(@page.content).to_latex
+#    else
+#      @tex_content = RedClothForTex.new(@page.content).to_tex
+#    end
     @tex_content = table_of_contents(@web.page('HomePage').content, render_tex_web)
-    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex_web', :layout => nil)) }
+    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex_web', :layout => tex)) }
   end
 
   def get_page_and_revision
@@ -407,7 +416,7 @@ class WikiController < ApplicationController
       if  @web.markup == :markdownMML
         tex_web[page.name] = Maruku.new(page.content).to_latex
       else
-      tex_web[page.name] = RedClothForTex.new(page.content).to_tex
+        tex_web[page.name] = RedClothForTex.new(page.content).to_tex
       end
       tex_web
     end

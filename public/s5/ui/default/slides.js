@@ -1,201 +1,4 @@
-module MaRuKu
-	S5_external =<<EOF
-	
-	<meta name="defaultView" content="slideshow" />
-	<meta name="controlVis" content="hidden" />
-	<link rel="stylesheet" href="s5/ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
-	<link rel="stylesheet" href="s5/ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
-	<link rel="stylesheet" href="s5/ui/default/print.css" type="text/css" media="print" id="slidePrint" />
-	<link rel="stylesheet" href="s5/ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
-	<script src="s5/ui/default/slides.js" type="text/javascript"> </script>
-EOF
-
-
-	S5_Fancy =<<EOF
-
-<meta name="defaultView" content="slideshow" />
-<meta name="controlVis" content="hidden" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<style type="text/css" media="projection" id="slideProj">
-/* Do not edit or override these styles! The system will likely break if you do. */
-
-div#header, div#footer, div#controls, .slide {position: absolute;}
-html>body div#header, html>body div#footer, 
-  html>body div#controls, html>body .slide {position: fixed;}
-.handout {display: none;}
-.layout {display: block;}
-.slide, .hideme, .incremental {visibility: hidden;}
-#slide0 {visibility: visible;}
-
-/* The following styles size, place, and layer the slide components.
-   Edit these if you want to change the overall slide layout.
-   The commented lines can be uncommented (and modified, if necessary) 
-    to help you with the rearrangement process. */
-
-/* target = 1024x768 */
-
-div#header, div#footer, .slide {width: 100%; top: 0; left: 0;}
-div#header {top: 0; height: 3em; z-index: 1;}
-div#footer {top: auto; bottom: 0; height: 2.5em; z-index: 5;}
-.slide {top: 0; width: 92%; padding: 3.5em 4% 4%; z-index: 2;  list-style: none;}
-div#controls {left: 50%; bottom: 0; width: 50%; z-index: 100;}
-div#controls form {position: absolute; bottom: 0; right: 0; width: 100%;
-  margin: 0;}
-#currentSlide {position: absolute; width: 10%; left: 45%; bottom: 1em; z-index: 10;}
-html>body #currentSlide {position: fixed;}
-
-/*
-div#header {background: #FCC;}
-div#footer {background: #CCF;}
-div#controls {background: #BBD;}
-div#currentSlide {background: #FFC;}
-*/
-
-/* Following are the presentation styles -- edit away! */
-
-body {background: #FFF url(bodybg.gif) -16px 0 no-repeat; color: #000; font-size: 2em;}
-:link, :visited {text-decoration: none; color: #00C;}
-#controls :active {color: #88A !important;}
-#controls :focus {outline: 1px dotted #227;}
-h1, h2, h3, h4 {font-size: 100%; margin: 0; padding: 0; font-weight: inherit;}
-ul, pre {margin: 0; line-height: 1em;}
-html, body {margin: 0; padding: 0;}
-
-blockquote, q {font-style: italic;}
-blockquote {padding: 0 2em 0.5em; margin: 0 1.5em 0.5em; text-align: center; font-size: 1em;}
-blockquote p {margin: 0;}
-blockquote i {font-style: normal;}
-blockquote b {display: block; margin-top: 0.5em; font-weight: normal; font-size: smaller; font-style: normal;}
-blockquote b i {font-style: italic;}
-
-kbd {font-weight: bold; font-size: 1em;}
-sup {font-size: smaller; line-height: 1px;}
-
-.slide code {padding: 2px 0.25em; font-weight: bold; color: #533;}
-.slide code.bad, code del {color: red;}
-.slide code.old {color: silver;}
-.slide pre {padding: 0; margin: 0.25em 0 0.5em 0.5em; color: #533; font-size: 90%;}
-.slide pre code {display: block;}
-.slide ul {margin-left: 5%; margin-right: 7%; list-style: disc;}
-.slide li {margin-top: 0.75em; margin-right: 0;}
-.slide ul ul {line-height: 1;}
-.slide ul ul li {margin: .2em; font-size: 85%; list-style: square;}
-.slide img.leader {display: block; margin: 0 auto;}
-
-div#header, div#footer {background: #005; color: #AAB;
-  font-family: Verdana, Helvetica, sans-serif;}
-div#header {background: #005 url(bodybg.gif) -16px 0 no-repeat;
-  line-height: 1px;}
-div#footer {font-size: 0.5em; font-weight: bold; padding: 1em 0;}
-#footer h1, #footer h2 {display: block; padding: 0 1em;}
-#footer h2 {font-style: italic;}
-
-div.long {font-size: 0.75em;}
-.slide h1 {position: absolute; top: 0.7em; left: 87px; z-index: 1;
-  margin: 0; padding: 0.3em 0 0 50px; white-space: nowrap;
-  font: bold 150%/1em Helvetica, sans-serif; text-transform: capitalize;
-  color: #DDE; background: #005;}
-.slide h3 {font-size: 130%;}
-h1 abbr {font-variant: small-caps;}
-
-div#controls {position: absolute; left: 50%; bottom: 0;
-  width: 50%;
-  text-align: right; font: bold 0.9em Verdana, Helvetica, sans-serif;}
-html>body div#controls {position: fixed; padding: 0 0 1em 0;
-  top: auto;}
-div#controls form {position: absolute; bottom: 0; right: 0; width: 100%;
-  margin: 0; padding: 0;}
-#controls #navLinks a {padding: 0; margin: 0 0.5em; 
-  background: #005; border: none; color: #779; 
-  cursor: pointer;}
-#controls #navList {height: 1em;}
-#controls #navList #jumplist {position: absolute; bottom: 0; right: 0; background: #DDD; color: #227;}
-
-#currentSlide {text-align: center; font-size: 0.5em; color: #449;}
-
-#slide0 {padding-top: 3.5em; font-size: 90%;}
-#slide0 h1 {position: static; margin: 1em 0 0; padding: 0;
-   font: bold 2em Helvetica, sans-serif; white-space: normal;
-   color: #000; background: transparent;}
-#slide0 h2 {font: bold italic 1em Helvetica, sans-serif; margin: 0.25em;}
-#slide0 h3 {margin-top: 1.5em; font-size: 1.5em;}
-#slide0 h4 {margin-top: 0; font-size: 1em;}
-
-ul.urls {list-style: none; display: inline; margin: 0;}
-.urls li {display: inline; margin: 0;}
-.note {display: none;}
-.external {border-bottom: 1px dotted gray;}
-html>body .external {border-bottom: none;}
-.external:after {content: " \274F"; font-size: smaller; color: #77B;}
-
-.incremental, .incremental *, .incremental *:after {color: #DDE; visibility: visible;}
-img.incremental {visibility: hidden;}
-.slide .current {color: #B02;}
-
-
-/* diagnostics
-
-li:after {content: " [" attr(class) "]"; color: #F88;}
- */
-</style>
-<style type="text/css" media="projection" id="operaFix">
-/* DO NOT CHANGE THESE unless you really want to break Opera Show */
-.slide {
-	visibility: visible !important;
-	position: static !important;
-	page-break-before: always;
-}
-#slide0 {page-break-before: avoid;}
-
-</style>
-<style type="text/css" media="screen" id="outlineStyle">
-/* don't change this unless you want the layout stuff to show up in the outline view! */
-
-.layout div, #footer *, #controlForm * {display: none;}
-#footer, #controls, #controlForm, #navLinks, #toggle {
-  display: block; visibility: visible; margin: 0; padding: 0;}
-#toggle {float: right; padding: 0.5em;}
-html>body #toggle {position: fixed; top: 0; right: 0;}
-
-/* making the outline look pretty-ish */
-
-#slide0 h1, #slide0 h2, #slide0 h3, #slide0 h4 {border: none; margin: 0;}
-#slide0 h1 {padding-top: 1.5em;}
-.slide h1 {margin: 1.5em 0 0; padding-top: 0.25em;
-  border-top: 1px solid #888; border-bottom: 1px solid #AAA;}
-#toggle {border: 1px solid; border-width: 0 0 1px 1px; background: #FFF;}
-
-</style>
-<style type="text/css" media="print" id="slidePrint">
-/* The following rule is necessary to have all slides appear in print! DO NOT REMOVE IT! */
-.slide, ul {page-break-inside: avoid; visibility: visible !important;}
-h1 {page-break-after: avoid;}
-
-body {font-size: 12pt; background: white;}
-* {color: black;}
-
-#slide0 h1 {font-size: 200%; border: none; margin: 0.5em 0 0.25em;}
-#slide0 h3 {margin: 0; padding: 0;}
-#slide0 h4 {margin: 0 0 0.5em; padding: 0;}
-#slide0 {margin-bottom: 3em;}
-
-h1 {border-top: 2pt solid gray; border-bottom: 1px dotted silver;}
-.extra {background: transparent !important;}
-div.extra, pre.extra, .example {font-size: 10pt; color: #333;}
-ul.extra a {font-weight: bold;}
-p.example {display: none;}
-
-#header {display: none;}
-#footer h1 {margin: 0; border-bottom: 1px solid; color: gray; font-style: italic;}
-#footer h2, #controls {display: none;}
-
-/* The following rule keeps the layout stuff out of print.  Remove at your own risk! */
-.layout, .layout * {display: none !important;}
-
-</style>
-<script type="text/javascript">
-<![CDATA[
-// S5 v1.1 slides.js -- released into the Public Domain
+// S5 v1.2a1 slides.js -- released into the Public Domain
 //
 // Please see http://www.meyerweb.com/eric/tools/s5/credits.html for information 
 // about all the wonderful and talented contributors to this code!
@@ -209,6 +12,21 @@ var number = undef;
 var s5mode = true;
 var defaultView = 'slideshow';
 var controlVis = 'visible';
+
+var s5NotesWindow;
+var s5NotesWindowLoaded = false;
+var previousSlide = 0;
+var presentationStart = new Date();
+var slideStart = new Date();
+
+var countdown = {
+	timer: 0,
+	state: 'pause',
+	start: new Date(),
+	end: 0,
+	remaining: 0
+};
+
 
 var isIE = navigator.appName == 'Microsoft Internet Explorer' && navigator.userAgent.indexOf('Opera') < 1 ? 1 : 0;
 var isOp = navigator.userAgent.indexOf('Opera') > -1 ? 1 : 0;
@@ -225,7 +43,7 @@ function hasValue(object, value) {
 }
 
 function removeClass(object,className) {
-	if (!object) return;
+	if (!object || !hasClass(object,className)) return;
 	object.className = object.className.replace(new RegExp('(^|\\s)'+className+'(\\s|$)'), RegExp.$1+RegExp.$2);
 }
 
@@ -250,7 +68,7 @@ function GetElementsWithClassName(elementName,className) {
 }
 
 function isParentOrSelf(element, id) {
-	if (element == null || element.nodeName=='BODY') return false;
+	if (element == null || element.nodeName=='body') return false;
 	else if (element.id == id) return true;
 	else return isParentOrSelf(element.parentNode, id);
 }
@@ -278,7 +96,8 @@ function slideLabel() {
 
 		var did = 'slide' + n.toString();
 		obj.setAttribute('id',did);
-		if (isOp) continue;
+
+//		if (isOp) continue;   // Opera fix (hallvord)
 
 		var otext = '';
 		var menu = obj.firstChild;
@@ -303,9 +122,23 @@ function currentSlide() {
 	} else {
 		cs = document.currentSlide;
 	}
-	cs.innerHTML = '<span id="csHere">' + snum + '<\/span> ' + 
-		'<span id="csSep">\/<\/span> ' + 
-		'<span id="csTotal">' + (smax-1) + '<\/span>';
+	var plink = document.createElement('a');
+	plink.id = 'plink';
+	plink.setAttribute('href', '');
+	var csHere = document.createElement('span');
+	var csSep = document.createElement('span');
+	var csTotal = document.createElement('span');
+	csHere.id = 'csHere';
+	csSep.id = 'csSep';
+	csTotal.id = 'csTotal';
+	csHere.appendChild(document.createTextNode(this.snum));
+	csSep.appendChild(document.createTextNode('/'));
+	csTotal.appendChild(document.createTextNode(this.smax-1));
+	plink.appendChild(csHere);
+	plink.appendChild(csSep);
+	plink.appendChild(csTotal);
+	cs.removeChild(cs.firstChild);
+	cs.appendChild(plink);
 	if (snum == 0) {
 		cs.style.visibility = 'hidden';
 	} else {
@@ -348,11 +181,17 @@ function go(step) {
 	}
 	if (incrementals[snum].length > 0 && incpos > 0)
 		addClass(incrementals[snum][incpos - 1], 'current');
-	ce.style.visibility = 'hidden';
-	ne.style.visibility = 'visible';
+	if (isOp) { //hallvord
+		location.hash = nid;
+	} else {
+		ce.style.visibility = 'hidden'; 
+		ne.style.visibility = 'visible';
+	} // /hallvord
 	jl.selectedIndex = snum;
 	currentSlide();
-	number = 0;
+	loadNote();
+	permaLink();
+	number = undef;
 }
 
 function goTo(target) {
@@ -372,6 +211,7 @@ function subgo(step) {
 		addClass(incrementals[snum][incpos], 'incremental');
 		addClass(incrementals[snum][incpos - 1],'current');
 	}
+	loadNote();
 }
 
 function toggle() {
@@ -467,6 +307,9 @@ function keys(key) {
 			case 67: // c
 				showHide('k');
 				break;
+			case 78: // n
+				createNotesWindow();
+				break;
 		}
 		if (key.which < 48 || key.which > 57) {
 			number = undef;
@@ -486,7 +329,7 @@ function clicker(e) {
 		target = window.event.srcElement;
 		e = window.event;
 	} else target = e.target;
-	if (target.getAttribute('href') != null || hasValue(target.rel, 'external') || isParentOrSelf(target, 'controls') || isParentOrSelf(target,'embed') || isParentOrSelf(target,'object')) return true;
+	if (target.href != null || hasValue(target.rel, 'external') || isParentOrSelf(target, 'controls') || isParentOrSelf(target,'embed') || isParentOrSelf(target,'object')) return true;
 	if (!e.which || e.which == 1) {
 		if (!incrementals[snum] || incpos >= incrementals[snum].length) {
 			go(1);
@@ -507,7 +350,7 @@ function findSlide(hash) {
 			break;
 		}
 	}
-	while(target != null && target.nodeName != 'BODY') {
+	while(target != null && target.nodeName != 'body') {
 		if (hasClass(target, 'slide')) {
 			return parseInt(target.id.slice(5));
 		}
@@ -568,23 +411,61 @@ function externalLinks() {
 	}
 }
 
+function permaLink() {
+	document.getElementById('plink').href = window.location.pathname + '#slide' + snum;
+}
+
 function createControls() {
 	var controlsDiv = document.getElementById("controls");
 	if (!controlsDiv) return;
-	var hider = ' onmouseover="showHide(\'s\');" onmouseout="showHide(\'h\');"';
-	var hideDiv, hideList = '';
+	var controlForm = document.createElement('form');
+	controlForm.id = 'controlForm';
+	controlForm.setAttribute('action', '#');
 	if (controlVis == 'hidden') {
-		hideDiv = hider;
-	} else {
-		hideList = hider;
+	   controlForm.setAttribute('onmouseover', 'showHide(\'s\');');
+	   controlForm.setAttribute('onmouseout',  'showHide(\'h\');');
 	}
-	controlsDiv.innerHTML = '<form action="#" id="controlForm"' + hideDiv + '>' +
-	'<div id="navLinks">' +
-	'<a accesskey="t" id="toggle" href="javascript:toggle();">&#216;<\/a>' +
-	'<a accesskey="z" id="prev" href="javascript:go(-1);">&laquo;<\/a>' +
-	'<a accesskey="x" id="next" href="javascript:go(1);">&raquo;<\/a>' +
-	'<div id="navList"' + hideList + '><select id="jumplist" onchange="go(\'j\');"><\/select><\/div>' +
-	'<\/div><\/form>';
+	var navLinks = document.createElement('div');
+	navLinks.id = 'navLinks';
+	var showNotes = document.createElement('a');
+	showNotes.id = 'show-notes';
+	showNotes.setAttribute('accesskey', 'n');
+	showNotes.setAttribute('href', 'javascript:createNotesWindow();');
+	showNotes.setAttribute('title', 'Show Notes');
+	showNotes.appendChild(document.createTextNode('\u2261'));
+	var toggle =  document.createElement('a');
+	toggle.id = 'toggle';
+	toggle.setAttribute('accesskey', 't');
+	toggle.setAttribute('href', 'javascript:toggle();');
+	toggle.appendChild(document.createTextNode('\u00D8'));
+    var prev =  document.createElement('a');
+	prev.id = 'prev';
+	prev.setAttribute('accesskey', 'z');
+	prev.setAttribute('href', 'javascript:go(-1);');
+	prev.appendChild(document.createTextNode('\u00AB'));
+    var next =  document.createElement('a');
+	next.id = 'next';
+	next.setAttribute('accesskey', 'x');
+	next.setAttribute('href', 'javascript:go(1);');
+	next.appendChild(document.createTextNode('\u00BB'));	
+	var navList =  document.createElement('div');
+	navList.id = 'navList';
+	if (controlVis != 'hidden') {
+	   navList.setAttribute('onmouseover', 'showHide(\'s\');');
+	   navList.setAttribute('onmouseout',  'showHide(\'h\');');
+	}
+	var jumplist = document.createElement('select');
+	jumplist.id = 'jumplist';
+	jumplist.setAttribute('onchange', 'go(\'j\');');
+	navList.appendChild(jumplist);
+	navLinks.appendChild(showNotes);
+	navLinks.appendChild(toggle);
+	navLinks.appendChild(prev);
+	navLinks.appendChild(next);
+	navLinks.appendChild(navList);
+	controlForm.appendChild(navLinks);
+    controlsDiv.appendChild(controlForm);
+
 	if (controlVis == 'hidden') {
 		var hidden = document.getElementById('navLinks');
 	} else {
@@ -595,8 +476,8 @@ function createControls() {
 
 function fontScale() {  // causes layout problems in FireFox that get fixed if browser's Reload is used; same may be true of other Gecko-based browsers
 	if (!s5mode) return false;
-	var vScale = 22;  // both yield 32 (after rounding) at 1024x768
-	var hScale = 32;  // perhaps should auto-calculate based on theme's declared value?
+	var vScale = 48;  // both yield 16 (the usual browser default) at 1024x768
+	var hScale = 64;  // perhaps should auto-calculate based on theme's declared value?
 	if (window.innerHeight) {
 		var vSize = window.innerHeight;
 		var hSize = window.innerWidth;
@@ -621,7 +502,7 @@ function fontScale() {  // causes layout problems in FireFox that get fixed if b
 
 function fontSize(value) {
 	if (!(s5ss = document.getElementById('s5ss'))) {
-		if (!isIE) {
+		if (!document.createStyleSheet) {
 			document.getElementsByTagName('head')[0].appendChild(s5ss = document.createElement('style'));
 			s5ss.setAttribute('media','screen, projection');
 			s5ss.setAttribute('id','s5ss');
@@ -630,11 +511,11 @@ function fontSize(value) {
 			document.s5ss = document.styleSheets[document.styleSheets.length - 1];
 		}
 	}
-	if (!isIE) {
+	if (!(document.s5ss && document.s5ss.addRule)) {
 		while (s5ss.lastChild) s5ss.removeChild(s5ss.lastChild);
-		s5ss.appendChild(document.createTextNode('body {font-size: ' + value + ' !important;}'));
+		s5ss.appendChild(document.createTextNode('html {font-size: ' + value + ' !important;}'));
 	} else {
-		document.s5ss.addRule('body','font-size: ' + value + ' !important;');
+		document.s5ss.addRule('html','font-size: ' + value + ' !important;');
 	}
 }
 
@@ -663,7 +544,7 @@ function getIncrementals(obj) {
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
 		if (hasClass(child, 'incremental')) {
-			if (child.nodeName == 'OL' || child.nodeName == 'UL') {
+			if (child.nodeName == 'ol' || child.nodeName == 'ul') {
 				removeClass(child, 'incremental');
 				for (var j = 0; j < child.childNodes.length; j++) {
 					if (child.childNodes[j].nodeType == 1) {
@@ -676,7 +557,7 @@ function getIncrementals(obj) {
 			}
 		}
 		if (hasClass(child, 'show-first')) {
-			if (child.nodeName == 'OL' || child.nodeName == 'UL') {
+			if (child.nodeName == 'ol' || child.nodeName == 'ul') {
 				removeClass(child, 'show-first');
 				if (child.childNodes[isGe].nodeType == 1) {
 					removeClass(child.childNodes[isGe], 'incremental');
@@ -725,32 +606,207 @@ function trap(e) {
 	return modifierKey || e.which == 0;
 }
 
-function startup() {
-	defaultCheck();
-	if (!isOp) 
-		createControls();
-	slideLabel();
-	fixLinks();
-	externalLinks();
-	fontScale();
-	if (!isOp) {
-		notOperaFix();
-		incrementals = createIncrementals();
-		slideJump();
-		if (defaultView == 'outline') {
-			toggle();
-		}
-		document.onkeyup = keys;
-		document.onkeypress = trap;
-		document.onclick = clicker;
+function noteLabel() { // Gives notes id's to match parent slides
+	var notes = GetElementsWithClassName('div','notes');
+	for (var i = 0; i < notes.length; i++) {
+		var note = notes[i];
+		var id = 'note' + note.parentNode.id.substring(5);
+		note.setAttribute('id',id);
+	}
+	resetElapsedSlide();
+	resetRemainingTime();
+	window.setInterval('updateElaspedTime()', 1000);
+}
+
+function createNotesWindow() { // creates a window for our notes
+	if (!s5NotesWindow || s5NotesWindow.closed) { // Create the window if it doesn't exist
+		s5NotesWindowLoaded = false;
+		// Note: Safari has a tendency to ignore window options preferring to default to the settings of the parent window, grr.
+		s5NotesWindow = window.open('ui/s5-notes.html', 's5NotesWindow', 'top=0,left=0');
+	}
+	if (s5NotesWindowLoaded) { // Load the current note if the Note HTML has loaded
+		loadNote();
+	} else { // Keep trying...
+		window.setTimeout('createNotesWindow()', 50);
 	}
 }
 
+function loadNote() {
+// Loads a note into the note window
+	var notes = nextNotes = '<em class="disclaimer">There are no notes for this slide.</em>';
+	if (document.getElementById('note' + snum)) {
+		notes = document.getElementById('note' + snum).innerHTML;
+	}
+	if (document.getElementById('note' + (snum + 1))) {
+		nextNotes = document.getElementById('note' + (snum + 1)).innerHTML;
+	}
+	
+	var jl = document.getElementById('jumplist');
+	var slideTitle = jl.options[jl.selectedIndex].text.replace(/^\d+\s+:\s+/, '') + ((jl.selectedIndex) ? ' (' + jl.selectedIndex + '/' + (smax - 1) + ')' : '');
+	if (incrementals[snum].length > 0) {
+//		alert('howdy');
+		slideTitle += ' <small>[' + incpos + '/' + incrementals[snum].length + ']</small>';
+	}
+	if (jl.selectedIndex < smax - 1) {
+		var nextTitle = jl.options[jl.selectedIndex + 1].text.replace(/^\d+\s+:\s+/, '') + ((jl.selectedIndex + 1) ? ' (' + (jl.selectedIndex + 1) + '/' + (smax - 1) + ')' : '');
+	} else {
+		var nextTitle = '[end of slide show]';
+	}
+	
+	if (s5NotesWindow && !s5NotesWindow.closed && s5NotesWindow.document) {
+		s5NotesWindow.document.getElementById('slide').innerHTML = slideTitle;
+		s5NotesWindow.document.getElementById('notes').innerHTML = notes;
+		s5NotesWindow.document.getElementById('next').innerHTML = nextTitle;
+		s5NotesWindow.document.getElementById('nextnotes').innerHTML = nextNotes;
+	}
+	resetElapsedSlide();
+}
+
+function minimizeTimer(id) {
+	var obj = s5NotesWindow.document.getElementById(id);
+	if (hasClass(obj,'collapsed')) {
+		removeClass(obj,'collapsed');
+	} else {
+		addClass(obj,'collapsed');
+	}
+}
+
+function resetElapsedTime() {
+	presentationStart = new Date();
+	slideStart = new Date();
+	updateElaspedTime();
+}
+
+function resetElapsedSlide() {
+	if (snum != previousSlide) {
+		slideStart = new Date();
+		previousSlide = snum;
+		updateElaspedTime();
+	}
+}
+
+function updateElaspedTime() {
+	if (!s5NotesWindowLoaded || !s5NotesWindow || s5NotesWindow.closed) return;
+	var now = new Date();
+	var ep = s5NotesWindow.document.getElementById('elapsed-presentation');
+	var es = s5NotesWindow.document.getElementById('elapsed-slide');
+	ep.removeChild(ep.firstChild);
+	ep.appendChild(document.createTextNode(formatTime(now.valueOf() - presentationStart.valueOf())));
+	es.removeChild(es.firstChild);
+	es.appendChild(document.createTextNode(formatTime(now.valueOf() - slideStart.valueOf())));
+}
+
+function resetRemainingTime() {
+	if (!s5NotesWindowLoaded || !s5NotesWindow || s5NotesWindow.closed) return;
+	var startField = s5NotesWindow.document.getElementById('startFrom');
+	startFrom = readTime(startField.value);
+	countdown.remaining = startFrom * 60000;  // convert to msecs
+	countdown.start = new Date().valueOf();
+	countdown.end = countdown.start + countdown.remaining;
+	var tl = s5NotesWindow.document.getElementById('timeLeft');
+	var timeLeft = formatTime(countdown.remaining);
+	tl.removeChild(tl.firstChild);
+	tl.appendChild(document.createTextNode(timeLeft));
+}
+
+function updateRemainingTime() {
+	if (!s5NotesWindowLoaded || !s5NotesWindow || s5NotesWindow.closed) return;
+	var tl = s5NotesWindow.document.getElementById('timeLeft');
+	var now = new Date();
+	if (countdown.state == 'run') {
+		countdown.remaining = countdown.end - now;
+	}
+	tl.style.color = '';
+	tl.style.backgroundColor = '';
+	if (countdown.remaining >= 0) {
+		var timeLeft = formatTime(countdown.remaining);
+		removeClass(tl,'overtime');
+		if (countdown.remaining < 300000) {
+			tl.style.color = 'rgb(' + (255-Math.round(countdown.remaining/2000)) + ',0,0)';
+			tl.style.backgroundColor = 'rgb(255,255,' + (Math.round(countdown.remaining/2000)) + ')';
+		}
+	} else {
+		var timeLeft = '-' + formatTime(-countdown.remaining);
+		addClass(tl,'overtime');
+	}
+	tl.removeChild(tl.firstChild);
+	tl.appendChild(document.createTextNode(timeLeft));
+}
+
+function toggleRemainingTime() {
+	if (countdown.state == 'pause') countdown.state = 'run'; else countdown.state = 'pause';
+	if (countdown.state == 'pause') {
+		window.clearInterval(countdown.timer);
+	}
+	if (countdown.state == 'run') {
+		countdown.start = new Date().valueOf();
+		countdown.end = countdown.start + countdown.remaining;
+		countdown.timer = window.setInterval('updateRemainingTime()', 1000);
+	}
+}
+
+function alterRemainingTime(amt) {
+	var change = amt * 60000;  // convert to msecs
+	countdown.end += change;
+	countdown.remaining += change;
+	updateRemainingTime();
+}
+
+function formatTime(msecs)  {
+	var time = new Date(msecs);
+	
+	var hrs = time.getUTCHours() + ((time.getUTCDate() -1) * 24); // I doubt anyone will spend more than 24 hours on a presentation or single slide but just in case...
+	hrs = (hrs < 10) ? '0'+hrs : hrs;
+	if (hrs == 'NaN' || isNaN(hrs)) hrs = '--';
+	
+	var min = time.getUTCMinutes();
+	min = (min < 10) ? '0'+min : min;
+	if (min == 'NaN' || isNaN(min)) min = '--';
+	
+	var sec = time.getUTCSeconds();
+	sec = (sec < 10) ? '0'+sec : sec;
+	if (sec == 'NaN' || isNaN(sec)) sec = '--';
+
+	return hrs + ':' + min + ':' + sec;
+}
+
+function readTime(val) {
+	var sregex = /:/;
+	var matches = sregex.exec(val);
+	if (matches == null) {
+		return val;
+	} else {
+		var times = val.split(':');
+		var hours = parseInt(times[0]);
+		var mins = parseInt(times[1]);
+		var total = (hours * 60) + mins;
+		return total;
+	}
+}
+
+function windowChange() {
+	fontScale();
+}
+
+function startup() {
+	defaultCheck();
+	createControls();  // hallvord
+	slideLabel();
+	incrementals = createIncrementals();
+	noteLabel(); // [SI:060104] must follow slideLabel()
+	loadNote();
+	fixLinks();
+	externalLinks();
+	fontScale();
+	if (!isOp) notOperaFix();
+	slideJump();
+	if (defaultView == 'outline') {
+		toggle();
+	}
+	document.onkeyup = keys;
+	document.onkeypress = trap;
+	document.onclick = clicker;
+}
+
 window.onload = startup;
-window.onresize = function(){setTimeout('fontScale()', 50);}
-]]></script>
-
-EOF
-
-end 
-
+window.onresize = function(){setTimeout('windowChange()',5);}
