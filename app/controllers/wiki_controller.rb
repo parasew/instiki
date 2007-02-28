@@ -356,7 +356,7 @@ class WikiController < ApplicationController
   end
 
   def parse_category
-    @categories = WikiReference.list_categories.sort
+    @categories = WikiReference.list_categories(@web).sort
     @category = @params['category']
     if @category
       @set_name = "category '#{@category}'"

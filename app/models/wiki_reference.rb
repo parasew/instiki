@@ -46,8 +46,12 @@ class WikiReference < ActiveRecord::Base
     names = connection.select_all(sanitize_sql([query, category])).map { |row| row['name'] }
   end
   
-  def self.list_categories
-    query = "SELECT DISTINCT referenced_name FROM wiki_references WHERE link_type = '#{CATEGORY}'"
+  def self.list_categories(web)
+    query = "SELECT DISTINCT wiki_references.referenced_name " +
+      "FROM wiki_references LEFT OUTER JOIN pages " +
+      "ON wiki_references.page_id = pages.id " +
+      "WHERE wiki_references.link_type = '#{CATEGORY}' " +
+      "AND pages.web_id = #{web.id}"
     connection.select_all(query).map { |row| row['referenced_name'] }
   end
 
