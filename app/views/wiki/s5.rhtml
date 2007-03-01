@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd" >
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title><%=@page.plain_name%></title>
+<!-- metadata -->
+<meta name="generator" content="Instiki" />
+<meta name="version" content="<%= "#{Instiki::VERSION::STRING}" %>" />
+<meta name="author" content="<%=@page.author%>" />
+<meta name="company" content="" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="/s5/ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+
+<link rel="stylesheet" href="/s5/ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="/s5/ui/default/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="/s5/ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+<link rel="stylesheet" href="/s5/ui/default/math.css" type="text/css" media="all" id="mathStyle" />
+
+<!-- S5 JS -->
+<script src="/s5/ui/default/slides.js" type="text/javascript"></script>
+</head>
+<body>
+
+<%= @s5_content %>
+
+</body>
+</html>

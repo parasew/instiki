@@ -7,13 +7,17 @@ module MaRuKu
 	def to_s5(context={})
 		indent = context[:indent] || -1
 		ie_hack = context[:ie_hack] ||true
+                content_only = true #context[:content_only] 
 
 		doc = Document.new(nil,{:respect_whitespace =>:all})
-		html = Element.new('html', doc)
-		html.add_namespace('http://www.w3.org/1999/xhtml')
-		html.add_namespace('svg', "http://www.w3.org/2000/svg" )
+                if (content_only) 
+                  body = Element.new('div', doc)
+                else
+		  html = Element.new('html', doc)
+		  html.add_namespace('http://www.w3.org/1999/xhtml')
+		  html.add_namespace('svg', "http://www.w3.org/2000/svg" )
 		
-		head = Element.new('head', html)
+		  head = Element.new('head', html)
 			me = Element.new 'meta', head
 			me.attributes['http-equiv'] = 'Content-type'
 			me.attributes['content'] = 'text/html;charset=utf-8'	
@@ -25,7 +29,8 @@ module MaRuKu
 				title << Text.new(doc_title)
 		
 		
-		body = Element.new('body', html)
+		  body = Element.new('body', html)
+                end
 		
 		slide_header = self.attributes[:slide_header]
 		slide_footer = self.attributes[:slide_footer]
@@ -35,16 +40,18 @@ module MaRuKu
 		slide_bottomright  = self.attributes[:slide_bottomright]
 
 		dummy_layout_slide = 
-		"<div class='layout'>
-			<div id='controls'><!-- DO NOT EDIT --></div>
-			<div id='currentSlide'><!-- DO NOT EDIT --></div>
-			<div id='header'> #{slide_header}</div>
-			<div id='footer'> #{slide_footer}</div>
-		  <div class='topleft'> #{slide_topleft}</div>
-		  <div class='topright'> #{slide_topright}</div>
-		  <div class='bottomleft'> #{slide_bottomleft}</div>
-		  <div class='bottomright'> #{slide_bottomright}</div>
-		</div>"
+		"
+		<div class='layout'>
+		<div id='controls'></div>
+		<div id='currentSlide'></div>
+		<div id='header'> #{slide_header}</div>
+		<div id='footer'> #{slide_footer}</div>
+		<div class='topleft'> #{slide_topleft}</div>
+		<div class='topright'> #{slide_topright}</div>
+		<div class='bottomleft'> #{slide_bottomleft}</div>
+		<div class='bottomright'> #{slide_bottomright}</div>
+		</div>
+                "
 		body.add_element Document.new(dummy_layout_slide, {:respect_whitespace =>:all}).root
 
 		presentation = Element.new 'div', body
@@ -82,20 +89,20 @@ module MaRuKu
 			end
 		end
 
-
-		doc2 = Document.new("<div>"+S5_external+"</div>",{:respect_whitespace =>:all})
-		doc2.root.children.each{ |child| head << child }
-
-	
-		add_css_to(head)
-
 		xml  = "" 
+		if (content_only)
+		   body.write(xml,indent,transitive=true,ie_hack);
+		else
+		  doc2 = Document.new("<div>"+S5_external+"</div>",{:respect_whitespace =>:all})
+		  doc2.root.children.each{ |child| head << child }
 
-		# REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
-		# containing code.
-		html.write(xml,indent,transitive=true,ie_hack);
+		  add_css_to(head)
 
-		Xhtml10strict + xml
+		  # REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
+		  # containing code.
+		  html.write(xml,indent,transitive=true,ie_hack);
+		  Xhtml10strict + xml
+		end
 	end
 
 end 

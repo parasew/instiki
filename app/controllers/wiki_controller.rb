@@ -2,6 +2,7 @@ require 'fileutils'
 require 'redcloth_for_tex'
 require 'parsedate'
 require 'zip/zip'
+require 'sanitize'
 
 class WikiController < ApplicationController
 
@@ -10,6 +11,8 @@ class WikiController < ApplicationController
   cache_sweeper :revision_sweeper
 
   layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex, :pdf, :s5, :export_tex, :export_html]
+
+  include Sanitize
 
   def index
     if @web_name
@@ -287,7 +290,9 @@ class WikiController < ApplicationController
 
   def s5
     if @web.markup == :markdownMML or @web.markup == :markdown
-      @s5_content = Maruku.new(@page.content).to_s5
+#      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"), {:raw => true}).to_s5)
+      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+           {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}'], :content_only => true}).to_s5)
     end
   end
 
