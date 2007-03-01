@@ -7,7 +7,7 @@ module MaRuKu
 	def to_s5(context={})
 		indent = context[:indent] || -1
 		ie_hack = context[:ie_hack] ||true
-                content_only = true #context[:content_only] 
+                content_only = context[:content_only] ||true
 
 		doc = Document.new(nil,{:respect_whitespace =>:all})
                 if (content_only) 
@@ -34,6 +34,7 @@ module MaRuKu
 		
 		slide_header = self.attributes[:slide_header]
 		slide_footer = self.attributes[:slide_footer]
+		slide_subfooter = self.attributes[:slide_subfooter]
 		slide_topleft  = self.attributes[:slide_topleft]
 		slide_topright  = self.attributes[:slide_topright]
 		slide_bottomleft  = self.attributes[:slide_bottomleft]
@@ -45,7 +46,10 @@ module MaRuKu
 		<div id='controls'></div>
 		<div id='currentSlide'></div>
 		<div id='header'> #{slide_header}</div>
-		<div id='footer'> #{slide_footer}</div>
+		<div id='footer'>
+		<h1>#{slide_footer}</h1>
+		<h2>#{slide_subfooter}</h2>
+		</div>
 		<div class='topleft'> #{slide_topleft}</div>
 		<div class='topright'> #{slide_topright}</div>
 		<div class='bottomleft'> #{slide_bottomleft}</div>
@@ -59,10 +63,10 @@ module MaRuKu
 		
 		first_slide="
 	  <div class='slide'>
-	  <h1> #{self.attributes[:title]}</h1>
-	  <h2> #{self.attributes[:subtitle]}</h2>
-	  <h3> #{self.attributes[:author]}</h3>
-	  <h4> #{self.attributes[:company]}</h4>
+	  <h1> #{self.attributes[:title] ||context[:title]}</h1>
+	  <h2> #{self.attributes[:subtitle] ||context[:subtitle]}</h2>
+	  <h3> #{self.attributes[:author] ||context[:author]}</h3>
+	  <h4> #{self.attributes[:company] ||context[:company]}</h4>
 	  </div>
 		"
 		presentation.add_element Document.new(first_slide).root

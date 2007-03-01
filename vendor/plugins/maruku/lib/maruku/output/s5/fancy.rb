@@ -3,11 +3,11 @@ module MaRuKu
 	
 	<meta name="defaultView" content="slideshow" />
 	<meta name="controlVis" content="hidden" />
-	<link rel="stylesheet" href="s5/ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
-	<link rel="stylesheet" href="s5/ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
-	<link rel="stylesheet" href="s5/ui/default/print.css" type="text/css" media="print" id="slidePrint" />
-	<link rel="stylesheet" href="s5/ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
-	<script src="s5/ui/default/slides.js" type="text/javascript"> </script>
+	<link rel="stylesheet" href="ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+	<link rel="stylesheet" href="ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+	<link rel="stylesheet" href="ui/default/print.css" type="text/css" media="print" id="slidePrint" />
+	<link rel="stylesheet" href="ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+	<script src="ui/default/slides.js" type="text/javascript"> </script>
 EOF
 
 

@@ -14,7 +14,7 @@ div.timers {
 	border: 0.08em solid #222;
 	border-top-width: 1px;
 	border-left-width: 1px;
-	float: left;
+	float: right;
 	padding: 0.2em;
 	margin: 0 0 0.5em;
 	position: relative;
@@ -93,7 +93,7 @@ div.timers li {float: left; width: 5em; margin: 0; padding: 0 0.5em;
   text-align: center;}
 
 div#elapsed {width: 12.1em;}
-div#remaining {clear: left; width: 12.1em;}
+div#remaining {clear: right; width: 12.1em;}
 div#remaining p {text-align: center;}
 
 #slide,
