@@ -44,7 +44,7 @@ module MaRuKu
 		"
 		<div class='layout'>
 		<div id='controls'></div>
-		<div id='currentSlide'></div>
+		<div id='currentSlide'> </div>
 		<div id='header'> #{slide_header}</div>
 		<div id='footer'>
 		<h1>#{slide_footer}</h1>

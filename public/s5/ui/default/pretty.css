@@ -41,7 +41,7 @@ div.long {font-size: 0.75em;}
 .slide h1 {position: absolute; top: 0em; left:5em; z-index: 1;
   margin: auto; padding: 0.3em 0 0 50px; white-space: nowrap;
   font: bold 150%/1em Helvetica, sans-serif; text-transform: capitalize;
-  color: #DFD; background: #050;}
+  color: #CCC; background: #050;}
 .slide h3 {font-size: 130%;}
 h1 abbr {font-variant: small-caps;}
 
@@ -54,7 +54,7 @@ html>body div#controls {position: fixed; padding: 0; top: auto;}
   cursor: pointer;}
 #controls #navList #jumplist {background: #DDD; color: #272;}
 
-#currentSlide {text-align: center; font-size: 0.5em; color: #4E4;}
+#currentSlide, #currentSlide a {text-align: center; font-size:.75em; color: #DED;}
 
 #slide0 {padding-top: 3.5em; font-size: 90%;}
 #slide0 h1 {position: static; margin: 1em 0 0; padding: 0;
