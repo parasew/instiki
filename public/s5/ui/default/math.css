@@ -3,3 +3,17 @@ math[display=block] {overflow:auto;}
 math { white-space: nowrap }
 .maruku-eq-number {float:right}
 .blockquotesource {margin-left:1em;}
+table.plaintable {
+    border-collapse:collapse;
+    margin-left:30px;
+    border:0;
+}
+.plaintable td {border:1px solid #000; padding: 3px;}
+.plaintable th {padding: 3px;}
+.plaintable caption {
+    font-weight: bold;
+    font-size:1.1em;
+    text-align:center;
+    margin-left:30px;
+}
+

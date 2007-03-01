@@ -54,7 +54,7 @@ html>body div#controls {position: fixed; padding: 0; top: auto;}
   cursor: pointer;}
 #controls #navList #jumplist {background: #DDD; color: #272;}
 
-#currentSlide {text-align: center; font-size: 0.5em; color: #494;}
+#currentSlide {text-align: center; font-size: 0.5em; color: #4E4;}
 
 #slide0 {padding-top: 3.5em; font-size: 90%;}
 #slide0 h1 {position: static; margin: 1em 0 0; padding: 0;
@@ -74,7 +74,6 @@ html>body .external {border-bottom: none;}
 .incremental, .incremental *, .incremental *:after {color: #DDE; visibility: visible;}
 img.incremental {visibility: hidden;}
 .slide .current {color: #B02;}
-
 
 /* diagnostics
 

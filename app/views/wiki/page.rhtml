@@ -44,7 +44,7 @@
     <%= link_to 'PDF', {:web => @web.address, :action => 'pdf', :id => @page.name},
             {:id => 'view_pdf'} %>
    <% end %>
-   <% if #{@params['category']}  == 'S5-slideshow' %>
+   <% if WikiReference.pages_in_category('S5-slideshow').map.include?(@page.name) %>
     |
     <%= link_to 'S5', {:web => @web.address, :action => 's5', :id => @page.name} %>
    <% end %>
