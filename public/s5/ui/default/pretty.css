@@ -1,6 +1,6 @@
 /* Following are the presentation styles -- edit away! */
 
-body {background: #FFF; color: #000; font-size: 2.25em;}
+body {background: #FFF; color: #000; font-size: 2em;}
 :link, :visited {text-decoration: none; color: #00C;}
 #controls :active {color: #8A8 !important;}
 #controls :focus {outline: 1px dotted #272;}
