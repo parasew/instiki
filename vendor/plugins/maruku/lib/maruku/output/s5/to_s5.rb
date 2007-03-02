@@ -5,32 +5,31 @@ module MaRuKu
 		
 	# Render as an HTML fragment (no head, just the content of BODY). (returns a string)
 	def to_s5(context={})
-		indent = context[:indent] || -1
-		ie_hack = context[:ie_hack] ||true
-                content_only = context[:content_only] ||true
+		indent       = context[:indent]       || -1
+		ie_hack      = !context[:ie_hack].kind_of?(FalseClass)
+		content_only = !context[:content_only].kind_of?(FalseClass)
 
 		doc = Document.new(nil,{:respect_whitespace =>:all})
-                if (content_only) 
-                  body = Element.new('div', doc)
-                else
-		  html = Element.new('html', doc)
-		  html.add_namespace('http://www.w3.org/1999/xhtml')
-		  html.add_namespace('svg', "http://www.w3.org/2000/svg" )
-		
-		  head = Element.new('head', html)
+
+		if content_only
+			body = Element.new('div', doc)
+		else
+			html = Element.new('html', doc)
+			html.add_namespace('http://www.w3.org/1999/xhtml')
+			html.add_namespace('svg', "http://www.w3.org/2000/svg" )
+
+			head = Element.new('head', html)
 			me = Element.new 'meta', head
 			me.attributes['http-equiv'] = 'Content-type'
 			me.attributes['content'] = 'text/html;charset=utf-8'	
 
-
 			# Create title element
 			doc_title = self.attributes[:title] || self.attributes[:subject] || ""
 			title = Element.new 'title', head
-				title << Text.new(doc_title)
-		
-		
-		  body = Element.new('body', html)
-                end
+				title << Text.new(doc_title)		
+			body = Element.new('body', html)
+			
+		end
 		
 		slide_header = self.attributes[:slide_header]
 		slide_footer = self.attributes[:slide_footer]
@@ -82,7 +81,6 @@ module MaRuKu
 			
 			h1 = Element.new 'h1', div
 			slide.header_element.children_to_html.each do |e| h1 << e; end
-
 			
 			array_to_html(slide.immediate_children).each do |e|  div << e  end
 				
@@ -105,7 +103,7 @@ module MaRuKu
 		  # REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
 		  # containing code.
 		  html.write(xml,indent,transitive=true,ie_hack);
-		  Xhtml10strict + xml
+		  Xhtml11_mathml2_svg11 + xml
 		end
 	end
 
