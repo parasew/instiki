@@ -11,11 +11,11 @@
   <%= render 'wiki_words_help' %>
 </div>
 
-<div id="editForm">
 	<%= form_tag({:web => @web.address, :action => 'save', :id => @page.name},
 	      { :id => 'editForm', :method => 'post', :onsubmit => 'cleanAuthorName();', 
 	        'accept-charset' => 'utf-8' }) %>
-        <textarea name="content" id="content"><%= @revision.content %></textarea>
+	<div>
+        <textarea name="content" id="content" rows="24" cols="60"><%= h(@revision.content.delete("\x01-\x08\x0B\x0C\x0E-\x1F")) %></textarea>
 		<div id="editFormButtons">
 	        <input type="submit" value="Update" accesskey="u" /> as 
 		    <input type="text" name="author" id="authorName" value="<%= @author %>" 
@@ -27,8 +27,8 @@
                 <span class="unlock">(unlocks page)</span>
 			</span>
 	    </div>
+	</div>
 	<%= end_form_tag %>
-</div>
 
 <script type="text/javascript">
 function cleanAuthorName() {
