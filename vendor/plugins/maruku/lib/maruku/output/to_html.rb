@@ -79,8 +79,8 @@ module MaRuKu; module Out; module HTML
 	end
 	
 				
-		Xhtml10strict  = "
-<?xml version='1.0' encoding='utf-8'?>
+		Xhtml10strict  = 
+"<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'
 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n"
 		
@@ -717,7 +717,7 @@ of the form `#ff00ff`.
 			url = ref[:url]
 			title = ref[:title]
 			a.attributes['src'] = url.to_s
-			a.attributes['alt'] = title.to_s if not a.attributes['alt']
+			a.attributes['alt'] = children_to_s 
 		else
 			maruku_error"Could not find id = #{id.inspect} for\n #{self.inspect}"
 			tell_user "Could not create image with ref_id = #{id.inspect};"+
@@ -737,7 +737,7 @@ of the form `#ff00ff`.
 		title = self.title
 		a =  create_html_element 'img'
 			a.attributes['src'] = url.to_s
-			a.attributes['alt'] = title.to_s if not a.attributes['alt']
+			a.attributes['alt'] = children_to_s 
 		return a
 	end
 
