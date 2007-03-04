@@ -379,3 +379,13 @@ math { white-space: nowrap }
 .maruku-eq-number {float:right}
 .blockquotesource {margin-left:1em;}
 fieldset.search {display:inline; border:none;padding:0;margin:0;top:5px;position:relative;}
+span.keyboard {
+ background: #CCC;
+ color: #000;
+ border: outset 2px;
+ font-family:verdana, arial, sans-serif;
+ font-size: .7em;
+ margin-left:5px;
+ padding:1px 2px;
+}
+

@@ -38,7 +38,7 @@ div#footer {font-size: 0.5em; font-weight: bold; padding: 1em 0;}
 #footer h2 {font-style: italic;}
 
 div.long {font-size: 0.75em;}
-.slide h1 {position: absolute; top: 0em; left:5em; z-index: 1;
+.slide h1 {position: absolute; top: 0em; left:0em; z-index: 1;
   margin: auto; padding: 0.3em 0 0 50px; white-space: nowrap;
   font: bold 150%/1em Helvetica, sans-serif; text-transform: capitalize;
   color: #CCC; background: #050;}
@@ -74,6 +74,8 @@ html>body .external {border-bottom: none;}
 .incremental, .incremental *, .incremental *:after {color: #DDE; visibility: visible;}
 img.incremental {visibility: hidden;}
 .slide .current {color: #B02;}
+
+p.flushtop {margin-top:0px}
 
 /* diagnostics
 

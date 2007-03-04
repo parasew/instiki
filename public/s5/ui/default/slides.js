@@ -544,7 +544,7 @@ function getIncrementals(obj) {
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
 		if (hasClass(child, 'incremental')) {
-			if (child.nodeName == 'ol' || child.nodeName == 'ul') {
+			if (child.nodeName == 'ol' || child.nodeName == 'ul' || child.nodeName == 'dl') {
 				removeClass(child, 'incremental');
 				for (var j = 0; j < child.childNodes.length; j++) {
 					if (child.childNodes[j].nodeType == 1) {
@@ -557,7 +557,7 @@ function getIncrementals(obj) {
 			}
 		}
 		if (hasClass(child, 'show-first')) {
-			if (child.nodeName == 'ol' || child.nodeName == 'ul') {
+			if (child.nodeName == 'ol' || child.nodeName == 'ul' || child.nodeName == 'dl') {
 				removeClass(child, 'show-first');
 				if (child.childNodes[isGe].nodeType == 1) {
 					removeClass(child.childNodes[isGe], 'incremental');
