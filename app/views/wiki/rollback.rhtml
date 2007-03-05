@@ -18,7 +18,7 @@
         <textarea name="content" id="content" rows="24" cols="60"><%= h(@revision.content.delete("\x01-\x08\x0B\x0C\x0E-\x1F")) %></textarea>
 		<div id="editFormButtons">
 	        <input type="submit" value="Update" accesskey="u" /> as 
-		    <input type="text" name="author" id="authorName" value="<%= @author %>" 
+		    <input type="text" name="author" id="authorName" value="<%= h(@author.delete("\x01-\x08\x0B\x0C\x0E-\x1F")) %>" 
 		        onclick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
 		    | 
 			<span>

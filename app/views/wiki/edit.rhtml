@@ -16,7 +16,7 @@
 		<textarea name="content" id="content" rows="24" cols="60"><%= h(@flash[:content] || @page.content.delete("\x01-\x08\x0B\x0C\x0E-\x1F")) %></textarea>
 		<div id="editFormButtons">
 			<input type="submit" value="Submit" accesskey="s"/> as 
-			<%= text_field_tag :author, @author, 
+			<%= text_field_tag :author, h(@author.delete("\x01-\x08\x0B\x0C\x0E-\x1F")), 
 			        :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
 			        :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
 			| 

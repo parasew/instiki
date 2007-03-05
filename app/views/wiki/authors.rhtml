@@ -3,7 +3,7 @@
 <ul id="authorList">
   <% for author in @authors %>
     <li>
-      <%= link_to_page author %>
+      <%= link_to_page author.delete("\x01-\x08\x0B\x0C\x0E-\x1F") %>
       co- or authored:
       <%= @page_names_by_author[author].collect { |page_name| link_to_page(page_name) }.sort.join ', ' %>
     </li>

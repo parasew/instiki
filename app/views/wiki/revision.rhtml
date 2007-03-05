@@ -17,7 +17,7 @@
 
 <div class="byline">
   <%= "Revision from #{format_date(@revision.revised_at)} by" %>
-  <%= link_to_page @revision.author %>
+  <%= link_to_page @revision.author.delete("\x01-\x08\x0B\x0C\x0E-\x1F") %>
 </div>
 
 <div class="navigation">
