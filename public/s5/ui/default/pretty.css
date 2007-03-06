@@ -29,7 +29,7 @@ sup {font-size: smaller; line-height: 1px;}
 .slide ul ul li {margin: .2em; font-size: 85%; list-style: square;}
 .slide img.leader {display: block; margin: 0 auto;}
 
-.incremental code {visibility: hidden}
+.incremental code {color: #DDE; visibility: visible;}
 
 div#header, div#footer {background: #050; color: #ABA;
   font-family: Verdana, Helvetica, sans-serif;}
