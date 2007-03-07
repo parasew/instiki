@@ -29,7 +29,7 @@ module MaRuKu; module Strings
 	TabSize = 4;
 	
 	def split_lines(s)
-		s.split("\n")
+		s.gsub("\r","").split("\n")
 	end
 	
 	# This parses email headers. Returns an hash. 

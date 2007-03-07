@@ -237,6 +237,10 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			ex = e.inspect + e.backtrace.join("\n")
 			maruku_error "Bad block-level HTML:\n#{add_tabs(ex,1,'|')}\n", src
 		end
+		if not (h.rest =~ /^\s*$/)
+			maruku_error "Could you please format this better?\n"+
+				"I see that #{h.rest.inspect} is left after the raw HTML.", src
+		end
 		raw_html = h.stuff_you_read
 		return md_html(raw_html)
 	end
@@ -246,7 +250,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		while src.cur_line 
 			# :olist does not break
 			case t = src.cur_line.md_type
-				when :quote,:header3,:empty,:raw_html,:ref_definition,:ial,:xml_instr
+				when :quote,:header3,:empty,:ref_definition,:ial #,:xml_instr,:raw_html
 					break
 				when :olist,:ulist
 					break if src.next_line.md_type == t
@@ -349,6 +353,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		# collect all indented lines
 		saw_empty = false; saw_anything_after = false
 		while src.cur_line 
+#			puts "Reading indent = #{indentation} #{src.cur_line.inspect}"
 			#puts "#{src.cur_line.md_type} #{src.cur_line.inspect}"
 			if src.cur_line.md_type == :empty
 				saw_empty = true
@@ -365,7 +370,9 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				end
 				saw_anything_after = true
 			else
-				break if break_list.include? src.cur_line.md_type
+#				if src.cur_line[0] != ?\ 
+					break if break_list.include? src.cur_line.md_type
+#				end
 #				break if src.cur_line.md_type != :text
 			end
 		

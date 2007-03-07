@@ -34,9 +34,13 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		EverythingElse = %r{^[^<]+}m
 		CommentStart = %r{^<!--}x
 		CommentEnd = %r{^.*-->}
-		TO_SANITIZE = ['img','hr'] 
+		TO_SANITIZE = ['img','hr','br'] 
 		
 		attr_reader :rest
+		
+		def my_debug(s)
+#			puts "---"*10+"\n"+inspect+"\t>>>\t"s
+		end
 		
 		def initialize 
 			@rest = ""
@@ -46,7 +50,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			self.state = :inside_element
 		end
 
-		attr_accessor :state # :inside_element, :inside_tag, :inside_comment,
+		attr_accessor :state # = :inside_element, :inside_tag, :inside_comment,
 		
 		def eat_this(line)
 			@rest = line  + @rest
@@ -70,15 +74,18 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 							@rest = @m.post_match
 							self.state = :inside_comment
 						elsif @m = Tag.match(@rest) then
+							my_debug "#{@state}: Tag: #{@m.to_s.inspect}"
 							things_read += 1
 							handle_tag
 							self.state = :inside_element
 						elsif @m = PartialTag.match(@rest) then
+							my_debug "#{@state}: PartialTag: #{@m.to_s.inspect}"
 							@already += @m.pre_match 
 							@rest = @m.post_match
 							@partial_tag = @m.to_s
 							self.state = :inside_tag
 						elsif @m = EverythingElse.match(@rest)
+							my_debug "#{@state}: Everything: #{@m.to_s.inspect}"
 							@already += @m.pre_match + @m.to_s
 							@rest = @m.post_match
 							self.state = :inside_element
@@ -87,7 +94,9 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 						end
 					when :inside_tag
 						if @m = /^[^>]*>/.match(@rest) then
+							my_debug "#{@state}: inside_tag: matched #{@m.to_s.inspect}"
 							@partial_tag += @m.to_s
+							my_debug "#{@state}: inside_tag: matched TOTAL: #{@partial_tag.to_s.inspect}"
 							@rest = @partial_tag + @m.post_match
 							@partial_tag = nil
 							self.state = :inside_element
@@ -112,16 +121,16 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 
 			is_closing = !!@m[1]
 			tag = @m[2]
-			attributes = @m[3]
-
+			attributes = @m[3].to_s
 		
 			is_single = false
-			if attributes =~ /\A(.*)\/\Z/
-				attributes = $1
+			if attributes[-1] == ?/ # =~ /\A(.*)\/\Z/
+				attributes = attributes[0, attributes.size-1]
 				is_single = true
 			end
 
-#			puts "READ TAG #{@m.to_s.inspect} tag = #{tag} closing? #{is_closing} single = #{is_single}"
+			my_debug "Attributes: #{attributes.inspect}"
+			my_debug "READ TAG #{@m.to_s.inspect} tag = #{tag} closing? #{is_closing} single = #{is_single}"
 	
 			if TO_SANITIZE.include? tag 
 				attributes.strip!
@@ -145,7 +154,10 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			else 
 				@already += @m.to_s
 				
-				@tag_stack.push(tag) unless is_single
+				if not is_single
+					@tag_stack.push(tag) 
+					my_debug "Pushing #{tag.inspect} when read #{@m.to_s.inspect}"
+				end
 			end
 		end
 		def error(s)
@@ -166,6 +178,8 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		def stuff_you_read
 			@already
 		end
+		
+		def rest() @rest end
 		
 		def is_finished?
 			(self.state == :inside_element)  and @tag_stack.empty?

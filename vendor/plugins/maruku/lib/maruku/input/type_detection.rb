@@ -50,8 +50,11 @@ module MaRuKu; module Strings
 		return :xml_instr if l =~ %r{^\s*<\?}
 		return :raw_html if l =~ %r{^[ ]?[ ]?[ ]?</?\s*\w+}
 		return :raw_html if l =~ %r{^[ ]?[ ]?[ ]?<\!\-\-}
-		return :ulist    if l =~ /^\s?([\*\-\+])\s+.*\w+/
-		return :olist    if l =~ /^\s?\d+\..*\w+/
+		# Something is wrong with how we parse lists! :-(
+		#return :ulist    if l =~ /^[ ]{0,3}([\*\-\+])\s+.*\w+/
+		#return :olist    if l =~ /^[ ]{0,3}\d+\..*\w+/
+		return :ulist    if l =~ /^[ ]{0,1}([\*\-\+])\s+.*\w+/
+		return :olist    if l =~ /^[ ]{0,1}\d+\..*\w+/
 		return :header1  if l =~ /^(=)+/ 
 		return :header2  if l =~ /^([-\s])+$/ 
 		return :header3  if l =~ /^(#)+\s*\S+/ 

@@ -451,22 +451,35 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		h = HTMLHelper.new
 		begin
 			# This is our current buffer in the context
-			start = src.current_remaining_buffer
+			next_stuff = src.current_remaining_buffer
 			
-			h.eat_this start
-			if not h.is_finished?
-				error "inline_html: Malformed:\n "+
-					"#{start.inspect}\n #{h.inspect}",src,con
+			consumed = 0
+			while true
+				h.eat_this next_stuff[consumed].chr; consumed += 1
+				break if h.is_finished? 
+				
+				if consumed >= next_stuff.size
+					maruku_error "Malformed HTML starting at #{next_stuff.inspect}", src, con
+				end
 			end
+			src.ignore_chars(consumed)
+			con.push_element md_html(h.stuff_you_read)
 			
-			consumed = start.size - h.rest.size 
-			if consumed > 0
-				con.push_element md_html(h.stuff_you_read)
-				src.ignore_chars(consumed)
-			else
-				puts "HTML helper did not work on #{start.inspect}"
-				con.push_char src.shift_char
-			end
+			#start = src.current_remaining_buffer
+			# h.eat_this start
+			# if not h.is_finished?
+			# 	error "inline_html: Malformed:\n "+
+			# 		"#{start.inspect}\n #{h.inspect}",src,con
+			# end
+			# 
+			# consumed = start.size - h.rest.size 
+			# if consumed > 0
+			# 	con.push_element md_html(h.stuff_you_read)
+			# 	src.ignore_chars(consumed)
+			# else
+			# 	puts "HTML helper did not work on #{start.inspect}"
+			# 	con.push_char src.shift_char
+			# end
 		rescue Exception => e
 			maruku_error "Bad html: \n" + 
 				add_tabs(e.inspect+e.backtrace.join("\n"),1,'>'),

@@ -42,7 +42,7 @@ module MaRuKu
 		dummy_layout_slide = 
 		"
 		<div class='layout'>
-		<div id='controls'> </div>
+		<div id='controls'></div>
 		<div id='currentSlide'> </div>
 		<div id='header'> #{slide_header}</div>
 		<div id='footer'>
@@ -75,7 +75,7 @@ module MaRuKu
 			slide_num += 1
 			@doc.attributes[:doc_prefix] = "s#{slide_num}"
 			
-#			puts "Slide #{slide_num}: " + slide.header_element.to_s
+			puts "Slide #{slide_num}: " + slide.header_element.to_s
 			div = Element.new('div', presentation)
 			div.attributes['class'] = 'slide'
 			
