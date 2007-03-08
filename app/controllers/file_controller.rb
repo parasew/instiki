@@ -1,6 +1,7 @@
 # Controller responsible for serving files and pictures.
 
 require 'zip/zip'
+require 'string_utils'
 
 class FileController < ApplicationController
 
@@ -9,7 +10,7 @@ class FileController < ApplicationController
   before_filter :check_allow_uploads
 
   def file
-    @file_name = params['id']
+    @file_name = @params['id']
     if @params['file']
       # form supplied
       new_file = @web.wiki_files.create(@params['file'])
@@ -28,6 +29,7 @@ class FileController < ApplicationController
         send_data(file.content, determine_file_options_for(@file_name, :filename => @file_name))
       else
         @file = WikiFile.new(:file_name => @file_name)
+#        @file = WikiFile.new(@file_name)
         render
       end
     end
@@ -61,7 +63,8 @@ class FileController < ApplicationController
     if @web.allow_uploads?
       return true
     else
-      render :status => 403, :text => 'File uploads are blocked by the webmaster' 
+      @hide_navigation  = true
+      render(:status => 403, :text => 'File uploads are blocked by the webmaster', :layout => true)
       return false
     end
   end
@@ -77,6 +80,10 @@ class FileController < ApplicationController
       page_content = entry.get_input_stream.read
       logger.info "Processing page '#{page_name}'"
       begin
+        if !page_content.is_utf8?
+          logger.info "Page '#{page_name}' contains non-utf8 character data. Skipping."
+          next
+        end
         existing_page = @wiki.read_page(@web.address, page_name)
         if existing_page
           if existing_page.content == page_content

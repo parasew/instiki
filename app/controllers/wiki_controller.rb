@@ -3,6 +3,7 @@ require 'redcloth_for_tex'
 require 'parsedate'
 require 'zip/zip'
 require 'sanitize'
+require 'string_utils'
 
 class WikiController < ApplicationController
 
@@ -226,25 +227,28 @@ class WikiController < ApplicationController
   def save
     render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
 
-    author_name = @params['author']
+    author_name = @params['author'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
+    raise "Your name was not valid utf-8" if !author_name.is_utf8?
     cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
-      filter_spam(@params['content'])
+      the_content = @params['content'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
+      raise "Your content was not valid utf-8" if !the_content.is_utf8?
+      filter_spam(the_content)
       if @page
-        wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
+        wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
         @page.unlock
       else
-        wiki.write_page(@web_name, @page_name, @params['content'], Time.now, 
+        wiki.write_page(@web_name, @page_name, the_content, Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
       end
       redirect_to_page @page_name
     rescue => e
       flash[:error] = e
       logger.error e
-      flash[:content] = @params['content']
+      flash[:content] = the_content
       if @page
         @page.unlock
         redirect_to :action => 'edit', :web => @web_name, :id => @page_name
@@ -290,7 +294,7 @@ class WikiController < ApplicationController
 
   def s5
     if @web.markup == :markdownMML or @web.markup == :markdown
-      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r"),
            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}'], :content_only => true,
             :author => @page.author, :title => @page.plain_name}).to_s5)
     end
@@ -441,7 +445,7 @@ class WikiController < ApplicationController
       raise "Your edit was blocked by spam filtering" if content =~ pattern
     end
   end
-  
+
   def load_spam_patterns
     spam_patterns_file = "#{RAILS_ROOT}/config/spam_patterns.txt"
     if File.exists?(spam_patterns_file)
