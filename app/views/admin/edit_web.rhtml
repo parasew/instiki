@@ -61,8 +61,7 @@
       <br/>
     </p>
 
-    <a href="#" 
-       onclick="document.getElementById('additionalStyle').style.display='block';return false;">
+    <a href="#" onclick="toggleView('additionalStyle');return false;">
     Stylesheet tweaks &gt;&gt;</a>
     <em>
     - add or change styles used by this web; styles defined here take precedence over 
@@ -70,8 +69,7 @@
     tags.</em>
     <br/>
     <textarea id="additionalStyle" class="disableAutoComplete" cols="50" rows="20"
-      style="display: none; margin-top: 10px; margin-bottom: 5px;" 
-      name="additional_style"><%= @web.additional_style %>
+      style="display:none" name="additional_style"><%= @web.additional_style %>
     </textarea>
   </div>
 
