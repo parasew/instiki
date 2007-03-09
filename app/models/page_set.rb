@@ -85,7 +85,7 @@ class PageSet < Array
 
   def wiki_words
     self.inject([]) { |wiki_words, page|
-      wiki_words + page.wiki_words
+        wiki_words + page.wiki_words
     }.flatten.uniq.sort
   end
 

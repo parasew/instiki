@@ -8,7 +8,8 @@ require 'string_utils'
 class WikiController < ApplicationController
 
   before_filter :load_page
-  caches_action :show, :published, :authors, :recently_revised, :list
+  caches_action :show, :published, :authors, :tex, :s5, :print
+#  caches_action :show, :published, :authors, :tex. :s5, :print, :recently_revised, :list
   cache_sweeper :revision_sweeper
 
   layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex, :pdf, :s5, :export_tex, :export_html]
@@ -294,7 +295,7 @@ class WikiController < ApplicationController
 
   def s5
     if @web.markup == :markdownMML or @web.markup == :markdown
-      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r"),
+      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}'], :content_only => true,
             :author => @page.author, :title => @page.plain_name}).to_s5)
     end
