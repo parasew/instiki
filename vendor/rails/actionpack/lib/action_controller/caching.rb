@@ -472,6 +472,7 @@ module ActionController #:nodoc:
         end
 
         def write(name, value, options = nil) #:nodoc:
+          File.umask(0006)
           ensure_cache_path(File.dirname(real_file_path(name)))
           File.open(real_file_path(name), "wb+") { |f| f.write(value) }
         rescue => e
