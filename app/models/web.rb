@@ -89,6 +89,7 @@ class Web < ActiveRecord::Base
   def create_files_directory
     return unless allow_uploads == 1
     dummy_file = self.wiki_files.build(:file_name => '0', :description => '0', :content => '0')
+    File.umask(0002)
     dir = File.dirname(dummy_file.content_path)
     begin
       require 'fileutils'
