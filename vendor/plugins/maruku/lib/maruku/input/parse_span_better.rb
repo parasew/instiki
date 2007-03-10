@@ -197,9 +197,13 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 					end
 				end
 			when ?{ # extension
-				src.ignore_char # {
-				interpret_extension(src, con, [?}])
-				src.ignore_char # }
+				if [?#, ?., ?:].include? src.next_char
+					src.ignore_char # {
+					interpret_extension(src, con, [?}])
+					src.ignore_char # }
+				else
+					con.push_char src.shift_char
+				end
 			when nil
 				maruku_error( ("Unclosed span (waiting for %s"+
 				 "#{exit_on_strings.inspect})") % [
@@ -455,12 +459,13 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			
 			consumed = 0
 			while true
-				h.eat_this next_stuff[consumed].chr; consumed += 1
-				break if h.is_finished? 
-				
 				if consumed >= next_stuff.size
 					maruku_error "Malformed HTML starting at #{next_stuff.inspect}", src, con
+					break
 				end
+
+				h.eat_this next_stuff[consumed].chr; consumed += 1
+				break if h.is_finished? 
 			end
 			src.ignore_chars(consumed)
 			con.push_element md_html(h.stuff_you_read)

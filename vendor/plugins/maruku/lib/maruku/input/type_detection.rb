@@ -76,7 +76,7 @@ module MaRuKu; module Strings
 	# $1 = id   $2 = attribute list
 	AttributeDefinitionList = /^\s{0,3}\{([\w\d\s]+)\}:\s*(.*)\s*$/
 	# 
-	InlineAttributeList = /^\s{0,3}\{(.*)\}\s*$/
+	InlineAttributeList = /^\s{0,3}\{([:#\.].*)\}\s*$/
 	# Example:
 	#     ^:blah blah
 	#     ^: blah blah
