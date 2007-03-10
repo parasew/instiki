@@ -190,7 +190,8 @@ class ApplicationController < ActionController::Base
     @web.nil? or
     @web.password.nil? or
     cookies[CGI.escape(@web_name)] == @web.password or
-    password_check(@params['password'])
+    password_check(@params['password']) or
+    (@web.published? and action_name == 's5')
   end
 
 end
