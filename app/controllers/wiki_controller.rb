@@ -8,8 +8,7 @@ require 'string_utils'
 class WikiController < ApplicationController
 
   before_filter :load_page
-  caches_action :show, :published, :authors, :tex, :s5, :print
-#  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list
+  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list
   cache_sweeper :revision_sweeper
 
   layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex, :pdf, :s5, :export_tex, :export_html]
