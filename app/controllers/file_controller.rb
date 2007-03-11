@@ -29,7 +29,6 @@ class FileController < ApplicationController
         send_data(file.content, determine_file_options_for(@file_name, :filename => @file_name))
       else
         @file = WikiFile.new(:file_name => @file_name)
-#        @file = WikiFile.new(@file_name)
         render
       end
     end
