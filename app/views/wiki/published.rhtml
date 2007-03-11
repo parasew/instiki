@@ -7,3 +7,19 @@
 %>
 
 <%= @renderer.display_published %>
+
+<div class="byline">
+  <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 
+  by
+  <%= author_link(@page, { :mode => (@link_mode || :show) }) %>
+</div>
+
+<div class="navigation">
+<span class="views">
+<% if WikiReference.pages_in_category(@web, 'S5-slideshow').map.include?(@page.name) %>
+Views:
+    <%= link_to 'S5', {:web => @web.address, :action => 's5',
+	:id => @page.name}, {:id => 'view_S5'} %>
+<% end %>
+</span>
+</div>
