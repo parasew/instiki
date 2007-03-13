@@ -2,7 +2,7 @@ class Wiki
 
   cattr_accessor :storage_path, :logger
   self.storage_path = "#{RAILS_ROOT}/storage/"
-  self.logger = RAILS_DEFAULT_LOGGER
+  self.logger = INSTIKI_LOGGER 
 
   def authenticate(password)
     password == (system.password || 'instiki')
