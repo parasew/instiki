@@ -1,3 +1,12 @@
+*1.2.3* (March 12th, 2007)
+
+* Ruby 1.8.6 compatibility
+
+* Windows: include MinGW in RUBY_PLATFORM check.  #2982 [okkez000@gmail.com, Kaspar Schiess]
+
+* Stop swallowing errors during rake test [Koz]
+
+
 *1.2.2* (February 5th, 2007)
 
 * Fix gem deprecation warnings, which also means depending on RubyGems 0.9.0+ [Chad Fowler]

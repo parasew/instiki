@@ -563,9 +563,9 @@ class Mysql
   def scramble41(password, message)
     return 0x00.chr if password.nil? or password.empty?
     buf = [0x14]
-    s1 = Digest::SHA1.new(password).digest
-    s2 = Digest::SHA1.new(s1).digest
-    x = Digest::SHA1.new(message + s2).digest
+    s1 = Digest::SHA1.digest(password)
+    s2 = Digest::SHA1.digest(s1)
+    x = Digest::SHA1.digest(message + s2)
     (0..s1.length - 1).each {|i| buf.push(s1[i] ^ x[i])}
     buf.pack("C*")
   end
@@ -1174,7 +1174,11 @@ class << Mysql
   def finalizer(net)
     proc {
       net.clear
-      net.write Mysql::COM_QUIT.chr
+      begin
+        net.write(Mysql::COM_QUIT.chr)
+        net.close
+      rescue  # Ignore IOError if socket is already closed.
+      end
     }
   end
 

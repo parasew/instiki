@@ -1,3 +1,12 @@
+*1.13.3* (March 12th, 2007)
+
+* Apply [5709] to stable.
+
+* session_enabled? works with session :off.  #6680 [Catfish]
+
+* Performance: patch cgi/session to require digest/md5 once rather than per #create_new_id.  [Stefan Kaes]
+
+
 *1.13.2* (February 5th, 2007)
 
 * Add much-needed html-scanner tests.  Fixed CDATA parsing bug. [Rick]
@@ -9,8 +18,6 @@
 * fix form_for example in ActionController::Resources documentation. [gnarg]
 
 * Add singleton resources from trunk [Rick Olson]
-
-* TestSession supports indifferent access so session['foo'] == session[:foo] in your tests.  #7372 [julik, jean.helou]
 
 * select :multiple => true suffixes the attribute name with [] unless already suffixed.  #6977 [nik.kakelin, ben, julik]
 

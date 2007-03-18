@@ -6,10 +6,12 @@ require 'fixtures/comment'
 require 'fixtures/author'
 require 'fixtures/category'
 require 'fixtures/categorization'
+require 'fixtures/vertex'
+require 'fixtures/edge'
 
 class AssociationsJoinModelTest < Test::Unit::TestCase
   self.use_transactional_fixtures = false
-  fixtures :posts, :authors, :categories, :categorizations, :comments, :tags, :taggings, :author_favorites
+  fixtures :posts, :authors, :categories, :categorizations, :comments, :tags, :taggings, :author_favorites, :vertices
 
   def test_has_many
     assert authors(:david).categories.include?(categories(:general))
@@ -298,6 +300,18 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
       assert_equal [posts(:welcome), posts(:thinking)], tags(:general).taggings.find(:all, :include => :taggable)
     end
   end
+  
+  def test_has_many_polymorphic_with_source_type
+    assert_equal [posts(:welcome), posts(:thinking)], tags(:general).tagged_posts
+  end
+
+  def test_eager_has_many_polymorphic_with_source_type
+    tag_with_include = Tag.find(tags(:general).id, :include => :tagged_posts)
+    desired = [posts(:welcome), posts(:thinking)]
+    assert_no_queries do
+      assert_equal desired, tag_with_include.tagged_posts
+    end
+  end
 
   def test_has_many_through_has_many_find_all
     assert_equal comments(:greetings), authors(:david).comments.find(:all, :order => 'comments.id').first
@@ -414,6 +428,9 @@ class AssociationsJoinModelTest < Test::Unit::TestCase
                 message = "Expected a Tagging in taggings collection, got #{wrong.class}.")
     assert_equal(count + 4, post_thinking.tags.size)
     assert_equal(count + 4, post_thinking.tags(true).size)
+
+    # Raises if the wrong reflection name is used to set the Edge belongs_to
+    assert_nothing_raised { vertices(:vertex_1).sinks << vertices(:vertex_5) }
   end
 
   def test_adding_junk_to_has_many_through_should_raise_type_mismatch
