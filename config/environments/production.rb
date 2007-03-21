@@ -6,18 +6,15 @@ config.cache_classes = true
 # config.logger        = SyslogLogger.new
 
 ####
-# This one rotates the log file, keeping 25 files, of 1MB each.
+# This rotates the log file, keeping 25 files, of 1MB each.
 
-INSTIKI_LOGGER = Logger.new("#{RAILS_ROOT}/log/#{RAILS_ENV}.log", 25, 1024000)
+config.action_controller.logger = Logger.new("#{RAILS_ROOT}/log/#{RAILS_ENV}.log", 25, 1024000)
 
 # Unfortunately, the above does not work well under Mongrel, as the default Ruby logger class
 # does no locking and you will have several processes running, each wanting to write to (and 
 # rotate) the log file. One solution is to have each mongrel instance writes to a different log file:
 #   http://blog.caboo.se/articles/2006/11/14/configure-mongrel-rails-logger-per-port for a solution.
-# Another is to use the default logging behaviour:
-
-#INSTIKI_LOGGER = RAILS_DEFAULT_LOGGER
-
+# Another is to use the default logging behaviour (comment out the above line)
 # and use an external program (e.g. logrotate) to rotate the logs.
 ####
 

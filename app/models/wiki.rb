@@ -1,8 +1,7 @@
-class Wiki
+class Wiki 
 
   cattr_accessor :storage_path, :logger
   self.storage_path = "#{RAILS_ROOT}/storage/"
-  self.logger = INSTIKI_LOGGER 
 
   def authenticate(password)
     password == (system.password || 'instiki')
@@ -38,14 +37,14 @@ class Wiki
   end
 
   def read_page(web_address, page_name)
-    self.class.logger.debug "Reading page '#{page_name}' from web '#{web_address}'"
+    ApplicationController.logger.debug "Reading page '#{page_name}' from web '#{web_address}'"
     web = Web.find_by_address(web_address)
     if web.nil?
-      self.class.logger.debug "Web '#{web_address}' not found"
+      ApplicationController.logger.debug "Web '#{web_address}' not found"
       return nil
     else
       page = web.pages.find(:first, :conditions => ['name = ?', page_name])
-      self.class.logger.debug "Page '#{page_name}' #{page.nil? ? 'not' : ''} found"
+      ApplicationController.logger.debug "Page '#{page_name}' #{page.nil? ? 'not' : ''} found"
       return page
     end
   end
