@@ -294,7 +294,7 @@ class WikiController < ApplicationController
 
   def s5
     if @web.markup == :markdownMML or @web.markup == :markdown
-      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F").to_ncr,
            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}'], :content_only => true,
             :author => @page.author, :title => @page.plain_name}).to_s5)
     end
