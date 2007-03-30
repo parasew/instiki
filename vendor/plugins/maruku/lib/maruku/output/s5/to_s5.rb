@@ -42,7 +42,7 @@ module MaRuKu
 		dummy_layout_slide = 
 		"
 		<div class='layout'>
-		<div id='controls'></div>
+		<div id='controls'> </div>
 		<div id='currentSlide'> </div>
 		<div id='header'> #{slide_header}</div>
 		<div id='footer'>
