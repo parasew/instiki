@@ -21,6 +21,7 @@ Rails::Initializer.run do |config|
   config.active_record.schema_format = :ruby
 
   config.load_paths << "#{RAILS_ROOT}/vendor/plugins/sqlite3-ruby"
+  File.umask(0026)
 end
 
 # Instiki-specific configuration below
