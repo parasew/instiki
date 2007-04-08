@@ -14,7 +14,7 @@ class Beta1Schema < ActiveRecord::Migration
       t.column "updated_at", :datetime, :null => false
       t.column "revised_at", :datetime, :null => false
       t.column "page_id", :integer, :default => 0, :null => false
-      t.column "content", :text, :default => "", :null => false
+      t.column "content", :text
       t.column "author", :string, :limit => 60
       t.column "ip", :string, :limit => 60
     end
