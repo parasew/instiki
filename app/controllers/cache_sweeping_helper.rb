@@ -19,7 +19,6 @@ module CacheSweepingHelper
     %w(authors atom_with_content atom_with_headlines).each do |action|
       expire_action :controller => 'wiki', :web => web.address, :action => action
     end
-    expire_fragment :controller => 'wiki', :web => web.address, :action => %w(rss_with_headlines rss_with_content)
   end
 
 end
