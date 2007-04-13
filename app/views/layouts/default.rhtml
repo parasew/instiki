@@ -32,8 +32,8 @@
   </style>
   <%= javascript_include_tag :defaults %>
   <% if @web %>
-  	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_headlines') %>
-  	<%= auto_discovery_link_tag(:rss, :controller => 'wiki', :web => @web.address, :action => 'rss_with_content') %>
+  	<%= auto_discovery_link_tag(:atom, :controller => 'wiki', :web => @web.address, :action => 'atom_with_headlines') %>
+  	<%= auto_discovery_link_tag(:atom, :controller => 'wiki', :web => @web.address, :action => 'atom_with_content') %>
   <% end %>
 </head>
 

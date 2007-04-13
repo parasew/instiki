@@ -8,10 +8,10 @@ require 'string_utils'
 class WikiController < ApplicationController
 
   before_filter :load_page
-  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list
+  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, :atom_with_content, :atom_with_headlines
   cache_sweeper :revision_sweeper
 
-  layout 'default', :except => [:rss_feed, :rss_with_content, :rss_with_headlines, :tex, :pdf, :s5, :export_tex, :export_html]
+  layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :tex, :pdf, :s5, :export_tex, :export_html]
 
   include Sanitize
 
@@ -132,17 +132,17 @@ class WikiController < ApplicationController
     end
   end
 
-  def rss_with_content
-    if rss_with_content_allowed?
-      render_rss(hide_description = false, *parse_rss_params)
+  def atom_with_content
+    if rss_with_content_allowed? 
+      render_atom(hide_description = false)
     else
-      render_text 'RSS feed with content for this web is blocked for security reasons. ' +
+      render_text 'Atom feed with content for this web is blocked for security reasons. ' +
         'The web is password-protected and not published', '403 Forbidden'
     end
   end
 
-  def rss_with_headlines
-    render_rss(hide_description = true, *parse_rss_params)
+  def atom_with_headlines
+    render_atom(hide_description = true)
   end
 
   def search
@@ -392,18 +392,6 @@ class WikiController < ApplicationController
       @set_name = 'the web'
     end
   end
-
-  def parse_rss_params
-    if @params.include? 'limit'
-      limit = @params['limit'].to_i rescue nil
-      limit = nil if limit == 0
-    else
-      limit = 15
-    end
-    start_date = Time.local(*ParseDate::parsedate(@params['start'])) rescue nil
-    end_date = Time.local(*ParseDate::parsedate(@params['end'])) rescue nil
-    [ limit, start_date, end_date ]
-  end
   
   def remote_ip
     ip = @request.remote_ip
@@ -411,20 +399,12 @@ class WikiController < ApplicationController
     ip
   end
 
-  def render_rss(hide_description = false, limit = 15, start_date = nil, end_date = nil)
-    if limit && !start_date && !end_date
-      @pages_by_revision = @web.select.by_revision.first(limit)
-    else
-      @pages_by_revision = @web.select.by_revision
-      @pages_by_revision.reject! { |page| page.revised_at < start_date } if start_date
-      @pages_by_revision.reject! { |page| page.revised_at > end_date } if end_date
-    end
-    
+  def render_atom(hide_description = false, limit = 15)
+    @pages_by_revision = @web.select.by_revision.first(limit)
     @hide_description = hide_description
     @link_action = @web.password ? 'published' : 'show'
-    
-    render :action => 'rss_feed'
-  end
+    render :action => 'atom'
+  end 
 
   def render_tex_web
     @web.select.by_name.inject({}) do |tex_web, page|

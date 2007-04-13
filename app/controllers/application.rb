@@ -145,8 +145,8 @@ class ApplicationController < ActionController::Base
   end
 
   def set_content_type_header
-    if %w(rss_with_content rss_with_headlines).include?(action_name)
-      @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
+    if %w(atom_with_content atom_with_headlines).include?(action_name)
+      @response.headers['Content-Type'] = 'application/atom+xml; charset=UTF-8'
     elsif %w(tex).include?(action_name)
       @response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
     elsif @request.env['HTTP_USER_AGENT'] =~ /MathPlayer|Validator/ or @request.env.include?('HTTP_ACCEPT') &&
@@ -185,7 +185,7 @@ class ApplicationController < ActionController::Base
   end
 
   def authorization_needed?
-    not %w( login authenticate published rss_with_content rss_with_headlines ).include?(action_name)
+    not %w( login authenticate published atom_with_headlines atom_with_content).include?(action_name)
   end
 
   def authorized?
