@@ -72,7 +72,7 @@ module Sanitize
        'stop-color', 'stop-opacity', 'strikethrough-position',
        'strikethrough-thickness', 'stroke', 'stroke-dasharray',
        'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin',
-       'stroke-miterlimit', 'stroke-width', 'systemLanguage', 'target',
+       'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'target',
        'text-anchor', 'to', 'transform', 'type', 'u1', 'u2',
        'underline-position', 'underline-thickness', 'unicode',
        'unicode-range', 'units-per-em', 'values', 'version', 'viewBox',
