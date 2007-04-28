@@ -83,7 +83,7 @@ module Sanitize
        'xlink:show', 'xlink:title', 'xlink:type', 'xml:base', 'xml:lang',
        'xml:space', 'xmlns', 'xmlns:xlink', 'y', 'y1', 'y2', 'zoomAndPan']
 
-  attr_val_is_uri = ['href', 'src', 'action', 'longdesc', 'xlink:href']
+  attr_val_is_uri = ['href', 'src', 'cite', 'action', 'longdesc', 'xlink:href']
   
   acceptable_css_properties = ['azimuth', 'background-color',
       'border-bottom-color', 'border-collapse', 'border-color',
