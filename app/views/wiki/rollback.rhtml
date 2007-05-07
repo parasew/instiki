@@ -4,7 +4,7 @@
   @hide_navigation = true
 %>
 
-<%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{@params["msg"]}</small></p>" if @params["msg"] %>
+<%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{params["msg"]}</small></p>" if params["msg"] %>
 
 <div id="MarkupHelp">
   <%= render("#{@web.markup}_help") %>
@@ -12,9 +12,9 @@
 </div>
 
 <div id="editForm">
-	<%= form_tag({:web => @web.address, :action => 'save', :id => @page.name},
+	<% form_tag({:web => @web.address, :action => 'save', :id => @page.name},
 	      { :id => 'editForm', :method => 'post', :onSubmit => 'cleanAuthorName();', 
-	        'accept-charset' => 'utf-8' }) %>
+	        'accept-charset' => 'utf-8' }) do %>
         <textarea name="content" id="content"><%= @revision.content %></textarea>
 		<div id="editFormButtons">
 	        <input type="submit" value="Update" accesskey="u" /> as 
@@ -27,7 +27,7 @@
                 <small>(unlocks page)</small>
 			</span>
 	    </div>
-	<%= end_form_tag %>
+	<% end %>
 </div>
 
 <script type="text/javascript">

@@ -29,8 +29,8 @@ class ApplicationController < ActionController::Base
   end
 
   def connect_to_model
-    @action_name = @params['action'] || 'index'
-    @web_name = @params['web']
+    @action_name = params['action'] || 'index'
+    @web_name = params['web']
     @wiki = wiki
     @author = cookies['author'] || 'AnonymousCoward'
     if @web_name
@@ -105,11 +105,11 @@ class ApplicationController < ActionController::Base
   end
 
   def remember_location
-    if @request.method == :get and 
-        @response.headers['Status'] == '200 OK' and not
+    if request.method == :get and 
+        response.headers['Status'] == '200 OK' and not
         %w(locked save back file pic import).include?(action_name)
-      @session[:return_to] = @request.request_uri
-      logger.debug "Session ##{session.object_id}: remembered URL '#{@session[:return_to]}'"
+      session[:return_to] = request.request_uri
+      logger.debug "Session ##{session.object_id}: remembered URL '#{session[:return_to]}'"
     end
   end
 
@@ -125,8 +125,8 @@ class ApplicationController < ActionController::Base
 
   def return_to_last_remembered
     # Forget the redirect location
-    redirect_target, @session[:return_to] = @session[:return_to], nil
-    tried_home, @session[:tried_home] = @session[:tried_home], false
+    redirect_target, session[:return_to] = session[:return_to], nil
+    tried_home, session[:tried_home] = session[:tried_home], false
 
     # then try to redirect to it
     if redirect_target.nil?
@@ -145,9 +145,9 @@ class ApplicationController < ActionController::Base
 
   def set_content_type_header
     if %w(rss_with_content rss_with_headlines).include?(action_name)
-      @response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
+      response.headers['Content-Type'] = 'text/xml; charset=UTF-8'
     else
-      @response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+      response.headers['Content-Type'] = 'text/html; charset=UTF-8'
     end
   end
 
@@ -185,7 +185,7 @@ class ApplicationController < ActionController::Base
     @web.nil? or
     @web.password.nil? or
     cookies[CGI.escape(@web_name)] == @web.password or
-    password_check(@params['password'])
+    password_check(params['password'])
   end
 
 end

@@ -40,7 +40,7 @@ class Web < ActiveRecord::Base
   end
 
   def has_page?(name)
-    Page.count(['web_id = ? AND name = ?', id, name]) > 0
+    Page.count(:conditions => ['web_id = ? AND name = ?', id, name]) > 0
   end
 
   def has_file?(file_name)

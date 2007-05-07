@@ -5,8 +5,8 @@
 
 <%= error_messages_for 'file' %>
 
-<%= form_tag({ :controller => 'file', :web => @web_name, :action => 'file' }, 
-        { 'multipart' => true , 'accept-charset' => 'utf-8' }) %>
+<% form_tag({ :controller => 'file', :web => @web_name, :action => 'file' }, 
+        { 'multipart' => true , 'accept-charset' => 'utf-8' }) do %>
   <%= hidden_field 'file', 'file_name' %>
   <div class="inputFieldWithPrompt">
     <b>Content of <%= h @file_name %> to upload <small>(required)</small>:</b>
@@ -30,4 +30,4 @@
             :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
             :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
   </div>
-<%= end_form_tag %>
+<% end %>

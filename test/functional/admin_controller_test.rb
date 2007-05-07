@@ -55,14 +55,14 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_equal wiki_before, @wiki
     # and no new web should be created either
     assert_equal old_size, @wiki.webs.size
-    assert_flash_has :error
+    assert(@response.has_flash_object?(:error))
   end
 
   def test_create_system_no_form_and_wiki_already_initialized
     assert @wiki.setup?
     process('create_system')
     assert_redirected_to :web => @wiki.webs.keys.first, :action => 'show', :id => 'HomePage'
-    assert_flash_has :error
+    assert(@response.has_flash_object?(:error))
   end
 
 

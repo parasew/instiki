@@ -26,10 +26,10 @@ class WikiController < ApplicationController
   # Outside a single web --------------------------------------------------------
 
   def authenticate
-    if password_check(@params['password'])
+    if password_check(params['password'])
       redirect_home
     else 
-      flash[:info] = password_error(@params['password'])
+      flash[:info] = password_error(params['password'])
       redirect_to :action => 'login', :web => @web_name
     end
   end
@@ -144,7 +144,7 @@ class WikiController < ApplicationController
   end
 
   def search
-    @query = @params['query']
+    @query = params['query']
     @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     all_pages_found = (@results + @title_results).uniq
@@ -163,7 +163,7 @@ class WikiController < ApplicationController
   def edit
     if @page.nil?
       redirect_home
-    elsif @page.locked?(Time.now) and not @params['break_lock']
+    elsif @page.locked?(Time.now) and not params['break_lock']
       redirect_to :web => @web_name, :action => 'locked', :id => @page_name
     else
       @page.lock(Time.now, @author)
@@ -214,7 +214,7 @@ class WikiController < ApplicationController
   
   def revision
     get_page_and_revision
-    @show_diff = (@params[:mode] == 'diff')
+    @show_diff = (params[:mode] == 'diff')
     @renderer = PageRenderer.new(@revision)
   end
 
@@ -225,25 +225,25 @@ class WikiController < ApplicationController
   def save
     render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
 
-    author_name = @params['author']
+    author_name = params['author']
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
     cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
-      filter_spam(@params['content'])
+      filter_spam(params['content'])
       if @page
-        wiki.revise_page(@web_name, @page_name, @params['content'], Time.now, 
+        wiki.revise_page(@web_name, @page_name, params['content'], Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
         @page.unlock
       else
-        wiki.write_page(@web_name, @page_name, @params['content'], Time.now, 
+        wiki.write_page(@web_name, @page_name, params['content'], Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
       end
       redirect_to_page @page_name
     rescue => e
       flash[:error] = e
       logger.error e
-      flash[:content] = @params['content']
+      flash[:content] = params['content']
       if @page
         @page.unlock
         redirect_to :action => 'edit', :web => @web_name, :id => @page_name
@@ -257,7 +257,7 @@ class WikiController < ApplicationController
     if @page
       begin
         @renderer = PageRenderer.new(@page.revisions.last)
-        @show_diff = (@params[:mode] == 'diff')
+        @show_diff = (params[:mode] == 'diff')
         render_action 'page'
       # TODO this rescue should differentiate between errors due to rendering and errors in 
       # the application itself (for application errors, it's better not to rescue the error at all)
@@ -286,7 +286,7 @@ class WikiController < ApplicationController
   protected
   
   def load_page
-    @page_name = @params['id']
+    @page_name = params['id']
     @page = @wiki.read_page(@web_name, @page_name) if @page_name
   end
 
@@ -339,8 +339,8 @@ class WikiController < ApplicationController
   end
 
   def get_page_and_revision
-    if @params['rev']
-      @revision_number = @params['rev'].to_i
+    if params['rev']
+      @revision_number = params['rev'].to_i
     else
       @revision_number = @page.revisions.length
     end
@@ -349,7 +349,7 @@ class WikiController < ApplicationController
 
   def parse_category
     @categories = WikiReference.list_categories.sort
-    @category = @params['category']
+    @category = params['category']
     if @category
       @set_name = "category '#{@category}'"
       pages = WikiReference.pages_in_category(@category).sort.map { |page_name| @web.page(page_name) }
@@ -362,19 +362,19 @@ class WikiController < ApplicationController
   end
 
   def parse_rss_params
-    if @params.include? 'limit'
-      limit = @params['limit'].to_i rescue nil
+    if params.include? 'limit'
+      limit = params['limit'].to_i rescue nil
       limit = nil if limit == 0
     else
       limit = 15
     end
-    start_date = Time.local(*ParseDate::parsedate(@params['start'])) rescue nil
-    end_date = Time.local(*ParseDate::parsedate(@params['end'])) rescue nil
+    start_date = Time.local(*ParseDate::parsedate(params['start'])) rescue nil
+    end_date = Time.local(*ParseDate::parsedate(params['end'])) rescue nil
     [ limit, start_date, end_date ]
   end
   
   def remote_ip
-    ip = @request.remote_ip
+    ip = request.remote_ip
     logger.info(ip)
     ip
   end

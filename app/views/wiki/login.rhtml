@@ -1,8 +1,8 @@
 <% @title = "#{@web_name} Login" %><% @hide_navigation = true %>
 
 <p>
-<%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
-    { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' }) %>
+<% form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
+    { 'name' => 'loginForm', 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' }) do %>
     <p>
     This web is password-protected. Please enter the password.
     <% if @web.published? %>
@@ -14,7 +14,7 @@
     <input type="password" name="password" id="password" />
     <input type="submit" value="Login" default="yes" />
     </p>
-<%= end_form_tag %>
+<% end %>
 </p>
 
 <script type="text/javascript">

@@ -10,11 +10,11 @@
 </div>
 
 <div id="editForm">
-	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
+	<% form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
 	             { 'id' => 'editForm', 'method' => 'post', 'onSubmit' => 'cleanAuthorName()',
-	               'accept-charset' => 'utf-8' }) %>
+	               'accept-charset' => 'utf-8' }) do %>
 	
-		<textarea name="content" id="content"><%= h(@flash[:content] || @page.content) %></textarea>
+		<textarea name="content" id="content"><%= h(flash[:content] || @page.content) %></textarea>
 		<div id="editFormButtons">
 			<input type="submit" value="Submit" accesskey="s"/> as 
 			<%= text_field_tag :author, @author, 
@@ -27,7 +27,7 @@
                 <small>(unlocks page)</small>
 			</span>
 		</div>
-	<%= end_form_tag %>
+	<% end %>
 </div>
 </div>
 <script type="text/javascript">

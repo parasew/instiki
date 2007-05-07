@@ -10,9 +10,9 @@ class FileController < ApplicationController
 
   def file
     @file_name = params['id']
-    if @params['file']
+    if params['file']
       # form supplied
-      new_file = @web.wiki_files.create(@params['file'])
+      new_file = @web.wiki_files.create(params['file'])
       if new_file.valid?
         flash[:info] = "File '#{@file_name}' successfully uploaded"
         return_to_last_remembered
@@ -38,10 +38,10 @@ class FileController < ApplicationController
   end
   
   def import
-    if @params['file']
+    if params['file']
       @problems = []
       import_file_name = "#{@web.address}-import-#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.zip"
-      import_from_archive(@params['file'].path)
+      import_from_archive(params['file'].path)
       if @problems.empty?
         flash[:info] = 'Import successfully finished'
       else
@@ -57,7 +57,7 @@ class FileController < ApplicationController
   protected
 
   def check_allow_uploads
-    render(:status => 404, :text => "Web #{@params['web'].inspect} not found") and return false unless @web
+    render(:status => 404, :text => "Web #{params['web'].inspect} not found") and return false unless @web
     if @web.allow_uploads?
       return true
     else

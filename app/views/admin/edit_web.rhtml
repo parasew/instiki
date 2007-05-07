@@ -1,9 +1,9 @@
 <% @title = "Edit Web" %>
 
-<%= form_tag({ :controller => 'admin', :action => 'edit_web', :web => @web.address },
+<% form_tag({ :controller => 'admin', :action => 'edit_web', :web => @web.address },
              { 'id' => 'setup', 'method' => 'post', 
                'onSubmit' => 'cleanAddress(); return validateSetup()',
-               'accept-charset' => 'utf-8' })
+               'accept-charset' => 'utf-8' }) do
 %>
 
   <h2 style="margin-bottom: 3px">Name and address</h2>
@@ -111,15 +111,15 @@
   </small>
 </p>
 
-<%= end_form_tag %>
+<% end %>
 
 <br/>
 <h1>Other administrative tasks</h1>
 
-<%= form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages'},
+<% form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages'},
         { :id => 'remove_orphaned_pages', 
           :onSubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned').value)",
-          'accept-charset' => 'utf-8' }) 
+          'accept-charset' => 'utf-8' }) do
 %>
   <p align="right">
     <small>
@@ -129,6 +129,6 @@
       <input type="submit" value="Delete Orphan Pages" />
     </small>
   </p>
-<%= end_form_tag %>
+<% end %>
 
 <%= javascript_include_tag 'edit_web' %>

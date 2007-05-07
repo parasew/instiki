@@ -6,9 +6,9 @@
   you'll need to do a brief one-time setup.
 </p>
 
-<%= form_tag({ :controller => 'admin', :action => 'create_system' },
+<% form_tag({ :controller => 'admin', :action => 'create_system' },
              { 'id' => 'setup', 'method' => 'post', 'onSubmit' => 'return validateSetup()', 
-               'accept-charset' => 'utf-8' })
+               'accept-charset' => 'utf-8' }) do
 %>
 <ol class="setup">
   <li>
@@ -46,7 +46,7 @@
 <p align="right">
     <input type="submit" value="Setup" style="margin-left: 40px" />
 </p>
-<%= end_form_tag %>
+<% end %>
 
 <script>
 function proposeAddress() {
