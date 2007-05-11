@@ -1,5 +1,5 @@
 <p>
-<%= form_tag({}, { 'multipart' => true, 'accept-charset' => 'utf-8' }) %>
+<% form_tag({}, { 'multipart' => true, 'accept-charset' => 'utf-8' }) do %>
   <p>
     File to upload:
     <br/>
@@ -19,5 +19,5 @@
     <% end %>
     
   </p>
-<%= end_form_tag %>
+<% end %>
 </p>
