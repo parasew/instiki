@@ -1,7 +1,7 @@
 <% @title = "#{@web_name} Login" %><% @hide_navigation = true %>
 
-<%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
-    { 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' }) %>
+<% form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
+    { 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' }) do %>
     <p>
     This web is password-protected. Please enter the password.
     <% if @web.published? %>
@@ -13,7 +13,7 @@
     <input type="password" name="password" id="password" />
     <input type="submit" value="Login" />
     </p>
-<%= end_form_tag %>
+<% end %>
 
 <script type="text/javascript">
     document.forms["loginForm"].elements["password"].focus();

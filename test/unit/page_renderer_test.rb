@@ -156,10 +156,18 @@ class PageRendererTest < Test::Unit::TestCase
         '_should we go ThatWay or ThisWay _')
   end
   
-  def test_content_with_wikiword_in_tag
+  # wikiwords are invalid as styles, must be in "name: value" form
+  def test_content_with_wikiword_in_style_tag
     assert_markup_parsed_as(
-        '<p>That is some <em style="WikiWord">Stylish Emphasis</em></p>', 
+        '<p>That is some <em style="">Stylish Emphasis</em></p>', 
 	    'That is some <em style="WikiWord">Stylish Emphasis</em>')
+  end
+ 
+  # validates format of style..
+  def test_content_with_valid_style_in_style_tag
+    assert_markup_parsed_as(
+        '<p>That is some <em style="text-align: right;">Stylish Emphasis</em></p>', 
+	    'That is some <em style="text-align: right">Stylish Emphasis</em>')
   end
   
   def test_content_with_escaped_wikiword
@@ -196,9 +204,10 @@ class PageRendererTest < Test::Unit::TestCase
     assert_markup_parsed_as( 
       '<p>This <img src="http://hobix.com/sample.jpg" alt="" /> is an inline image link.</p>', 
       'This <img src="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
-        
+       
+    # currently, upper case HTML elements are not allowed
     assert_markup_parsed_as( 
-      '<p>This <IMG SRC="http://hobix.com/sample.jpg" alt=""> is an inline image link.</p>', 
+      '<p>This &lt;IMG SRC="http://hobix.com/sample.jpg" alt=""> is an inline image link.</p>', 
       'This <IMG SRC="http://hobix.com/sample.jpg" alt=""> is an inline image link.')
   end
   

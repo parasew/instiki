@@ -4,16 +4,16 @@
   @hide_navigation = true
 %>
 
-<%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{@params["msg"]}</small></p>" if @params["msg"] %>
+<%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{params["msg"]}</small></p>" if params["msg"] %>
 
 <div id="MarkupHelp">
   <%= render("#{@web.markup}_help") %>
   <%= render 'wiki_words_help' %>
 </div>
 
-	<%= form_tag({:web => @web.address, :action => 'save', :id => @page.name},
+	<% form_tag({:web => @web.address, :action => 'save', :id => @page.name},
 	      { :id => 'editForm', :method => 'post', :onsubmit => 'cleanAuthorName();', 
-	        'accept-charset' => 'utf-8' }) %>
+	        'accept-charset' => 'utf-8' }) do %>
 	<div>
         <textarea name="content" id="content" rows="24" cols="60"><%= h(@revision.content.delete("\x01-\x08\x0B\x0C\x0E-\x1F")) %></textarea>
 		<div id="editFormButtons">
@@ -28,7 +28,7 @@
 			</span>
 	    </div>
 	</div>
-	<%= end_form_tag %>
+	<% end %>
 
 <script type="text/javascript">
 function cleanAuthorName() {

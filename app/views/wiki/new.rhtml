@@ -10,8 +10,8 @@
 </div>
 
 <div id="editForm">
-	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
-	        { 'id' => 'editForm', 'method' => 'post', 'onsubmit' => 'cleanAuthorName();', 'accept-charset' => 'utf-8' }) %>
+	<% form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
+	        { 'id' => 'editForm', 'method' => 'post', 'onsubmit' => 'cleanAuthorName();', 'accept-charset' => 'utf-8' }) do %>
 	
 	    <textarea name="content" id="content" rows="24" cols="60"><%= h(@flash[:content] || '') %></textarea>
 		<div id="editFormButtons">
@@ -20,7 +20,7 @@
 		        :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
 		        :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %> 
         </div>
-	<%= end_form_tag %>
+	<% end %>
 </div>
 
 <script type="text/javascript">

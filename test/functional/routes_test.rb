@@ -28,7 +28,11 @@ class RoutesTest < Test::Unit::TestCase
 
     assert_routing('web/show/%24HOME_PAGE', 
         :controller => 'wiki', :web => 'web', :action => 'show', :id => '$HOME_PAGE')
-      
+        
+    assert_routing('web/show/HomePage%3F', 
+        :controller => 'wiki', :web => 'web', :action => 'show', 
+        :id => 'HomePage')
+        
     assert_routing('web/show/HomePage%3Farg1%3Dvalue1%26arg2%3Dvalue2', 
         :controller => 'wiki', :web => 'web', :action => 'show', 
         :id => 'HomePage?arg1=value1&arg2=value2')

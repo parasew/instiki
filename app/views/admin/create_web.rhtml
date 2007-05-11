@@ -5,10 +5,10 @@
   so different subjects or projects can write about different <i>MuppetShows</i>.
 </p>
 
-<%= form_tag({ :controller => 'admin', :action => 'create_web' },
+<% form_tag({ :controller => 'admin', :action => 'create_web' },
              { 'id' => 'setup', 'method' => 'post', 
                'onsubmit' => 'cleanAddress(); return validateSetup()',
-               'accept-charset' => 'utf-8' })
+               'accept-charset' => 'utf-8' }) do
 %>
 
 <ol class="setup">
@@ -36,7 +36,7 @@
     <input type="submit" value="Create Web" />
 </p>
 
-<%= end_form_tag %>
+<% end %>
 
 <script type="text/javascript">
 function proposeAddress() {

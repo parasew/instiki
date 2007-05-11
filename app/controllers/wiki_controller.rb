@@ -30,10 +30,10 @@ class WikiController < ApplicationController
   # Outside a single web --------------------------------------------------------
 
   def authenticate
-    if password_check(@params['password'])
+    if password_check(params['password'])
       redirect_home
     else 
-      flash[:info] = password_error(@params['password'])
+      flash[:info] = password_error(params['password'])
       redirect_to :action => 'login', :web => @web_name
     end
   end
@@ -146,7 +146,7 @@ class WikiController < ApplicationController
   end
 
   def search
-    @query = @params['query']
+    @query = params['query']
     @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     all_pages_found = (@results + @title_results).uniq
@@ -165,7 +165,7 @@ class WikiController < ApplicationController
   def edit
     if @page.nil?
       redirect_home
-    elsif @page.locked?(Time.now) and not @params['break_lock']
+    elsif @page.locked?(Time.now) and not params['break_lock']
       redirect_to :web => @web_name, :action => 'locked', :id => @page_name
     else
       @page.lock(Time.now, @author)
@@ -216,7 +216,7 @@ class WikiController < ApplicationController
   
   def revision
     get_page_and_revision
-    @show_diff = (@params[:mode] == 'diff')
+    @show_diff = (params[:mode] == 'diff')
     @renderer = PageRenderer.new(@revision)
   end
 
@@ -227,13 +227,13 @@ class WikiController < ApplicationController
   def save
     render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
 
-    author_name = @params['author'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
+    author_name = params['author'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
     raise "Your name was not valid utf-8" if !author_name.is_utf8?
     cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
-      the_content = @params['content'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
+      the_content = params['content'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
       raise "Your content was not valid utf-8" if !the_content.is_utf8?
       filter_spam(the_content)
       if @page
@@ -262,7 +262,7 @@ class WikiController < ApplicationController
     if @page
       begin
         @renderer = PageRenderer.new(@page.revisions.last)
-        @show_diff = (@params[:mode] == 'diff')
+        @show_diff = (params[:mode] == 'diff')
         render_action 'page'
       # TODO this rescue should differentiate between errors due to rendering and errors in 
       # the application itself (for application errors, it's better not to rescue the error at all)
@@ -309,7 +309,7 @@ class WikiController < ApplicationController
   protected
   
   def load_page
-    @page_name = @params['id']
+    @page_name = params['id']
     @page = @wiki.read_page(@web_name, @page_name) if @page_name
   end
 
@@ -371,8 +371,8 @@ class WikiController < ApplicationController
   end
 
   def get_page_and_revision
-    if @params['rev']
-      @revision_number = @params['rev'].to_i
+    if params['rev']
+      @revision_number = params['rev'].to_i
     else
       @revision_number = @page.revisions.length
     end
@@ -381,7 +381,7 @@ class WikiController < ApplicationController
 
   def parse_category
     @categories = WikiReference.list_categories(@web).sort
-    @category = @params['category']
+    @category = params['category']
     if @category
       @set_name = "category '#{@category}'"
       pages = WikiReference.pages_in_category(@web, @category).sort.map { |page_name| @web.page(page_name) }
@@ -394,7 +394,7 @@ class WikiController < ApplicationController
   end
   
   def remote_ip
-    ip = @request.remote_ip
+    ip = request.remote_ip
     logger.info(ip)
     ip
   end
