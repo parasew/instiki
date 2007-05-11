@@ -21,7 +21,7 @@ end
       <fieldset class="search"><input type="text" id="searchField" name="query" value="Search"
              onfocus="this.value == 'Search' ? this.value = '' : true"
              onblur="this.value == '' ? this.value = 'Search' : true" /></fieldset>
-    <% end_form_tag %>
+    <% end %>
   <% else %>
   	<%= list_item 'Home Page', {:action => 'published', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %>
   <% end%>
