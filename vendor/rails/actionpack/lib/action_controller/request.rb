@@ -48,6 +48,10 @@ module ActionController
     # REQUEST_METHOD header directly. Thus, for head, both get? and head? will return true.
     def head?
       @env['REQUEST_METHOD'].downcase.to_sym == :head
+    end 
+
+    def headers 
+      @env 
     end
 
     # Determine whether the body of a HTTP call is URL-encoded (default)
