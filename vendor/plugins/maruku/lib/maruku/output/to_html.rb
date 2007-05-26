@@ -741,7 +741,17 @@ of the form `#ff00ff`.
 		return a
 	end
 
+=begin maruku_doc
+Attribute: filter_html
+Scope: document
+
+If true, raw HTML is discarded from the output.
+
+=end
+
 	def to_html_raw_html
+		return [] if get_setting(:filter_html)
+		
 		raw_html = self.raw_html
 		if rexml_doc = @parsed_html
 			root = rexml_doc.root

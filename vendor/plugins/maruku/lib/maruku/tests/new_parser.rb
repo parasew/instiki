@@ -155,7 +155,7 @@ module MaRuKu; module Tests
 		["[a]",   [ md_link(["a"],'a')], 'Empty link'],
 		["[a][]", ],
 		["[a][]b",   [ md_link(["a"],'a'),'b'], 'Empty link'],
-		["[a\\]][]", [ md_link(["a]"],'a]')], 'Escape inside link'],
+		["[a\\]][]", [ md_link(["a]"],'a')], 'Escape inside link (throw ?] away)'],
 		
 		["[a",  :throw,   'Link not closed'],
 		["[a][",  :throw,   'Ref not closed'],

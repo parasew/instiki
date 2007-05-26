@@ -477,7 +477,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		end
 		
 		id = match[1]; url = match[2]; title = match[3]; 
-		id = id.strip.downcase.gsub(' ','_')
+		id = sanitize_ref_id(id)
 		
 		hash = self.refs[id] = {:url=>url,:title=>title}
 		

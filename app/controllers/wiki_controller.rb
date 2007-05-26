@@ -294,13 +294,13 @@ class WikiController < ApplicationController
 
   def s5
     if @web.markup == :markdownMML
-      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+      @s5_content = sanitize_xhtml(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}'], :content_only => true,
-            :author => @page.author, :title => @page.plain_name}).to_s5).to_ncr
+            :author => @page.author, :title => @page.plain_name}).to_s5.to_ncr)
     elsif @web.markup == :markdown
-      @s5_content = sanitize_html(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+      @s5_content = sanitize_xhtml(Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
            {:math_enabled => false, :content_only => true,
-            :author => @page.author, :title => @page.plain_name}).to_s5).to_ncr
+            :author => @page.author, :title => @page.plain_name}).to_s5.to_ncr)
     else
       @s5_content = "S5 not supported with this text filter"
     end

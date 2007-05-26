@@ -108,6 +108,7 @@ module MaRuKu
 		# Input is a LineSource
 		def t2_parse_blocks(src, output)
 			while src.cur_line
+				l = src.shift_line
 				
 				# ignore empty line
 				if l.t2_empty? then 
@@ -115,7 +116,6 @@ module MaRuKu
 					next 
 				end
 				
-				l = src.shift_line
 				# TODO: lists
 				# TODO: xml
 				# TODO: `==`

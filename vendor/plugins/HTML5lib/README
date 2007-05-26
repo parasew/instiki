@@ -1,0 +1,9 @@
+= HTML5lib
+
+== Basic Usage
+
+    require 'html5lib'
+
+    doc = HTML5lib.parse('<html>...</html>')
+
+    doc.class # REXML::Document

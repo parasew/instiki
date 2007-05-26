@@ -32,7 +32,7 @@ module Engines
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
       html = redcloth.to_html(:textile)
-      sanitize_html(html)
+      sanitize_xhtml(html)
     end
   end
 
@@ -43,7 +43,7 @@ module Engines
       require_dependency 'maruku'
       require_dependency 'maruku/ext/math'
       html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"), {:math_enabled => false}).to_html
-      sanitize_html(html).to_ncr
+      sanitize_xhtml(html.to_ncr)
     end
   end
 
@@ -55,7 +55,7 @@ module Engines
       require_dependency 'maruku/ext/math'
       html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
             {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html
-      sanitize_html(html).to_ncr
+      sanitize_xhtml(html.to_ncr)
     end
   end
 
@@ -68,7 +68,7 @@ module Engines
       redcloth.filter_html = false
       redcloth.no_span_caps = false
       html = redcloth.to_html
-      sanitize_html(html)
+      sanitize_xhtml(html)
     end
   end
 
@@ -78,7 +78,7 @@ module Engines
     def mask
       require_dependency 'rdocsupport'
       html = RDocSupport::RDocFormatter.new(@content).to_html
-      sanitize_html(html)
+      sanitize_xhtml(html)
     end
   end
 

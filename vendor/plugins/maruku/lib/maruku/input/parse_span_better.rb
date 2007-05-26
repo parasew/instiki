@@ -287,7 +287,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	end
 
 	def extension_meta(src, con, break_on_chars)
-		if m = src.read_regexp(/([^\s\:]+):/)
+		if m = src.read_regexp(/([^\s\:\"\']+):/)
 			name = m[1]
 			al = read_attribute_list(src, con, break_on_chars)
 #			puts "#{name}=#{al.inspect}"
@@ -581,9 +581,9 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			ref_id = read_ref_id(src,con)
 			if ref_id
 				if ref_id.size == 0
-					ref_id =  children.to_s.downcase.gsub(' ','_')
+					ref_id = sanitize_ref_id(children.to_s)
 				else
-					ref_id = ref_id.downcase
+					ref_id = sanitize_ref_id(ref_id)
 				end	
 				con.push_element md_link(children, ref_id)
 			else 

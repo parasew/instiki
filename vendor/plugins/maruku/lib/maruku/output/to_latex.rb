@@ -152,7 +152,7 @@ end end
 module MaRuKu; module Out; module Latex
 	
 	def to_latex_hrule; "\n\\vspace{.5em} \\hrule \\vspace{.5em}\n" end
-	def to_latex_linebreak; "\\linebreak " end
+	def to_latex_linebreak; "\\newline " end
 	
 	def to_latex_paragraph 
 		children_to_latex+"\n\n"
