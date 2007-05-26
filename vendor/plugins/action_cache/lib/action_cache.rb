@@ -134,6 +134,7 @@ module ActionController
             controller.response.headers['Cache-Control'] == 'no-cache'
             controller.response.headers['Cache-Control'] = "max-age=#{controller.response.time_to_live}"
           end
+          controller.response.headers['Etag'] = "\"#{MD5.new(controller.response.body).to_s}\""
           controller.response.headers['Last-Modified'] ||= Time.now.httpdate
         end
         
@@ -145,10 +146,14 @@ module ActionController
         
         def send_not_modified(controller)
           controller.logger.info "Send Not Modified"
+          controller.response.headers['Etag'] = "\"#{MD5.new(fragment_body(controller)).to_s}\""
           controller.render(:text => "", :status => 304)
         end
         
         def client_has_latest?(cache_entry, controller)
+          requestEtag = controller.request.env['HTTP_IF_NONE_MATCH'] rescue nil
+          responseEtag = cache_entry.headers['Etag'] rescue nil
+          return true if (requestEtag and responseEtag and requestEtag == responseEtag)
           requestTime = Time.rfc2822(controller.request.env["HTTP_IF_MODIFIED_SINCE"]) rescue nil
           responseTime = Time.rfc2822(cache_entry.headers['Last-Modified']) rescue nil
           return (requestTime and responseTime and responseTime <= requestTime)
