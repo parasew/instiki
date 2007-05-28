@@ -144,6 +144,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  public
+
   def set_content_type_header
     if %w(atom_with_content atom_with_headlines).include?(action_name)
       response.headers['Content-Type'] = 'application/atom+xml; charset=UTF-8'
@@ -157,6 +159,8 @@ class ApplicationController < ActionController::Base
       response.headers['Content-Type'] = 'text/html; charset=UTF-8'
     end
   end
+
+  protected
 
   def set_robots_metatag
     if controller_name == 'wiki' and %w(show published).include? action_name 

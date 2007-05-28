@@ -141,6 +141,7 @@ module ActionController
         def send_cached_response(cache_entry, controller)
           controller.logger.info "Send #{body_name(controller)} by response.body"
           controller.response.headers = cache_entry.headers
+          controller.set_content_type_header
           controller.response.body = fragment_body(controller)
         end
         
