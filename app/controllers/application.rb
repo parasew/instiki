@@ -151,10 +151,12 @@ class ApplicationController < ActionController::Base
       response.headers['Content-Type'] = 'application/atom+xml; charset=UTF-8'
     elsif %w(tex).include?(action_name)
       response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-    elsif request.env['HTTP_USER_AGENT'] =~ /MathPlayer|Validator/ or request.env.include?('HTTP_ACCEPT') &&
+    elsif request.env['HTTP_USER_AGENT'] =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
            Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML) && 
            !(request.env['HTTP_USER_AGENT'] =~ /Safari/ and  %w(s5).include?(action_name))
       response.headers['Content-Type'] = 'application/xhtml+xml; charset=UTF-8'
+    elsif request.env['HTTP_USER_AGENT'] =~ /MathPlayer/ 
+      response.headers['Content-Type'] = 'application/xhtml+xml'
     else
       response.headers['Content-Type'] = 'text/html; charset=UTF-8'
     end
