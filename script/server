@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'webrick'
-require 'webrick/httputils'
 require 'optparse'
 
 OPTIONS = {
@@ -11,11 +10,17 @@ OPTIONS = {
   :server_root => File.expand_path(File.dirname(__FILE__) + "/../public/"),
   :server_type => WEBrick::SimpleServer,
   :mime_types  => WEBrick::HTTPUtils::DefaultMimeTypes.merge({
-       'js'  => 'application/x-javascript',
-       'svg' => 'application/svg+xml',
-       'tex' => 'application/x-tex',
-       'pdf' => 'application/pdf',
-       'avi' => 'video/x-msvideo' })
+       'avi'  => 'video/x-msvideo',
+       'gz'   => 'application/x-gzip',
+       'js'   => 'application/x-javascript',
+       'nb'   => 'application/mathematica',
+       'pdf'  => 'application/pdf',
+       'svg'  => 'application/svg+xml',
+       'tar'  => 'application/x-tar',
+       'tex'  => 'application/x-tex',
+       'xml'  => 'application/xml',
+       'xslt' => 'application/xslt+xml'
+        })
 }
 
 ARGV.options do |opts|
