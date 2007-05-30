@@ -11,7 +11,7 @@ begin
     def test_chardet
         File.open(File.join(HTML5LIB_BASE, 'tests', 'encoding', 'chardet', 'test_big5.txt')) do |file|
             stream = HTML5lib::HTMLInputStream.new(file, :chardet => true)
-            assert_equal 'big5', stream.charEncoding.downcase
+            assert_equal 'big5', stream.char_encoding.downcase
         end
     end
 rescue LoadError
@@ -28,7 +28,7 @@ end
 
             define_method 'test_%s_%d' % [ test_name, index + 1 ] do
                 stream = HTML5lib::HTMLInputStream.new(input, :chardet => false)
-                assert_equal encoding.downcase, stream.charEncoding.downcase, input
+                assert_equal encoding.downcase, stream.char_encoding.downcase, input
             end
         end
     end

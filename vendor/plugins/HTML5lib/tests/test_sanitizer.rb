@@ -203,4 +203,8 @@ class SanitizeTest < Test::Unit::TestCase
        sanitize_html(%(<img src='vbscript:msgbox("XSS")' />))
   end
 
+  def test_should_handle_astral_plane_characters
+    assert_equal "<p>\360\235\222\265 \360\235\224\270</p>",
+      sanitize_html("<p>&#x1d4b5; &#x1d538;</p>")
+  end
 end
