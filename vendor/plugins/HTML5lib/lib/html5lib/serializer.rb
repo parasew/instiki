@@ -250,9 +250,9 @@ class HTMLSerializer
             require 'html5lib/sanitizer'
             treewalker = HTMLSanitizeFilter.new(treewalker)
         end
-#        if @omit_optional_tags
-#            treewalker = OptionalTagFilter.new(treewalker)
-#        end
+        if @omit_optional_tags
+            treewalker = OptionalTagFilter.new(treewalker)
+        end
 
         result = []
         treewalker.each do |token|
