@@ -53,9 +53,10 @@ module Engines
     def mask
       require_dependency 'maruku'
       require_dependency 'maruku/ext/math'
-      html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
-            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html
-      sanitize_xhtml(html.to_ncr)
+#      html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+#            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html_tree)
+      html = sanitize_xhtml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html.to_ncr)
     end
   end
 

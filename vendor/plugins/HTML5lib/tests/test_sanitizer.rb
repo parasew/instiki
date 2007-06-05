@@ -2,9 +2,11 @@
 
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/sanitizer'
 require 'html5lib/html5parser'
 require 'html5lib/liberalxmlparser'
+require 'html5lib/treewalkers'
+require 'html5lib/serializer'
+require 'html5lib/sanitizer'
 
 class SanitizeTest < Test::Unit::TestCase
   include HTML5lib

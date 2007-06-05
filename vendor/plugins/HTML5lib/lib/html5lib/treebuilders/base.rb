@@ -144,7 +144,7 @@ module HTML5lib
           # code. It should still do the same though.
 
           # Step 1: stop the algorithm when there's nothing to do.
-          return unless @activeFormattingElements
+          return if @activeFormattingElements.empty?
 
           # Step 2 and step 3: we start with the last element. So i is -1.
           i = -1

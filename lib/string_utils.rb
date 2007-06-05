@@ -2155,3 +2155,20 @@ class String
     end
 
 end
+
+require 'rexml/element'
+module REXML
+  class Element
+    def to_ncr
+      XPath.each(self, '//*') { |el|
+        el.texts.each_index  {|i|
+          el.texts[i].value = el.texts[i].to_s.to_ncr
+        }
+        el.attributes.each { |name,val|
+          el.attributes[name] = val.to_ncr
+        }
+      }
+      return self
+    end
+  end
+end

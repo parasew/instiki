@@ -37,13 +37,13 @@ module HTML5lib
     # :strict - raise an exception when a parse error is encountered
     # :tree - a treebuilder class controlling the type of tree that will be
     # returned. Built in treebuilders can be accessed through
-    # html5lib.treebuilders.getTreeBuilder(treeType)
+    # HTML5lib::TreeBuilders[treeType]
     def initialize(options = {})
       @strict = false
       @errors = []
      
       @tokenizer =  HTMLTokenizer
-      @tree = TreeBuilders::REXMLTree::TreeBuilder
+      @tree = TreeBuilders::REXML::TreeBuilder
  
       options.each { |name, value| instance_variable_set("@#{name}", value) }
 

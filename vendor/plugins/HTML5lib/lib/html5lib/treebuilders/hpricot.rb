@@ -1,4 +1,5 @@
 require 'html5lib/treebuilders/base'
+require 'rubygems'
 require 'hpricot'
 require 'forwardable'
 
@@ -26,12 +27,14 @@ module HTML5lib
             childNodes << node
             hpricot.children << node.hpricot
           end
+          node.hpricot.parent = hpricot
           node.parent = self
         end
 
         def removeChild(node)
            childNodes.delete(node)
            hpricot.children.delete_at(hpricot.children.index(node.hpricot))
+           node.hpricot.parent = nil
            node.parent = nil
         end
 
@@ -48,6 +51,7 @@ module HTML5lib
           if node.kind_of?(TextNode) and index > 0 and childNodes[index-1].kind_of?(TextNode)
             childNodes[index-1].hpricot.content = childNodes[index-1].hpricot.to_s + node.hpricot.to_s
           else
+            refNode.hpricot.parent.insert_before(node.hpricot,refNode.hpricot)
             childNodes.insert(index, node)
           end
         end

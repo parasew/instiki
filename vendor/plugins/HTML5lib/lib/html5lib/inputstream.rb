@@ -58,7 +58,7 @@ module HTML5lib
       unless @char_encoding == 'utf-8'
         begin
           require 'iconv'
-          uString = Iconv.iconv('utf-8', @encoding, uString)[0]
+          uString = Iconv.iconv('utf-8', @char_encoding, uString)[0]
         rescue
         end
       end
@@ -95,11 +95,13 @@ module HTML5lib
       #First look for a BOM
       #This will also read past the BOM if present
       encoding = detect_bom
+
       #If there is no BOM need to look for meta elements with encoding 
       #information
       if encoding.nil? and @parse_meta
         encoding = detect_encoding_meta
       end
+
       #Guess with chardet, if avaliable
       if encoding.nil? and @chardet
         begin
@@ -111,13 +113,14 @@ module HTML5lib
         rescue LoadError
         end
       end
+
       # If all else fails use the default encoding
       if encoding.nil?
         encoding = @DEFAULT_ENCODING
       end
     
       #Substitute for equivalent encodings:
-      encoding_sub = {'ascii' => 'windows-1252', 'iso-8859-1' => 'windows-1252'}
+      encoding_sub = {'iso-8859-1' => 'windows-1252'}
 
       if encoding_sub.has_key?(encoding.downcase)
         encoding = encoding_sub[encoding.downcase]
@@ -132,10 +135,10 @@ module HTML5lib
     def detect_bom
       bom_dict = {
         "\xef\xbb\xbf" => 'utf-8',
-        "\xff\xfe" => 'utf-16-le',
-        "\xfe\xff" => 'utf-16-be',
-        "\xff\xfe\x00\x00" => 'utf-32-le',
-        "\x00\x00\xfe\xff" => 'utf-32-be'
+        "\xff\xfe" => 'utf16le',
+        "\xfe\xff" => 'utf16be',
+        "\xff\xfe\x00\x00" => 'utf32le',
+        "\x00\x00\xfe\xff" => 'utf32be'
       }
 
       # Go to beginning of file and read in 4 bytes
@@ -205,7 +208,17 @@ module HTML5lib
       else
         begin
           @tell += 1
-          return @data_stream[@tell - 1].chr
+          c = @data_stream[@tell - 1]
+          case c
+          when 0xC2 .. 0xDF
+            @tell += 1
+            c.chr + @data_stream[@tell-1].chr
+          when 0xE0 .. 0xF0
+            @tell += 2
+            c.chr + @data_stream[@tell-2].chr + @data_stream[@tell-1].chr
+          else
+            c.chr
+          end
         rescue
           return :EOF
         end
@@ -227,8 +240,8 @@ module HTML5lib
           else
             # Then the rest
             begin
-              char_stack.push(@data_stream[@tell].chr)
               @tell += 1
+              char_stack.push(@data_stream[@tell-1].chr)
             rescue
               char_stack.push(:EOF)
               break

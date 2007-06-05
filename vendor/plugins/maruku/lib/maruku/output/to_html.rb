@@ -154,6 +154,21 @@ Example:
 	CSS: style.css math.css
 
 =end
+	# Render to an HTML fragment (returns a REXML document tree)
+	def to_html_tree
+		div = Element.new 'div'
+                        children_to_html.each do |e|
+                                div << e
+                        end
+
+                        # render footnotes
+                        if @doc.footnotes_order.size > 0
+                                div << render_footnotes
+                        end
+
+                doc = Document.new(nil,{:respect_whitespace =>:all})
+                doc << div
+	end
 
 	# Render to a complete HTML document (returns a REXML document tree)
 	def to_html_document_tree
