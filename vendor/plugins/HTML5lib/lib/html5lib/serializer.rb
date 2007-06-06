@@ -266,7 +266,7 @@ class HTMLSerializer
 
             elsif [:Characters, :SpaceCharacters].include? type
                 if type == :SpaceCharacters or in_cdata
-                    if in_cdata and token[:data].find("</") >= 0
+                    if in_cdata and token[:data].include?("</")
                         serializeError(_("Unexpected </ in CDATA"))
                     end
                     if encoding
