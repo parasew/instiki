@@ -22,22 +22,28 @@ class HTMLInputStreamTest < Test::Unit::TestCase
     assert_equal("\xe2\x80\x98", stream.char)
   end
 
-  def test_char_win1252
-    stream = HTMLInputStream.new("\x91")
-    assert_equal('windows-1252', stream.char_encoding)
-    assert_equal("\xe2\x80\x98", stream.char)
-  end
-
   def test_bom
     stream = HTMLInputStream.new("\xef\xbb\xbf" + "'")
     assert_equal('utf-8', stream.char_encoding)
     assert_equal("'", stream.char)
   end
 
-  def test_utf_16
-    stream = HTMLInputStream.new("\xff\xfe" + " \x00"*1025)
-    assert(stream.char_encoding, 'utf-16-le')
-    assert_equal(1025, stream.chars_until(' ',true).length)
+  begin
+    require 'iconv'
+
+    def test_char_win1252
+      stream = HTMLInputStream.new("\x91")
+      assert_equal('windows-1252', stream.char_encoding)
+      assert_equal("\xe2\x80\x98", stream.char)
+    end
+
+    def test_utf_16
+      stream = HTMLInputStream.new("\xff\xfe" + " \x00"*1025)
+      assert(stream.char_encoding, 'utf-16-le')
+      assert_equal(1025, stream.chars_until(' ',true).length)
+    end
+  rescue LoadError
+    puts "iconv not found, skipping iconv tests"
   end
 
   def test_newlines

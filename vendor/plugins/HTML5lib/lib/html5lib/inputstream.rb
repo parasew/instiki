@@ -59,7 +59,8 @@ module HTML5lib
         begin
           require 'iconv'
           uString = Iconv.iconv('utf-8', @char_encoding, uString)[0]
-        rescue
+        rescue LoadError
+        rescue Exception
         end
       end
 
@@ -206,21 +207,36 @@ module HTML5lib
       unless @queue.empty?
         return @queue.shift
       else
-        begin
-          @tell += 1
-          c = @data_stream[@tell - 1]
-          case c
-          when 0xC2 .. 0xDF
+        @tell += 1
+        c = @data_stream[@tell - 1]
+        case c
+        when 0xC2 .. 0xDF
+          if @data_stream[@tell .. @tell] =~ /[\x80-\xBF]/
             @tell += 1
-            c.chr + @data_stream[@tell-1].chr
-          when 0xE0 .. 0xF0
-            @tell += 2
-            c.chr + @data_stream[@tell-2].chr + @data_stream[@tell-1].chr
+            @data_stream[@tell-2..@tell-1]
           else
-            c.chr
+            [0xFFFD].pack('U')
           end
-        rescue
-          return :EOF
+        when 0xE0 .. 0xEF
+          if @data_stream[@tell .. @tell+1] =~ /[\x80-\xBF]{2}/
+            @tell += 2
+            @data_stream[@tell-3..@tell-1]
+          else
+            [0xFFFD].pack('U')
+          end
+        when 0xF0 .. 0xF3
+          if @data_stream[@tell .. @tell+2] =~ /[\x80-\xBF]{3}/
+            @tell += 3
+            @data_stream[@tell-4..@tell-1]
+          else
+            [0xFFFD].pack('U')
+          end
+        else
+          begin
+            c.chr
+          rescue
+            :EOF
+          end
         end
       end
     end
