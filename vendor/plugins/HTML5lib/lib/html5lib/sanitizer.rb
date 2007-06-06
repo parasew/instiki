@@ -4,6 +4,17 @@ module HTML5lib
 
 # This module provides sanitization of XHTML+MathML+SVG
 # and of inline style attributes.
+#
+# It can be either at the Tokenizer stage:
+#
+#       HTMLParser.parse(html, :tokenizer => HTMLSanitizer)
+#
+# or, if you already have a parse tree (in this example, a REXML tree),
+# at the Serializer stage:
+#
+#     tokens = TreeWalkers.getTreeWalker('rexml').new(tree)
+#     HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
+#        :sanitize => true})
 
    module HTMLSanitizeModule
 

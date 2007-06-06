@@ -19,6 +19,19 @@ class SanitizeTest < Test::Unit::TestCase
     HTMLParser.parseFragment(stream, :tokenizer => HTMLSanitizer).join('').gsub(/'/,'"')
   end
 
+  def sanitize_rexml stream
+    require 'rexml/document'
+    doc = REXML::Document.new("<div xmlns=\"http://www.w3.org/1999/xhtml\">#{stream}</div>")
+    tokens = TreeWalkers.getTreeWalker('rexml').new(doc)
+    HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
+      :quote_attr_values => true,
+      :minimize_boolean_attributes => false,
+      :use_trailing_solidus => true,
+      :omit_optional_tags => false,
+      :inject_meta_charset => false,
+      :sanitize => true}).gsub(/^<div xmlns="http:\/\/www.w3.org\/1999\/xhtml">(.*)<\/div>$/, '\1')
+  end
+
   HTMLSanitizer::ALLOWED_ELEMENTS.each do |tag_name|
     next if %w[caption col colgroup optgroup option table tbody td tfoot th thead tr].include?(tag_name) ### TODO
     define_method "test_should_allow_#{tag_name}_tag" do
@@ -33,6 +46,8 @@ class SanitizeTest < Test::Unit::TestCase
           sanitize_html("<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>")
         assert_equal "<#{tag_name} title=\"1\">foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>",
           sanitize_xhtml("<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>")
+        assert_equal "<#{tag_name} title=\"1\">foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>",
+          sanitize_rexml("<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>")
       end
     end
   end
@@ -41,6 +56,8 @@ class SanitizeTest < Test::Unit::TestCase
     define_method "test_should_forbid_#{tag_name.upcase}_tag" do
       assert_equal "&lt;#{tag_name.upcase} title=\"1\"&gt;foo &lt;bad&gt;bar&lt;/bad&gt; baz&lt;/#{tag_name.upcase}&gt;",
         sanitize_html("<#{tag_name.upcase} title='1'>foo <bad>bar</bad> baz</#{tag_name.upcase}>")
+      assert_equal "&lt;#{tag_name.upcase} title=\"1\"&gt;foo &lt;bad&gt;bar&lt;/bad&gt; baz&lt;/#{tag_name.upcase}&gt;",
+        sanitize_rexml("<#{tag_name.upcase} title='1'>foo <bad>bar</bad> baz</#{tag_name.upcase}>")
     end
   end
 
@@ -51,6 +68,8 @@ class SanitizeTest < Test::Unit::TestCase
         sanitize_html("<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>")
       assert_equal "<p #{attribute_name}=\"foo\">foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>",
         sanitize_xhtml("<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>")
+      assert_equal "<p #{attribute_name}=\"foo\">foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>",
+        sanitize_rexml("<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>")
     end
   end
 
@@ -58,6 +77,8 @@ class SanitizeTest < Test::Unit::TestCase
     define_method "test_should_forbid_#{attribute_name.upcase}_attribute" do
       assert_equal "<p>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>",
         sanitize_html("<p #{attribute_name.upcase}='display: none;'>foo <bad>bar</bad> baz</p>")
+      assert_equal "<p>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>",
+        sanitize_rexml("<p #{attribute_name.upcase}='display: none;'>foo <bad>bar</bad> baz</p>")
     end
   end
 
@@ -65,6 +86,8 @@ class SanitizeTest < Test::Unit::TestCase
     define_method "test_should_allow_#{protocol}_uris" do
       assert_equal "<a href=\"#{protocol}\">foo</a>",
         sanitize_html(%(<a href="#{protocol}">foo</a>))
+      assert_equal "<a href=\"#{protocol}\">foo</a>",
+        sanitize_rexml(%(<a href="#{protocol}">foo</a>))
     end
   end
 
@@ -72,44 +95,57 @@ class SanitizeTest < Test::Unit::TestCase
     define_method "test_should_allow_uppercase_#{protocol}_uris" do
       assert_equal "<a href=\"#{protocol.upcase}\">foo</a>",
         sanitize_html(%(<a href="#{protocol.upcase}">foo</a>))
+      assert_equal "<a href=\"#{protocol.upcase}\">foo</a>",
+        sanitize_rexml(%(<a href="#{protocol.upcase}">foo</a>))
     end
   end
 
   def test_should_allow_anchors
     assert_equal "<a href=\"foo\">&lt;script&gt;baz&lt;/script&gt;</a>",
      sanitize_html("<a href='foo' onclick='bar'><script>baz</script></a>")
+    assert_equal "<a href=\"foo\">&lt;script&gt;baz&lt;/script&gt;</a>",
+     sanitize_rexml("<a href='foo' onclick='bar'><script>baz</script></a>")
   end
 
   # RFC 3986, sec 4.2
   def test_allow_colons_in_path_component
     assert_equal "<a href=\"./this:that\">foo</a>",
       sanitize_html("<a href=\"./this:that\">foo</a>")
+    assert_equal "<a href=\"./this:that\">foo</a>",
+      sanitize_rexml("<a href=\"./this:that\">foo</a>")
   end
 
   %w(src width height alt).each do |img_attr|
     define_method "test_should_allow_image_#{img_attr}_attribute" do
       assert_equal "<img #{img_attr}=\"foo\"/>",
         sanitize_html("<img #{img_attr}='foo' onclick='bar' />")
+      assert_equal "<img #{img_attr}=\"foo\" />",
+        sanitize_rexml("<img #{img_attr}='foo' onclick='bar' />")
     end
   end
 
   def test_should_handle_non_html
     assert_equal 'abc',  sanitize_html("abc")
+    assert_equal 'abc',  sanitize_rexml("abc")
   end
 
   def test_should_handle_blank_text
     assert_equal '', sanitize_html('')
+    assert_equal '', sanitize_rexml('')
   end
 
   [%w(img src), %w(a href)].each do |(tag, attr)|
     close = VOID_ELEMENTS.include?(tag) ? "/>boo" : ">boo</#{tag}>"
+    xclose = VOID_ELEMENTS.include?(tag) ? " />" : ">boo</#{tag}>"
 
     define_method "test_should_strip_#{attr}_attribute_in_#{tag}_with_bad_protocols" do
-      assert_equal %(<#{tag} title="1"#{close}), sanitize_html(%(<#{tag} #{attr}="javascript:XSS" title="1">boo</#{tag}>))
+      assert_equal %(<#{tag} title="1"#{close}),  sanitize_html(%(<#{tag} #{attr}="javascript:XSS" title="1">boo</#{tag}>))
+      assert_equal %(<#{tag} title="1"#{xclose}), sanitize_rexml(%(<#{tag} #{attr}="javascript:XSS" title="1">boo</#{tag}>))
     end
 
     define_method "test_should_strip_#{attr}_attribute_in_#{tag}_with_bad_protocols_and_whitespace" do
       assert_equal %(<#{tag} title="1"#{close}), sanitize_html(%(<#{tag} #{attr}=" javascript:XSS" title="1">boo</#{tag}>))
+      assert_equal %(<#{tag} title="1"#{xclose}), sanitize_rexml(%(<#{tag} #{attr}=" javascript:XSS" title="1">boo</#{tag}>))
     end
   end
 
@@ -157,21 +193,28 @@ class SanitizeTest < Test::Unit::TestCase
   def test_should_not_fall_for_ridiculous_hack
     img_hack = %(<img\nsrc\n=\n"\nj\na\nv\na\ns\nc\nr\ni\np\nt\n:\na\nl\ne\nr\nt\n(\n'\nX\nS\nS\n'\n)\n"\n />)
     assert_equal "<img/>", sanitize_html(img_hack)
+    assert_equal "<img />", sanitize_rexml(img_hack)
   end
 
   def test_platypus
     assert_equal %(<a href=\"http://www.ragingplatypus.com/\" style=\"display: block; width: 100%; height: 100%; background-color: black; background-x: center; background-y: center;\">never trust your upstream platypus</a>),
        sanitize_html(%(<a href="http://www.ragingplatypus.com/" style="display:block; position:absolute; left:0; top:0; width:100%; height:100%; z-index:1; background-color:black; background-image:url(http://www.ragingplatypus.com/i/cam-full.jpg); background-x:center; background-y:center; background-repeat:repeat;">never trust your upstream platypus</a>))
+    assert_equal %(<a href=\"http://www.ragingplatypus.com/\" style=\"display: block; width: 100%; height: 100%; background-color: black; background-x: center; background-y: center;\">never trust your upstream platypus</a>),
+       sanitize_rexml(%(<a href="http://www.ragingplatypus.com/" style="display:block; position:absolute; left:0; top:0; width:100%; height:100%; z-index:1; background-color:black; background-image:url(http://www.ragingplatypus.com/i/cam-full.jpg); background-x:center; background-y:center; background-repeat:repeat;">never trust your upstream platypus</a>))
   end
 
   def test_xul
     assert_equal %(<p style="">fubar</p>),
      sanitize_html(%(<p style="-moz-binding:url('http://ha.ckers.org/xssmoz.xml#xss')">fubar</p>))
+    assert_equal %(<p style="">fubar</p>),
+     sanitize_rexml(%(<p style="-moz-binding:url('http://ha.ckers.org/xssmoz.xml#xss')">fubar</p>))
   end
 
   def test_input_image
     assert_equal %(<input type="image"/>),
       sanitize_html(%(<input type="image" src="javascript:alert('XSS');" />))
+    assert_equal %(<input type="image" />),
+      sanitize_rexml(%(<input type="image" src="javascript:alert('XSS');" />))
   end
 
   def test_non_alpha_non_digit
@@ -186,27 +229,35 @@ class SanitizeTest < Test::Unit::TestCase
   def test_img_dynsrc_lowsrc
      assert_equal "<img/>",
        sanitize_html(%(<img dynsrc="javascript:alert('XSS')" />))
-     assert_equal "<img/>",
-       sanitize_html(%(<img lowsrc="javascript:alert('XSS')" />))
+     assert_equal "<img />",
+       sanitize_rexml(%(<img dynsrc="javascript:alert('XSS')" />))
   end
 
   def test_div_background_image_unicode_encoded
     assert_equal '<div style="">foo</div>',
       sanitize_html(%(<div style="background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072\0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029'\0029">foo</div>))
+    assert_equal '<div style="">foo</div>',
+      sanitize_rexml(%(<div style="background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072\0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029'\0029">foo</div>))
   end
 
   def test_div_expression
     assert_equal '<div style="">foo</div>',
       sanitize_html(%(<div style="width: expression(alert('XSS'));">foo</div>))
+    assert_equal '<div style="">foo</div>',
+      sanitize_rexml(%(<div style="width: expression(alert('XSS'));">foo</div>))
   end
 
   def test_img_vbscript
      assert_equal '<img/>',
        sanitize_html(%(<img src='vbscript:msgbox("XSS")' />))
+     assert_equal '<img />',
+       sanitize_rexml(%(<img src='vbscript:msgbox("XSS")' />))
   end
 
   def test_should_handle_astral_plane_characters
     assert_equal "<p>\360\235\222\265 \360\235\224\270</p>",
       sanitize_html("<p>&#x1d4b5; &#x1d538;</p>")
+    assert_equal "<p>\360\235\222\265 \360\235\224\270</p>",
+      sanitize_rexml("<p>&#x1d4b5; &#x1d538;</p>")
   end
 end
