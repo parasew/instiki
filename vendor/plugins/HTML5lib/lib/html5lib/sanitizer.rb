@@ -106,7 +106,7 @@ module HTML5lib
     ALLOWED_SVG_PROPERTIES = ACCEPTABLE_SVG_PROPERTIES
     ALLOWED_PROTOCOLS = ACCEPTABLE_PROTOCOLS
 
-    def process_token(token)
+    def sanitize_token(token)
         case token[:type]
         when :StartTag, :EndTag, :EmptyTag
           if ALLOWED_ELEMENTS.include?(token[:name])
@@ -176,7 +176,7 @@ module HTML5lib
     include HTMLSanitizeModule
     def each
       @source.each do |token|
-        yield(process_token(token))
+        yield(sanitize_token(token))
       end
     end
   end
@@ -185,7 +185,7 @@ module HTML5lib
     include HTMLSanitizeModule
     def each
       super do |token|
-        yield(process_token(token))
+        yield(sanitize_token(token))
       end
     end
   end
