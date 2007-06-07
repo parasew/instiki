@@ -22,11 +22,11 @@ module Sanitize
   include HTML5lib
 
   def sanitize_xhtml(html)
-    XHTMLParser.parseFragment(html.to_ncr, :tokenizer => HTMLSanitizer).to_s
+    XHTMLParser.parseFragment(html.to_ncr, {:tokenizer => HTMLSanitizer, :encoding=>'utf-8' }).to_s
   end
 
   def sanitize_html(html)
-    HTMLParser.parseFragment(html, :tokenizer => HTMLSanitizer).to_s
+    HTMLParser.parseFragment(html, {:tokenizer => HTMLSanitizer, :encoding=>'utf-8' }).to_s
   end
 
   def sanitize_rexml(tree)
