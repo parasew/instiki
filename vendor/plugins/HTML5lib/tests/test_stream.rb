@@ -6,7 +6,7 @@ class HTMLInputStreamTest < Test::Unit::TestCase
   include HTML5lib
 
   def test_char_ascii
-    stream = HTMLInputStream.new("'")
+    stream = HTMLInputStream.new("'", :encoding=>'ascii')
     assert_equal('ascii', stream.char_encoding)
     assert_equal("'", stream.char)
   end
@@ -17,9 +17,19 @@ class HTMLInputStreamTest < Test::Unit::TestCase
   end
 
   def test_char_utf8
-    stream = HTMLInputStream.new("\xe2\x80\x98")
+    stream = HTMLInputStream.new("\xe2\x80\x98", :encoding=>'utf-8')
     assert_equal('utf-8', stream.char_encoding)
     assert_equal("\xe2\x80\x98", stream.char)
+  end
+
+  def test_char_win1252
+    stream = HTMLInputStream.new("\xa2\xc5\xf1\x92\x86")
+    assert_equal('windows-1252', stream.char_encoding)
+    assert_equal("\xc2\xa2", stream.char)
+    assert_equal("\xc3\x85", stream.char)
+    assert_equal("\xc3\xb1", stream.char)
+    assert_equal("\xe2\x80\x99", stream.char)
+    assert_equal("\xe2\x80\xa0", stream.char)
   end
 
   def test_bom
@@ -30,12 +40,6 @@ class HTMLInputStreamTest < Test::Unit::TestCase
 
   begin
     require 'iconv'
-
-    def test_char_win1252
-      stream = HTMLInputStream.new("\x91")
-      assert_equal('windows-1252', stream.char_encoding)
-      assert_equal("\xe2\x80\x98", stream.char)
-    end
 
     def test_utf_16
       stream = HTMLInputStream.new("\xff\xfe" + " \x00"*1025)
@@ -51,10 +55,10 @@ class HTMLInputStreamTest < Test::Unit::TestCase
     assert_equal(0, stream.instance_eval {@tell})
     assert_equal("a\nbb\n", stream.chars_until('c'))
     assert_equal(6, stream.instance_eval {@tell})
-    assert_equal([3,1], stream.position)
+    assert_equal([3,0], stream.position)
     assert_equal("ccc\ndddd", stream.chars_until('x'))
     assert_equal(14, stream.instance_eval {@tell})
-    assert_equal([4,5], stream.position)
-    assert_equal([0,1,4,8], stream.instance_eval {@new_lines})
+    assert_equal([4,4], stream.position)
+    assert_equal([0,1,5,9], stream.instance_eval {@new_lines})
   end
 end

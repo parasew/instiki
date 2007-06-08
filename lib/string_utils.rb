@@ -2,6 +2,12 @@
 
 class String
 
+# Check whether a string is valid utf-8
+#
+# :call-seq:
+#    string.is_utf8?    -> boolean
+#
+# returns true if the sequence of bytes in string is valid utf-8
    def is_utf8?
      self =~  /^(
          [\x09\x0A\x0D\x20-\x7E]            # ASCII
@@ -2138,10 +2144,21 @@ class String
 	'zeetrf' => '&#x02128;'
   }
 
+# Converts XHTML+MathML named entities to Numeric Character References
+#
+#  :call-seq:
+#     string.to_ncr  -> string
+#
     def to_ncr
        self.gsub(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_ncr}
     end
 
+# Converts XHTML+MathML named entities to Numeric Character References
+#
+#  :call-seq:
+#     string.to_ncr!  -> str or nil
+#
+# Substitution is done in-place.
     def to_ncr!
        self.gsub!(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_ncr}
     end
@@ -2159,6 +2176,14 @@ end
 require 'rexml/element'
 module REXML
   class Element
+
+# Convert XHTML+MathML Named Entities in a REXML::Element to Numeric Character References
+#
+#  :call-seq:
+#     elt.to_ncr  -> REXML::Element
+#
+# REXML, typically, converts NCRs to utf-8 characters, which is what you'll see when you
+# access the resulting REXML document.
     def to_ncr
       XPath.each(self, '//*') { |el|
         el.texts.each_index  {|i|

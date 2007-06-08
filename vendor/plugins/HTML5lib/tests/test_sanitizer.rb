@@ -12,11 +12,11 @@ class SanitizeTest < Test::Unit::TestCase
   include HTML5lib
 
   def sanitize_xhtml stream
-    XHTMLParser.parseFragment(stream, :tokenizer => HTMLSanitizer).join('').gsub(/'/,'"')
+    XHTMLParser.parseFragment(stream, {:tokenizer => HTMLSanitizer, :encoding => 'utf-8'}).join('').gsub(/'/,'"')
   end
 
   def sanitize_html stream
-    HTMLParser.parseFragment(stream, :tokenizer => HTMLSanitizer).join('').gsub(/'/,'"')
+    HTMLParser.parseFragment(stream, {:tokenizer => HTMLSanitizer, :encoding => 'utf-8'}).join('').gsub(/'/,'"')
   end
 
   def sanitize_rexml stream
@@ -259,5 +259,9 @@ class SanitizeTest < Test::Unit::TestCase
       sanitize_html("<p>&#x1d4b5; &#x1d538;</p>")
     assert_equal "<p>\360\235\222\265 \360\235\224\270</p>",
       sanitize_rexml("<p>&#x1d4b5; &#x1d538;</p>")
+    assert_equal "<p><tspan>\360\235\224\270</tspan> a</p>",
+      sanitize_html("<p><tspan>\360\235\224\270</tspan> a</p>")
+    assert_equal "<p><tspan>\360\235\224\270</tspan> a</p>",
+      sanitize_rexml("<p><tspan>\360\235\224\270</tspan> a</p>")
   end
 end

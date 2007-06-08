@@ -29,6 +29,8 @@ module Sanitize
 #
 # Unless otherwise specified, the string is assumed to be utf-8 encoded.
 # By default, the output is a string. But, optionally, you can return a REXML tree.
+# The string returned is utf-8 encoded. If you want, you can use iconv to convert it to some other encoding.
+# (REXML trees are always utf-8 encoded.)
   def sanitize_xhtml(html, options = {})
     @encoding = 'utf-8'
     @treebuilder = TreeBuilders::REXML::TreeBuilder
@@ -55,6 +57,8 @@ module Sanitize
 #
 # Unless otherwise specified, the string is assumed to be utf-8 encoded.
 # By default, the output is a string. But, optionally, you can return a REXML tree.
+# The string returned is utf-8 encoded. If you want, you can use iconv to convert it to some other encoding.
+# (REXML trees are always utf-8 encoded.)
   def sanitize_html(html, options = {})
     @encoding = 'utf-8'
     @treebuilder = TreeBuilders::REXML::TreeBuilder

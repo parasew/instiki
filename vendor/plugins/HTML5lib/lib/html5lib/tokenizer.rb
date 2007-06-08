@@ -68,7 +68,6 @@ module HTML5lib
     # to return we yield the token which pauses processing until the next token
     # is requested.
     def each
-      @stream.reset
       @tokenQueue = []
       # Start processing. When EOF is reached @state will return false
       # instead of true and the loop will terminate.

@@ -41,14 +41,14 @@ module HTML5lib
       super(parser, tree)
 
       # for special handling of whitespace in <pre>
-      @processSpaceCharactersPre = false
+      @processSpaceCharactersDropNewline = false
     end
 
-    def processSpaceCharactersPre(data)
+    def processSpaceCharactersDropNewline(data)
       #Sometimes (start of <pre> blocks) we want to drop leading newlines
-      @processSpaceCharactersPre = false
+      @processSpaceCharactersDropNewline = false
       if (data.length > 0 and data[0] == ?\n and 
-        @tree.openElements[-1].name == 'pre' and
+        %w[pre textarea].include?(@tree.openElements[-1].name) and
         not @tree.openElements[-1].hasContent)
         data = data[1..-1]
       end
@@ -56,8 +56,8 @@ module HTML5lib
     end
 
     def processSpaceCharacters(data)
-      if @processSpaceCharactersPre
-        processSpaceCharactersPre(data)
+      if @processSpaceCharactersDropNewline
+        processSpaceCharactersDropNewline(data)
       else
         super(data)
       end
@@ -98,7 +98,7 @@ module HTML5lib
     def startTagCloseP(name, attributes)
       endTagP('p') if in_scope?('p')
       @tree.insertElement(name, attributes)
-      @processSpaceCharactersPre = true if name == 'pre'
+      @processSpaceCharactersDropNewline = true if name == 'pre'
     end
 
     def startTagForm(name, attributes)
@@ -248,6 +248,7 @@ module HTML5lib
       # XXX Form element pointer checking here as well...
       @tree.insertElement(name, attributes)
       @parser.tokenizer.contentModelFlag = :RCDATA
+      @processSpaceCharactersDropNewline = true
     end
 
     # iframe, noembed noframes, noscript(if scripting enabled)
@@ -312,7 +313,7 @@ module HTML5lib
 
     def endTagBlock(name)
       #Put us back in the right whitespace handling mode
-      @processSpaceCharactersPre = false if name == 'pre'
+      @processSpaceCharactersDropNewline = false if name == 'pre'
 
       @tree.generateImpliedEndTags if in_scope?(name)
 
