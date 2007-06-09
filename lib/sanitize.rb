@@ -1,15 +1,29 @@
-module Sanitize
-
-# This module provides sanitization of XHTML+MathML+SVG 
-# and of inline style attributes.
+# == Introduction
 #
-# Uses the HTML5lib parser, so that the parsing behaviour should
+# This module provides sanitization of XHTML+MathML+SVG 
+# and of inline style attributes. Its genesis is {described here}[http://golem.ph.utexas.edu/~distler/blog/archives/001181.html].
+#
+# Uses the {HTML5lib parser}[http://code.google.com/p/html5lib/], so that the parsing behaviour should
 # resemble that of browsers.
 #
 #  sanitize_xhtml() is a case-sensitive sanitizer, suitable for XHTML
 #  sanitize_html() is a case-insensitive sanitizer suitable for HTML
-#  sanitize_rexml() sanitized a REXML tree, returning a string
+#  sanitize_rexml() sanitizes a REXML tree, returning a string
+#
+# == Files
+#
+# {sanitize.rb}[http://golem.ph.utexas.edu/~distler/code/instiki/svn/lib/sanitize.rb],
+# {HTML5lib}[http://golem.ph.utexas.edu/~distler/code/instiki/svn/vendor/plugins/HTML5lib/]
+#
+# == Author
+#
+# {Jacques Distler}[http://golem.ph.utexas.edu/~distler/]
+#
+# ==  License
+#
+# Ruby License
 
+module Sanitize
 
   require 'html5lib/html5parser'
   require 'html5lib/liberalxmlparser'
@@ -27,6 +41,7 @@ module Sanitize
 #
 # Unless otherwise specified, the string is assumed to be utf-8 encoded.
 # By default, the output is a string. But, optionally, you can return a REXML tree.
+#
 # The string returned is utf-8 encoded. If you want, you can use iconv to convert it to some other encoding.
 # (REXML trees are always utf-8 encoded.)
   def sanitize_xhtml(html, options = {})
@@ -50,11 +65,12 @@ module Sanitize
 # Sanitize a string, parsed using HTML parsing rules.
 #
 # :call-seq:
-#    sanitize_html(string)                    -> string
-#    sanitize_html(string, {:encoding => 'iso-8859-1', :to_tree => true}) -> REXML::Document
+#    sanitize_html( string )                    ->  string
+#    sanitize_html( string, {:encoding => 'iso-8859-1', :to_tree => true} ) ->  REXML::Document
 #
 # Unless otherwise specified, the string is assumed to be utf-8 encoded.
 # By default, the output is a string. But, optionally, you can return a REXML tree.
+#
 # The string returned is utf-8 encoded. If you want, you can use iconv to convert it to some other encoding.
 # (REXML trees are always utf-8 encoded.)
   def sanitize_html(html, options = {})
@@ -116,6 +132,7 @@ class String
      )*$/x;
    end
 
+#:stopdoc: 
   MATHML_ENTITIES = {
 	'Alpha' => '&#x0391;',
 	'Beta' => '&#x0392;',
@@ -2238,6 +2255,7 @@ class String
 	'wr' => '&#x02240;',
 	'zeetrf' => '&#x02128;'
   }
+#:startdoc:
 
 # Converts XHTML+MathML named entities to Numeric Character References
 #
@@ -2260,7 +2278,7 @@ class String
 
   protected
 
-    def convert_to_ncr
+    def convert_to_ncr #:nodoc:
       self =~ /^&([a-zA-Z0-9]+);$/
       name = $1
       return MATHML_ENTITIES.has_key?(name) ? MATHML_ENTITIES[name] : "&amp;" + name + ";"
@@ -2269,13 +2287,13 @@ class String
 end
 
 require 'rexml/element'
-module REXML
+module REXML #:nodoc:
   class Element
 
 # Convert XHTML+MathML Named Entities in a REXML::Element to Numeric Character References
 #
 #  :call-seq:
-#     elt.to_ncr  -> REXML::Element
+#     tree.to_ncr  -> REXML::Element
 #
 # REXML, typically, converts NCRs to utf-8 characters, which is what you'll see when you
 # access the resulting REXML document.
