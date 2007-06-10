@@ -307,4 +307,102 @@ class SanitizeTest < Test::Unit::TestCase
     output = "<p><tspan>\360\235\224\270</tspan> a</p>"
     check_sanitization(input, output, output, output)
   end
+
+  def test_should_handle_malformed_image_tags
+    input = %(<img """><script>alert("XSS")</script>">)
+    output = "<img/>&lt;script&gt;alert(\"XSS\")&lt;/script&gt;\"&gt;"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
+  end
+
+  def test_non_alpha_non_digit_II
+    input = %(<a href!#\$%&()*~+-_.,:;?@[/|\]^`=alert('XSS')>foo</a>)
+    output = "<a>foo</a>"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
+  end
+
+  def test_non_alpha_non_digit_III
+    input = %(<a/href="javascript:alert('XSS');">foo</a>)
+    output = "<a>foo</a>"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
+  end
+
+  def test_no_closing_script_tags
+    input = %(<script src=http://ha.ckers.org/xss.js?<b>)
+    output = "&lt;script src=\"http://ha.ckers.org/xss.js?\"&gt;<b/>"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)    
+  end
+
+  def test_protocol_resolution_in_script_tag
+    input = %(<script src=//ha.ckers.org/.j></script>)
+    output = "&lt;script src=\"//ha.ckers.org/.j\"&gt;&lt;/script&gt;"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
+  end
+
+  def test_double_open_angle_brackets
+    input = %(<img src=http://ha.ckers.org/scriptlet.html <)
+    output = "<img src='http://ha.ckers.org/scriptlet.html'/>&lt;"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
+
+    input = %(<script src=http://ha.ckers.org/scriptlet.html <)
+    output = "&lt;script src=\"http://ha.ckers.org/scriptlet.html\"&gt;&lt;"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
+  end
+
+  def test_background_attribute
+    input = %(<div background="javascript:alert('XSS')"></div>)
+    output = "<div/>"
+    xhtmloutput = "<div></div>"
+    check_sanitization(input, output, xhtmloutput, xhtmloutput)
+  end
+
+  def test_bgsound
+    input = %(<bgsound src="javascript:alert('XSS');" />)
+    output = "&lt;bgsound src=\"javascript:alert('XSS');\"/&gt;"
+    rexmloutput = "&lt;bgsound src=\"javascript:alert('XSS');\"&gt;&lt;/bgsound&gt;"
+    check_sanitization(input, output, output, rexmloutput)
+  end
+
+# This affects only NS4. Is it worth fixing?
+#  def test_javascript_includes
+#    input = %(<div size="&{alert('XSS')}">foo</div>)
+#    output = "<div>foo</div>"    
+#    check_sanitization(input, output, output, output)
+#  end
+
+  def test_link_stylesheets
+    input =%(<link rel="stylesheet" href="javascript:alert('XSS');" />)
+    output = "&lt;link rel=\"stylesheet\" href=\"javascript:alert('XSS');\"/&gt;" 
+    rexmloutput = "&lt;link href=\"javascript:alert('XSS');\" rel=\"stylesheet\"/&gt;" 
+    check_sanitization(input, output, output, rexmloutput)
+
+    input =%(<link rel="stylesheet" href="http://ha.ckers.org/xss.css" />)
+    output = "&lt;link rel=\"stylesheet\" href=\"http://ha.ckers.org/xss.css\"/&gt;" 
+    rexmloutput = "&lt;link href=\"http://ha.ckers.org/xss.css\" rel=\"stylesheet\"/&gt;" 
+    check_sanitization(input, output, output, rexmloutput)
+  end
+
+  def test_list_style_image
+    input = %(<li style="list-style-image: url\(javascript:alert\('XSS'\)\)">foo</li>)
+    output = "<li style=''>foo</li>"
+    check_sanitization(input, output, output, output)
+  end
+
+  def test_IE_Comments
+    input = %(<!--[if gte IE 4]><script>alert\('XSS'\);</script><![endif]-->)
+    output = ""
+    check_sanitization(input, output, output, output)
+  end
+
+  def test_xml_base
+    input =%(<div xml:base="javascript:alert('XSS');//">foo</div>)
+    output = "<div>foo</div>"
+    check_sanitization(input, output, output, output)
+  end
 end

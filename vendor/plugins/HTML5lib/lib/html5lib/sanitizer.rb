@@ -74,7 +74,7 @@ module HTML5lib
        xlink:show xlink:title xlink:type xml:base xml:lang xml:space xmlns
        xmlns:xlink y y1 y2 zoomAndPan]
 
-    ATTR_VAL_IS_URI = %w[href src cite action longdesc xlink:href]
+    ATTR_VAL_IS_URI = %w[href src cite action longdesc xlink:href xml:base]
 
     ACCEPTABLE_CSS_PROPERTIES = %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
@@ -139,6 +139,9 @@ module HTML5lib
             token.delete(:name)
             return token
           end
+        when :Comment
+          token[:data] = ""
+          return token
         else
           return token
         end
