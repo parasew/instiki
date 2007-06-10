@@ -42,14 +42,23 @@ class SanitizeTest < Test::Unit::TestCase
   end
 
   HTMLSanitizer::ALLOWED_ELEMENTS.each do |tag_name|
-    next if %w[caption col colgroup optgroup option table tbody td tfoot th thead tr].include?(tag_name) ### TODO
     define_method "test_should_allow_#{tag_name}_tag" do
       input = "<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>"
       htmloutput = "<#{tag_name.downcase} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name.downcase}>"
       xhtmloutput = "<#{tag_name} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>"
       rexmloutput = xhtmloutput
 
-      if tag_name == 'image'
+      if %w[caption colgroup optgroup option tbody td tfoot th thead tr].include?(tag_name)
+        htmloutput = "foo &lt;bad&gt;bar&lt;/bad&gt; baz"
+        xhtmloutput = htmloutput
+      elsif tag_name == 'col'
+        htmloutput = "foo &lt;bad&gt;bar&lt;/bad&gt; baz"
+        xhtmloutput = htmloutput
+        rexmloutput = "<col title='1' />"
+      elsif tag_name == 'table'
+        htmloutput = "foo &lt;bad&gt;bar&lt;/bad&gt;baz<table title='1'> </table>"
+        xhtmloutput = htmloutput
+      elsif tag_name == 'image'
         htmloutput = "<img title='1'/>foo &lt;bad&gt;bar&lt;/bad&gt; baz"
         xhtmloutput = htmloutput
         rexmloutput = "<image title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</image>"
