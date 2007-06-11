@@ -398,11 +398,23 @@ class SanitizeTest < Test::Unit::TestCase
     input = %(<!--[if gte IE 4]><script>alert\('XSS'\);</script><![endif]-->)
     output = ""
     check_sanitization(input, output, output, output)
+
+    input = %(<![if !IE 5]><script>alert\('XSS'\);</script><![endif]>)
+    output = "&lt;script&gt;alert('XSS');&lt;/script&gt;"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
   end
 
   def test_xml_base
-    input =%(<div xml:base="javascript:alert('XSS');//">foo</div>)
+    input = %(<div xml:base="javascript:alert('XSS');//">foo</div>)
     output = "<div>foo</div>"
     check_sanitization(input, output, output, output)
+  end
+
+  def test_grave_accents
+    input =%(<img src=`javascript:alert('XSS')` />)
+    output = "<img/>"
+    rexmloutput = "Ill-formed XHTML!"
+    check_sanitization(input, output, output, rexmloutput)
   end
 end

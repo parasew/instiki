@@ -114,7 +114,7 @@ module HTML5lib
               attrs = Hash[*token[:data].flatten]
               attrs.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
               ATTR_VAL_IS_URI.each do |attr|
-                val_unescaped = CGI.unescapeHTML(attrs[attr].to_s).gsub(/[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
+                val_unescaped = CGI.unescapeHTML(attrs[attr].to_s).gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
                 if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0])
                   attrs.delete attr
                 end
