@@ -181,7 +181,7 @@ module HTML5lib
         end
 
       elsif token[:type] == :EndTag
-        parseError(_('End tag contains unexpected attributes.')) if token[:data]
+        parseError(_('End tag contains unexpected attributes.')) unless token[:data].empty?
         token[:name] = token[:name].downcase
       end
 

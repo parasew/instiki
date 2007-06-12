@@ -54,7 +54,7 @@ class Html5ParserTestCase < Test::Unit::TestCase
             actual_errors = parser.errors.map do |(line, col), message|
               'Line: %i Col: %i %s' % [line, col, message]
             end
-            assert_equal parser.errors.length, expected_errors.length, [
+            assert_equal expected_errors.length, parser.errors.length, [
               'Expected errors:', expected_errors.join("\n"),
               'Actual errors:', actual_errors.join("\n") 
             ].join("\n")

@@ -1,17 +1,24 @@
 require 'test/unit'
 
-HTML5LIB_BASE = File.dirname(File.dirname(File.dirname(File.expand_path(__FILE__))))
+HTML5LIB_BASE = File.dirname(File.dirname(File.dirname(File.expand_path(__FILE__)))) 
+
+if File.exists?(File.join(HTML5LIB_BASE, 'testdata'))
+  TESTDATA_DIR = File.join(HTML5LIB_BASE, 'testdata')
+else
+  TESTDATA_DIR = File.join(File.dirname(File.dirname(File.expand_path(__FILE__))), 'testdata')
+end
 
 $:.unshift File.join(File.dirname(File.dirname(__FILE__)),'lib')
 
 $:.unshift File.dirname(__FILE__)
 
 def html5lib_test_files(subdirectory)
-  Dir[File.join(HTML5LIB_BASE, 'tests', subdirectory, '*.*')]
+  Dir[File.join(TESTDATA_DIR, subdirectory, '*.*')]
 end
 
 begin
-  require 'jsonx'
+  require 'rubygems'
+  require 'json'
 rescue LoadError
   class JSON
     def self.parse json
