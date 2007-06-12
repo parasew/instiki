@@ -30,6 +30,7 @@ module Sanitize
   require 'html5lib/treewalkers'
   require 'html5lib/treebuilders'
   require 'html5lib/serializer'
+  require 'html5lib/sanitizer'
 
   include HTML5lib
 

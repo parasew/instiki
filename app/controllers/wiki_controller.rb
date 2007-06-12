@@ -3,7 +3,6 @@ require 'redcloth_for_tex'
 require 'parsedate'
 require 'zip/zip'
 require 'sanitize'
-require 'string_utils'
 
 class WikiController < ApplicationController
 

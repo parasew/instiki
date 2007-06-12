@@ -78,7 +78,7 @@ module HTML5lib
 
       class Element < Node
         def to_s
-           "<%s>" % name
+           "<#{name}>"
         end
 
         def printTree indent=0

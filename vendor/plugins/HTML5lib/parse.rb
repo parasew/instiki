@@ -32,19 +32,19 @@ def parse(opts, args)
   if opts.profile
     require 'profiler'
     Profiler__::start_profile
-    p.parse(f)
+    p.send(opts.parsemethod,f)
     Profiler__::stop_profile
     Profiler__::print_profile($stderr)
   elsif opts.time
     require 'time'
     t0 = Time.new
-    document = p.parse(f)
+    document = p.send(opts.parsemethod,f)
     t1 = Time.new
     printOutput(p, document, opts)
     t2 = Time.new
     puts "\n\nRun took: %fs (plus %fs to print the output)"%[t1-t0, t2-t1]
   else
-    document = p.parse(f)
+    document = p.send(opts.parsemethod,f)
     printOutput(p, document, opts)
   end
 end
@@ -63,7 +63,8 @@ def printOutput(parser, document, opts)
   when :hilite
     print document.hilite
   when :tree
-    print parser.tree.testSerializer(document)
+    document = [document] unless document.respond_to?(:each)
+    document.each {|fragment| puts parser.tree.testSerializer(fragment)}
   end
 
   if opts.error
@@ -71,7 +72,7 @@ def printOutput(parser, document, opts)
     for pos, message in parser.errors
         errList << ("Line %i Col %i"%pos + " " + message)
     end
-    $stderr.write("\nParse errors:\n" + errList.join("\n")+"\n")
+    $stdout.write("\nParse errors:\n" + errList.join("\n")+"\n")
   end
 end
 
@@ -83,6 +84,7 @@ options.output = :tree
 options.treebuilder = 'simpletree'
 options.error = false
 options.encoding = false
+options.parsemethod = :parse
 
 require 'optparse'
 opts = OptionParser.new do |opts|
@@ -108,6 +110,10 @@ opts = OptionParser.new do |opts|
 
   opts.on("-e", "--error", "Print a list of parse errors") do |error|
     options.error = error
+  end
+
+  opts.on("-f", "--fragment", "Parse as a fragment") do |parse|
+    options.parsemethod = :parseFragment
   end
 
   opts.on("-x", "--xml", "output as xml") do |xml|

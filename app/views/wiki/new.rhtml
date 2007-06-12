@@ -13,7 +13,7 @@
 	<% form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
 	        { 'id' => 'editForm', 'method' => 'post', 'onsubmit' => 'cleanAuthorName();', 'accept-charset' => 'utf-8' }) do %>
 	
-	    <textarea name="content" id="content" rows="24" cols="60"><%= h(@flash[:content] || '') %></textarea>
+	    <textarea name="content" id="content" rows="24" cols="60"><%= h(flash[:content] || '') %></textarea>
 		<div id="editFormButtons">
 		    <input type="submit" value="Submit" accesskey="s"/> as 
 		    <%= text_field_tag :author, @author, 

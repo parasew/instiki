@@ -27,6 +27,8 @@ module HTML5lib
 
     handle_end %w( address blockquote center div dl fieldset listing menu ol pre ul ) => 'Block'
 
+    handle_end HEADING_ELEMENTS => 'Heading'
+
     handle_end %w( a b big em font i nobr s small strike strong tt u ) => 'Formatting'
 
     handle_end %w( head frameset select optgroup option table caption colgroup col thead tfoot tbody tr td th ) => 'Misplaced' 

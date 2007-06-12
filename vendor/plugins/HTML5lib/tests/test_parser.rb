@@ -12,7 +12,7 @@ begin
 rescue LoadError
 end
 
-$CHECK_PARSER_ERRORS = false
+$CHECK_PARSER_ERRORS = ARGV.delete('-p')
 
 puts 'Testing tree builders: ' + $tree_types_to_test * ', '
 
@@ -55,6 +55,7 @@ class Html5ParserTestCase < Test::Unit::TestCase
               'Line: %i Col: %i %s' % [line, col, message]
             end
             assert_equal expected_errors.length, parser.errors.length, [
+              'Input', input + "\n",
               'Expected errors:', expected_errors.join("\n"),
               'Actual errors:', actual_errors.join("\n") 
             ].join("\n")

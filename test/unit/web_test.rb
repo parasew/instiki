@@ -40,7 +40,7 @@ class WebTest < Test::Unit::TestCase
     assert_equal '123', web.password
   
     # new web should be set for maximum features enabled
-    assert_equal :textile, web.markup
+    assert_equal :markdownMML, web.markup
     assert_equal '008B26', web.color
     assert !web.safe_mode?
     assert_equal([], web.pages)
