@@ -1,4 +1,5 @@
 require 'cgi'
+require 'html5lib/filters'
 
 module HTML5lib
 
@@ -175,10 +176,10 @@ module HTML5lib
     end
   end
 
-  class HTMLSanitizeFilter < Filter
+  class HTMLSanitizeFilter < Filters::Base
     include HTMLSanitizeModule
     def each
-      @source.each do |token|
+      __getobj__.each do |token|
         yield(sanitize_token(token))
       end
     end

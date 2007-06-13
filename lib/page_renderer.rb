@@ -40,8 +40,8 @@ class PageRenderer
     previous_revision = @revision.page.previous_revision(@revision)
     if previous_revision
 
-      previous_content = "<div>\n" + WikiContent.new(previous_revision, @@url_generator).render!.to_s + "\n</div>"
-      current_content = "<div>\n" + display_content.to_s  + "\n</div>"
+      previous_content = "<div>" + WikiContent.new(previous_revision, @@url_generator).render!.to_s + "</div>"
+      current_content = "<div>" + display_content.to_s  + "</div>"
       diff_doc = REXML::Document.new
       diff_doc << (div = REXML::Element.new 'div')
       hd = XHTMLDiff.new(div)
@@ -54,7 +54,7 @@ class PageRenderer
 
       diffs = ''
       diff_doc.write(diffs, -1, true, true)
-      diffs
+      diffs.gsub(/^<div>(.*)<\/div>$/, '\1')
     else
       display_content
     end

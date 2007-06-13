@@ -46,7 +46,7 @@ class PageRendererTest < Test::Unit::TestCase
         'would be <a class="existingWikiWord" href="../show/MyWay">My Way</a> in kinda ' +
         '<a class="existingWikiWord" href="../show/ThatWay">That Way</a> in ' +
         '<span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
-        "though <a class=\"existingWikiWord\" href=\"../show/MyWay\">My Way</a> OverThere\u8212see " +
+        %{though <a class="existingWikiWord" href="../show/MyWay">My Way</a> OverThere—see } +
         '<a class="existingWikiWord" href="../show/SmartEngine">Smart Engine</a> in that ' +
         '<span class="newWikiWord">Smart Engine GUI' +
         '<a href="../show/SmartEngineGUI">?</a></span></p>', 
@@ -60,6 +60,11 @@ class PageRendererTest < Test::Unit::TestCase
         %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
         %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
         "My Headline\n===========\n\nthat SmartEngineGUI")
+  
+    assert_markup_parsed_as(
+        %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
+        %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
+        "#My Headline#\n\nthat SmartEngineGUI")
   
     code_block = [ 
       'This is a code block:',
@@ -239,7 +244,7 @@ class PageRendererTest < Test::Unit::TestCase
         '<a class="existingWikiWord" href="MyWay.html">My Way</a> in kinda ' +
         '<a class="existingWikiWord" href="ThatWay.html">That Way</a> in ' +
         '<span class="newWikiWord">His Way</span> though ' +
-        "<a class=\"existingWikiWord\" href=\"MyWay.html\">My Way</a> OverThere\u8212see " +
+        %{<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere—see } +
         '<a class="existingWikiWord" href="SmartEngine.html">Smart Engine</a> in that ' +
         '<span class="newWikiWord">Smart Engine GUI</span></p>', 
         test_renderer(@revision).display_content_for_export
@@ -274,8 +279,8 @@ class PageRendererTest < Test::Unit::TestCase
     Revision.create(:page => @page, :content => 'What a red and lovely morning today', 
         :author => Author.new('DavidHeinemeierHansson'), :revised_at => Time.now)
 
-    assert_equal "<p>What a <del class=\"diffmod\">blue</del><ins class=\"diffmod\">red" +
-        "</ins> and lovely morning<ins class=\"diffins\"> today</ins></p>", test_renderer(@page.revisions.last).display_diff
+    assert_equal "<p><span> What a<del class='diffmod'> blue</del><ins class='diffmod'> red" +
+        "</ins> and lovely morning<ins class='diffins'> today</ins></span></p>", test_renderer(@page.revisions.last).display_diff
   end
   
   def test_link_to_file

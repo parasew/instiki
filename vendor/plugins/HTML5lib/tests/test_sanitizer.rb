@@ -31,7 +31,7 @@ class SanitizeTest < Test::Unit::TestCase
       :omit_optional_tags => false,
       :inject_meta_charset => false,
       :sanitize => true}).gsub(/^<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>$/, '\1')
-  rescue
+  rescue REXML::ParseException
     return "Ill-formed XHTML!"
   end
 
