@@ -59,7 +59,7 @@ def printOutput(parser, document, opts)
     require 'html5lib/treewalkers'
     tokens = HTML5lib::TreeWalkers[opts.treebuilder].new(document)
     require 'html5lib/serializer'
-    print HTML5lib::HTMLSerializer.serialize(tokens, :encoding=>'utf-8')
+    print HTML5lib::HTMLSerializer.serialize(tokens, opts.serializer)
   when :hilite
     print document.hilite
   when :tree
@@ -80,11 +80,16 @@ require 'ostruct'
 options = OpenStruct.new
 options.profile = false
 options.time = false
-options.output = :tree
+options.output = :html
 options.treebuilder = 'simpletree'
 options.error = false
 options.encoding = false
 options.parsemethod = :parse
+options.serializer = {
+  :encoding => 'utf-8',
+  :omit_optional_tags => false,
+  :inject_meta_charset => false
+}
 
 require 'optparse'
 opts = OptionParser.new do |opts|
@@ -96,14 +101,6 @@ opts = OptionParser.new do |opts|
     options.time = time
   end
     
-  opts.on("--[no-]tree", "Do not print output tree") do |tree|
-    if tree
-      options.output = :tree
-    else
-      options.output = nil
-    end
-  end
-  
   opts.on("-b", "--treebuilder NAME") do |treebuilder|
     options.treebuilder = treebuilder
   end
@@ -116,13 +113,17 @@ opts = OptionParser.new do |opts|
     options.parsemethod = :parseFragment
   end
 
+  opts.on("--tree", "output as debug tree") do |tree|
+    options.output = :tree
+  end
+  
   opts.on("-x", "--xml", "output as xml") do |xml|
     options.output = :xml
     options.treebuilder = "rexml"
   end
   
-  opts.on("--html", "Output as html") do |html|
-    options.output = :html
+  opts.on("--[no-]html", "Output as html") do |html|
+    options.output = (html ? :html : nil)
   end
   
   opts.on("--hilite", "Output as formatted highlighted code.") do |hilite|
@@ -131,6 +132,22 @@ opts = OptionParser.new do |opts|
   
   opts.on("-c", "--[no-]encoding", "Print character encoding used") do |encoding|
     options.encoding = encoding
+  end
+
+  opts.on("--[no-]inject-meta-charset", "inject <meta charset>") do |inject|
+    options.serializer[:inject_meta_charset] = inject
+  end
+
+  opts.on("--[no-]strip-whitespace", "strip unnecessary whitespace") do |strip|
+    options.serializer[:strip_whitespace] = strip
+  end
+
+  opts.on("--[no-]sanitize", "escape unsafe tags") do |sanitize|
+    options.serializer[:sanitize] = sanitize
+  end
+
+  opts.on("--[no-]omit-optional-tags", "Omit optional tags") do |omit|
+    options.serializer[:omit_optional_tags] = omit
   end
 
   opts.on_tail("-h", "--help", "Show this message") do

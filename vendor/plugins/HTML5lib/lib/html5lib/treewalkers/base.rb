@@ -27,13 +27,13 @@ module TokenConstructor
     end
 
     def text(data)
-        if data =~ /^([#{SPACE_CHARACTERS.join('')}]+)/
+        if data =~ /\A([#{SPACE_CHARACTERS.join('')}]+)/m
           yield({:type => :SpaceCharacters, :data => $1})
           data = data[$1.length .. -1]
           return if data.empty?
         end
 
-        if data =~ /([#{SPACE_CHARACTERS.join('')}]+)$/
+        if data =~ /([#{SPACE_CHARACTERS.join('')}]+)\Z/m
           yield({:type => :Characters, :data => data[0 ... -$1.length]})
           yield({:type => :SpaceCharacters, :data => $1})
         else

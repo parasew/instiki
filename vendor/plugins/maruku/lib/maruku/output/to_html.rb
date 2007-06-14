@@ -157,6 +157,7 @@ Example:
 	# Render to an HTML fragment (returns a REXML document tree)
 	def to_html_tree
 		div = Element.new 'div'
+			div.attributes['class'] = 'maruku_wrapper_div'
                         children_to_html.each do |e|
                                 div << e
                         end

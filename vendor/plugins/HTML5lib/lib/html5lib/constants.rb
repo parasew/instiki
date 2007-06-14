@@ -148,6 +148,18 @@ module HTML5lib
       input
   ]
 
+  CDATA_ELEMENTS = %w[title textarea]
+
+  RCDATA_ELEMENTS = %w[
+    style
+    script
+    xmp
+    iframe
+    noembed
+    noframes
+    noscript
+  ]
+
   BOOLEAN_ATTRIBUTES = {
     :global => %w[irrelevant],
     'style' => %w[scoped],

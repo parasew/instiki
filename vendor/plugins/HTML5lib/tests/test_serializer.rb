@@ -24,7 +24,7 @@ class JsonWalker < HTML5lib::TreeWalkers::Base
       when 'Doctype'
         yield doctype(token[1])
       else
-        raise ValueError("Unknown token type: " + type)
+        raise "Unknown token type: " + token[0]
       end
     end
   end
@@ -37,7 +37,10 @@ class Html5SerializeTestcase < Test::Unit::TestCase
     tests['tests'].each_with_index do |test, index|
 
       define_method "test_#{test_name}_#{index+1}" do
-        next if test_name == 'whitespace' #TODO
+        if test["options"] and test["options"]["encoding"]
+          test["options"][:encoding] = test["options"]["encoding"]
+        end
+
         result = HTML5lib::HTMLSerializer.
           serialize(JsonWalker.new(test["input"]), (test["options"] || {}))
         expected = test["expected"]

@@ -44,7 +44,7 @@ module Engines
       require 'maruku/ext/math'
       html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
             {:math_enabled => false}).to_html_tree)
-      html.gsub(/\A<div>(.*)<\/div>\z/, '\1')
+      html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
     end
   end
 
@@ -56,7 +56,7 @@ module Engines
       require 'maruku/ext/math'
       html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
             {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html_tree)
-      html.gsub(/\A<div>(.*)<\/div>\z/, '\1')
+      html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
     end
   end
 

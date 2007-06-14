@@ -1,5 +1,4 @@
 require 'cgi'
-require 'html5lib/filters'
 
 module HTML5lib
 
@@ -173,15 +172,6 @@ module HTML5lib
       end
 
       style = clean.join(' ')
-    end
-  end
-
-  class HTMLSanitizeFilter < Filters::Base
-    include HTMLSanitizeModule
-    def each
-      __getobj__.each do |token|
-        yield(sanitize_token(token))
-      end
     end
   end
 

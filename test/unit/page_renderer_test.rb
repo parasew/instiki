@@ -57,12 +57,12 @@ class PageRendererTest < Test::Unit::TestCase
     set_web_property :markup, :markdown
   
     assert_markup_parsed_as(
-        %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
+        %{<h1 id="my_headline">My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
         %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
         "My Headline\n===========\n\nthat SmartEngineGUI")
   
     assert_markup_parsed_as(
-        %{<h1>My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
+        %{<h1 id="my_headline">My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
         %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
         "#My Headline#\n\nthat SmartEngineGUI")
   
@@ -77,7 +77,7 @@ class PageRendererTest < Test::Unit::TestCase
   
     assert_markup_parsed_as(
         %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
-        %{return ThatWay\n</code></pre>\n\n<p>Nice!</p>}, 
+        %{return ThatWay</code></pre>\n\n<p>Nice!</p>}, 
         code_block)
   end
   
@@ -105,15 +105,15 @@ class PageRendererTest < Test::Unit::TestCase
     
     set_web_property :markup, :markdown
     assert_markup_parsed_as(
-      "<h1>Markdown heading</h1>\n\n" +
+      "<h1 id=\"markdown_heading\">Markdown heading</h1>\n\n" +
       "<p>h2. Textile heading</p>\n\n" +
       "<p><em>some</em> <strong>text</strong> <em>with</em> -styles-</p>\n\n" +
-      "<ul>\n<li>list 1</li>\n<li>list 2</li>\n</ul>",
+      "<ul>\n<li>list 1</li>\n\n<li>list 2</li>\n</ul>",
       textile_and_markdown)
     
     set_web_property :markup, :textile
     assert_markup_parsed_as(
-      "<p>Markdown heading<br />================</p>\n\n\n\t<h2>Textile heading</h2>" +
+      "<p>Markdown heading<br/>================</p>\n\n\n\t<h2>Textile heading</h2>" +
       "\n\n\n\t<p><strong>some</strong> <b>text</b> <em>with</em> <del>styles</del></p>" +
       "\n\n\n\t<ul>\n\t<li>list 1</li>\n\t\t<li>list 2</li>\n\t</ul>",
       textile_and_markdown)
