@@ -7,6 +7,28 @@ module ActionController
   end
   
   module Caching
+    ##Fix one method which seems to be broken
+    module Fragments
+      def expire_fragment(name, options = nil)
+        return unless perform_caching
+
+        key = fragment_cache_key(name)
+
+        if key.is_a?(Regexp)
+          #need this next line, otherwise filenames with '+'s in them fail
+          key = Regexp.new(Regexp.escape(key.source).gsub(/\\\.\\\*/, '.*'))
+          self.class.benchmark "Expired fragments matching: #{key.source}" do
+            fragment_cache_store.delete_matched(key, options)
+          end
+        else
+          self.class.benchmark "Expired fragment: #{key}" do
+            fragment_cache_store.delete(key, options)
+          end
+        end
+      end
+    end
+    #####
+
     module Actions
 
       # All documentation is keeping DRY in the plugin's README
@@ -134,7 +156,7 @@ module ActionController
             controller.response.headers['Cache-Control'] == 'no-cache'
             controller.response.headers['Cache-Control'] = "max-age=#{controller.response.time_to_live}"
           end
-          controller.response.headers['Etag'] = "\"#{MD5.new(controller.response.body).to_s}\""
+          controller.response.headers['Etag'] = %{"#{MD5.new(controller.response.body).to_s}"}
           controller.response.headers['Last-Modified'] ||= Time.now.httpdate
         end
         
@@ -147,7 +169,7 @@ module ActionController
         
         def send_not_modified(controller)
           controller.logger.info "Send Not Modified"
-          controller.response.headers['Etag'] = "\"#{MD5.new(fragment_body(controller)).to_s}\""
+          controller.response.headers['Etag'] = %{"#{MD5.new(fragment_body(controller)).to_s}"}
           controller.render(:text => "", :status => 304)
         end
         
