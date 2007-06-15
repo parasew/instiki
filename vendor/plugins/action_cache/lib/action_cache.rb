@@ -7,27 +7,6 @@ module ActionController
   end
   
   module Caching
-    ##Fix one method which seems to be broken
-    module Fragments
-      def expire_fragment(name, options = nil)
-        return unless perform_caching
-
-        key = fragment_cache_key(name)
-
-        if key.is_a?(Regexp)
-          #need this next line, otherwise filenames with '+'s in them fail
-          key = Regexp.new(Regexp.escape(key.source).gsub(/\\\.\\\*/, '.*'))
-          self.class.benchmark "Expired fragments matching: #{key.source}" do
-            fragment_cache_store.delete_matched(key, options)
-          end
-        else
-          self.class.benchmark "Expired fragment: #{key}" do
-            fragment_cache_store.delete(key, options)
-          end
-        end
-      end
-    end
-    #####
 
     module Actions
 
@@ -39,7 +18,7 @@ module ActionController
       end
 
       def expire_one_action(options)
-        expire_fragment(Regexp.new(".*/" + ActionCachePath.path_for(self, options) + ".*"))
+        expire_fragment(Regexp.new(".*/" + Regexp.escape(ActionCachePath.path_for(self, options)) + ".*"))
       end
       
       def expire_action(options = {})
