@@ -33,9 +33,6 @@ module HTML5lib
 
       options.each { |name, value| instance_variable_set("@#{name}", value) }
 
-      # List of where new lines occur
-      @new_lines = []
-
       # Raw Stream
       @raw_stream = open_stream(source)
 
@@ -55,17 +52,20 @@ module HTML5lib
 
       # Read bytes from stream decoding them into Unicode
       uString = @raw_stream.read
-      unless @char_encoding == 'utf-8'
+      if @char_encoding == 'windows-1252'
+        @win1252 = true
+      elsif @char_encoding != 'utf-8'
         begin
           require 'iconv'
-          uString = Iconv.iconv('utf-8', @encoding, uString)[0]
-        rescue
+          begin
+            uString = Iconv.iconv('utf-8', @char_encoding, uString).first
+          rescue
+            @win1252 = true
+          end
+        rescue LoadError
+          @win1252 = true
         end
       end
-
-      # Normalize newlines and null characters
-      uString.gsub!(/\r\n?/, "\n")
-      uString.gsub!("\x00", [0xFFFD].pack('U'))
 
       # Convert the unicode string into a list to be used as the data stream
       @data_stream = uString
@@ -73,7 +73,9 @@ module HTML5lib
       @queue = []
 
       # Reset position in the list to read from
-      reset
+      @tell = 0
+      @line = @col = 0
+      @line_lengths = []
     end
 
     # Produces a file object from source.
@@ -95,11 +97,13 @@ module HTML5lib
       #First look for a BOM
       #This will also read past the BOM if present
       encoding = detect_bom
+
       #If there is no BOM need to look for meta elements with encoding 
       #information
       if encoding.nil? and @parse_meta
         encoding = detect_encoding_meta
       end
+
       #Guess with chardet, if avaliable
       if encoding.nil? and @chardet
         begin
@@ -107,17 +111,18 @@ module HTML5lib
           require 'UniversalDetector' # gem install chardet
           buffer = @raw_stream.read
           encoding = UniversalDetector::chardet(buffer)['encoding']
-          @raw_stream = open_stream(buffer)
+          seek(buffer, 0)
         rescue LoadError
         end
       end
+
       # If all else fails use the default encoding
       if encoding.nil?
         encoding = @DEFAULT_ENCODING
       end
     
-      #Substitute for equivalent encodings:
-      encoding_sub = {'ascii' => 'windows-1252', 'iso-8859-1' => 'windows-1252'}
+      #Substitute for equivalent encodings
+      encoding_sub = {'iso-8859-1' => 'windows-1252'}
 
       if encoding_sub.has_key?(encoding.downcase)
         encoding = encoding_sub[encoding.downcase]
@@ -132,14 +137,13 @@ module HTML5lib
     def detect_bom
       bom_dict = {
         "\xef\xbb\xbf" => 'utf-8',
-        "\xff\xfe" => 'utf-16-le',
-        "\xfe\xff" => 'utf-16-be',
-        "\xff\xfe\x00\x00" => 'utf-32-le',
-        "\x00\x00\xfe\xff" => 'utf-32-be'
+        "\xff\xfe" => 'utf-16le',
+        "\xfe\xff" => 'utf-16be',
+        "\xff\xfe\x00\x00" => 'utf-32le',
+        "\x00\x00\xfe\xff" => 'utf-32be'
       }
 
       # Go to beginning of file and read in 4 bytes
-      @raw_stream.seek(0)
       string = @raw_stream.read(4)
       return nil unless string
 
@@ -156,45 +160,80 @@ module HTML5lib
         end
       end
 
-      #AT - move this to the caller?
       # Set the read position past the BOM if one was found, otherwise
       # set it to the start of the stream
-      @raw_stream.seek(encoding ? seek : 0)
+      seek(string, encoding ? seek : 0)
 
       return encoding
     end
 
-    # Report the encoding declared by the meta element
-    def detect_encoding_meta
-      parser = EncodingParser.new(@raw_stream.read(@NUM_BYTES_META))
-      @raw_stream.seek(0)
-      return parser.get_encoding
+    def seek(buffer, n)
+      if @raw_stream.respond_to?(:unget)
+        @raw_stream.unget(buffer[n..-1])
+        return
+      end
+
+      if @raw_stream.respond_to?(:seek)
+        begin
+          @raw_stream.seek(n)
+          return
+        rescue Errno::ESPIPE
+        end
+      end
+
+      require 'delegate'
+      @raw_stream = SimpleDelegator.new(@raw_stream)
+
+      class << @raw_stream
+        def read(chars=-1)
+          if chars == -1 or chars > @data.length
+            result = @data
+            @data = ''
+            return result if __getobj__.eof?
+            return result + __getobj__.read if chars == -1
+            return result + __getobj__.read(chars-result.length)
+          elsif @data.empty?
+            return __getobj__.read(chars)
+          else
+            result = @data[1...chars]
+            @data = @data[chars..-1]
+            return result
+          end
+        end
+
+        def unget(data)
+          if !@data or @data.empty?
+            @data = data
+          else
+            @data += data
+          end
+        end
+      end
+
+      @raw_stream.unget(buffer[n .. -1])
     end
 
-    def determine_new_lines
-      # Looks through the stream to find where new lines occur so
-      # the position method can tell where it is.
-      @new_lines.push(0)
-      (0...@data_stream.length).each { |i| @new_lines.push(i) if @data_stream[i] == ?\n }
+    # Report the encoding declared by the meta element
+    def detect_encoding_meta
+      buffer = @raw_stream.read(@NUM_BYTES_META)
+      parser = EncodingParser.new(buffer)
+      seek(buffer, 0)
+      return parser.get_encoding
     end
 
     # Returns (line, col) of the current position in the stream.
     def position
-      # Generate list of new lines first time around
-      determine_new_lines if @new_lines.empty?
-      line = 0
-      tell = @tell
-      @new_lines.each do |pos|
-        break unless pos < tell
-        line += 1
+      line, col = @line, @col
+      @queue.reverse.each do |c|
+        if c == "\n"
+          line -= 1
+          raise RuntimeError.new("col=#{col}") unless col == 0
+          col = @line_lengths[line]
+        else
+          col -= 1
+        end 
       end
-      col = tell - @new_lines[line-1] - 1
-      return [line, col]
-    end
-
-    # Resets the position in the stream back to the start.
-    def reset
-      @tell = 0
+      return [line+1, col]
     end
 
     # Read one character from the stream or queue if available. Return
@@ -203,11 +242,60 @@ module HTML5lib
       unless @queue.empty?
         return @queue.shift
       else
-        begin
-          @tell += 1
-          return @data_stream[@tell - 1].chr
-        rescue
-          return :EOF
+        c = @data_stream[@tell]
+        @tell += 1
+
+        case c
+        when 0x01 .. 0x7F
+          if c == 0x0D
+            # normalize newlines
+            @tell += 1 if @data_stream[@tell] == 0x0A
+            c = 0x0A
+          end
+
+          # update position in stream
+          if c == 0x0a
+            @line_lengths << @col
+            @line += 1
+            @col = 0
+          else
+            @col += 1
+          end
+
+          c.chr
+
+        when 0x80 .. 0xBF
+          if !@win1252
+            [0xFFFD].pack('U') # invalid utf-8
+          elsif c <= 0x9f
+            [ENTITIES_WINDOWS1252[c-0x80]].pack('U')
+          else
+            "\xC2" + c.chr # convert to utf-8
+          end
+
+        when 0xC0 .. 0xFF
+          if @win1252
+            "\xC3" + (c-64).chr # convert to utf-8
+          elsif @data_stream[@tell-1 .. -1] =~ /^
+                ( [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+                |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
+                | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+                |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
+                |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
+                | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+                |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
+                )/x
+            @tell += $1.length - 1
+            $1
+          else
+            [0xFFFD].pack('U') # invalid utf-8
+          end
+
+        when 0x00
+          [0xFFFD].pack('U') # null characters are invalid
+
+        else
+          :EOF
         end
       end
     end
@@ -218,28 +306,15 @@ module HTML5lib
     def chars_until(characters, opposite=false)
       char_stack = [char]
 
-      unless char_stack[0] == :EOF
-        while (characters.include? char_stack[-1]) == opposite
-          unless @queue.empty?
-            # First from the queue
-            char_stack.push(@queue.shift)
-            break if char_stack[-1] == :EOF
-          else
-            # Then the rest
-            begin
-              char_stack.push(@data_stream[@tell].chr)
-              @tell += 1
-            rescue
-              char_stack.push(:EOF)
-              break
-            end
-          end
-        end
+      while char_stack.last != :EOF
+        break unless (characters.include?(char_stack.last)) == opposite
+        char_stack.push(char)
       end
 
       # Put the character stopped on back to the front of the queue
       # from where it came.
-      @queue.insert(0, char_stack.pop)
+      c = char_stack.pop
+      @queue.insert(0, c) unless c == :EOF
       return char_stack.join('')
     end
   end
@@ -428,7 +503,7 @@ module HTML5lib
       space_found = false
       #Step 5 attribute name
       while true
-        if @data.current_byte == '=' and attr_name:
+        if @data.current_byte == '=' and attr_name
           break
         elsif SPACE_CHARACTERS.include?(@data.current_byte)
           space_found = true

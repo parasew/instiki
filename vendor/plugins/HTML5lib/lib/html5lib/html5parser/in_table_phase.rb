@@ -89,10 +89,10 @@ module HTML5lib
     def endTagOther(name)
       @parser.parseError(_("Unexpected end tag (#{name}) in table context caused voodoo mode."))
       # Make all the special element rearranging voodoo kick in
-      @parser.insertFromTable = true
+      @tree.insertFromTable = true
       # Process the end tag in the "in body" mode
       @parser.phases[:inBody].processEndTag(name)
-      @parser.insertFromTable = false
+      @tree.insertFromTable = false
     end
 
     protected

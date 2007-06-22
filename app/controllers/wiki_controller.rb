@@ -1,9 +1,9 @@
 require 'fileutils'
-require 'redcloth_for_tex'
+#require 'redcloth_for_tex'
+require 'maruku'
 require 'parsedate'
 require 'zip/zip'
 require 'sanitize'
-require 'string_utils'
 
 class WikiController < ApplicationController
 
@@ -11,7 +11,7 @@ class WikiController < ApplicationController
   caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, :atom_with_content, :atom_with_headlines
   cache_sweeper :revision_sweeper
 
-  layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :tex, :pdf, :s5, :export_tex, :export_html]
+  layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :tex, :s5, :export_html]
 
   include Sanitize
 
@@ -95,21 +95,21 @@ class WikiController < ApplicationController
     export_pages_as_zip(@web.markup) { |page| page.content }
   end
 
-  def export_pdf
-    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
-    file_path = File.join(@wiki.storage_path, file_name)
+#  def export_pdf
+#    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
+#    file_path = File.join(@wiki.storage_path, file_name)
+#
+#    export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
+#    convert_tex_to_pdf "#{file_path}.tex"
+#    send_file "#{file_path}.pdf"
+#  end
 
-    export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
-    convert_tex_to_pdf "#{file_path}.tex"
-    send_file "#{file_path}.pdf"
-  end
-
-  def export_tex
-    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
-    file_path = File.join(@wiki.storage_path, file_name)
-    export_web_to_tex(file_path) unless FileTest.exists?(file_path)
-    send_file file_path
-  end
+#  def export_tex
+#    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
+#    file_path = File.join(@wiki.storage_path, file_name)
+#    export_web_to_tex(file_path) unless FileTest.exists?(file_path)
+#    send_file file_path
+#  end
 
   def feeds
     @rss_with_content_allowed = rss_with_content_allowed?
@@ -180,17 +180,17 @@ class WikiController < ApplicationController
     # to template
   end
 
-  def pdf
-    page = wiki.read_page(@web_name, @page_name)
-    safe_page_name = @page.name.gsub(/\W/, '')
-    file_name = "#{safe_page_name}-#{@web.address}-#{@page.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
-    file_path = File.join(@wiki.storage_path, file_name)
-
-    export_page_to_tex("#{file_path}.tex") unless FileTest.exists?("#{file_path}.tex")
-    # NB: this is _very_ slow
-    convert_tex_to_pdf("#{file_path}.tex")
-    send_file "#{file_path}.pdf"
-  end
+#  def pdf
+#    page = wiki.read_page(@web_name, @page_name)
+#    safe_page_name = @page.name.gsub(/\W/, '')
+#    file_name = "#{safe_page_name}-#{@web.address}-#{@page.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
+#    file_path = File.join(@wiki.storage_path, file_name)
+#
+#    export_page_to_tex("#{file_path}.tex") unless FileTest.exists?("#{file_path}.tex")
+#    # NB: this is _very_ slow
+#    convert_tex_to_pdf("#{file_path}.tex")
+#    send_file "#{file_path}.pdf"
+#  end
 
   def print
     if @page.nil?
@@ -285,10 +285,10 @@ class WikiController < ApplicationController
   end
 
   def tex
-    if @web.markup == :markdownMML
+    if @web.markup == :markdownMML or @web.markup == :markdown
       @tex_content = Maruku.new(@page.content).to_latex
     else
-      @tex_content = RedClothForTex.new(@page.content).to_tex
+      @tex_content = 'TeX export only supported with the Markdown text filters.'
     end
   end
 
@@ -315,23 +315,23 @@ class WikiController < ApplicationController
 
   private
 
-  def convert_tex_to_pdf(tex_path)
-    # TODO remove earlier PDF files with the same prefix
-    # TODO handle gracefully situation where pdflatex is not available
-    begin
-      wd = Dir.getwd
-      Dir.chdir(File.dirname(tex_path))
-      logger.info `pdflatex --interaction=nonstopmode #{File.basename(tex_path)}`
-    ensure
-      Dir.chdir(wd)
-    end
-  end
+#  def convert_tex_to_pdf(tex_path)
+#    # TODO remove earlier PDF files with the same prefix
+#    # TODO handle gracefully situation where pdflatex is not available
+#    begin
+#      wd = Dir.getwd
+#      Dir.chdir(File.dirname(tex_path))
+#      logger.info `pdflatex --interaction=nonstopmode #{File.basename(tex_path)}`
+#    ensure
+#      Dir.chdir(wd)
+#    end
+#  end
 
   def export_page_to_tex(file_path)
     if @web.markup == :markdownMML
       @tex_content = Maruku.new(@page.content).to_latex
     else
-      @tex_content = RedClothForTex.new(@page.content).to_tex
+      @tex_content = 'TeX export only supported with the Markdown text filters.'
     end
     File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => 'tex')) }
   end
@@ -360,15 +360,15 @@ class WikiController < ApplicationController
     send_file file_path
   end
 
-  def export_web_to_tex(file_path)
+#  def export_web_to_tex(file_path)
 #    if @web.markup == :markdownMML
 #      @tex_content = Maruku.new(@page.content).to_latex
 #    else
-#      @tex_content = RedClothForTex.new(@page.content).to_tex
+#      @tex_content = 'TeX export only supported with the Markdown text filters.'
 #    end
-    @tex_content = table_of_contents(@web.page('HomePage').content, render_tex_web)
-    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex_web', :layout => tex)) }
-  end
+#    @tex_content = table_of_contents(@web.page('HomePage').content, render_tex_web)
+#    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex_web', :layout => tex)) }
+#  end
 
   def get_page_and_revision
     if params['rev']
@@ -411,7 +411,7 @@ class WikiController < ApplicationController
       if  @web.markup == :markdownMML
         tex_web[page.name] = Maruku.new(page.content).to_latex
       else
-        tex_web[page.name] = RedClothForTex.new(page.content).to_tex
+        tex_web[page.name] = 'TeX export only supported with the Markdown text filters.'
       end
       tex_web
     end

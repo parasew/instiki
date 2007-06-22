@@ -1,0 +1,68 @@
+require File.join(File.dirname(__FILE__), 'preamble')
+
+require 'html5lib/html5parser'
+require 'html5lib/serializer'
+require 'html5lib/treewalkers'
+
+#Run the serialize error checks
+checkSerializeErrors = false
+
+class JsonWalker < HTML5lib::TreeWalkers::Base
+  def each
+    @tree.each do |token|
+      case token[0]
+      when 'StartTag'
+        yield startTag(token[1], token[2])
+      when 'EndTag'
+        yield endTag(token[1])
+      when 'EmptyTag'
+        yield emptyTag(token[1], token[2])
+      when 'Comment'
+        yield comment(token[1])
+      when 'Characters', 'SpaceCharacters'
+        text(token[1]) {|textToken| yield textToken}
+      when 'Doctype'
+        yield doctype(token[1])
+      else
+        raise "Unknown token type: " + token[0]
+      end
+    end
+  end
+end
+
+class Html5SerializeTestcase < Test::Unit::TestCase
+  html5lib_test_files('serializer').each do |filename|
+    test_name = File.basename(filename).sub('.test', '')
+    tests = JSON::parse(open(filename).read)
+    tests['tests'].each_with_index do |test, index|
+
+      define_method "test_#{test_name}_#{index+1}" do
+        if test["options"] and test["options"]["encoding"]
+          test["options"][:encoding] = test["options"]["encoding"]
+        end
+
+        result = HTML5lib::HTMLSerializer.
+          serialize(JsonWalker.new(test["input"]), (test["options"] || {}))
+        expected = test["expected"]
+        if expected.length == 1
+          assert_equal(expected[0], result, test["description"])
+        elsif !expected.include?(result)
+          flunk("Expected: #{expected.inspect}, Received: #{result.inspect}")
+        end
+
+        return if test_name == 'optionaltags'
+
+        result = HTML5lib::XHTMLSerializer.
+          serialize(JsonWalker.new(test["input"]), (test["options"] || {}))
+        expected = test["xhtml"] || test["expected"]
+        if expected.length == 1
+          assert_equal(expected[0], result, test["description"])
+        elsif !expected.include?(result)
+          flunk("Expected: #{expected.inspect}, Received: #{result.inspect}")
+        end
+
+      end
+
+    end
+  end
+end

@@ -1,12 +1,22 @@
-require 'html5lib/tokenizer'
 require 'cgi'
 
 module HTML5lib
 
 # This module provides sanitization of XHTML+MathML+SVG
 # and of inline style attributes.
+#
+# It can be either at the Tokenizer stage:
+#
+#       HTMLParser.parse(html, :tokenizer => HTMLSanitizer)
+#
+# or, if you already have a parse tree (in this example, a REXML tree),
+# at the Serializer stage:
+#
+#     tokens = TreeWalkers.getTreeWalker('rexml').new(tree)
+#     HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
+#        :sanitize => true})
 
-  class HTMLSanitizer < HTMLTokenizer
+   module HTMLSanitizeModule
 
     ACCEPTABLE_ELEMENTS = %w[a abbr acronym address area b big blockquote br
       button caption center cite code col colgroup dd del dfn dir div dl dt
@@ -64,7 +74,7 @@ module HTML5lib
        xlink:show xlink:title xlink:type xml:base xml:lang xml:space xmlns
        xmlns:xlink y y1 y2 zoomAndPan]
 
-    ATTR_VAL_IS_URI = %w[href src cite action longdesc xlink:href]
+    ATTR_VAL_IS_URI = %w[href src cite action longdesc xlink:href xml:base]
 
     ACCEPTABLE_CSS_PROPERTIES = %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
@@ -96,19 +106,7 @@ module HTML5lib
     ALLOWED_SVG_PROPERTIES = ACCEPTABLE_SVG_PROPERTIES
     ALLOWED_PROTOCOLS = ACCEPTABLE_PROTOCOLS
 
-    # Sanitize the +html+, escaping all elements not in ALLOWED_ELEMENTS, and
-    # stripping out all # attributes not in ALLOWED_ATTRIBUTES. Style
-    # attributes are parsed, and a restricted set, # specified by
-    # ALLOWED_CSS_PROPERTIES and ALLOWED_CSS_KEYWORDS, are allowed through.
-    # attributes in ATTR_VAL_IS_URI are scanned, and only URI schemes specified
-    # in ALLOWED_PROTOCOLS are allowed.
-    #
-    #   sanitize_html('<script> do_nasty_stuff() </script>')
-    #  => &lt;script> do_nasty_stuff() &lt;/script>
-    #   sanitize_html('<a href="javascript: sucker();">Click here for $100</a>')
-    #  => <a>Click here for $100</a>
-    def each
-      super do |token|
+    def sanitize_token(token)
         case token[:type]
         when :StartTag, :EndTag, :EmptyTag
           if ALLOWED_ELEMENTS.include?(token[:name])
@@ -116,7 +114,7 @@ module HTML5lib
               attrs = Hash[*token[:data].flatten]
               attrs.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
               ATTR_VAL_IS_URI.each do |attr|
-                val_unescaped = CGI.unescapeHTML(attrs[attr].to_s).gsub(/[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
+                val_unescaped = CGI.unescapeHTML(attrs[attr].to_s).gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
                 if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0])
                   attrs.delete attr
                 end
@@ -126,7 +124,7 @@ module HTML5lib
               end
               token[:data] = attrs.map {|k,v| [k,v]}
             end
-            yield token
+            return token
           else
             if token[:type] == :EndTag
               token[:data] = "</#{token[:name]}>"
@@ -139,12 +137,14 @@ module HTML5lib
             token[:data].insert(-2,'/') if token[:type] == :EmptyTag
             token[:type] = :Characters
             token.delete(:name)
-            yield token
+            return token
           end
+        when :Comment
+          token[:data] = ""
+          return token
         else
-          yield token
+          return token
         end
-      end
     end
 
     def sanitize_css(style)
@@ -174,4 +174,14 @@ module HTML5lib
       style = clean.join(' ')
     end
   end
+
+  class HTMLSanitizer < HTMLTokenizer
+    include HTMLSanitizeModule
+    def each
+      super do |token|
+        yield(sanitize_token(token))
+      end
+    end
+  end
+
 end

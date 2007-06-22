@@ -1,18 +1,17 @@
 #!/usr/bin/env ruby
 
 require File.dirname(__FILE__) + '/../test_helper'
-require 'redcloth_for_tex'
 
 class RedClothForTexTest < Test::Unit::TestCase
   def test_basics
-    assert_equal '{\bf First Page}', RedClothForTex.new("*First Page*").to_tex
-    assert_equal '{\em First Page}', RedClothForTex.new("_First Page_").to_tex
-    assert_equal "\\begin{itemize}\n\t\\item A\n\t\t\\item B\n\t\t\\item C\n\t\\end{itemize}", RedClothForTex.new("* A\n* B\n* C").to_tex
+    assert_equal '{\bf First Page}', Maruku.new('*First Page*').to_latex
+    assert_equal '{\em First Page}', Maruku.new('_First Page_').to_latex
+    assert_equal "\\begin{itemize}\n\t\\item A\n\t\t\\item B\n\t\t\\item C\n\t\\end{itemize}", Maruku.new('* A\n* B\n* C').to_latex
   end
   
   def test_blocks
-    assert_equal '\section*{hello}', RedClothForTex.new("h1. hello").to_tex
-    assert_equal '\subsection*{hello}', RedClothForTex.new("h2. hello").to_tex
+    assert_equal '\section*{hello}', Maruku.new('#hello#').to_latex 
+    assert_equal '\subsection*{hello}', Maruku.new('##hello##').to_latex
   end
   
   def test_table_of_contents

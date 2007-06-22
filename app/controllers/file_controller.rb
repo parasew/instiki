@@ -1,7 +1,7 @@
 # Controller responsible for serving files and pictures.
 
 require 'zip/zip'
-require 'string_utils'
+require 'sanitize'
 
 class FileController < ApplicationController
 

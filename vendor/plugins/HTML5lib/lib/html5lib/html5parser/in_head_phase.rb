@@ -5,7 +5,9 @@ module HTML5lib
 
     handle_start 'html', 'head', 'title', 'style', 'script', %w( base link meta )
 
-    handle_end 'head', 'html', %w( title style script )
+    handle_end 'head'
+    handle_end %w( html body br ) => 'ImplyAfterHead'
+    handle_end %w( title style script )
 
     def processEOF
       if ['title', 'style', 'script'].include?(name = @tree.openElements[-1].name)
@@ -63,7 +65,11 @@ module HTML5lib
 
     def startTagBaseLinkMeta(name, attributes)
       element = @tree.createElement(name, attributes)
-      appendToHead(element)
+      if @tree.headPointer != nil and @parser.phase == @parser.phases[:inHead]
+        appendToHead(element)
+      else
+        @tree.openElements[-1].appendChild(element)
+      end
     end
 
     def startTagOther(name, attributes)
@@ -80,7 +86,7 @@ module HTML5lib
       @parser.phase = @parser.phases[:afterHead]
     end
 
-    def endTagHtml(name)
+    def endTagImplyAfterHead(name)
       anythingElse
       @parser.phase.processEndTag(name)
     end

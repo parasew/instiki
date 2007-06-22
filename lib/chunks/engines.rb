@@ -24,10 +24,10 @@ module Engines
   end
 
   class Textile < AbstractEngine
-    require_dependency 'sanitize'
+    require 'sanitize'
     include Sanitize
     def mask
-      require_dependency 'redcloth'
+      require 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
@@ -37,33 +37,34 @@ module Engines
   end
 
   class Markdown < AbstractEngine
-    require_dependency 'sanitize'
+    require 'sanitize'
     include Sanitize
     def mask
-      require_dependency 'maruku'
-      require_dependency 'maruku/ext/math'
-      html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"), {:math_enabled => false}).to_html
-      sanitize_xhtml(html.to_ncr)
+      require 'maruku'
+      require 'maruku/ext/math'
+      html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+            {:math_enabled => false}).to_html_tree)
+      html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
     end
   end
 
   class MarkdownMML < AbstractEngine
-    require_dependency 'sanitize'
+    require 'sanitize'
     include Sanitize
     def mask
-      require_dependency 'maruku'
-      require_dependency 'maruku/ext/math'
-      html = Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
-            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html
-      sanitize_xhtml(html.to_ncr)
+      require 'maruku'
+      require 'maruku/ext/math'
+      html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html_tree)
+      html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
     end
   end
 
   class Mixed < AbstractEngine
-    require_dependency 'sanitize'
+    require 'sanitize'
     include Sanitize
     def mask
-      require_dependency 'redcloth'
+      require 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
@@ -73,7 +74,7 @@ module Engines
   end
 
   class RDoc < AbstractEngine
-    require_dependency 'sanitize'
+    require 'sanitize'
     include Sanitize
     def mask
       require_dependency 'rdocsupport'

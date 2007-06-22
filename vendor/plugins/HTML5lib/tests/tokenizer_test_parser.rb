@@ -11,14 +11,15 @@ class TokenizerTestParser
     debug = nil
     for token in @tokenizer
       debug = token.inspect if token[:type] == :ParseError
-      send ('process' + token[:type].to_s), token
+      send(('process' + token[:type].to_s), token)
     end
 
     return @outputTokens
   end
 
   def processDoctype(token)
-    @outputTokens.push(["DOCTYPE", token[:name], token[:data]])
+    @outputTokens.push(["DOCTYPE", token[:name], token[:publicId],
+      token[:systemId], token[:correct]])
   end
 
   def processStartTag(token)

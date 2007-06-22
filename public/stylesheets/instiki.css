@@ -336,6 +336,7 @@ font-size:70%;
 
 div.rightHandSide {
 border-left:1px dotted #ccc;
+border-bottom:1px dotted #ccc;
 float:right;
 font-size:80%;
 margin-left:0.7em;

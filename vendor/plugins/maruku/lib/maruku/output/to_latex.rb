@@ -365,7 +365,7 @@ Otherwise, a standard `verbatim` environment is used.
 		color = get_setting(:code_background_color)
 		colorspec = latex_color(color, 'colorbox')
 
-		"#{colorspec}{\\tt #{s}}"
+		"{#{colorspec}{\\tt #{s}}}"
 	end
 
 	def to_latex_immediate_link

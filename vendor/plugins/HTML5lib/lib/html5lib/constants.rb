@@ -148,6 +148,38 @@ module HTML5lib
       input
   ]
 
+  CDATA_ELEMENTS = %w[title textarea]
+
+  RCDATA_ELEMENTS = %w[
+    style
+    script
+    xmp
+    iframe
+    noembed
+    noframes
+    noscript
+  ]
+
+  BOOLEAN_ATTRIBUTES = {
+    :global => %w[irrelevant],
+    'style' => %w[scoped],
+    'img' => %w[ismap],
+    'audio' => %w[autoplay controls],
+    'video' => %w[autoplay controls],
+    'script' => %w[defer async],
+    'details' => %w[open],
+    'datagrid' => %w[multiple disabled],
+    'command' => %w[hidden disabled checked default],
+    'menu' => %w[autosubmit],
+    'fieldset' => %w[disabled readonly],
+    'option' => %w[disabled readonly selected],
+    'optgroup' => %w[disabled readonly],
+    'button' => %w[disabled autofocus],
+    'input' => %w[disabled readonly required autofocus checked ismap],
+    'select' => %w[disabled readonly autofocus multiple],
+    'output' => %w[disabled readonly]
+  }
+
   # entitiesWindows1252 has to be _ordered_ and needs to have an index.
   ENTITIES_WINDOWS1252 = [
       8364,  # 0x80  0x20AC  EURO SIGN

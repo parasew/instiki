@@ -4,7 +4,7 @@ require 'forwardable'
 
 module HTML5lib
   module TreeBuilders
-    module REXMLTree
+    module REXML
 
       class Node < Base::Node
         extend Forwardable
@@ -52,6 +52,7 @@ module HTML5lib
             childNodes[index-1].rxobj.raw = true
           else
             childNodes.insert index, node
+            refNode.rxobj.parent.insert_before(refNode.rxobj,node.rxobj)
           end
         end
 
@@ -62,7 +63,7 @@ module HTML5lib
 
       class Element < Node
         def self.rxclass
-          REXML::Element
+          ::REXML::Element
         end
 
         def initialize name
@@ -95,7 +96,7 @@ module HTML5lib
 
       class Document < Node
         def self.rxclass
-          REXML::Document
+          ::REXML::Document
         end
 
         def initialize
@@ -120,7 +121,7 @@ module HTML5lib
 
       class DocumentType < Node
         def self.rxclass
-          REXML::DocType
+          ::REXML::DocType
         end
 
         def printTree indent=0
@@ -145,7 +146,7 @@ module HTML5lib
       class TextNode < Node
         def initialize data
           raw=data.gsub('&','&amp;').gsub('<','&lt;').gsub('>','&gt;')
-          @rxobj = REXML::Text.new(raw, true, nil, true)
+          @rxobj = ::REXML::Text.new(raw, true, nil, true)
         end
 
         def printTree indent=0
@@ -155,7 +156,7 @@ module HTML5lib
 
       class CommentNode < Node
         def self.rxclass
-          REXML::Comment
+          ::REXML::Comment
         end
 
         def printTree indent=0

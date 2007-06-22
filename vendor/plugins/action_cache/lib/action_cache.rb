@@ -7,6 +7,7 @@ module ActionController
   end
   
   module Caching
+
     module Actions
 
       # All documentation is keeping DRY in the plugin's README
@@ -17,7 +18,7 @@ module ActionController
       end
 
       def expire_one_action(options)
-        expire_fragment(Regexp.new(".*/" + ActionCachePath.path_for(self, options) + ".*"))
+        expire_fragment(Regexp.new(".*/" + Regexp.escape(ActionCachePath.path_for(self, options)) + ".*"))
       end
       
       def expire_action(options = {})
@@ -134,7 +135,7 @@ module ActionController
             controller.response.headers['Cache-Control'] == 'no-cache'
             controller.response.headers['Cache-Control'] = "max-age=#{controller.response.time_to_live}"
           end
-          controller.response.headers['Etag'] = "\"#{MD5.new(controller.response.body).to_s}\""
+          controller.response.headers['Etag'] = %{"#{MD5.new(controller.response.body).to_s}"}
           controller.response.headers['Last-Modified'] ||= Time.now.httpdate
         end
         
@@ -147,7 +148,7 @@ module ActionController
         
         def send_not_modified(controller)
           controller.logger.info "Send Not Modified"
-          controller.response.headers['Etag'] = "\"#{MD5.new(fragment_body(controller)).to_s}\""
+          controller.response.headers['Etag'] = %{"#{MD5.new(fragment_body(controller)).to_s}"}
           controller.render(:text => "", :status => 304)
         end
         

@@ -191,13 +191,13 @@ EOX
   end
 
   def test_br
-    assert_xhtml_equal <<EOX
+    assert_xhtml_equal <<EOX1
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><title>XLINK</title></head>
 <body>
 <br/>
 </body></html>
-EOX
+EOX1
   end
 
   def xtest_strong

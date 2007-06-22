@@ -101,7 +101,7 @@ module HTML5lib
       @tree.insertComment(data, @tree.openElements[-1])
     end
 
-    def processDoctype(name, error)
+    def processDoctype(name, publicId, systemId, correct)
       @parser.parseError(_('Unexpected DOCTYPE. Ignored.'))
     end
 

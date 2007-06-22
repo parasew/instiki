@@ -89,7 +89,6 @@ class FileControllerTest < Test::Unit::TestCase
     # updated from post to get - post fails the spam protection (no javascript)
     r = get :file, :web => 'wiki1', 
              :file => {:file_name => 'rails-e2e.gif',  :content => StringIO.new(picture)}
-    assert_redirected_to({})
     assert @web.has_file?('rails-e2e.gif')
     assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)
   end
