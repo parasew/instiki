@@ -226,7 +226,6 @@ Line1<br>Line2<br>Line3<br>Line4
 <h1>Hello<h2>World
 #errors
 4: missing document type declaration
-13: h2 element start tag implying h1 element end tag
 19: mismatched body element end tag (premature end of file?)
 #document
 | <html>
@@ -234,8 +233,8 @@ Line1<br>Line2<br>Line3<br>Line4
 |   <body>
 |     <h1>
 |       "Hello"
-|     <h2>
-|       "World"
+|       <h2>
+|         "World"
 
 #data
 <a><p>X<a>Y</a>Z</p></a>
@@ -307,13 +306,18 @@ Line1<br>Line2<br>Line3<br>Line4
 #data
 <!--><div>--<!-->
 #errors
-13: unexpected character after two '-' characters while parsing comment
-18: missing document type declaration
+Incorrect comment token
+Missing document type declaration
+Incorrect comment token
+Unexpected end of file
 #document
-| <!-- ><div>--<! -->
+| <!--  -->
 | <html>
 |   <head>
 |   <body>
+|     <div>
+|       "--"
+|       <!--  -->
 
 #data
 <p><hr></p>
@@ -638,10 +642,10 @@ Line1<br>Line2<br>Line3<br>Line4
 | <html>
 |   <head>
 |     <script>
-|       " <!-- "
+|       " <!-- </script> --> "
 |     " "
 |   <body>
-|     "-->  EOF"
+|     "EOF"
 
 #data
 <b><p></b>TEST
@@ -1248,15 +1252,13 @@ Line1<br>Line2<br>Line3<br>Line4
 #data
 <style><!--</style><meta><script>--><link></script>
 #errors
-7: missing document type declaration
+missing document type declaration
+unexpected EOF
 #document
 | <html>
 |   <head>
 |     <style>
-|       "<!--"
-|     <meta>
-|     <script>
-|       "--><link>"
+|       "<!--</style><meta><script>--><link></script>"
 |   <body>
 
 #data
@@ -1305,12 +1307,12 @@ Line1<br>Line2<br>Line3<br>Line4
 #document
 | <html>
 |   <head>
-|     <base>
-|     <link>
-|     <meta>
 |     <title>
 |       "<p>"
 |   <body>
+|     <base>
+|     <link>
+|     <meta>
 |     <p>
 
 #data
@@ -1381,12 +1383,11 @@ Line1<br>Line2<br>Line3<br>Line4
 6: missing document type declaration
 19: unexpected node at end of document
 19: unexpected node after body element end tag
-19: meta element start tag out of place
 #document
 | <html>
 |   <head>
-|     <meta>
 |   <body>
+|     <meta>
 |     <p>
 
 #data
@@ -1430,14 +1431,13 @@ Line1<br>Line2<br>Line3<br>Line4
 <h1><h2>
 #errors
 4: missing document type declaration
-8: h2 element start tag implying h1 element end tag
 9: mismatched body element end tag (premature end of file?)
 #document
 | <html>
 |   <head>
 |   <body>
 |     <h1>
-|     <h2>
+|       <h2>
 
 #data
 <a><p><a></a></p></a>
@@ -1630,8 +1630,7 @@ Line1<br>Line2<br>Line3<br>Line4
 4: missing document type declaration
 15: required tr element start tag implied by unexpected td element start tag
 27: unexpected td element end tag implied other end tags
-31: h3 element start tag implying h1 element end tag
-36: mismatched h1 element end tag
+Unexpected EOF
 #document
 | <html>
 |   <head>
@@ -1642,7 +1641,7 @@ Line1<br>Line2<br>Line3<br>Line4
 |           <tr>
 |             <td>
 |               <h3>
-|     <h3>
+|       <h3>
 
 #data
 <table><colgroup><col><colgroup><col><col><col><colgroup><col><col><thead><tr><td></table>
@@ -1807,6 +1806,7 @@ Line1<br>Line2<br>Line3<br>Line4
 | <html>
 |   <head>
 |   <body>
+|     <br>
 
 #data
 <table><tr></strong></b></em></i></u></strike></s></blink></tt></pre></big></small></font></select></h1></h2></h3></h4></h5></h6></body></br></a></img></title></span></style></script></table></th></td></tr></frame></area></link></param></hr></input></col></base></meta></basefont></bgsound></embed></spacer></p></dd></dt></caption></colgroup></tbody></tfoot></thead></address></blockquote></center></dir></div></dl></fieldset></listing></menu></ol></ul></li></nobr></wbr></form></button></marquee></object></html></frameset></head></iframe></image></isindex></noembed></noframes></noscript></optgroup></option></plaintext></textarea>
@@ -1924,6 +1924,7 @@ Line1<br>Line2<br>Line3<br>Line4
 | <html>
 |   <head>
 |   <body>
+|     <br>
 |     <table>
 |       <tbody>
 |         <tr>

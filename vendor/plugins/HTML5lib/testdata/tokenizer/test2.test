@@ -1,24 +1,44 @@
 {"tests": [
 
-{"description":"Doctype without a name",
+{"description":"DOCTYPE without name",
 "input":"<!DOCTYPE>",
-"output":["ParseError", "ParseError", ["DOCTYPE", "", true]]},
+"output":["ParseError", "ParseError", ["DOCTYPE", "", null, null, false]]},
 
-{"description":"Correct doctype without a space before name",
+{"description":"DOCTYPE without space before name",
 "input":"<!DOCTYPEhtml>",
-"output":["ParseError", ["DOCTYPE", "HTML", false]]},
+"output":["ParseError", ["DOCTYPE", "html", null, null, true]]},
 
-{"description":"Incorrect doctype without a space before name",
+{"description":"Incorrect DOCTYPE without a space before name",
 "input":"<!DOCTYPEfoo>",
-"output":["ParseError", ["DOCTYPE", "FOO", true]]},
+"output":["ParseError", ["DOCTYPE", "foo", null, null, true]]},
 
-{"description":"Bogus doctype",
+{"description":"DOCTYPE with publicId",
 "input":"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML Transitional 4.01//EN\">",
-"output":["ParseError", ["DOCTYPE", "HTML", true]]},
+"output":[["DOCTYPE", "html", "-//W3C//DTD HTML Transitional 4.01//EN", null, true]]},
+
+{"description":"DOCTYPE with EOF after PUBLIC",
+"input":"<!DOCTYPE html PUBLIC",
+"output":["ParseError", ["DOCTYPE", "html", null, null, false]]},
+
+{"description":"DOCTYPE with EOF after PUBLIC '",
+"input":"<!DOCTYPE html PUBLIC '",
+"output":["ParseError", ["DOCTYPE", "html", "", null, false]]},
+
+{"description":"DOCTYPE with EOF after PUBLIC 'x",
+"input":"<!DOCTYPE html PUBLIC 'x",
+"output":["ParseError", ["DOCTYPE", "html", "x", null, false]]},
+
+{"description":"DOCTYPE with systemId",
+"input":"<!DOCTYPE html SYSTEM \"-//W3C//DTD HTML Transitional 4.01//EN\">",
+"output":[["DOCTYPE", "html", null, "-//W3C//DTD HTML Transitional 4.01//EN", true]]},
+
+{"description":"DOCTYPE with publicId and systemId",
+"input":"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML Transitional 4.01//EN\" \"-//W3C//DTD HTML Transitional 4.01//EN\">",
+"output":[["DOCTYPE", "html", "-//W3C//DTD HTML Transitional 4.01//EN", "-//W3C//DTD HTML Transitional 4.01//EN", true]]},
 
 {"description":"Incomplete doctype",
 "input":"<!DOCTYPE html ",
-"output":["ParseError", ["DOCTYPE", "HTML", true]]},
+"output":["ParseError", ["DOCTYPE", "html", null, null, false]]},
 
 {"description":"Numeric entity representing the NUL character",
 "input":"&#0000;",
@@ -30,19 +50,19 @@
 
 {"description":"Numeric entity representing a codepoint after 1114111 (U+10FFFF)",
 "input":"&#2225222;",
-"output":["ParseError", ["Character", "\uFFFD"]]},
+"output":[["Character", "\uFFFD"]]},
 
 {"description":"Hexadecimal entity representing a codepoint after 1114111 (U+10FFFF)",
 "input":"&#x1010FFFF;",
-"output":["ParseError", ["Character", "\uFFFD"]]},
+"output":[["Character", "\uFFFD"]]},
 
 {"description":"Numeric entity representing a Windows-1252 'codepoint'",
 "input":"&#137;",
-"output":[["Character", "\u2030"]]},
+"output":["ParseError", ["Character", "\u2030"]]},
 
 {"description":"Hexadecimal entity representing a Windows-1252 'codepoint'",
 "input":"&#x89;",
-"output":[["Character", "\u2030"]]},
+"output":["ParseError", ["Character", "\u2030"]]},
 
 {"description":"Hexadecimal entity with mixed uppercase and lowercase",
 "input":"&#xaBcD;",
@@ -58,7 +78,7 @@
 
 {"description":"StartTag containing <",
 "input":"<a<b>",
-"output":["ParseError", ["StartTag", "a", { }], ["StartTag", "b", { }]]},
+"output":[["StartTag", "a<b", { }]]},
 
 {"description":"Non-void element containing trailing /",
 "input":"<h/>",

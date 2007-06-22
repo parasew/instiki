@@ -62,7 +62,8 @@ module HTML5lib
       @errors = []
 
       @tokenizer = @tokenizer.class unless Class === @tokenizer
-      @tokenizer = @tokenizer.new(stream, :encoding => encoding, :parseMeta => innerHTML)
+      @tokenizer = @tokenizer.new(stream, :encoding => encoding,
+        :parseMeta => !innerHTML)
 
       if innerHTML
         case @innerHTML = container.downcase
@@ -99,10 +100,13 @@ module HTML5lib
         case token[:type]
           when :Characters, :SpaceCharacters, :Comment
             @phase.send method, token[:data]
-          when :StartTag, :Doctype
+          when :StartTag
             @phase.send method, token[:name], token[:data]
           when :EndTag
             @phase.send method, token[:name]
+          when :Doctype
+            @phase.send method, token[:name], token[:publicId],
+              token[:systemId], token[:correct]
           else
             parseError(token[:data])
         end
@@ -147,10 +151,6 @@ module HTML5lib
       raise ParseError if @strict
     end
 
-    # This error is not an error
-    def atheistParseError
-    end
-
     # HTML5 specific normalizations to the token stream
     def normalizeToken(token)
 
@@ -160,9 +160,7 @@ module HTML5lib
         # element.  If it matches a void element atheists did the wrong
         # thing and if it doesn't it's wrong for everyone.
 
-        if VOID_ELEMENTS.include?(token[:name])
-          atheistParseError
-        else
+        unless VOID_ELEMENTS.include?(token[:name])
           parseError(_('Solidus (/) incorrectly placed in tag.'))
         end
 

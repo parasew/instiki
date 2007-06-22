@@ -12,7 +12,7 @@ begin
 rescue LoadError
 end
 
-$CHECK_PARSER_ERRORS = ARGV.delete('-p')
+$CHECK_PARSER_ERRORS = ARGV.delete('-p') # TODO
 
 puts 'Testing tree builders: ' + $tree_types_to_test * ', '
 
@@ -45,9 +45,9 @@ class Html5ParserTestCase < Test::Unit::TestCase
           actual_output = convertTreeDump(parser.tree.testSerializer(parser.tree.document))
 
           assert_equal sortattrs(expected_output), sortattrs(actual_output), [
-            'Input:', input,
-            'Expected:', expected_output,
-            'Recieved:', actual_output
+            '', 'Input:', input,
+            '', 'Expected:', expected_output,
+            '', 'Recieved:', actual_output
           ].join("\n")
 
           if $CHECK_PARSER_ERRORS

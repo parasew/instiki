@@ -33,9 +33,6 @@ module HTML5lib
 
       options.each { |name, value| instance_variable_set("@#{name}", value) }
 
-      # List of where new lines occur
-      @new_lines = [0]
-
       # Raw Stream
       @raw_stream = open_stream(source)
 
@@ -77,6 +74,8 @@ module HTML5lib
 
       # Reset position in the list to read from
       @tell = 0
+      @line = @col = 0
+      @line_lengths = []
     end
 
     # Produces a file object from source.
@@ -112,7 +111,7 @@ module HTML5lib
           require 'UniversalDetector' # gem install chardet
           buffer = @raw_stream.read
           encoding = UniversalDetector::chardet(buffer)['encoding']
-          @raw_stream = open_stream(buffer)
+          seek(buffer, 0)
         rescue LoadError
         end
       end
@@ -122,7 +121,7 @@ module HTML5lib
         encoding = @DEFAULT_ENCODING
       end
     
-      #Substitute for equivalent encodings:
+      #Substitute for equivalent encodings
       encoding_sub = {'iso-8859-1' => 'windows-1252'}
 
       if encoding_sub.has_key?(encoding.downcase)
@@ -145,7 +144,6 @@ module HTML5lib
       }
 
       # Go to beginning of file and read in 4 bytes
-      @raw_stream.seek(0)
       string = @raw_stream.read(4)
       return nil unless string
 
@@ -162,30 +160,80 @@ module HTML5lib
         end
       end
 
-      #AT - move this to the caller?
       # Set the read position past the BOM if one was found, otherwise
       # set it to the start of the stream
-      @raw_stream.seek(encoding ? seek : 0)
+      seek(string, encoding ? seek : 0)
 
       return encoding
     end
 
+    def seek(buffer, n)
+      if @raw_stream.respond_to?(:unget)
+        @raw_stream.unget(buffer[n..-1])
+        return
+      end
+
+      if @raw_stream.respond_to?(:seek)
+        begin
+          @raw_stream.seek(n)
+          return
+        rescue Errno::ESPIPE
+        end
+      end
+
+      require 'delegate'
+      @raw_stream = SimpleDelegator.new(@raw_stream)
+
+      class << @raw_stream
+        def read(chars=-1)
+          if chars == -1 or chars > @data.length
+            result = @data
+            @data = ''
+            return result if __getobj__.eof?
+            return result + __getobj__.read if chars == -1
+            return result + __getobj__.read(chars-result.length)
+          elsif @data.empty?
+            return __getobj__.read(chars)
+          else
+            result = @data[1...chars]
+            @data = @data[chars..-1]
+            return result
+          end
+        end
+
+        def unget(data)
+          if !@data or @data.empty?
+            @data = data
+          else
+            @data += data
+          end
+        end
+      end
+
+      @raw_stream.unget(buffer[n .. -1])
+    end
+
     # Report the encoding declared by the meta element
     def detect_encoding_meta
-      parser = EncodingParser.new(@raw_stream.read(@NUM_BYTES_META))
-      @raw_stream.seek(0)
+      buffer = @raw_stream.read(@NUM_BYTES_META)
+      parser = EncodingParser.new(buffer)
+      seek(buffer, 0)
       return parser.get_encoding
     end
 
     # Returns (line, col) of the current position in the stream.
     def position
-      line = 0
-      @new_lines.each do |pos|
-        break unless pos < @tell
-        line += 1
+      line, col = @line, @col
+      @queue.reverse.each do |c|
+        if c == "\n"
+          line -= 1
+          raise RuntimeError.new("col=#{col}") unless col == 0
+          col = @line_lengths[line]
+        else
+          col -= 1
+        end 
       end
-      col = @tell - @new_lines[line-1] - 1
-      return [line, col]
+      return [line+1, col]
     end
 
     # Read one character from the stream or queue if available. Return
@@ -205,9 +253,14 @@ module HTML5lib
             c = 0x0A
           end
 
-          # record where newlines occur so that the position method
-          # can tell where it is
-          @new_lines << @tell-1 if c == 0x0A
+          # update position in stream
+          if c == 0x0a
+            @line_lengths << @col
+            @line += 1
+            @col = 0
+          else
+            @col += 1
+          end
 
           c.chr
 
@@ -261,11 +314,7 @@ module HTML5lib
       # Put the character stopped on back to the front of the queue
       # from where it came.
       c = char_stack.pop
-      if c == :EOF or @data_stream[@tell-1] == c[0]
-        @tell -= 1
-      else
-        @queue.insert(0, c)
-      end
+      @queue.insert(0, c) unless c == :EOF
       return char_stack.join('')
     end
   end
@@ -454,7 +503,7 @@ module HTML5lib
       space_found = false
       #Step 5 attribute name
       while true
-        if @data.current_byte == '=' and attr_name:
+        if @data.current_byte == '=' and attr_name
           break
         elsif SPACE_CHARACTERS.include?(@data.current_byte)
           space_found = true

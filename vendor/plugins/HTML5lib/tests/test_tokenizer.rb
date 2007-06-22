@@ -30,9 +30,10 @@ class Html5TokenizerTestCase < Test::Unit::TestCase
   def tokenizer_test(data)
     (data['contentModelFlags'] || [:PCDATA]).each do |content_model_flag|
       message = [
-        'Description:', data['description'],
-        'Input:', data['input'],
-        'Content Model Flag:', content_model_flag ] * "\n"
+        '', 'Description:', data['description'],
+        '', 'Input:', data['input'],
+        '', 'Content Model Flag:', content_model_flag,
+        '' ] * "\n"
 
       assert_nothing_raised message do
         tokenizer = HTML5lib::HTMLTokenizer.new(data['input'])

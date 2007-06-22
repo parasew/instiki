@@ -27,6 +27,9 @@ module HTML5lib
             childNodes << node
             hpricot.children << node.hpricot
           end
+          if (oldparent = node.hpricot.parent) != nil
+            oldparent.children.delete_at(oldparent.children.index(node.hpricot))
+          end
           node.hpricot.parent = hpricot
           node.parent = self
         end

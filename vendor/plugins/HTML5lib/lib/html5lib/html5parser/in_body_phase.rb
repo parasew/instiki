@@ -5,15 +5,20 @@ module HTML5lib
 
     # http://www.whatwg.org/specs/web-apps/current-work/#in-body
 
-    handle_start 'html', 'body', 'form', 'plaintext', 'a', 'button', 'xmp', 'table', 'hr', 'image'
+    handle_start 'html'
+    handle_start %w( base link meta script style ) => 'ProcessInHead'
+    handle_start 'title'
 
-    handle_start 'input', 'textarea', 'select', 'isindex', %w( script style ), %w( marquee object )
+    handle_start 'body', 'form', 'plaintext', 'a', 'button', 'xmp', 'table', 'hr', 'image'
 
-    handle_start %w( li dd dt ) => 'ListItem', %w( base link meta title ) => 'FromHead'
+    handle_start 'input', 'textarea', 'select', 'isindex', %w( marquee object )
+
+    handle_start %w( li dd dt ) => 'ListItem'
       
     handle_start %w( address blockquote center dir div dl fieldset listing menu ol p pre ul ) => 'CloseP'
 
-    handle_start %w( b big em font i nobr s small strike strong tt u ) => 'Formatting'
+    handle_start %w( b big em font i s small strike strong tt u ) => 'Formatting'
+    handle_start 'nobr'
 
     handle_start %w( area basefont bgsound br embed img param spacer wbr ) => 'VoidFormatting'
 
@@ -33,7 +38,9 @@ module HTML5lib
 
     handle_end %w( head frameset select optgroup option table caption colgroup col thead tfoot tbody tr td th ) => 'Misplaced' 
 
-    handle_end %w( area basefont bgsound br embed hr image img input isindex param spacer wbr frame ) => 'None'
+    handle_end 'br'
+
+    handle_end %w( area basefont bgsound embed hr image img input isindex param spacer wbr frame ) => 'None'
 
     handle_end %w( noframes noscript noembed textarea xmp iframe ) => 'CdataTextAreaXmp'
 
@@ -73,11 +80,11 @@ module HTML5lib
       @tree.insertText(data)
     end
 
-    def startTagScriptStyle(name, attributes)
+    def startTagProcessInHead(name, attributes)
       @parser.phases[:inHead].processStartTag(name, attributes)
     end
 
-    def startTagFromHead(name, attributes)
+    def startTagTitle(name, attributes)
       @parser.parseError(_("Unexpected start tag (#{name}) that belongs in the head. Moved."))
       @parser.phases[:inHead].processStartTag(name, attributes)
     end
@@ -120,7 +127,12 @@ module HTML5lib
 
       @tree.openElements.reverse.each_with_index do |node, i|
         if stopName.include?(node.name)
-          (i + 1).times { @tree.openElements.pop }
+          poppedNodes = (0..i).collect { @tree.openElements.pop }
+          if i >= 1
+            @parser.parseError("Missing end tag%s (%s)" % [
+              (i>1 ? 's' : ''),
+              poppedNodes.reverse.map {|item| item.name}.join(', ')])
+          end
           break
         end
 
@@ -142,15 +154,19 @@ module HTML5lib
 
     def startTagHeading(name, attributes)
       endTagP('p') if in_scope?('p')
-      HEADING_ELEMENTS.each do |element|
-        if in_scope?(element)
-          @parser.parseError(_("Unexpected start tag (#{name})."))
-        
-          remove_open_elements_until { |element| HEADING_ELEMENTS.include?(element.name) }
 
-          break
-         end
-      end
+      # Uncomment the following for IE7 behavior:
+      # HEADING_ELEMENTS.each do |element|
+      #   if in_scope?(element)
+      #     @parser.parseError(_("Unexpected start tag (#{name})."))
+      # 
+      #     remove_open_elements_until do |element|
+      #       HEADING_ELEMENTS.include?(element.name)
+      #     end
+      #
+      #     break
+      #   end
+      # end
       @tree.insertElement(name, attributes)
     end
 
@@ -167,6 +183,12 @@ module HTML5lib
 
     def startTagFormatting(name, attributes)
       @tree.reconstructActiveFormattingElements
+      addFormattingElement(name, attributes)
+    end
+
+    def startTagNobr(name, attributes)
+      @tree.reconstructActiveFormattingElements
+      processEndTag('nobr') if in_scope?('nobr')
       addFormattingElement(name, attributes)
     end
 
@@ -495,6 +517,13 @@ module HTML5lib
     def endTagMisplaced(name)
       # This handles elements with end tags in other insertion modes.
       @parser.parseError(_("Unexpected end tag (#{name}). Ignored."))
+    end
+
+    def endTagBr(name)
+      @parser.parseError(_("Unexpected end tag (br). Treated as br element."))
+      @tree.reconstructActiveFormattingElements
+      @tree.insertElement(name, {})
+      @tree.openElements.pop()
     end
 
     def endTagNone(name)

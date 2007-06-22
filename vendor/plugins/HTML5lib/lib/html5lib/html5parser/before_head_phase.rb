@@ -5,7 +5,7 @@ module HTML5lib
 
     handle_start 'html', 'head'
 
-    handle_end 'html'
+    handle_end %w( html head body br ) => 'ImplyHead'
 
     def processEOF
       startTagHead('head', {})
@@ -28,7 +28,7 @@ module HTML5lib
       @parser.phase.processStartTag(name, attributes)
     end
 
-    def endTagHtml(name)
+    def endTagImplyHead(name)
       startTagHead('head', {})
       @parser.phase.processEndTag(name)
     end

@@ -30,7 +30,7 @@ class SanitizeTest < Test::Unit::TestCase
       :use_trailing_solidus => true,
       :omit_optional_tags => false,
       :inject_meta_charset => false,
-      :sanitize => true}).gsub(/^<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>$/, '\1')
+      :sanitize => true}).gsub(/\A<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>\Z/m, '\1')
   rescue REXML::ParseException
     return "Ill-formed XHTML!"
   end
@@ -65,6 +65,7 @@ class SanitizeTest < Test::Unit::TestCase
       elsif VOID_ELEMENTS.include?(tag_name)
         htmloutput = "<#{tag_name} title='1'/>foo &lt;bad&gt;bar&lt;/bad&gt; baz"
         xhtmloutput = htmloutput
+        htmloutput += '<br/>' if tag_name == 'br'
         rexmloutput =  "<#{tag_name} title='1' />"
       end
       check_sanitization(input, htmloutput, xhtmloutput, rexmloutput)

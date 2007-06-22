@@ -69,15 +69,22 @@ module HTML5lib
 
       # ensure that non-void XHTML elements have content so that separate
       # open and close tags are emitted
-      if token[:type]  == :EndTag and \
-        not VOID_ELEMENTS.include? token[:name] and \
-        token[:name] == @tree.openElements[-1].name and \
-        not @tree.openElements[-1].hasContent
-        @tree.insertText('') unless
-          @tree.openElements.any? {|e|
-            e.attributes.keys.include? 'xmlns' and
-            e.attributes['xmlns'] != 'http://www.w3.org/1999/xhtml'
-          }
+      if token[:type]  == :EndTag
+        if VOID_ELEMENTS.include? token[:name]
+          if @tree.openElements[-1].name != token["name"]:
+            token[:type] = :EmptyTag
+            token["data"] ||= {}
+          end
+        else
+          if token[:name] == @tree.openElements[-1].name and \
+            not @tree.openElements[-1].hasContent
+            @tree.insertText('') unless
+              @tree.openElements.any? {|e|
+                e.attributes.keys.include? 'xmlns' and
+                e.attributes['xmlns'] != 'http://www.w3.org/1999/xhtml'
+              }
+           end
+        end
       end
 
       return token

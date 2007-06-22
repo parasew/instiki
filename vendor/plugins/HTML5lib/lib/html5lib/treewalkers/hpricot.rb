@@ -9,7 +9,7 @@ module HTML5lib
         def node_details(node)
           case node
           when ::Hpricot::Elem
-            if !node.name
+            if node.name.empty?
               [:DOCUMENT_FRAGMENT]
             else
               [:ELEMENT, node.name,

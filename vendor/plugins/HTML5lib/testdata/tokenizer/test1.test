@@ -2,15 +2,15 @@
 
 {"description":"Correct Doctype lowercase",
 "input":"<!DOCTYPE html>",
-"output":[["DOCTYPE", "HTML", false]]},
+"output":[["DOCTYPE", "html", null, null, true]]},
 
 {"description":"Correct Doctype uppercase",
-"input":"<!DOCTYPE HTML>", 
-"output":[["DOCTYPE", "HTML", false]]},
+"input":"<!DOCTYPE HTML>",
+"output":[["DOCTYPE", "HTML", null, null, true]]},
 
 {"description":"Correct Doctype mixed case",
 "input":"<!DOCTYPE HtMl>", 
-"output":[["DOCTYPE", "HTML", false]]},
+"output":[["DOCTYPE", "HtMl", null, null, true]]},
 
 {"description":"Truncated doctype start",
 "input":"<!DOC>", 
@@ -18,7 +18,7 @@
 
 {"description":"Doctype in error",
 "input":"<!DOCTYPE foo>", 
-"output":[["DOCTYPE", "FOO", true]]},
+"output":[["DOCTYPE", "foo", null, null, true]]},
 
 {"description":"Single Start Tag",
 "input":"<h>",
@@ -84,17 +84,38 @@
 "input":"<!-",
 "output":["ParseError", ["Comment", "-"]]},
 
-{"description":"Ampersand only",
+{"description":"Short comment",
+ "input":"<!-->",
+ "output":["ParseError", ["Comment", ""]]},
+
+{"description":"Short comment two",
+ "input":"<!--->",
+ "output":["ParseError", ["Comment", ""]]},
+
+{"description":"Short comment three",
+ "input":"<!---->",
+ "output":[["Comment", ""]]},
+
+
+{"description":"Ampersand EOF",
 "input":"&",
-"output":["ParseError", ["Character", "&"]]},
+"output":[["Character", "&"]]},
+
+{"description":"Ampersand ampersand EOF",
+"input":"&&",
+"output":[["Character", "&&"]]},
+
+{"description":"Ampersand space EOF",
+"input":"& ",
+"output":[["Character", "& "]]},
 
 {"description":"Unfinished entity",
 "input":"&f",
-"output":["ParseError", ["Character", "&"], ["Character", "f"]]},
+"output":["ParseError", ["Character", "&f"]]},
 
 {"description":"Ampersand, number sign",
 "input":"&#",
-"output":["ParseError", ["Character", "&"], ["Character", "#"]]},
+"output":["ParseError", ["Character", "&#"]]},
 
 {"description":"Unfinished numeric entity",
 "input":"&#x",
@@ -110,8 +131,7 @@
 
 {"description":"Entity without trailing semicolon (1)",
 "input":"I'm &notit",
-"output":[["Character","I'm "], "ParseError", ["Character", "¬"],
-["Character", "it"]]},
+"output":[["Character","I'm "], "ParseError", ["Character", "¬it"]]},
 
 {"description":"Entity without trailing semicolon (2)",
 "input":"I'm &notin",

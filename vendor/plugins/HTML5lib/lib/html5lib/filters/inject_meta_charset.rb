@@ -20,20 +20,43 @@ module HTML5lib
 
           when :EmptyTag
             if token[:name].downcase == "meta"
-              if token[:data].any? {|name,value| name=='charset'}
-                # replace charset with actual encoding
-                attrs=Hash[*token[:data].flatten]
-                attrs['charset'] = @encoding
-                token[:data] = attrs.to_a.sort
-                meta_found = true
+              # replace charset with actual encoding
+              token[:data].each_with_index do |(name,value),index|
+                if name == 'charset'
+                  token[:data][index][1]=@encoding
+                  meta_found = true
+                end
+              end
+
+              # replace charset with actual encoding
+              has_http_equiv_content_type = false
+              content_index = -1
+              token[:data].each_with_index do |(name,value),i|
+                if name.downcase == 'charset'
+                  token[:data][i] = ['charset', @encoding]
+                  meta_found = true
+                  break
+                elsif name == 'http-equiv' and value.downcase == 'content-type'
+                  has_http_equiv_content_type = true
+                elsif name == 'content'
+                  content_index = i
+                end
+              end
+
+              if not meta_found
+                if has_http_equiv_content_type and content_index >= 0
+                  token[:data][content_index][1] =
+                    'text/html; charset=%s' % @encoding
+                  meta_found = true
+                end
               end
 
             elsif token[:name].downcase == "head" and not meta_found
               # insert meta into empty head
-              yield({:type => :StartTag, :name => "head", :data => {}})
-              yield({:type => :EmptyTag, :name => "meta",
-                     :data => {"charset" => @encoding}})
-              yield({:type => :EndTag, :name => "head"})
+              yield(:type => :StartTag, :name => "head", :data => token[:data])
+              yield(:type => :EmptyTag, :name => "meta",
+                    :data => [["charset", @encoding]])
+              yield(:type => :EndTag, :name => "head")
               meta_found = true
               next
             end
@@ -42,8 +65,8 @@ module HTML5lib
             if token[:name].downcase == "head" and pending.any?
               # insert meta into head (if necessary) and flush pending queue
               yield pending.shift
-              yield({:type => :EmptyTag, :name => "meta",
-                     :data => {"charset" => @encoding}}) if not meta_found
+              yield(:type => :EmptyTag, :name => "meta",
+                    :data => [["charset", @encoding]]) if not meta_found
               yield pending.shift while pending.any?
               meta_found = true
               state = :post_head
