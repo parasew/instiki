@@ -99,12 +99,8 @@ module Sanitize
 #
   def sanitize_rexml(tree)
     tokens = TreeWalkers.getTreeWalker('rexml').new(tree.to_ncr)
-    HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
-      :quote_attr_values => true,
-      :minimize_boolean_attributes => false,
-      :use_trailing_solidus => true,
+    XHTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
       :space_before_trailing_solidus => true,
-      :omit_optional_tags => false,
       :inject_meta_charset => false,
       :sanitize => true})
   end

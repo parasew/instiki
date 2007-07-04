@@ -23,12 +23,8 @@ class SanitizeTest < Test::Unit::TestCase
     require 'rexml/document'
     doc = REXML::Document.new("<div xmlns='http://www.w3.org/1999/xhtml'>#{stream}</div>")
     tokens = TreeWalkers.getTreeWalker('rexml').new(doc)
-    HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
-      :quote_attr_values => true,
+    XHTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
       :quote_char => "'",
-      :minimize_boolean_attributes => false,
-      :use_trailing_solidus => true,
-      :omit_optional_tags => false,
       :inject_meta_charset => false,
       :sanitize => true}).gsub(/\A<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>\Z/m, '\1')
   rescue REXML::ParseException
