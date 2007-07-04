@@ -1,9 +1,9 @@
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/inputstream'
+require 'html5/inputstream'
 
 class HTMLInputStreamTest < Test::Unit::TestCase
-  include HTML5lib
+  include HTML5
 
   def test_char_ascii
     stream = HTMLInputStream.new("'", :encoding=>'ascii')

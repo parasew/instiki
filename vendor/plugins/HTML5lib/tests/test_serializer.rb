@@ -1,13 +1,13 @@
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/html5parser'
-require 'html5lib/serializer'
-require 'html5lib/treewalkers'
+require 'html5/html5parser'
+require 'html5/serializer'
+require 'html5/treewalkers'
 
 #Run the serialize error checks
 checkSerializeErrors = false
 
-class JsonWalker < HTML5lib::TreeWalkers::Base
+class JsonWalker < HTML5::TreeWalkers::Base
   def each
     @tree.each do |token|
       case token[0]
@@ -31,7 +31,7 @@ class JsonWalker < HTML5lib::TreeWalkers::Base
 end
 
 class Html5SerializeTestcase < Test::Unit::TestCase
-  html5lib_test_files('serializer').each do |filename|
+  html5_test_files('serializer').each do |filename|
     test_name = File.basename(filename).sub('.test', '')
     tests = JSON::parse(open(filename).read)
     tests['tests'].each_with_index do |test, index|
@@ -41,7 +41,7 @@ class Html5SerializeTestcase < Test::Unit::TestCase
           test["options"][:encoding] = test["options"]["encoding"]
         end
 
-        result = HTML5lib::HTMLSerializer.
+        result = HTML5::HTMLSerializer.
           serialize(JsonWalker.new(test["input"]), (test["options"] || {}))
         expected = test["expected"]
         if expected.length == 1
@@ -52,7 +52,7 @@ class Html5SerializeTestcase < Test::Unit::TestCase
 
         return if test_name == 'optionaltags'
 
-        result = HTML5lib::XHTMLSerializer.
+        result = HTML5::XHTMLSerializer.
           serialize(JsonWalker.new(test["input"]), (test["options"] || {}))
         expected = test["xhtml"] || test["expected"]
         if expected.length == 1

@@ -1,4 +1,4 @@
-require 'html5lib/constants'
+require 'html5/constants'
 
 class TokenizerTestParser
   def initialize(tokenizer)
@@ -27,7 +27,7 @@ class TokenizerTestParser
   end
 
   def processEmptyTag(token)
-    if not HTML5lib::VOID_ELEMENTS.include? token[:name]
+    if not HTML5::VOID_ELEMENTS.include? token[:name]
       @outputTokens.push("ParseError")
     end
     @outputTokens.push(["StartTag", token[:name], token[:data]])

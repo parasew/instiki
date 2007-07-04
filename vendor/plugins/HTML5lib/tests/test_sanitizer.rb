@@ -2,14 +2,14 @@
 
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/html5parser'
-require 'html5lib/liberalxmlparser'
-require 'html5lib/treewalkers'
-require 'html5lib/serializer'
-require 'html5lib/sanitizer'
+require 'html5/html5parser'
+require 'html5/liberalxmlparser'
+require 'html5/treewalkers'
+require 'html5/serializer'
+require 'html5/sanitizer'
 
 class SanitizeTest < Test::Unit::TestCase
-  include HTML5lib
+  include HTML5
 
   def sanitize_xhtml stream
     XHTMLParser.parseFragment(stream, {:tokenizer => HTMLSanitizer, :encoding => 'utf-8'}).to_s
@@ -131,7 +131,7 @@ class SanitizeTest < Test::Unit::TestCase
 #    check_sanitization(input, output, output, output)
 #  end
 
-  html5lib_test_files('sanitizer').each do |filename|
+  html5_test_files('sanitizer').each do |filename|
     JSON::parse(open(filename).read).each do |test|
       define_method "test_#{test['name']}" do
         check_sanitization(

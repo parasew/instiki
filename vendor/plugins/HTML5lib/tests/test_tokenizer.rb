@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/tokenizer'
+require 'html5/tokenizer'
 
 require 'tokenizer_test_parser'
 
@@ -36,7 +36,7 @@ class Html5TokenizerTestCase < Test::Unit::TestCase
         '' ] * "\n"
 
       assert_nothing_raised message do
-        tokenizer = HTML5lib::HTMLTokenizer.new(data['input'])
+        tokenizer = HTML5::HTMLTokenizer.new(data['input'])
 
         tokenizer.contentModelFlag = content_model_flag.to_sym
 
@@ -53,7 +53,7 @@ class Html5TokenizerTestCase < Test::Unit::TestCase
     end 
   end
 
-  html5lib_test_files('tokenizer').each do |test_file|
+  html5_test_files('tokenizer').each do |test_file|
     test_name = File.basename(test_file).sub('.test', '')
 
     tests = JSON.parse(File.read(test_file))['tests']

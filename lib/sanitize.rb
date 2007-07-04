@@ -25,14 +25,14 @@
 
 module Sanitize
 
-  require 'html5lib/html5parser'
-  require 'html5lib/liberalxmlparser'
-  require 'html5lib/treewalkers'
-  require 'html5lib/treebuilders'
-  require 'html5lib/serializer'
-  require 'html5lib/sanitizer'
+  require 'html5/html5parser'
+  require 'html5/liberalxmlparser'
+  require 'html5/treewalkers'
+  require 'html5/treebuilders'
+  require 'html5/serializer'
+  require 'html5/sanitizer'
 
-  include HTML5lib
+  include HTML5
 
 # Sanitize a string, parsed using XHTML parsing rules.
 #

@@ -27,3 +27,41 @@
 |   <head>
 |   <body>
 |     <meta>
+
+#data
+<!doctype HTml><form><div></form><div>
+#errors
+Form end tag ignored.
+Unexpected end of file.
+#document
+| <!DOCTYPE HTml>
+| <html>
+|   <head>
+|   <body>
+|     <form>
+|       <div>
+|         <div>
+
+#data
+<!doctype HTml><title>&amp;</title>
+#errors
+Unexpected end of file.
+#document
+| <!DOCTYPE HTml>
+| <html>
+|   <head>
+|     <title>
+|       "&"
+|   <body>
+
+#data
+<!doctype HTml><title><!--&amp;--></title>
+#errors
+Unexpected end of file.
+#document
+| <!DOCTYPE HTml>
+| <html>
+|   <head>
+|     <title>
+|       "<!--&amp;-->"
+|   <body>

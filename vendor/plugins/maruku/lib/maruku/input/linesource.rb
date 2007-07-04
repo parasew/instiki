@@ -28,6 +28,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 	
 class LineSource
 	include MaRuKu::Strings
+	attr_reader :parent
 	
 	def initialize(lines, parent=nil, parent_offset=nil)
 		raise "NIL lines? " if not lines

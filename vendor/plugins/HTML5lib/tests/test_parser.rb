@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/treebuilders'
-require 'html5lib/html5parser'
+require 'html5/treebuilders'
+require 'html5/html5parser'
 
 
 $tree_types_to_test = ['simpletree', 'rexml']
@@ -18,18 +18,17 @@ puts 'Testing tree builders: ' + $tree_types_to_test * ', '
 
 
 class Html5ParserTestCase < Test::Unit::TestCase
-  include HTML5lib
+  include HTML5
   include TestSupport
 
-  html5lib_test_files('tree-construction').each do |test_file|
+  html5_test_files('tree-construction').each do |test_file|
 
     test_name = File.basename(test_file).sub('.dat', '')
 
-    File.read(test_file).split("#data\n").each_with_index do |data, index|
-      next if data.empty?
-     
-      innerHTML, input, expected_output, expected_errors =
-        TestSupport.parseTestcase(data)
+    TestData.new(test_file, %w(data errors document-fragment document)).
+      each_with_index do |(input, errors, innerHTML, expected), index|
+
+      expected = expected.gsub("\n| ","\n")[2..-1]
 
       $tree_types_to_test.each do |tree_name|
         define_method 'test_%s_%d_%s' % [ test_name, index + 1, tree_name ] do
@@ -44,9 +43,9 @@ class Html5ParserTestCase < Test::Unit::TestCase
         
           actual_output = convertTreeDump(parser.tree.testSerializer(parser.tree.document))
 
-          assert_equal sortattrs(expected_output), sortattrs(actual_output), [
+          assert_equal sortattrs(expected), sortattrs(actual_output), [
             '', 'Input:', input,
-            '', 'Expected:', expected_output,
+            '', 'Expected:', expected,
             '', 'Recieved:', actual_output
           ].join("\n")
 
@@ -54,9 +53,9 @@ class Html5ParserTestCase < Test::Unit::TestCase
             actual_errors = parser.errors.map do |(line, col), message|
               'Line: %i Col: %i %s' % [line, col, message]
             end
-            assert_equal expected_errors.length, parser.errors.length, [
+            assert_equal errors.length, parser.errors.length, [
               'Input', input + "\n",
-              'Expected errors:', expected_errors.join("\n"),
+              'Expected errors:', errors.join("\n"),
               'Actual errors:', actual_errors.join("\n") 
             ].join("\n")
           end

@@ -1,25 +1,25 @@
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/html5parser'
-require 'html5lib/treewalkers'
-require 'html5lib/treebuilders'
+require 'html5/html5parser'
+require 'html5/treewalkers'
+require 'html5/treebuilders'
 
 $tree_types_to_test = {
   'simpletree' =>
-    {:builder => HTML5lib::TreeBuilders['simpletree'],
-     :walker  => HTML5lib::TreeWalkers['simpletree']},
+    {:builder => HTML5::TreeBuilders['simpletree'],
+     :walker  => HTML5::TreeWalkers['simpletree']},
   'rexml' =>
-    {:builder => HTML5lib::TreeBuilders['rexml'],
-     :walker  => HTML5lib::TreeWalkers['rexml']},
+    {:builder => HTML5::TreeBuilders['rexml'],
+     :walker  => HTML5::TreeWalkers['rexml']},
   'hpricot' =>
-    {:builder => HTML5lib::TreeBuilders['hpricot'],
-     :walker  => HTML5lib::TreeWalkers['hpricot']},
+    {:builder => HTML5::TreeBuilders['hpricot'],
+     :walker  => HTML5::TreeWalkers['hpricot']},
 }
 
 puts 'Testing tree walkers: ' + $tree_types_to_test.keys * ', '
 
 class TestTreeWalkers < Test::Unit::TestCase
-  include HTML5lib::TestSupport
+  include HTML5::TestSupport
 
   def concatenateCharacterTokens(tokens)
     charactersToken = nil
@@ -70,22 +70,21 @@ class TestTreeWalkers < Test::Unit::TestCase
     return output.join("\n")
   end
 
-  html5lib_test_files('tree-construction').each do |test_file|
+  html5_test_files('tree-construction').each do |test_file|
 
     test_name = File.basename(test_file).sub('.dat', '')
     next if test_name == 'tests5' # TODO
 
-    File.read(test_file).split("#data\n").each_with_index do |data, index|
-      next if data.empty?
+    TestData.new(test_file, %w(data errors document-fragment document)).
+      each_with_index do |(input, errors, innerHTML, expected), index|
 
-      innerHTML, input, expected_output, expected_errors =
-        HTML5lib::TestSupport::parseTestcase(data)
+      expected = expected.gsub("\n| ","\n")[2..-1]
 
       $tree_types_to_test.each do |tree_name, tree_class|
 
         define_method "test_#{test_name}_#{index}_#{tree_name}" do
 
-          parser = HTML5lib::HTMLParser.new(:tree => tree_class[:builder])
+          parser = HTML5::HTMLParser.new(:tree => tree_class[:builder])
 
           if innerHTML
             parser.parseFragment(input, innerHTML)
@@ -97,7 +96,7 @@ class TestTreeWalkers < Test::Unit::TestCase
 
           begin
             output = sortattrs(convertTokens(tree_class[:walker].new(document)))
-            expected = sortattrs(expected_output)
+            expected = sortattrs(expected)
             assert_equal expected, output, [
               '', 'Input:', input,
               '', 'Expected:', expected,
