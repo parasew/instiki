@@ -60,14 +60,6 @@
 "input":"&#xD869;&#xDED6;",
 "output":["ParseError", ["Character", "\uFFFD"], "ParseError", ["Character", "\uFFFD"]]},
 
-{"description":"Numeric entity representing a Windows-1252 'codepoint'",
-"input":"&#137;",
-"output":["ParseError", ["Character", "\u2030"]]},
-
-{"description":"Hexadecimal entity representing a Windows-1252 'codepoint'",
-"input":"&#x89;",
-"output":["ParseError", ["Character", "\u2030"]]},
-
 {"description":"Hexadecimal entity with mixed uppercase and lowercase",
 "input":"&#xaBcD;",
 "output":[["Character", "\uABCD"]]},
@@ -122,7 +114,15 @@
 
 {"description":"Null Byte Replacement",
 "input":"\u0000",
-"output":["ParseError", ["Character", "\ufffd"]]}
+"output":["ParseError", ["Character", "\ufffd"]]},
+
+{"description":"Comment with dash",
+"input":"<!---x",
+"output":["ParseError", ["Comment", "-x"]]},
+
+{"description":"Entity + newline",
+"input":"\nx\n&gt;\n",
+"output":[["Character","\nx\n>\n"]]}
 
 ]}
 

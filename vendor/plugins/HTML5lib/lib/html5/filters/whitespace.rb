@@ -21,7 +21,7 @@ module HTML5
             preserve -= 1 if preserve > 0
 
           when :SpaceCharacters
-            next if preserve == 0
+            token[:data] = " " if preserve == 0 && token[:data]
 
           when :Characters
             token[:data] = token[:data].sub(SPACES,' ') if preserve == 0

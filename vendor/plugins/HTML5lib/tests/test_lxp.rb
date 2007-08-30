@@ -6,7 +6,7 @@ XMLELEM = /<(\w+\s*)((?:[-:\w]+="[^"]*"\s*)+)(\/?)>/
 
 def assert_xml_equal(input, expected=nil, parser=HTML5::XMLParser)
   sortattrs = proc {"<#{$1+$2.split.sort.join(' ')+$3}>"}
-  document = parser.parse(input.chomp).root
+  document = parser.parse(input.chomp, :lowercase_attr_name => false, :lowercase_element_name => false).root
   if not expected
     expected = input.chomp.gsub(XMLELEM,&sortattrs)
     expected = expected.gsub(/&#(\d+);/) {[$1.to_i].pack('U')}
@@ -257,6 +257,22 @@ EOX1
 <head><title>PROLOG</title></head>
 <body>
 </body></html>
+EOX2
+  end
+
+  def test_tagsoup
+    assert_xhtml_equal <<EOX1, <<EOX2.strip
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>TAGSOUP</title></head>
+<body>
+<u><blockquote><p></u>
+</body></html>
+EOX1
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>TAGSOUP</title></head>
+<body>
+<u/><blockquote><u/><p><u/>
+</p></blockquote></body></html>
 EOX2
   end
 

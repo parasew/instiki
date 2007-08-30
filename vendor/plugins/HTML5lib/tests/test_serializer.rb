@@ -12,17 +12,17 @@ class JsonWalker < HTML5::TreeWalkers::Base
     @tree.each do |token|
       case token[0]
       when 'StartTag'
-        yield startTag(token[1], token[2])
+        yield start_tag(token[1], token[2])
       when 'EndTag'
-        yield endTag(token[1])
+        yield end_tag(token[1])
       when 'EmptyTag'
-        yield emptyTag(token[1], token[2])
+        yield empty_tag(token[1], token[2])
       when 'Comment'
         yield comment(token[1])
       when 'Characters', 'SpaceCharacters'
         text(token[1]) {|textToken| yield textToken}
       when 'Doctype'
-        yield doctype(token[1])
+        yield doctype(token[1], token[2], token[3])
       else
         raise "Unknown token type: " + token[0]
       end

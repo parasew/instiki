@@ -7,22 +7,22 @@ module HTML5
     # covered in the specification. The error handling is typically known as
     # "quirks mode". It is expected that a future version of HTML5 will define this.
 
-    def processEOF
-      @parser.parseError(_('Unexpected End of file. Expected DOCTYPE.'))
+    def process_eof
+      parse_error(_('Unexpected End of file. Expected DOCTYPE.'))
       @parser.phase = @parser.phases[:rootElement]
-      @parser.phase.processEOF
+      @parser.phase.process_eof
     end
 
     def processComment(data)
-      @tree.insertComment(data, @tree.document)
+      @tree.insert_comment(data, @tree.document)
     end
 
     def processDoctype(name, publicId, systemId, correct)
       if name.downcase != 'html' or publicId or systemId
-        @parser.parseError(_('Erroneous DOCTYPE.'))
+        parse_error(_('Erroneous DOCTYPE.'))
       end
       # XXX need to update DOCTYPE tokens
-      @tree.insertDoctype(name)
+      @tree.insertDoctype(name, publicId, systemId)
 
       publicId = publicId.to_s.upcase
 
@@ -110,23 +110,22 @@ module HTML5
     end
 
     def processSpaceCharacters(data)
-      @tree.insertText(data, @tree.document)
     end
 
     def processCharacters(data)
-      @parser.parseError(_('Unexpected non-space characters. Expected DOCTYPE.'))
+      parse_error(_('Unexpected non-space characters. Expected DOCTYPE.'))
       @parser.phase = @parser.phases[:rootElement]
       @parser.phase.processCharacters(data)
     end
 
     def processStartTag(name, attributes)
-      @parser.parseError(_("Unexpected start tag (#{name}). Expected DOCTYPE."))
+      parse_error(_("Unexpected start tag (#{name}). Expected DOCTYPE."))
       @parser.phase = @parser.phases[:rootElement]
       @parser.phase.processStartTag(name, attributes)
     end
 
     def processEndTag(name)
-      @parser.parseError(_("Unexpected end tag (#{name}). Expected DOCTYPE."))
+      parse_error(_("Unexpected end tag (#{name}). Expected DOCTYPE."))
       @parser.phase = @parser.phases[:rootElement]
       @parser.phase.processEndTag(name)
     end

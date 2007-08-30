@@ -20,8 +20,8 @@ module HTML5
         closeCell
         @parser.phase.processStartTag(name, attributes)
       else
-        # innerHTML case
-        @parser.parseError
+        # inner_html case
+        parse_error
       end
     end
 
@@ -32,22 +32,22 @@ module HTML5
     def endTagTableCell(name)
       if in_scope?(name, true)
         @tree.generateImpliedEndTags(name)
-        if @tree.openElements[-1].name != name
-          @parser.parseError("Got table cell end tag (#{name}) while required end tags are missing.")
+        if @tree.open_elements.last.name != name
+          parse_error("Got table cell end tag (#{name}) while required end tags are missing.")
 
           remove_open_elements_until(name)
         else
-          @tree.openElements.pop
+          @tree.open_elements.pop
         end
         @tree.clearActiveFormattingElements
         @parser.phase = @parser.phases[:inRow]
       else
-        @parser.parseError(_("Unexpected end tag (#{name}). Ignored."))
+        parse_error(_("Unexpected end tag (#{name}). Ignored."))
       end
     end
 
     def endTagIgnore(name)
-      @parser.parseError(_("Unexpected end tag (#{name}). Ignored."))
+      parse_error(_("Unexpected end tag (#{name}). Ignored."))
     end
 
     def endTagImply(name)
@@ -55,8 +55,8 @@ module HTML5
         closeCell
         @parser.phase.processEndTag(name)
       else
-        # sometimes innerHTML case
-        @parser.parseError
+        # sometimes inner_html case
+        parse_error
       end
     end
 

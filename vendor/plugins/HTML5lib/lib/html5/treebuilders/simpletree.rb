@@ -18,17 +18,17 @@ module HTML5
 
         def initialize name
           super
-          @name = name
-          @value = nil
+          @name       = name
+          @value      = nil
           @attributes = {}
         end
 
         def appendChild node
           if node.kind_of? TextNode and 
-            childNodes.length>0 and childNodes[-1].kind_of? TextNode
-            childNodes[-1].value += node.value
+            childNodes.length > 0 and childNodes.last.kind_of? TextNode
+            childNodes.last.value += node.value
           else
-            childNodes.push node
+            childNodes << node
           end
           node.parent = self
         end
@@ -55,8 +55,7 @@ module HTML5
 
         def insertBefore node, refNode
           index = childNodes.index(refNode)
-          if node.kind_of? TextNode and index>0 and 
-            childNodes[index-1].kind_of? TextNode
+          if node.kind_of?(TextNode) && index > 0 && childNodes[index-1].kind_of?(TextNode)
             childNodes[index-1].value += node.value
           else
             childNodes.insert index, node
@@ -72,7 +71,7 @@ module HTML5
         end
 
         def hasContent
-          return (childNodes.length > 0)
+          childNodes.length > 0
         end
       end
 
@@ -90,7 +89,7 @@ module HTML5
           for child in childNodes
             tree += child.printTree(indent)
           end
-          return tree
+          tree
         end
       end
 
@@ -108,13 +107,21 @@ module HTML5
           for child in childNodes
             tree += child.printTree(indent + 2)
           end
-          return tree
+          tree
         end
       end
 
       class DocumentType < Node
+        attr_accessor :public_id, :system_id
+
         def to_s
-           "<!DOCTYPE %s>" % name
+          "<!DOCTYPE #{name}>"
+        end
+
+        def initialize name
+          super name
+          @public_id = nil
+          @system_id = nil
         end
       end
 
@@ -157,19 +164,19 @@ module HTML5
       class TreeBuilder < Base::TreeBuilder
         def initialize
           @documentClass = Document
-          @doctypeClass = DocumentType
-          @elementClass = Element
-          @commentClass = CommentNode
+          @doctypeClass  = DocumentType
+          @elementClass  = Element
+          @commentClass  = CommentNode
           @fragmentClass = DocumentFragment
         end
 
         def testSerializer node
-          node.printTree()
+          node.printTree
         end
 
-        def getFragment
+        def get_fragment
           @document = super
-          return @document.childNodes
+          @document.childNodes
         end
       end
 

@@ -24,9 +24,9 @@ module HTML5
         attr_accessor :_flags
 
         def initialize(name)
-          @parent = nil
+          @parent     = nil
           @childNodes = []
-          @_flags = []
+          @_flags     = []
         end
 
         # Insert node as a child of the current node
@@ -76,13 +76,13 @@ module HTML5
       # Base treebuilder implementation
       class TreeBuilder
 
-        attr_accessor :openElements
+        attr_accessor :open_elements
 
         attr_accessor :activeFormattingElements
 
         attr_accessor :document
 
-        attr_accessor :headPointer
+        attr_accessor :head_pointer
 
         attr_accessor :formPointer
 
@@ -106,25 +106,25 @@ module HTML5
         end
 
         def reset
-          @openElements = []
+          @open_elements = []
           @activeFormattingElements = []
 
           #XXX - rename these to headElement, formElement
-          @headPointer = nil
+          @head_pointer = nil
           @formPointer = nil
 
-          self.insertFromTable = false
+          self.insert_from_table = false
 
           @document = @documentClass.new
         end
 
         def elementInScope(target, tableVariant=false)
           # Exit early when possible.
-          return true if @openElements[-1].name == target
+          return true if @open_elements[-1].name == target
 
           # AT How about while true and simply set node to [-1] and set it to
           # [-2] at the end...
-          @openElements.reverse.each do |element|
+          @open_elements.reverse.each do |element|
             if element.name == target
               return true
             elsif element.name == 'table'
@@ -149,10 +149,10 @@ module HTML5
           # Step 2 and step 3: we start with the last element. So i is -1.
           i = -1
           entry = @activeFormattingElements[i]
-          return if entry == Marker or @openElements.include?(entry)
+          return if entry == Marker or @open_elements.include?(entry)
 
           # Step 6
-          until entry == Marker or @openElements.include?(entry)
+          until entry == Marker or @open_elements.include?(entry)
             # Step 5: let entry be one earlier in the list.
             i -= 1
             begin
@@ -171,7 +171,7 @@ module HTML5
             clone = @activeFormattingElements[i].cloneNode
 
             # Step 9
-            element = insertElement(clone.name, clone.attributes)
+            element = insert_element(clone.name, clone.attributes)
 
             # Step 10
             @activeFormattingElements[i] = element
@@ -198,12 +198,15 @@ module HTML5
           return false
         end
 
-        def insertDoctype(name)
-          @document.appendChild(@doctypeClass.new(name))
+        def insertDoctype(name, public_id, system_id)
+          doctype = @doctypeClass.new(name)
+          doctype.public_id = public_id
+          doctype.system_id = system_id
+          @document.appendChild(doctype)
         end
 
-        def insertComment(data, parent=nil)
-          parent = @openElements[-1] if parent.nil?
+        def insert_comment(data, parent=nil)
+          parent = @open_elements[-1] if parent.nil?
           parent.appendChild(@commentClass.new(data))
         end
                
@@ -216,28 +219,28 @@ module HTML5
 
         # Switch the function used to insert an element from the
         # normal one to the misnested table one and back again
-        def insertFromTable=(value)
-          @insertFromTable = value
-          @insertElement = value ? :insertElementTable : :insertElementNormal
+        def insert_from_table=(value)
+          @insert_from_table = value
+          @insert_element = value ? :insert_elementTable : :insert_elementNormal
         end
 
-        def insertElement(name, attributes)
-          send(@insertElement, name, attributes)
+        def insert_element(name, attributes)
+          send(@insert_element, name, attributes)
         end
 
-        def insertElementNormal(name, attributes)
+        def insert_elementNormal(name, attributes)
           element = @elementClass.new(name)
           element.attributes = attributes
-          @openElements[-1].appendChild(element)
-          @openElements.push(element)
+          @open_elements.last.appendChild(element)
+          @open_elements.push(element)
           return element
         end
 
         # Create an element and insert it into the tree
-        def insertElementTable(name, attributes)
+        def insert_elementTable(name, attributes)
           element = @elementClass.new(name)
           element.attributes = attributes
-          if TABLE_INSERT_MODE_ELEMENTS.include?(@openElements[-1].name)
+          if TABLE_INSERT_MODE_ELEMENTS.include?(@open_elements.last.name)
             #We should be in the InTable mode. This means we want to do
             #special magic element rearranging
             parent, insertBefore = getTableMisnestedNodePosition
@@ -246,17 +249,17 @@ module HTML5
             else
               parent.insertBefore(element, insertBefore)
             end
-            @openElements.push(element)
+            @open_elements.push(element)
           else
-            return insertElementNormal(name, attributes)
+            return insert_elementNormal(name, attributes)
           end
           return element
         end
 
         def insertText(data, parent=nil)
-          parent = @openElements[-1] if parent.nil?
+          parent = @open_elements[-1] if parent.nil?
 
-          if (not(@insertFromTable) or (@insertFromTable and not TABLE_INSERT_MODE_ELEMENTS.include?(@openElements[-1].name)))
+          if (not(@insert_from_table) or (@insert_from_table and not TABLE_INSERT_MODE_ELEMENTS.include?(@open_elements[-1].name)))
             parent.insertText(data)
           else
             #We should be in the InTable mode. This means we want to do
@@ -265,7 +268,7 @@ module HTML5
             parent.insertText(data, insertBefore)
           end
         end
-      
+
         # Get the foster parent element, and sibling to insert before
         # (or nil) when inserting a misnested table node
         def getTableMisnestedNodePosition
@@ -275,7 +278,7 @@ module HTML5
           lastTable = nil
           fosterParent = nil
           insertBefore = nil
-          @openElements.reverse.each do |element|
+          @open_elements.reverse.each do |element|
             if element.name == "table"
               lastTable = element
               break
@@ -288,33 +291,34 @@ module HTML5
               fosterParent = lastTable.parent
               insertBefore = lastTable
             else
-              fosterParent = @openElements[@openElements.index(lastTable) - 1]
+              fosterParent = @open_elements[@open_elements.index(lastTable) - 1]
             end
           else
-            fosterParent = @openElements[0]
+            fosterParent = @open_elements[0]
           end
           return fosterParent, insertBefore
         end
 
         def generateImpliedEndTags(exclude=nil)
-          name = @openElements[-1].name
+          name = @open_elements[-1].name
 
-          if (['dd', 'dt', 'li', 'p', 'td', 'th', 'tr'].include?(name) and name != exclude)
-            @openElements.pop
+          # XXX td, th and tr are not actually needed
+          if (%w[dd dt li p td th tr].include?(name) and name != exclude)
+            @open_elements.pop
             # XXX This is not entirely what the specification says. We should
             # investigate it more closely.
             generateImpliedEndTags(exclude)
           end
         end
 
-        def getDocument
+        def get_document
           @document
         end
   
-        def getFragment
-          #assert @innerHTML
+        def get_fragment
+          #assert @inner_html
           fragment = @fragmentClass.new
-          @openElements[0].reparentChildren(fragment)
+          @open_elements[0].reparentChildren(fragment)
           return fragment
         end
 

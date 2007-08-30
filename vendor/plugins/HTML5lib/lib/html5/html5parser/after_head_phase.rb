@@ -2,47 +2,47 @@ require 'html5/html5parser/phase'
 
 module HTML5
   class AfterHeadPhase < Phase
-  
+
     handle_start 'html', 'body', 'frameset', %w( base link meta script style title ) => 'FromHead'
 
-    def processEOF
-      anythingElse
-      @parser.phase.processEOF
+    def process_eof
+      anything_else
+      @parser.phase.process_eof
     end
 
     def processCharacters(data)
-      anythingElse
+      anything_else
       @parser.phase.processCharacters(data)
     end
 
     def startTagBody(name, attributes)
-      @tree.insertElement(name, attributes)
+      @tree.insert_element(name, attributes)
       @parser.phase = @parser.phases[:inBody]
     end
 
     def startTagFrameset(name, attributes)
-      @tree.insertElement(name, attributes)
+      @tree.insert_element(name, attributes)
       @parser.phase = @parser.phases[:inFrameset]
     end
 
     def startTagFromHead(name, attributes)
-      @parser.parseError(_("Unexpected start tag (#{name}) that can be in head. Moved."))
+      parse_error(_("Unexpected start tag (#{name}) that can be in head. Moved."))
       @parser.phase = @parser.phases[:inHead]
       @parser.phase.processStartTag(name, attributes)
     end
 
     def startTagOther(name, attributes)
-      anythingElse
+      anything_else
       @parser.phase.processStartTag(name, attributes)
     end
 
     def processEndTag(name)
-      anythingElse
+      anything_else
       @parser.phase.processEndTag(name)
     end
 
-    def anythingElse
-      @tree.insertElement('body', {})
+    def anything_else
+      @tree.insert_element('body', {})
       @parser.phase = @parser.phases[:inBody]
     end
 

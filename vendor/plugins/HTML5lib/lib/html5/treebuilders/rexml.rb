@@ -17,11 +17,9 @@ module HTML5
         end
 
         def appendChild node
-          if node.kind_of? TextNode and 
-            childNodes.length>0 and childNodes[-1].kind_of? TextNode
-            childNodes[-1].rxobj.value =
-              childNodes[-1].rxobj.to_s + node.rxobj.to_s
-            childNodes[-1].rxobj.raw = true
+          if node.kind_of?(TextNode) && childNodes.length > 0 && childNodes.last.kind_of?(TextNode)
+            childNodes.last.rxobj.value = childNodes.last.rxobj.to_s + node.rxobj.to_s
+            childNodes.last.rxobj.raw = true
           else
             childNodes.push node
             rxobj.add node.rxobj
@@ -45,10 +43,8 @@ module HTML5
 
         def insertBefore node, refNode
           index = childNodes.index(refNode)
-          if node.kind_of? TextNode and index>0 and 
-            childNodes[index-1].kind_of? TextNode
-            childNodes[index-1].rxobj.value =
-              childNodes[index-1].rxobj.to_s + node.rxobj.to_s
+          if node.kind_of?(TextNode) and index > 0 && childNodes[index-1].kind_of?(TextNode)
+            childNodes[index-1].rxobj.value = childNodes[index-1].rxobj.to_s + node.rxobj.to_s
             childNodes[index-1].rxobj.raw = true
           else
             childNodes.insert index, node
@@ -57,7 +53,7 @@ module HTML5
         end
 
         def hasContent
-          return (childNodes.length > 0)
+          (childNodes.length > 0)
         end
       end
 
@@ -77,7 +73,7 @@ module HTML5
         end
 
         def attributes= value
-          value.each {|name, value| rxobj.attributes[name]=value}
+          value.each {|name, value| rxobj.attributes[name] = value}
         end
 
         def printTree indent=0
@@ -90,7 +86,7 @@ module HTML5
           for child in childNodes
             tree += child.printTree(indent)
           end
-          return tree
+          tree
         end
       end
 
@@ -120,8 +116,23 @@ module HTML5
       end
 
       class DocumentType < Node
+        def_delegator :@rxobj, :public, :public_id
+
+        def_delegator :@rxobj, :system, :system_id
+
         def self.rxclass
           ::REXML::DocType
+        end
+
+        def initialize name, public_id, system_id
+            super(name)
+            if public_id
+              @rxobj = ::REXML::DocType.new [name, ::REXML::DocType::PUBLIC, public_id, system_id]
+            elsif system_id
+              @rxobj = ::REXML::DocType.new [name, ::REXML::DocType::SYSTEM, nil, system_id]
+            else
+              @rxobj = ::REXML::DocType.new name
+            end
         end
 
         def printTree indent=0
@@ -145,7 +156,7 @@ module HTML5
 
       class TextNode < Node
         def initialize data
-          raw=data.gsub('&','&amp;').gsub('<','&lt;').gsub('>','&gt;')
+          raw = data.gsub('&', '&amp;').gsub('<', '&lt;').gsub('>', '&gt;')
           @rxobj = ::REXML::Text.new(raw, true, nil, true)
         end
 
@@ -167,21 +178,26 @@ module HTML5
       class TreeBuilder < Base::TreeBuilder
         def initialize
           @documentClass = Document
-          @doctypeClass = DocumentType
-          @elementClass = Element
-          @commentClass = CommentNode
+          @doctypeClass  = DocumentType
+          @elementClass  = Element
+          @commentClass  = CommentNode
           @fragmentClass = DocumentFragment
         end
 
-        def testSerializer node
-          node.printTree()
+        def insertDoctype(name, public_id, system_id)
+          doctype = @doctypeClass.new(name, public_id, system_id)
+          @document.appendChild(doctype)
         end
 
-        def getDocument
+        def testSerializer node
+          node.printTree
+        end
+
+        def get_document
           @document.rxobj
         end
 
-        def getFragment
+        def get_fragment
           @document = super
           return @document.rxobj.children
         end

@@ -24,7 +24,7 @@ module HTML5
       @phases[:initial] = XmlRootPhase.new(self, @tree)
     end
 
-    def normalizeToken(token)
+    def normalize_token(token)
       case token[:type]
       when :StartTag, :EmptyTag
         # We need to remove the duplicate attributes and convert attributes
@@ -34,23 +34,23 @@ module HTML5
 
         # For EmptyTags, process both a Start and an End tag
         if token[:type] == :EmptyTag
-          save = @tokenizer.contentModelFlag
+          save = @tokenizer.content_model_flag
           @phase.processStartTag(token[:name], token[:data])
-          @tokenizer.contentModelFlag = save
+          @tokenizer.content_model_flag = save
           token[:data] = {}
           token[:type] = :EndTag
         end
 
       when :Characters
         # un-escape RCDATA_ELEMENTS (e.g. style, script)
-        if @tokenizer.contentModelFlag == :CDATA
+        if @tokenizer.content_model_flag == :CDATA
           token[:data] = token[:data].
             gsub('&lt;','<').gsub('&gt;','>').gsub('&amp;','&')
         end
 
       when :EndTag
         if token[:data]
-           parseError(_("End tag contains unexpected attributes."))
+           parse_error(_("End tag contains unexpected attributes."))
         end
 
       when :Comment
@@ -74,22 +74,22 @@ module HTML5
       @phases[:rootElement] = XhmlRootPhase.new(self, @tree)
     end
 
-    def normalizeToken(token)
+    def normalize_token(token)
       super(token)
 
       # ensure that non-void XHTML elements have content so that separate
       # open and close tags are emitted
       if token[:type]  == :EndTag
         if VOID_ELEMENTS.include? token[:name]
-          if @tree.openElements[-1].name != token["name"]:
+          if @tree.open_elements[-1].name != token["name"]:
             token[:type] = :EmptyTag
             token["data"] ||= {}
           end
         else
-          if token[:name] == @tree.openElements[-1].name and \
-            not @tree.openElements[-1].hasContent
+          if token[:name] == @tree.open_elements[-1].name and \
+            not @tree.open_elements[-1].hasContent
             @tree.insertText('') unless
-              @tree.openElements.any? {|e|
+              @tree.open_elements.any? {|e|
                 e.attributes.keys.include? 'xmlns' and
                 e.attributes['xmlns'] != 'http://www.w3.org/1999/xhtml'
               }
@@ -102,9 +102,9 @@ module HTML5
   end
 
   class XhmlRootPhase < RootElementPhase
-    def insertHtmlElement
+    def insert_html_element
       element = @tree.createElement("html", {'xmlns' => 'http://www.w3.org/1999/xhtml'})
-      @tree.openElements.push(element)
+      @tree.open_elements.push(element)
       @tree.document.appendChild(element)
       @parser.phase = @parser.phases[:beforeHead]
     end
@@ -115,15 +115,15 @@ module HTML5
     @start_tag_handlers = Hash.new(:startTagOther)
     @end_tag_handlers = Hash.new(:endTagOther)
     def startTagOther(name, attributes)
-      @tree.openElements.push(@tree.document)
+      @tree.open_elements.push(@tree.document)
       element = @tree.createElement(name, attributes)
-      @tree.openElements[-1].appendChild(element)
-      @tree.openElements.push(element)
+      @tree.open_elements[-1].appendChild(element)
+      @tree.open_elements.push(element)
       @parser.phase = XmlElementPhase.new(@parser,@tree)
     end
     def endTagOther(name)
       super
-      @tree.openElements.pop
+      @tree.open_elements.pop
     end
   end
 
@@ -135,17 +135,17 @@ module HTML5
 
     def startTagOther(name, attributes)
       element = @tree.createElement(name, attributes)
-      @tree.openElements[-1].appendChild(element)
-      @tree.openElements.push(element)
+      @tree.open_elements[-1].appendChild(element)
+      @tree.open_elements.push(element)
     end
 
     def endTagOther(name)
-      for node in @tree.openElements.reverse
+      for node in @tree.open_elements.reverse
         if node.name == name
-          {} while @tree.openElements.pop != node
+          {} while @tree.open_elements.pop != node
           break
         else
-          @parser.parseError
+          parse_error
         end
       end
     end

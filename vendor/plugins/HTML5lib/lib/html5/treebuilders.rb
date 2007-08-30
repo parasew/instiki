@@ -18,7 +18,7 @@ module HTML5
         end
       end
 
-      alias :getTreeBuilder :[]
+      alias :get_tree_builder :[]
     end
   end
 end

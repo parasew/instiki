@@ -15,9 +15,12 @@ module HTML5
   #
   class Phase
 
+    extend Forwardable
+    def_delegators :@parser, :parse_error
+
     # The following example call:
     #
-    #   tag_handlers('startTag', 'html', %( base link meta ), %( li dt dd ) => 'ListItem')
+    #   tag_handlers('startTag', 'html', %w( base link meta ), %w( li dt dd ) => 'ListItem')
     #
     # ...would return a hash equal to this:
     #
@@ -34,15 +37,15 @@ module HTML5
       if tags.last.is_a?(Hash)
         tags.pop.each do |names, handler_method_suffix|
           handler_method = prefix + handler_method_suffix
-          Array(names).each { |name| mapping[name] = handler_method }
+          Array(names).each {|name| mapping[name] = handler_method }
         end
       end
       tags.each do |names|
         names = Array(names)
-        handler_method = prefix + names.map { |name| name.capitalize }.join
-        names.each { |name| mapping[name] = handler_method }
+        handler_method = prefix + names.map {|name| name.capitalize }.join
+        names.each {|name| mapping[name] = handler_method }
       end
-      return mapping
+      mapping
     end
 
     def self.start_tag_handlers
@@ -80,17 +83,17 @@ module HTML5
       @parser, @tree = parser, tree
     end
 
-    def processEOF
+    def process_eof
       @tree.generateImpliedEndTags
 
-      if @tree.openElements.length > 2
-        @parser.parseError(_('Unexpected end of file. Missing closing tags.'))
-      elsif @tree.openElements.length == 2 and @tree.openElements[1].name != 'body'
+      if @tree.open_elements.length > 2
+        parse_error(_('Unexpected end of file. Missing closing tags.'))
+      elsif @tree.open_elements.length == 2 and @tree.open_elements[1].name != 'body'
         # This happens for framesets or something?
-        @parser.parseError(_("Unexpected end of file. Expected end tag (#{@tree.openElements[1].name}) first."))
-      elsif @parser.innerHTML and @tree.openElements.length > 1 
+        parse_error(_("Unexpected end of file. Expected end tag (#{@tree.open_elements[1].name}) first."))
+      elsif @parser.inner_html and @tree.open_elements.length > 1 
         # XXX This is not what the specification says. Not sure what to do here.
-        @parser.parseError(_('XXX innerHTML EOF'))
+        parse_error(_('XXX inner_html EOF'))
       end
       # Betting ends.
     end
@@ -98,11 +101,11 @@ module HTML5
     def processComment(data)
       # For most phases the following is correct. Where it's not it will be
       # overridden.
-      @tree.insertComment(data, @tree.openElements[-1])
+      @tree.insert_comment(data, @tree.open_elements.last)
     end
 
     def processDoctype(name, publicId, systemId, correct)
-      @parser.parseError(_('Unexpected DOCTYPE. Ignored.'))
+      parse_error(_('Unexpected DOCTYPE. Ignored.'))
     end
 
     def processSpaceCharacters(data)
@@ -114,17 +117,17 @@ module HTML5
     end
 
     def startTagHtml(name, attributes)
-      if @parser.firstStartTag == false and name == 'html'
-         @parser.parseError(_('html needs to be the first start tag.'))
+      if @parser.first_start_tag == false and name == 'html'
+         parse_error(_('html needs to be the first start tag.'))
       end
       # XXX Need a check here to see if the first start tag token emitted is
-      # this token... If it's not, invoke @parser.parseError.
+      # this token... If it's not, invoke parse_error.
       attributes.each do |attr, value|
-        unless @tree.openElements[0].attributes.has_key?(attr)
-          @tree.openElements[0].attributes[attr] = value
+        unless @tree.open_elements.first.attributes.has_key?(attr)
+          @tree.open_elements.first.attributes[attr] = value
         end
       end
-      @parser.firstStartTag = false
+      @parser.first_start_tag = false
     end
 
     def processEndTag(name)
@@ -146,11 +149,10 @@ module HTML5
     def remove_open_elements_until(name=nil)
       finished = false
       until finished
-        element = @tree.openElements.pop
-        finished = name.nil?? yield(element) : element.name == name
+        element = @tree.open_elements.pop
+        finished = name.nil? ? yield(element) : element.name == name
       end
       return element
     end
-
   end
 end

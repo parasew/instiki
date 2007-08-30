@@ -54,7 +54,7 @@ class TokenizerTestParser
     @outputTokens.push(["Character", token[:data]])
   end
 
-  def processEOF(token)
+  def process_eof(token)
   end
 
   def processParseError(token)

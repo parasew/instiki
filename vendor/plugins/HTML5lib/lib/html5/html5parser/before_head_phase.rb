@@ -7,9 +7,9 @@ module HTML5
 
     handle_end %w( html head body br p ) => 'ImplyHead'
 
-    def processEOF
+    def process_eof
       startTagHead('head', {})
-      @parser.phase.processEOF
+      @parser.phase.process_eof
     end
 
     def processCharacters(data)
@@ -18,8 +18,8 @@ module HTML5
     end
 
     def startTagHead(name, attributes)
-      @tree.insertElement(name, attributes)
-      @tree.headPointer = @tree.openElements[-1]
+      @tree.insert_element(name, attributes)
+      @tree.head_pointer = @tree.open_elements[-1]
       @parser.phase = @parser.phases[:inHead]
     end
 
@@ -34,7 +34,7 @@ module HTML5
     end
 
     def endTagOther(name)
-      @parser.parseError(_("Unexpected end tag (#{name}) after the (implied) root element."))
+      parse_error(_("Unexpected end tag (#{name}) after the (implied) root element."))
     end
 
   end

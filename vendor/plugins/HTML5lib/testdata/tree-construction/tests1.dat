@@ -113,7 +113,6 @@ Line1<br>Line2<br>Line3<br>Line4
 <html><head></body></html>
 #errors
 6: missing document type declaration
-19: unexpected body element end tag in head
 #document
 | <html>
 |   <head>
@@ -159,7 +158,6 @@ Line1<br>Line2<br>Line3<br>Line4
 </head>
 #errors
 7: missing document type declaration
-7: unexpected head element end tag
 #document
 | <html>
 |   <head>
@@ -169,7 +167,6 @@ Line1<br>Line2<br>Line3<br>Line4
 </body>
 #errors
 7: missing document type declaration
-7: unexpected body element end tag
 #document
 | <html>
 |   <head>
@@ -437,6 +434,7 @@ Unexpected end of file
 #data
 <!DOCTYPE HTML><li>hello<li>world<ul>how<li>do</ul>you</body><!--do-->
 #errors
+Unexpected end of file. Expected </li>. XXX
 #document
 | <!DOCTYPE HTML>
 | <html>
@@ -638,7 +636,6 @@ Unexpected end of file
 #data
 <!DOCTYPE HTML><script> <!-- </script> --> </script> EOF
 #errors
-52: unexpected script element end tag
 #document
 | <!DOCTYPE HTML>
 | <html>
@@ -732,6 +729,7 @@ Unexpected end of file
 #errors
 6: missing document type declaration
 29: mismatched font element end tag (misnested tags)
+AAA </font> tag strikes again
 35: mismatched body element end tag (premature end of file?)
 #document
 | <html>
@@ -1122,6 +1120,7 @@ Unexpected end of file
 15: missing document type declaration
 39: unexpected node in table context
 39: a element start tag implying a element end tag
+AAA violation: </a>
 39: unexpected node in table context
 39: mismatched a element end tag (misnested tags across <table> tag)
 43: unexpected node in table context
@@ -1177,6 +1176,8 @@ Unexpected end of file
 7: missing document type declaration
 22: unexpected node in table context
 27: unexpected node in table context
+XXX more table voodoo
+XXX more table voodoo
 54: unexpected td element end tag implied other end tags
 63: unexpected node in table context
 72: mismatched body element end tag (premature end of file?)
@@ -1301,11 +1302,9 @@ unexpected EOF
 #errors
 6: missing document type declaration
 12: unexpected body element start tag
-18: base element start tag out of place
-24: link element start tag out of place
-30: meta element start tag out of place
 37: title element start tag out of place
 54: unexpected body element start tag
+Missing end tag </p>. XXX
 #document
 | <html>
 |   <head>
@@ -1346,7 +1345,6 @@ unexpected EOF
 3: missing document type declaration
 13: unexpected node in table context
 13: a element start tag implying a element end tag
-13: unexpected node in table context
 13: mismatched a element end tag (misnested tags across <table> tag)
 21: mismatched table element end tag
 27: a element start tag implying a element end tag
@@ -1576,6 +1574,8 @@ unexpected EOF
 <ul><li></li><div><li></div><li><li><div><li><address><li><b><em></b><li></ul>
 #errors
 4: missing document type declaration
+Missing end tag for <div> (nr2)
+Missing end tag for <address>
 69: mismatched b element end tag (misnested tags)
 #document
 | <html>
@@ -1620,7 +1620,6 @@ unexpected EOF
 56: unexpected frameset element start tag in body
 63: unexpected frame element start tag in body
 74: unexpected frameset element end tag
-87: unescaped '</' in CDATA or RCDATA block
 106: unexpected end of file while parsing CDATA section for element noframes
 #document
 | <html>
@@ -1635,6 +1634,7 @@ unexpected EOF
 4: missing document type declaration
 15: required tr element start tag implied by unexpected td element start tag
 27: unexpected td element end tag implied other end tags
+Unexpected </h1> tag. Expected other.
 Unexpected EOF
 #document
 | <html>
@@ -1742,9 +1742,9 @@ Unexpected EOF
 108: unexpected h4 element end tag
 113: unexpected h5 element end tag
 118: unexpected h6 element end tag
-125: unexpected body element end tag
+125: unexpected end tag token br in after body phase
 130: unexpected br element end tag
-134: unexpected a element end tag
+134: unexpected a element end tag (AAA)
 140: unexpected img element end tag
 148: unexpected title element end tag
 155: unexpected span element end tag
@@ -1926,6 +1926,9 @@ Unexpected EOF
 610: unexpected option element end tag
 622: unexpected plaintext element end tag
 633: mismatched special end tag textarea
+XXX
+XXX
+XXX
 #document
 | <html>
 |   <head>
@@ -1935,3 +1938,13 @@ Unexpected EOF
 |       <tbody>
 |         <tr>
 |     <p>
+
+#data
+<frameset>
+#errors
+10: Start tag seen without seeing a doctype first.
+11: End of file seen and there were open elements.
+#document
+| <html>
+|   <head>
+|   <frameset>

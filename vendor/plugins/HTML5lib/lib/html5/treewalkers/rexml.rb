@@ -23,7 +23,7 @@ module HTML5
           when ::REXML::Comment
             [:COMMENT, node.string]
           when ::REXML::DocType
-            [:DOCTYPE, node.name]
+            [:DOCTYPE, node.name, node.public, node.system]
           when ::REXML::XMLDecl
             [nil]
           else

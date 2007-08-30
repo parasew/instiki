@@ -10,7 +10,7 @@ module HTML5
     handle_end 'html'
 
     def processCharacters(data)
-      @parser.parseError(_('Unexpected non-space characters in the after frameset phase. Ignored.'))
+      parse_error(_('Unexpected non-space characters in the after frameset phase. Ignored.'))
     end
 
     def startTagNoframes(name, attributes)
@@ -18,16 +18,16 @@ module HTML5
     end
 
     def startTagOther(name, attributes)
-      @parser.parseError(_("Unexpected start tag (#{name}) in the after frameset phase. Ignored."))
+      parse_error(_("Unexpected start tag (#{name}) in the after frameset phase. Ignored."))
     end
 
     def endTagHtml(name)
-      @parser.lastPhase = @parser.phase
-      @parser.phase = @parser.phases[:trailingEnd]
+      @parser.last_phase = @parser.phase
+      @parser.phase      = @parser.phases[:trailingEnd]
     end
 
     def endTagOther(name)
-      @parser.parseError(_("Unexpected end tag (#{name}) in the after frameset phase. Ignored."))
+      parse_error(_("Unexpected end tag (#{name}) in the after frameset phase. Ignored."))
     end
 
   end

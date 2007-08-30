@@ -8,7 +8,6 @@ module HTML5
     module Hpricot
 
       class Node < Base::Node
-
         extend Forwardable
 
         def_delegators :@hpricot, :name
@@ -22,7 +21,7 @@ module HTML5
 
         def appendChild(node)
           if node.kind_of?(TextNode) and childNodes.any? and childNodes.last.kind_of?(TextNode)
-            childNodes[-1].hpricot.content = childNodes[-1].hpricot.to_s + node.hpricot.to_s
+            childNodes.last.hpricot.content = childNodes.last.hpricot.content + node.hpricot.content
           else
             childNodes << node
             hpricot.children << node.hpricot
@@ -145,21 +144,27 @@ module HTML5
       end
 
       class DocumentType < Node
+        def_delegators :@hpricot, :public_id, :system_id
+
         def self.hpricot_class
           ::Hpricot::DocType
         end
 
-        def initialize(name)
+        def initialize(name, public_id, system_id)
           begin
             super(name)
           rescue ArgumentError # needs 3...
           end
 
-          @hpricot = ::Hpricot::DocType.new(name, nil, nil)
+          @hpricot = ::Hpricot::DocType.new(name, public_id, system_id)
         end
 
         def printTree(indent=0)
-          "\n|#{' ' * indent}<!DOCTYPE #{hpricot.target}>"
+          if hpricot.target and hpricot.target.any?
+            "\n|#{' ' * indent}<!DOCTYPE #{hpricot.target}>"
+          else
+            "\n|#{' ' * indent}<!DOCTYPE >"
+          end
         end
       end
 
@@ -169,7 +174,7 @@ module HTML5
         end
 
         def printTree(indent=0)
-          childNodes.inject('') { |tree, child| tree + child.printTree(indent+2) }
+          childNodes.inject('') {|tree, child| tree + child.printTree(indent + 2) }
         end
       end
 
@@ -196,21 +201,26 @@ module HTML5
       class TreeBuilder < Base::TreeBuilder
         def initialize
           @documentClass = Document
-          @doctypeClass = DocumentType
-          @elementClass = Element
-          @commentClass = CommentNode
+          @doctypeClass  = DocumentType
+          @elementClass  = Element
+          @commentClass  = CommentNode
           @fragmentClass = DocumentFragment
+        end
+
+        def insertDoctype(name, public_id, system_id)
+          doctype = @doctypeClass.new(name, public_id, system_id)
+          @document.appendChild(doctype)
         end
 
         def testSerializer(node)
           node.printTree
         end
 
-        def getDocument
+        def get_document
           @document.hpricot
         end
 
-        def getFragment
+        def get_fragment
           @document = super
           return @document.hpricot.children
         end

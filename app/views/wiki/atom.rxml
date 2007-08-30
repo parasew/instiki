@@ -18,7 +18,7 @@ xml.feed('xmlns' => "http://www.w3.org/2005/Atom", "xml:lang" => 'en') do
         xml.name(page.author)
       end
       if @hide_description
-        xml.summary('Content suppressed.', 'type' => 'text')
+        xml.summary("Updated by #{page.author} on #{page.updated_at.getgm.strftime("%Y-%m-%d")} at #{page.updated_at.getgm.strftime("%H:%M:%SZ")}.", 'type' => 'text')
       else
         xml.content('type' => 'xhtml', 'xml:base' => url_for(:only_path => false, :web => @web_name, :action => @link_action, :id => page.name) ) do
           xml.div('xmlns' => 'http://www.w3.org/1999/xhtml' ) do

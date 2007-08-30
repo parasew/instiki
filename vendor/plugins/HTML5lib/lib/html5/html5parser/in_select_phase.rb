@@ -15,44 +15,44 @@ module HTML5
 
     def startTagOption(name, attributes)
       # We need to imply </option> if <option> is the current node.
-      @tree.openElements.pop if @tree.openElements[-1].name == 'option'
-      @tree.insertElement(name, attributes)
+      @tree.open_elements.pop if @tree.open_elements.last.name == 'option'
+      @tree.insert_element(name, attributes)
     end
 
     def startTagOptgroup(name, attributes)
-      @tree.openElements.pop if @tree.openElements[-1].name == 'option'
-      @tree.openElements.pop if @tree.openElements[-1].name == 'optgroup'
-      @tree.insertElement(name, attributes)
+      @tree.open_elements.pop if @tree.open_elements.last.name == 'option'
+      @tree.open_elements.pop if @tree.open_elements.last.name == 'optgroup'
+      @tree.insert_element(name, attributes)
     end
 
     def startTagSelect(name, attributes)
-      @parser.parseError(_('Unexpected start tag (select) in the select phase implies select start tag.'))
+      parse_error(_('Unexpected start tag (select) in the select phase implies select start tag.'))
       endTagSelect('select')
     end
 
     def startTagOther(name, attributes)
-      @parser.parseError(_('Unexpected start tag token (#{name}) in the select phase. Ignored.'))
+      parse_error(_('Unexpected start tag token (#{name}) in the select phase. Ignored.'))
     end
 
     def endTagOption(name)
-      if @tree.openElements[-1].name == 'option'
-        @tree.openElements.pop
+      if @tree.open_elements.last.name == 'option'
+        @tree.open_elements.pop
       else
-        @parser.parseError(_('Unexpected end tag (option) in the select phase. Ignored.'))
+        parse_error(_('Unexpected end tag (option) in the select phase. Ignored.'))
       end
     end
 
     def endTagOptgroup(name)
       # </optgroup> implicitly closes <option>
-      if @tree.openElements[-1].name == 'option' and @tree.openElements[-2].name == 'optgroup'
-        @tree.openElements.pop
+      if @tree.open_elements.last.name == 'option' and @tree.open_elements[-2].name == 'optgroup'
+        @tree.open_elements.pop
       end
       # It also closes </optgroup>
-      if @tree.openElements[-1].name == 'optgroup'
-        @tree.openElements.pop
+      if @tree.open_elements.last.name == 'optgroup'
+        @tree.open_elements.pop
       # But nothing else
       else
-        @parser.parseError(_('Unexpected end tag (optgroup) in the select phase. Ignored.'))
+        parse_error(_('Unexpected end tag (optgroup) in the select phase. Ignored.'))
       end
     end
 
@@ -60,15 +60,15 @@ module HTML5
       if in_scope?('select', true)
         remove_open_elements_until('select')
 
-        @parser.resetInsertionMode
+        @parser.reset_insertion_mode
       else
-        # innerHTML case
-        @parser.parseError
+        # inner_html case
+        parse_error
       end
     end
 
     def endTagTableElements(name)
-      @parser.parseError(_("Unexpected table end tag (#{name}) in the select phase."))
+      parse_error(_("Unexpected table end tag (#{name}) in the select phase."))
 
       if in_scope?(name, true)
         endTagSelect('select')
@@ -77,7 +77,7 @@ module HTML5
     end
 
     def endTagOther(name)
-      @parser.parseError(_("Unexpected end tag token (#{name}) in the select phase. Ignored."))
+      parse_error(_("Unexpected end tag token (#{name}) in the select phase. Ignored."))
     end
 
   end

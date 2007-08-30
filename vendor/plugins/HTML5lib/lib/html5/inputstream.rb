@@ -27,11 +27,11 @@ module HTML5
     # parseMeta - Look for a <meta> element containing encoding information
 
     def initialize(source, options = {})
-      @encoding = nil
+      @encoding   = nil
       @parse_meta = true
-      @chardet = true
+      @chardet    = true
 
-      options.each { |name, value| instance_variable_set("@#{name}", value) }
+      options.each {|name, value| instance_variable_set("@#{name}", value) }
 
       # Raw Stream
       @raw_stream = open_stream(source)
@@ -297,7 +297,7 @@ module HTML5
           end
 
         when 0xC0 .. 0xFF
-          if @win1252
+          if instance_variables.include?("@win1252") && @win1252
             "\xC3" + (c-64).chr # convert to utf-8
           elsif @buffer[@tell-1 .. @tell+3] =~ /^
                 ( [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte

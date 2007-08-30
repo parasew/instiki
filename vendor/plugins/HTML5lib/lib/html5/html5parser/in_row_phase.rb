@@ -15,7 +15,7 @@ module HTML5
 
     def startTagTableCell(name, attributes)
       clearStackToTableRowContext
-      @tree.insertElement(name, attributes)
+      @tree.insert_element(name, attributes)
       @parser.phase = @parser.phases[:inCell]
       @tree.activeFormattingElements.push(Marker)
     end
@@ -23,7 +23,7 @@ module HTML5
     def startTagTableOther(name, attributes)
       ignoreEndTag = ignoreEndTagTr
       endTagTr('tr')
-      # XXX how are we sure it's always ignored in the innerHTML case?
+      # XXX how are we sure it's always ignored in the inner_html case?
       @parser.phase.processStartTag(name, attributes) unless ignoreEndTag
     end
 
@@ -33,12 +33,12 @@ module HTML5
 
     def endTagTr(name)
       if ignoreEndTagTr
-        # innerHTML case
-        assert @parser.innerHTML
-        @parser.parseError
+        # inner_html case
+        assert @parser.inner_html
+        parse_error
       else
         clearStackToTableRowContext
-        @tree.openElements.pop
+        @tree.open_elements.pop
         @parser.phase = @parser.phases[:inTableBody]
       end
     end
@@ -47,7 +47,7 @@ module HTML5
       ignoreEndTag = ignoreEndTagTr
       endTagTr('tr')
       # Reprocess the current tag if the tr end tag was not ignored
-      # XXX how are we sure it's always ignored in the innerHTML case?
+      # XXX how are we sure it's always ignored in the inner_html case?
       @parser.phase.processEndTag(name) unless ignoreEndTag
     end
 
@@ -56,13 +56,13 @@ module HTML5
         endTagTr('tr')
         @parser.phase.processEndTag(name)
       else
-        # innerHTML case
-        @parser.parseError
+        # inner_html case
+        parse_error
       end
     end
 
     def endTagIgnore(name)
-      @parser.parseError(_("Unexpected end tag (#{name}) in the row phase. Ignored."))
+      parse_error(_("Unexpected end tag (#{name}) in the row phase. Ignored."))
     end
 
     def endTagOther(name)
@@ -73,9 +73,9 @@ module HTML5
 
     # XXX unify this with other table helper methods
     def clearStackToTableRowContext
-      until ['tr', 'html'].include?(name = @tree.openElements[-1].name)
-        @parser.parseError(_("Unexpected implied end tag (#{name}) in the row phase."))
-        @tree.openElements.pop
+      until %w[tr html].include?(name = @tree.open_elements.last.name)
+        parse_error(_("Unexpected implied end tag (#{name}) in the row phase."))
+        @tree.open_elements.pop
       end
     end
 

@@ -15,12 +15,12 @@ module HTML5
 
     def startTagTr(name, attributes)
       clearStackToTableBodyContext
-      @tree.insertElement(name, attributes)
+      @tree.insert_element(name, attributes)
       @parser.phase = @parser.phases[:inRow]
     end
 
     def startTagTableCell(name, attributes)
-      @parser.parseError(_("Unexpected table cell start tag (#{name}) in the table body phase."))
+      parse_error(_("Unexpected table cell start tag (#{name}) in the table body phase."))
       startTagTr('tr', {})
       @parser.phase.processStartTag(name, attributes)
     end
@@ -29,11 +29,11 @@ module HTML5
       # XXX AT Any ideas on how to share this with endTagTable?
       if in_scope?('tbody', true) or in_scope?('thead', true) or in_scope?('tfoot', true)
         clearStackToTableBodyContext
-        endTagTableRowGroup(@tree.openElements[-1].name)
+        endTagTableRowGroup(@tree.open_elements.last.name)
         @parser.phase.processStartTag(name, attributes)
       else
-        # innerHTML case
-        @parser.parseError
+        # inner_html case
+        parse_error
       end
     end
 
@@ -44,26 +44,26 @@ module HTML5
     def endTagTableRowGroup(name)
       if in_scope?(name, true)
         clearStackToTableBodyContext
-        @tree.openElements.pop
+        @tree.open_elements.pop
         @parser.phase = @parser.phases[:inTable]
       else
-        @parser.parseError(_("Unexpected end tag (#{name}) in the table body phase. Ignored."))
+        parse_error(_("Unexpected end tag (#{name}) in the table body phase. Ignored."))
       end
     end
 
     def endTagTable(name)
       if in_scope?('tbody', true) or in_scope?('thead', true) or in_scope?('tfoot', true)
         clearStackToTableBodyContext
-        endTagTableRowGroup(@tree.openElements[-1].name)
+        endTagTableRowGroup(@tree.open_elements.last.name)
         @parser.phase.processEndTag(name)
       else
-        # innerHTML case
-        @parser.parseError
+        # inner_html case
+        parse_error
       end
     end
 
     def endTagIgnore(name)
-      @parser.parseError(_("Unexpected end tag (#{name}) in the table body phase. Ignored."))
+      parse_error(_("Unexpected end tag (#{name}) in the table body phase. Ignored."))
     end
 
     def endTagOther(name)
@@ -73,9 +73,9 @@ module HTML5
     protected
 
     def clearStackToTableBodyContext
-      until ['tbody', 'tfoot', 'thead', 'html'].include?(name = @tree.openElements[-1].name)
-        @parser.parseError(_("Unexpected implied end tag (#{name}) in the table body phase."))
-        @tree.openElements.pop
+      until %w[tbody tfoot thead html].include?(name = @tree.open_elements.last.name)
+        parse_error(_("Unexpected implied end tag (#{name}) in the table body phase."))
+        @tree.open_elements.pop
       end
     end
 

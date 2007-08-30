@@ -16,19 +16,8 @@ def html5_test_files(subdirectory)
   Dir[File.join(TESTDATA_DIR, subdirectory, '*.*')]
 end
 
-begin
-  require 'rubygems'
-  require 'json'
-rescue LoadError
-  class JSON
-    def self.parse json
-      json.gsub!(/"\s*:/, '"=>')
-      json.gsub!(/\\u[0-9a-fA-F]{4}/) {|x| [x[2..-1].to_i(16)].pack('U')}
-      null = nil
-      eval json
-    end
-  end
-end
+require 'rubygems'
+require 'json'
 
 module HTML5
   module TestSupport

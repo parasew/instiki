@@ -3,38 +3,37 @@ require 'html5/html5parser/phase'
 module HTML5
   class RootElementPhase < Phase
 
-    def processEOF
-      insertHtmlElement
-      @parser.phase.processEOF
+    def process_eof
+      insert_html_element
+      @parser.phase.process_eof
     end
 
     def processComment(data)
-      @tree.insertComment(data, @tree.document)
+      @tree.insert_comment(data, @tree.document)
     end
 
     def processSpaceCharacters(data)
-      @tree.insertText(data, @tree.document)
     end
 
     def processCharacters(data)
-      insertHtmlElement
+      insert_html_element
       @parser.phase.processCharacters(data)
     end
 
     def processStartTag(name, attributes)
-      @parser.firstStartTag = true if name == 'html'
-      insertHtmlElement
+      @parser.first_start_tag = true if name == 'html'
+      insert_html_element
       @parser.phase.processStartTag(name, attributes)
     end
 
     def processEndTag(name)
-      insertHtmlElement
+      insert_html_element
       @parser.phase.processEndTag(name)
     end
 
-    def insertHtmlElement
+    def insert_html_element
       element = @tree.createElement('html', {})
-      @tree.openElements.push(element)
+      @tree.open_elements.push(element)
       @tree.document.appendChild(element)
       @parser.phase = @parser.phases[:beforeHead]
     end

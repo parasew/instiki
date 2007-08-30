@@ -12,20 +12,20 @@ module HTML5
             return
 
           when DocumentType
-            yield doctype(node.name)
+            yield doctype(node.name, node.public_id, node.system_id)
 
           when TextNode
             text(node.value) {|token| yield token}
 
           when Element
             if VOID_ELEMENTS.include?(node.name)
-              yield emptyTag(node.name, node.attributes, node.hasContent())
+              yield empty_tag(node.name, node.attributes, node.hasContent())
             else
-              yield startTag(node.name, node.attributes)
+              yield start_tag(node.name, node.attributes)
               for child in node.childNodes
                 walk(child) {|token| yield token}
               end
-              yield endTag(node.name)
+              yield end_tag(node.name)
             end
 
           when CommentNode

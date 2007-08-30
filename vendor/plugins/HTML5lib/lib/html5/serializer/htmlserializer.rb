@@ -13,18 +13,18 @@ module HTML5
     end
  
     def initialize(options={})
-      @quote_attr_values = false
-      @quote_char = '"'
-      @use_best_quote_char = true
+      @quote_attr_values           = false
+      @quote_char                  = '"'
+      @use_best_quote_char         = true
       @minimize_boolean_attributes = true
 
-      @use_trailing_solidus = false
+      @use_trailing_solidus          = false
       @space_before_trailing_solidus = true
-      @escape_lt_in_attrs = false
-      @escape_rcdata = false
+      @escape_lt_in_attrs            = false
+      @escape_rcdata                 = false
 
       @omit_optional_tags = true
-      @sanitize = false
+      @sanitize           = false
 
       @strip_whitespace = false
 
@@ -73,7 +73,7 @@ module HTML5
         elsif [:Characters, :SpaceCharacters].include? type
           if type == :SpaceCharacters or in_cdata
             if in_cdata and token[:data].include?("</")
-              serializeError(_("Unexpected </ in CDATA"))
+              serialize_error(_("Unexpected </ in CDATA"))
             end
             result << token[:data]
           else
@@ -85,7 +85,7 @@ module HTML5
           if RCDATA_ELEMENTS.include?(name) and not @escape_rcdata
             in_cdata = true
           elsif in_cdata
-            serializeError(_("Unexpected child element of a CDATA element"))
+            serialize_error(_("Unexpected child element of a CDATA element"))
           end
           attributes = []
           for k,v in attrs = token[:data].to_a.sort
@@ -137,19 +137,19 @@ module HTML5
           if RCDATA_ELEMENTS.include?(name)
             in_cdata = false
           elsif in_cdata
-            serializeError(_("Unexpected child element of a CDATA element"))
+            serialize_error(_("Unexpected child element of a CDATA element"))
           end
           end_tag = "</#{name}>"
           result << end_tag
 
         elsif type == :Comment
           data = token[:data]
-          serializeError(_("Comment contains --")) if data.index("--")
+          serialize_error(_("Comment contains --")) if data.index("--")
           comment = "<!--%s-->" % token[:data]
           result << comment
 
         else
-          serializeError(token[:data])
+          serialize_error(token[:data])
         end
       end
 
@@ -163,13 +163,15 @@ module HTML5
 
     alias :render :serialize
 
-    def serializeError(data="XXX ERROR MESSAGE NEEDED")
+    def serialize_error(data="XXX ERROR MESSAGE NEEDED")
       # XXX The idea is to make data mandatory.
       @errors.push(data)
       if @strict
         raise SerializeError
       end
     end
+
+    def _(string); string; end
   end
 
   # Error in serialized tree

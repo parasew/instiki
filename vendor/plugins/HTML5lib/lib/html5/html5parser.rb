@@ -16,7 +16,7 @@ module HTML5
   #
   class HTMLParser
 
-    attr_accessor :phase, :firstStartTag, :innerHTML, :lastPhase, :insertFromTable
+    attr_accessor :phase, :first_start_tag, :inner_html, :last_phase, :insert_from_table
 
     attr_reader :phases, :tokenizer, :tree, :errors
 
@@ -25,10 +25,10 @@ module HTML5
       new(options).parse(stream,encoding)
     end
 
-    def self.parseFragment(stream, options = {})
+    def self.parse_fragment(stream, options = {})
       container = options.delete(:container) || 'div'
       encoding = options.delete(:encoding)
-      new(options).parseFragment(stream,container,encoding)
+      new(options).parse_fragment(stream, container, encoding)
     end
 
     @@phases = %w( initial rootElement beforeHead inHead afterHead inBody inTable inCaption
@@ -44,56 +44,58 @@ module HTML5
      
       @tokenizer =  HTMLTokenizer
       @tree = TreeBuilders::REXML::TreeBuilder
- 
-      options.each { |name, value| instance_variable_set("@#{name}", value) }
+
+      options.each {|name, value| instance_variable_set("@#{name}", value) }
+      @lowercase_attr_name    = nil unless instance_variables.include?("@lowercase_attr_name")
+      @lowercase_element_name = nil unless instance_variables.include?("@lowercase_element_name")
 
       @tree = @tree.new
 
       @phases = @@phases.inject({}) do |phases, phase_name|
         phase_class_name = phase_name.sub(/(.)/) { $1.upcase } + 'Phase'
         phases[phase_name.to_sym] = HTML5.const_get(phase_class_name).new(self, @tree)
-        phases 
+        phases
       end
     end
 
-    def _parse(stream, innerHTML, encoding, container = 'div')
+    def _parse(stream, inner_html, encoding, container = 'div')
       @tree.reset
-      @firstStartTag = false
+      @first_start_tag = false
       @errors = []
 
       @tokenizer = @tokenizer.class unless Class === @tokenizer
       @tokenizer = @tokenizer.new(stream, :encoding => encoding,
-        :parseMeta => !innerHTML)
+        :parseMeta => !inner_html, :lowercase_attr_name => @lowercase_attr_name, :lowercase_element_name => @lowercase_element_name)
 
-      if innerHTML
-        case @innerHTML = container.downcase
+      if inner_html
+        case @inner_html = container.downcase
           when 'title', 'textarea'
-            @tokenizer.contentModelFlag = :RCDATA
+            @tokenizer.content_model_flag = :RCDATA
           when 'style', 'script', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript'
-            @tokenizer.contentModelFlag = :CDATA
+            @tokenizer.content_model_flag = :CDATA
           when 'plaintext'
-            @tokenizer.contentModelFlag = :PLAINTEXT
+            @tokenizer.content_model_flag = :PLAINTEXT
           else
-          # contentModelFlag already is PCDATA
-          #@tokenizer.contentModelFlag = :PCDATA
+          # content_model_flag already is PCDATA
+          #@tokenizer.content_model_flag = :PCDATA
         end
       
         @phase = @phases[:rootElement]
-        @phase.insertHtmlElement
-        resetInsertionMode
+        @phase.insert_html_element
+        reset_insertion_mode
       else
-        @innerHTML = false
+        @inner_html = false
         @phase = @phases[:initial]
       end
 
       # We only seem to have InBodyPhase testcases where the following is
       # relevant ... need others too
-      @lastPhase = nil
+      @last_phase = nil
 
       # XXX This is temporary for the moment so there isn't any other
       # changes needed for the parser to work with the iterable tokenizer
       @tokenizer.each do |token|
-        token = normalizeToken(token)
+        token = normalize_token(token)
 
         method = 'process%s' % token[:type]
 
@@ -108,12 +110,12 @@ module HTML5
             @phase.send method, token[:name], token[:publicId],
               token[:systemId], token[:correct]
           else
-            parseError(token[:data])
+            parse_error(token[:data])
         end
       end
 
       # When the loop finishes it's EOF
-      @phase.processEOF
+      @phase.process_eof
     end
 
     # Parse a HTML document into a well-formed tree
@@ -126,12 +128,12 @@ module HTML5
     # element)
     def parse(stream, encoding=nil)
       _parse(stream, false, encoding)
-      return @tree.getDocument
+      @tree.get_document
     end
-  
+
     # Parse a HTML fragment into a well-formed tree fragment
-    
-    # container - name of the element we're setting the innerHTML property
+
+    # container - name of the element we're setting the inner_html property
     # if set to nil, default to 'div'
     #
     # stream - a filelike object or string containing the HTML to be parsed
@@ -140,19 +142,19 @@ module HTML5
     # the encoding.  If specified, that encoding will be used,
     # regardless of any BOM or later declaration (such as in a meta
     # element)
-    def parseFragment(stream, container='div', encoding=nil)
+    def parse_fragment(stream, container='div', encoding=nil)
       _parse(stream, true, encoding, container)
-      return @tree.getFragment
+      @tree.get_fragment
     end
 
-    def parseError(data = 'XXX ERROR MESSAGE NEEDED')
+    def parse_error(data = 'XXX ERROR MESSAGE NEEDED')
       # XXX The idea is to make data mandatory.
       @errors.push([@tokenizer.stream.position, data])
       raise ParseError if @strict
     end
 
     # HTML5 specific normalizations to the token stream
-    def normalizeToken(token)
+    def normalize_token(token)
 
       if token[:type] == :EmptyTag
         # When a solidus (/) is encountered within a tag name what happens
@@ -161,75 +163,75 @@ module HTML5
         # thing and if it doesn't it's wrong for everyone.
 
         unless VOID_ELEMENTS.include?(token[:name])
-          parseError(_('Solidus (/) incorrectly placed in tag.'))
+          parse_error(_('Solidus (/) incorrectly placed in tag.'))
         end
 
         token[:type] = :StartTag
       end
 
       if token[:type] == :StartTag
-        token[:name] = token[:name].tr(ASCII_UPPERCASE,ASCII_LOWERCASE)
+        token[:name] = token[:name].downcase
 
         # We need to remove the duplicate attributes and convert attributes
         # to a dict so that [["x", "y"], ["x", "z"]] becomes {"x": "y"}
 
         unless token[:data].empty?
-          data = token[:data].reverse.map { |attr, value| [attr.tr(ASCII_UPPERCASE, ASCII_LOWERCASE), value] }
+          data = token[:data].reverse.map {|attr, value| [attr.downcase, value] }
           token[:data] = Hash[*data.flatten]
         end
 
       elsif token[:type] == :EndTag
-        parseError(_('End tag contains unexpected attributes.')) unless token[:data].empty?
+        parse_error(_('End tag contains unexpected attributes.')) unless token[:data].empty?
         token[:name] = token[:name].downcase
       end
 
-      return token
+      token
     end
 
     @@new_modes = {
-      'select' => :inSelect,
-      'td' => :inCell,
-      'th' => :inCell,
-      'tr' => :inRow,
-      'tbody' => :inTableBody,
-      'thead' => :inTableBody,
-      'tfoot' => :inTableBody,
-      'caption' => :inCaption,
+      'select'   => :inSelect,
+      'td'       => :inCell,
+      'th'       => :inCell,
+      'tr'       => :inRow,
+      'tbody'    => :inTableBody,
+      'thead'    => :inTableBody,
+      'tfoot'    => :inTableBody,
+      'caption'  => :inCaption,
       'colgroup' => :inColumnGroup,
-      'table' => :inTable,
-      'head' => :inBody,
-      'body' => :inBody,
+      'table'    => :inTable,
+      'head'     => :inBody,
+      'body'     => :inBody,
       'frameset' => :inFrameset
     }
 
-    def resetInsertionMode
+    def reset_insertion_mode
       # The name of this method is mostly historical. (It's also used in the
       # specification.)
       last = false
 
-      @tree.openElements.reverse.each do |node|
-        nodeName = node.name
+      @tree.open_elements.reverse.each do |node|
+        node_name = node.name
 
-        if node == @tree.openElements[0]
+        if node == @tree.open_elements.first
           last = true
-          unless ['td', 'th'].include?(nodeName)
+          unless ['td', 'th'].include?(node_name)
             # XXX
-            # assert @innerHTML
-            nodeName = @innerHTML
+            # assert @inner_html
+            node_name = @inner_html
           end
         end
 
-        # Check for conditions that should only happen in the innerHTML
+        # Check for conditions that should only happen in the inner_html
         # case
-        if ['select', 'colgroup', 'head', 'frameset'].include?(nodeName)
+        if ['select', 'colgroup', 'head', 'frameset'].include?(node_name)
           # XXX
-          # assert @innerHTML
+          # assert @inner_html
         end
 
-        if @@new_modes.has_key?(nodeName)
-          @phase = @phases[@@new_modes[nodeName]]
-        elsif nodeName == 'html'
-          @phase = @phases[@tree.headPointer.nil?? :beforeHead : :afterHead]
+        if @@new_modes.has_key?(node_name)
+          @phase = @phases[@@new_modes[node_name]]
+        elsif node_name == 'html'
+          @phase = @phases[@tree.head_pointer.nil?? :beforeHead : :afterHead]
         elsif last
           @phase = @phases[:inBody]
         else

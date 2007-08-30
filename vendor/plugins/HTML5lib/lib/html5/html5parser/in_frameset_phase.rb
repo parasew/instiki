@@ -10,16 +10,16 @@ module HTML5
     handle_end 'frameset', 'noframes'
 
     def processCharacters(data)
-      @parser.parseError(_('Unexpected characters in the frameset phase. Characters ignored.'))
+      parse_error(_('Unexpected characters in the frameset phase. Characters ignored.'))
     end
 
     def startTagFrameset(name, attributes)
-      @tree.insertElement(name, attributes)
+      @tree.insert_element(name, attributes)
     end
 
     def startTagFrame(name, attributes)
-      @tree.insertElement(name, attributes)
-      @tree.openElements.pop
+      @tree.insert_element(name, attributes)
+      @tree.open_elements.pop
     end
 
     def startTagNoframes(name, attributes)
@@ -27,19 +27,19 @@ module HTML5
     end
 
     def startTagOther(name, attributes)
-      @parser.parseError(_("Unexpected start tag token (#{name}) in the frameset phase. Ignored"))
+      parse_error(_("Unexpected start tag token (#{name}) in the frameset phase. Ignored"))
     end
 
     def endTagFrameset(name)
-      if @tree.openElements[-1].name == 'html'
-        # innerHTML case
-        @parser.parseError(_("Unexpected end tag token (frameset) in the frameset phase (innerHTML)."))
+      if @tree.open_elements.last.name == 'html'
+        # inner_html case
+        parse_error(_("Unexpected end tag token (frameset) in the frameset phase (inner_html)."))
       else
-        @tree.openElements.pop
+        @tree.open_elements.pop
       end
-      if (not @parser.innerHTML and
-        @tree.openElements[-1].name != 'frameset')
-        # If we're not in innerHTML mode and the the current node is not a
+      if (not @parser.inner_html and
+        @tree.open_elements.last.name != 'frameset')
+        # If we're not in inner_html mode and the the current node is not a
         # "frameset" element (anymore) then switch.
         @parser.phase = @parser.phases[:afterFrameset]
       end
@@ -50,7 +50,7 @@ module HTML5
     end
 
     def endTagOther(name)
-      @parser.parseError(_("Unexpected end tag token (#{name}) in the frameset phase. Ignored."))
+      parse_error(_("Unexpected end tag token (#{name}) in the frameset phase. Ignored."))
     end
 
   end

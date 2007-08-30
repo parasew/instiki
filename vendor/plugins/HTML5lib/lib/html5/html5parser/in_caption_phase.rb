@@ -10,7 +10,7 @@ module HTML5
     handle_end 'caption', 'table', %w( body col colgroup html tbody td tfoot th thead tr ) => 'Ignore'
 
     def ignoreEndTagCaption
-      not in_scope?('caption', true)
+      !in_scope?('caption', true)
     end
 
     def processCharacters(data)
@@ -18,7 +18,7 @@ module HTML5
     end
 
     def startTagTableElement(name, attributes)
-      @parser.parseError
+      parse_error
       #XXX Have to duplicate logic here to find out if the tag is ignored
       ignoreEndTag = ignoreEndTagCaption
       @parser.phase.processEndTag('caption')
@@ -31,15 +31,15 @@ module HTML5
 
     def endTagCaption(name)
       if ignoreEndTagCaption
-        # innerHTML case
-        assert @parser.innerHTML
-        @parser.parseError
+        # inner_html case
+        assert @parser.inner_html
+        parse_error
       else
         # AT this code is quite similar to endTagTable in "InTable"
         @tree.generateImpliedEndTags
 
-        unless @tree.openElements[-1].name == 'caption'
-          @parser.parseError(_("Unexpected end tag (caption). Missing end tags."))
+        unless @tree.open_elements[-1].name == 'caption'
+          parse_error(_("Unexpected end tag (caption). Missing end tags."))
         end
 
         remove_open_elements_until('caption')
@@ -50,14 +50,14 @@ module HTML5
     end
 
     def endTagTable(name)
-      @parser.parseError
+      parse_error
       ignoreEndTag = ignoreEndTagCaption
       @parser.phase.processEndTag('caption')
       @parser.phase.processEndTag(name) unless ignoreEndTag
     end
 
     def endTagIgnore(name)
-      @parser.parseError(_("Unexpected end tag (#{name}). Ignored."))
+      parse_error(_("Unexpected end tag (#{name}). Ignored."))
     end
 
     def endTagOther(name)

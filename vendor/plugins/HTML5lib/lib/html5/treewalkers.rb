@@ -6,13 +6,13 @@ module HTML5
     class << self
       def [](name)
         case name.to_s.downcase
-        when 'simpletree' then
+        when 'simpletree'
           require 'html5/treewalkers/simpletree'
           SimpleTree::TreeWalker
-        when 'rexml' then
+        when 'rexml'
           require 'html5/treewalkers/rexml'
           REXML::TreeWalker
-        when 'hpricot' then
+        when 'hpricot'
           require 'html5/treewalkers/hpricot'
           Hpricot::TreeWalker
         else
@@ -20,7 +20,7 @@ module HTML5
         end
       end
 
-      alias :getTreeWalker :[]
+      alias :get_tree_walker :[]
     end
   end
 end

@@ -131,6 +131,7 @@ y"
 <!DOCTYPE htML><html><head></head><body><pre>x<div>
 y</pre></body></html>
 #errors
+End tag <pre> seen too early. Expected other end tag.
 #document
 | <!DOCTYPE htML>
 | <html>
@@ -140,11 +141,12 @@ y</pre></body></html>
 |       "x"
 |       <div>
 |         "
-| y"
+y"
 
 #data
 <!DOCTYPE htML><HTML><META><HEAD></HEAD></HTML>
 #errors
+Unexpected start tag HEAD in HEAD. Ignored.
 #document
 | <!DOCTYPE htML>
 | <html>
@@ -155,6 +157,7 @@ y</pre></body></html>
 #data
 <!DOCTYPE htML><HTML><HEAD><head></HEAD></HTML>
 #errors
+Unexpected start tag HEAD in HEAD. Ignored.
 #document
 | <!DOCTYPE htML>
 | <html>
@@ -164,6 +167,8 @@ y</pre></body></html>
 #data
 <textarea>foo<span>bar</span><i>baz
 #errors
+Unexpected start tag. Expected DOCTYPE.
+Unexpected end of file.
 #document
 | <html>
 |   <head>
@@ -174,6 +179,8 @@ y</pre></body></html>
 #data
 <title>foo<span>bar</em><i>baz
 #errors
+Unexpected start tag. Expected DOCTYPE.
+Unexpected end of file.
 #document
 | <html>
 |   <head>
@@ -236,6 +243,8 @@ Missing end tag (div)
 #data
 <!doctype html><nobr><nobr><nobr>
 #errors
+Unexpected <nobr> tag.
+Unexpected <nobr> tag.
 Unexpected end of file.
 #document
 | <!DOCTYPE html>
@@ -249,6 +258,7 @@ Unexpected end of file.
 #data
 <!doctype html><nobr><nobr></nobr><nobr>
 #errors
+Unexpected <nobr> tag.
 Unexpected end of file.
 #document
 | <!DOCTYPE html>

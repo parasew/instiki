@@ -10,7 +10,7 @@ module HTML5
     handle_end 'colgroup', 'col'
 
     def ignoreEndTagColgroup
-      @tree.openElements[-1].name == 'html'
+      @tree.open_elements[-1].name == 'html'
     end
 
     def processCharacters(data)
@@ -20,8 +20,8 @@ module HTML5
     end
 
     def startTagCol(name, attributes)
-      @tree.insertElement(name, attributes)
-      @tree.openElements.pop
+      @tree.insert_element(name, attributes)
+      @tree.open_elements.pop
     end
 
     def startTagOther(name, attributes)
@@ -32,17 +32,17 @@ module HTML5
 
     def endTagColgroup(name)
       if ignoreEndTagColgroup
-        # innerHTML case
-        assert @parser.innerHTML
-        @parser.parseError
+        # inner_html case
+        assert @parser.inner_html
+        parse_error
       else
-        @tree.openElements.pop
+        @tree.open_elements.pop
         @parser.phase = @parser.phases[:inTable]
       end
     end
 
     def endTagCol(name)
-      @parser.parseError(_('Unexpected end tag (col). col has no end tag.'))
+      parse_error(_('Unexpected end tag (col). col has no end tag.'))
     end
 
     def endTagOther(name)

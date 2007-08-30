@@ -75,8 +75,7 @@ module HTML5
           if type == :StartTag
             # omit the thead and tfoot elements' end tag when they are
             # immediately followed by a tbody element. See is_optional_end.
-            if previous and previous[:type] == :EndTag and \
-              %w(tbody thead tfoot).include?(previous[:name])
+            if previous and previous[:type] == :EndTag && %w(tbody thead tfoot).include?(previous[:name])
               return false
             end
 
@@ -85,7 +84,7 @@ module HTML5
             return false
           end
         end
-      return false
+        return false
       end
 
       def is_optional_end(tagname, nexttok)

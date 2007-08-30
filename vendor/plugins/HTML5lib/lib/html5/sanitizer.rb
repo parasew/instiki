@@ -13,11 +13,11 @@ module HTML5
 # or, if you already have a parse tree (in this example, a REXML tree),
 # at the Serializer stage:
 #
-#     tokens = TreeWalkers.getTreeWalker('rexml').new(tree)
+#     tokens = TreeWalkers.get_tree_walker('rexml').new(tree)
 #     HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
 #        :sanitize => true})
 
-   module HTMLSanitizeModule
+  module HTMLSanitizeModule
 
     ACCEPTABLE_ELEMENTS = %w[a abbr acronym address area b big blockquote br
       button caption center cite code col colgroup dd del dfn dir div dl dt

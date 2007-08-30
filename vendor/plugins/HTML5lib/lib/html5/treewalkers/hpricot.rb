@@ -13,17 +13,17 @@ module HTML5
               [:DOCUMENT_FRAGMENT]
             else
               [:ELEMENT, node.name,
-                node.attributes.map {|name,value| [name,value]},
+                node.attributes.map {|name, value| [name, value]},
                 !node.empty?]
             end
           when ::Hpricot::Text
-            [:TEXT, node.to_plain_text]
+            [:TEXT, node.content]
           when ::Hpricot::Comment
             [:COMMENT, node.content]
           when ::Hpricot::Doc
             [:DOCUMENT]
           when ::Hpricot::DocType
-            [:DOCTYPE, node.target]
+            [:DOCTYPE, node.target, node.public_id, node.system_id]
           when ::Hpricot::XMLDecl
             [nil]
           else

@@ -60,7 +60,11 @@ class TestTreeWalkers < Test::Unit::TestCase
         when :Comment
             output << "#{' '*indent}<!-- #{token[:data]} -->"
         when :Doctype
-            output << "#{' '*indent}<!DOCTYPE #{token[:name]}>"
+            if token[:name] and token[:name].any?
+              output << "#{' '*indent}<!DOCTYPE #{token[:name]}>"
+            else
+              output << "#{' '*indent}<!DOCTYPE >"
+            end
         when :Characters, :SpaceCharacters
             output << "#{' '*indent}\"#{token[:data]}\""
         else
@@ -76,7 +80,7 @@ class TestTreeWalkers < Test::Unit::TestCase
     next if test_name == 'tests5' # TODO
 
     TestData.new(test_file, %w(data errors document-fragment document)).
-      each_with_index do |(input, errors, innerHTML, expected), index|
+      each_with_index do |(input, errors, inner_html, expected), index|
 
       expected = expected.gsub("\n| ","\n")[2..-1]
 
@@ -86,13 +90,13 @@ class TestTreeWalkers < Test::Unit::TestCase
 
           parser = HTML5::HTMLParser.new(:tree => tree_class[:builder])
 
-          if innerHTML
-            parser.parseFragment(input, innerHTML)
+          if inner_html
+            parser.parse_fragment(input, inner_html)
           else
             parser.parse(input)
           end
 
-          document = parser.tree.getDocument
+          document = parser.tree.get_document
 
           begin
             output = sortattrs(convertTokens(tree_class[:walker].new(document)))
