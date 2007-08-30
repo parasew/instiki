@@ -52,12 +52,12 @@ module Sanitize
     options.each do |name, value|
       next unless %w(encoding treebuilder to_tree).include? name.to_s
       if name.to_s == 'treebuilder'
-        @treebuilder =  HTML5lib::TreeBuilders.getTreeBuilder(value)
+        @treebuilder =  HTML5lib::TreeBuilders.get_tree_builder(value)
       else
         instance_variable_set("@#{name}", value)
       end
     end
-    parsed = XHTMLParser.parseFragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
+    parsed = XHTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
       :encoding => @encoding, :tree => @treebuilder })
     return parsed if @to_tree
     return parsed.to_s
@@ -81,12 +81,12 @@ module Sanitize
     options.each do |name, value|
       next unless %w(encoding treebuilder to_tree).include? name.to_s
       if name.to_s == 'treebuilder'
-        @treebuilder =  HTML5lib::TreeBuilders.getTreeBuilder(value)
+        @treebuilder =  HTML5lib::TreeBuilders.get_tree_builder(value)
       else
         instance_variable_set("@#{name}", value)
       end
     end
-    parsed = HTMLParser.parseFragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
+    parsed = HTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
       :encoding => @encoding, :tree => @treebuilder })
     return parsed if @to_tree
     return parsed.to_s
@@ -98,7 +98,7 @@ module Sanitize
 #    sanitize_rexml(tree)                    -> string
 #
   def sanitize_rexml(tree)
-    tokens = TreeWalkers.getTreeWalker('rexml').new(tree.to_ncr)
+    tokens = TreeWalkers.get_tree_walker('rexml').new(tree.to_ncr)
     XHTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
       :space_before_trailing_solidus => true,
       :inject_meta_charset => false,
