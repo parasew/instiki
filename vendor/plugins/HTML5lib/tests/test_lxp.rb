@@ -1,23 +1,23 @@
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/liberalxmlparser'
+require 'html5/liberalxmlparser'
 
 XMLELEM = /<(\w+\s*)((?:[-:\w]+="[^"]*"\s*)+)(\/?)>/
-SORTATTRS = '<#{$1+$2.split.sort.join(' ')+$3}>'
 
-def assert_xml_equal(input, expected=nil, parser=HTML5lib::XMLParser)
-  document = parser.parse(input.chomp).root
+def assert_xml_equal(input, expected=nil, parser=HTML5::XMLParser)
+  sortattrs = proc {"<#{$1+$2.split.sort.join(' ')+$3}>"}
+  document = parser.parse(input.chomp, :lowercase_attr_name => false, :lowercase_element_name => false).root
   if not expected
-    expected = input.chomp.gsub(XMLELEM,SORTATTRS)
+    expected = input.chomp.gsub(XMLELEM,&sortattrs)
     expected = expected.gsub(/&#(\d+);/) {[$1.to_i].pack('U')}
-    output = document.to_s.gsub(/'/,'"').gsub(XMLELEM,SORTATTRS)
+    output = document.to_s.gsub(/'/,'"').gsub(XMLELEM,&sortattrs)
     assert_equal(expected, output)
   else
     assert_equal(expected, document.to_s.gsub(/'/,'"'))
   end
 end
 
-def assert_xhtml_equal(input, expected=nil, parser=HTML5lib::XHTMLParser)
+def assert_xhtml_equal(input, expected=nil, parser=HTML5::XHTMLParser)
   assert_xml_equal(input, expected, parser)
 end
 
@@ -34,10 +34,10 @@ class BasicXhtml5Test < Test::Unit::TestCase
 
   def test_title_body_named_charref
     assert_xhtml_equal(
-      '<title>mdash</title>A &mdash B',
+      '<title>ntilde</title>A &ntilde B',
       '<html xmlns="http://www.w3.org/1999/xhtml">' +
-      '<head><title>mdash</title></head>' + 
-      '<body>A '+ [0x2014].pack('U') + ' B</body>' +
+      '<head><title>ntilde</title></head>' + 
+      '<body>A '+ [0xF1].pack('U') + ' B</body>' +
       '</html>')
   end
 end
@@ -193,20 +193,87 @@ EOX
   def test_br
     assert_xhtml_equal <<EOX1
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head><title>XLINK</title></head>
+<head><title>BR</title></head>
 <body>
 <br/>
 </body></html>
 EOX1
   end
 
-  def xtest_strong
+  def test_strong
     assert_xhtml_equal <<EOX
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head><title>XLINK</title></head>
+<head><title>STRONG</title></head>
 <body>
 <strong></strong>
 </body></html>
 EOX
   end
+
+  def test_script
+    assert_xhtml_equal <<EOX
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>SCRIPT</title></head>
+<body>
+<script>1 &lt; 2 &amp; 3</script>
+</body></html>
+EOX
+  end
+
+  def test_script_src
+    assert_xhtml_equal <<EOX1, <<EOX2.strip
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>SCRIPT</title><script src="http://example.com"/></head>
+<body>
+<script>1 &lt; 2 &amp; 3</script>
+</body></html>
+EOX1
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>SCRIPT</title><script src="http://example.com"></script></head>
+<body>
+<script>1 &lt; 2 &amp; 3</script>
+</body></html>
+EOX2
+  end
+
+  def test_title
+    assert_xhtml_equal <<EOX
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>1 &lt; 2 &amp; 3</title></head>
+<body>
+</body></html>
+EOX
+  end
+
+  def test_prolog
+    assert_xhtml_equal <<EOX1, <<EOX2.strip
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>PROLOG</title></head>
+<body>
+</body></html>
+EOX1
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>PROLOG</title></head>
+<body>
+</body></html>
+EOX2
+  end
+
+  def test_tagsoup
+    assert_xhtml_equal <<EOX1, <<EOX2.strip
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>TAGSOUP</title></head>
+<body>
+<u><blockquote><p></u>
+</body></html>
+EOX1
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>TAGSOUP</title></head>
+<body>
+<u/><blockquote><u/><p><u/>
+</p></blockquote></body></html>
+EOX2
+  end
+
 end

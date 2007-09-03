@@ -1,0 +1,5 @@
+== 0.1.0 / 2007-08-07
+
+* 1 major enhancement
+  * Birthday!
+

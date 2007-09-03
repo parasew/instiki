@@ -25,14 +25,14 @@
 
 module Sanitize
 
-  require 'html5lib/html5parser'
-  require 'html5lib/liberalxmlparser'
-  require 'html5lib/treewalkers'
-  require 'html5lib/treebuilders'
-  require 'html5lib/serializer'
-  require 'html5lib/sanitizer'
+  require 'html5/html5parser'
+  require 'html5/liberalxmlparser'
+  require 'html5/treewalkers'
+  require 'html5/treebuilders'
+  require 'html5/serializer'
+  require 'html5/sanitizer'
 
-  include HTML5lib
+  include HTML5
 
 # Sanitize a string, parsed using XHTML parsing rules.
 #
@@ -52,12 +52,12 @@ module Sanitize
     options.each do |name, value|
       next unless %w(encoding treebuilder to_tree).include? name.to_s
       if name.to_s == 'treebuilder'
-        @treebuilder =  HTML5lib::TreeBuilders.getTreeBuilder(value)
+        @treebuilder =  HTML5lib::TreeBuilders.get_tree_builder(value)
       else
         instance_variable_set("@#{name}", value)
       end
     end
-    parsed = XHTMLParser.parseFragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
+    parsed = XHTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
       :encoding => @encoding, :tree => @treebuilder })
     return parsed if @to_tree
     return parsed.to_s
@@ -81,12 +81,12 @@ module Sanitize
     options.each do |name, value|
       next unless %w(encoding treebuilder to_tree).include? name.to_s
       if name.to_s == 'treebuilder'
-        @treebuilder =  HTML5lib::TreeBuilders.getTreeBuilder(value)
+        @treebuilder =  HTML5lib::TreeBuilders.get_tree_builder(value)
       else
         instance_variable_set("@#{name}", value)
       end
     end
-    parsed = HTMLParser.parseFragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
+    parsed = HTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
       :encoding => @encoding, :tree => @treebuilder })
     return parsed if @to_tree
     return parsed.to_s
@@ -98,13 +98,9 @@ module Sanitize
 #    sanitize_rexml(tree)                    -> string
 #
   def sanitize_rexml(tree)
-    tokens = TreeWalkers.getTreeWalker('rexml').new(tree.to_ncr)
-    HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
-      :quote_attr_values => true,
-      :minimize_boolean_attributes => false,
-      :use_trailing_solidus => true,
+    tokens = TreeWalkers.get_tree_walker('rexml').new(tree.to_ncr)
+    XHTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
       :space_before_trailing_solidus => true,
-      :omit_optional_tags => false,
       :inject_meta_charset => false,
       :sanitize => true})
   end

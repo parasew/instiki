@@ -26,15 +26,15 @@ def parse(opts, args)
     exit(1)
   end
 
-  require 'html5lib/treebuilders'
-  treebuilder = HTML5lib::TreeBuilders[opts.treebuilder]
+  require 'html5/treebuilders'
+  treebuilder = HTML5::TreeBuilders[opts.treebuilder]
 
   if opts.output == :xml
-    require 'html5lib/liberalxmlparser'
-    p = HTML5lib::XHTMLParser.new(:tree=>treebuilder)
+    require 'html5/liberalxmlparser'
+    p = HTML5::XHTMLParser.new(:tree=>treebuilder)
   else
-    require 'html5lib/html5parser'
-    p = HTML5lib::HTMLParser.new(:tree=>treebuilder)
+    require 'html5/html5parser'
+    p = HTML5::HTMLParser.new(:tree=>treebuilder)
   end
 
   if opts.parsemethod == :parse
@@ -70,10 +70,10 @@ def printOutput(parser, document, opts)
   when :xml
     print document
   when :html
-    require 'html5lib/treewalkers'
-    tokens = HTML5lib::TreeWalkers[opts.treebuilder].new(document)
-    require 'html5lib/serializer'
-    puts HTML5lib::HTMLSerializer.serialize(tokens, opts.serializer)
+    require 'html5/treewalkers'
+    tokens = HTML5::TreeWalkers[opts.treebuilder].new(document)
+    require 'html5/serializer'
+    puts HTML5::HTMLSerializer.serialize(tokens, opts.serializer)
   when :hilite
     print document.hilite
   when :tree
@@ -186,6 +186,10 @@ opts = OptionParser.new do |opts|
 
   opts.on("--[no-]escape-lt-in-attrs", "Escape less than signs in attribute values") do |lt|
     options.serializer[:escape_lt_in_attrs] = lt
+  end
+
+  opts.on("--[no-]escape-rcdata", "Escape rcdata element values") do |rcdata|
+    options.serializer[:escape_rcdata] = rcdata
   end
 
   opts.separator ""

@@ -65,22 +65,8 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				when :ald
 					output.push read_ald(src)
 				when :text
-					if src.cur_line =~ MightBeTableHeader and 
-						(src.next_line && src.next_line =~ TableSeparator)
-						output.push read_table(src)
-					elsif [:header1,:header2].include? src.next_line.md_type
-						output.push read_header12(src)
-					elsif eventually_comes_a_def_list(src)
-					 	definition = read_definition(src)
-						if output.last.kind_of?(MDElement) && 
-							output.last.node_type == :definition_list then
-							output.last.children << definition
-						else
-							output.push md_el(:definition_list, [definition])
-						end
-					else # Start of a paragraph
-						output.push read_paragraph(src)
-					end
+					# paragraph, or table, or definition list
+					read_text_material(src, output)
 				when :header2, :hrule
 					# hrule
 					src.shift_line
@@ -102,7 +88,12 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				when :raw_html; e = read_raw_html(src); output << e if e
 
 				when :footnote_text;   output.push read_footnote_text(src)
-				when :ref_definition;  read_ref_definition(src, output)
+				when :ref_definition;  
+					if src.parent && (src.cur_index == 0)
+						read_text_material(src, output)
+					else
+						read_ref_definition(src, output)
+					end
 				when :abbreviation;    output.push read_abbreviation(src)
 				when :xml_instr;       read_xml_instruction(src, output)
 				when :metadata;        
@@ -149,6 +140,24 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		output
 	end
 	
+	def read_text_material(src, output)
+		if src.cur_line =~ MightBeTableHeader and 
+			(src.next_line && src.next_line =~ TableSeparator)
+			output.push read_table(src)
+		elsif [:header1,:header2].include? src.next_line.md_type
+			output.push read_header12(src)
+		elsif eventually_comes_a_def_list(src)
+		 	definition = read_definition(src)
+			if output.last.kind_of?(MDElement) && 
+				output.last.node_type == :definition_list then
+				output.last.children << definition
+			else
+				output.push md_el(:definition_list, [definition])
+			end
+		else # Start of a paragraph
+			output.push read_paragraph(src)
+		end
+	end
 	
 	
 	def read_ald(src)
@@ -274,9 +283,9 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		item_type = src.cur_line.md_type
 		first = src.shift_line
 
-		# Ugly things going on inside `read_indented_content`
 		indentation = spaces_before_first_char(first)
 		break_list = [:ulist, :olist, :ial]
+		# Ugly things going on inside `read_indented_content`
 		lines, want_my_paragraph = 
 			read_indented_content(src,indentation, break_list, item_type)
 
@@ -285,7 +294,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			stripped = first[indentation, first.size-1]
 		lines.unshift stripped
 		
-		#dbg_describe_ary(lines, 'LIST ITEM ')
+		# dbg_describe_ary(lines, 'LIST ITEM ')
 
 		src2 = LineSource.new(lines, src, parent_offset)
 		children = parse_blocks(src2)

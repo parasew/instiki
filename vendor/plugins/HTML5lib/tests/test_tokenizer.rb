@@ -1,10 +1,37 @@
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/tokenizer'
+require 'html5/tokenizer'
 
 require 'tokenizer_test_parser'
 
 class Html5TokenizerTestCase < Test::Unit::TestCase
+
+  def assert_tokens_match(expectedTokens, receivedTokens, ignoreErrorOrder, message)
+    if !ignoreErrorOrder
+      return expectedTokens == receivedTokens
+    else
+      #Sort the tokens into two groups; non-parse errors and parse errors
+      expected = [[],[]]
+      received = [[],[]]
+      
+      for token in expectedTokens
+        if token != "ParseError"
+          expected[0] << token
+        else
+          expected[1] << token
+        end
+      end
+
+      for token in receivedTokens
+        if token != "ParseError"
+          received[0] << token
+        else
+          received[1] << token
+        end
+      end
+      assert_equal expected, received, message
+    end
+  end
 
   def type_of?(token_name, token)
     token != 'ParseError' and token_name == token.first
@@ -36,11 +63,11 @@ class Html5TokenizerTestCase < Test::Unit::TestCase
         '' ] * "\n"
 
       assert_nothing_raised message do
-        tokenizer = HTML5lib::HTMLTokenizer.new(data['input'])
+        tokenizer = HTML5::HTMLTokenizer.new(data['input'])
 
-        tokenizer.contentModelFlag = content_model_flag.to_sym
+        tokenizer.content_model_flag = content_model_flag.to_sym
 
-        tokenizer.currentToken = {:type => :startTag, :name => data['lastStartTag']} if data.has_key?('lastStartTag')
+        tokenizer.current_token = {:type => :startTag, :name => data['lastStartTag']} if data.has_key?('lastStartTag')
 
         tokens = TokenizerTestParser.new(tokenizer).parse
 
@@ -48,12 +75,12 @@ class Html5TokenizerTestCase < Test::Unit::TestCase
 
         expected = concatenate_consecutive_characters(data['output'])
 
-        assert_equal expected, actual, message
+        assert_tokens_match expected, actual, data["ignoreErrorOrder"], message
       end
     end 
   end
 
-  html5lib_test_files('tokenizer').each do |test_file|
+  html5_test_files('tokenizer').each do |test_file|
     test_name = File.basename(test_file).sub('.test', '')
 
     tests = JSON.parse(File.read(test_file))['tests']

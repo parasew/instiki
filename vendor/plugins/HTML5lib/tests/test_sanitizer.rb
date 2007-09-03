@@ -2,33 +2,29 @@
 
 require File.join(File.dirname(__FILE__), 'preamble')
 
-require 'html5lib/html5parser'
-require 'html5lib/liberalxmlparser'
-require 'html5lib/treewalkers'
-require 'html5lib/serializer'
-require 'html5lib/sanitizer'
+require 'html5/html5parser'
+require 'html5/liberalxmlparser'
+require 'html5/treewalkers'
+require 'html5/serializer'
+require 'html5/sanitizer'
 
 class SanitizeTest < Test::Unit::TestCase
-  include HTML5lib
+  include HTML5
 
   def sanitize_xhtml stream
-    XHTMLParser.parseFragment(stream, {:tokenizer => HTMLSanitizer, :encoding => 'utf-8'}).to_s
+    XHTMLParser.parse_fragment(stream, {:tokenizer => HTMLSanitizer, :encoding => 'utf-8', :lowercase_element_name => false, :lowercase_attr_name => false}).to_s
   end
 
   def sanitize_html stream
-    HTMLParser.parseFragment(stream, {:tokenizer => HTMLSanitizer, :encoding => 'utf-8'}).to_s
+    HTMLParser.parse_fragment(stream, {:tokenizer => HTMLSanitizer, :encoding => 'utf-8', :lowercase_element_name => false, :lowercase_attr_name => false}).to_s
   end
 
   def sanitize_rexml stream
     require 'rexml/document'
     doc = REXML::Document.new("<div xmlns='http://www.w3.org/1999/xhtml'>#{stream}</div>")
-    tokens = TreeWalkers.getTreeWalker('rexml').new(doc)
-    HTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
-      :quote_attr_values => true,
+    tokens = TreeWalkers.get_tree_walker('rexml').new(doc)
+    XHTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
       :quote_char => "'",
-      :minimize_boolean_attributes => false,
-      :use_trailing_solidus => true,
-      :omit_optional_tags => false,
       :inject_meta_charset => false,
       :sanitize => true}).gsub(/\A<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>\Z/m, '\1')
   rescue REXML::ParseException
@@ -43,8 +39,8 @@ class SanitizeTest < Test::Unit::TestCase
 
   HTMLSanitizer::ALLOWED_ELEMENTS.each do |tag_name|
     define_method "test_should_allow_#{tag_name}_tag" do
-      input = "<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>"
-      htmloutput = "<#{tag_name.downcase} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name.downcase}>"
+      input       = "<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>"
+      htmloutput  = "<#{tag_name.downcase} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name.downcase}>"
       xhtmloutput = "<#{tag_name} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>"
       rexmloutput = xhtmloutput
 
@@ -131,7 +127,7 @@ class SanitizeTest < Test::Unit::TestCase
 #    check_sanitization(input, output, output, output)
 #  end
 
-  html5lib_test_files('sanitizer').each do |filename|
+  html5_test_files('sanitizer').each do |filename|
     JSON::parse(open(filename).read).each do |test|
       define_method "test_#{test['name']}" do
         check_sanitization(

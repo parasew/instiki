@@ -16,4 +16,4 @@ table.plaintable {
     text-align:center;
     margin-left:30px;
 }
-
+.noborder td, .noborder th {border:0}

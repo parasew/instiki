@@ -1,4 +1,5 @@
-// S5 v1.2a1 slides.js -- released into the Public Domain
+// S5 v1.2a2 slides.js -- released into the Public Domain
+// Many modifications by Jacques Distler to allow operation as real XHTML.
 //
 // Please see http://www.meyerweb.com/eric/tools/s5/credits.html for information 
 // about all the wonderful and talented contributors to this code!
@@ -30,6 +31,7 @@ var countdown = {
 
 var isIE = navigator.appName == 'Microsoft Internet Explorer' && navigator.userAgent.indexOf('Opera') < 1 ? 1 : 0;
 var isOp = navigator.userAgent.indexOf('Opera') > -1 ? 1 : 0;
+var isSa = navigator.userAgent.indexOf('Safari') > -1 ? 1 : 0;
 var isGe = navigator.userAgent.indexOf('Gecko') > -1 && navigator.userAgent.indexOf('Safari') < 1 ? 1 : 0;
 
 function hasClass(object, className) {
@@ -111,7 +113,14 @@ function slideLabel() {
 		for (var o = 0; o < menunodes.length; o++) {
 			otext += nodeValue(menunodes[o]);
 		}
-		list.options[list.length] = new Option(n + ' : '  + otext, n);
+               if (isSa) {
+		  var option = createElement('option');
+		  option.setAttribute('value', n);
+		  option.appendChild(document.createTextNode(n + ' : '  + otext) );
+		  list.appendChild(option);
+                } else {
+		  list.options[list.length] = new Option(n + ' : '  + otext, n);
+                }
 	}
 }
 
@@ -122,12 +131,12 @@ function currentSlide() {
 	} else {
 		cs = document.currentSlide;
 	}
-	var plink = document.createElement('a');
+	var plink = createElement('a');
 	plink.id = 'plink';
 	plink.setAttribute('href', '');
-	var csHere = document.createElement('span');
-	var csSep = document.createElement('span');
-	var csTotal = document.createElement('span');
+	var csHere = createElement('span');
+	var csSep = createElement('span');
+	var csTotal = createElement('span');
 	csHere.id = 'csHere';
 	csSep.id = 'csSep';
 	csTotal.id = 'csTotal';
@@ -376,7 +385,7 @@ function slideJump() {
 function fixLinks() {
 	var thisUri = window.location.href;
 	thisUri = thisUri.slice(0, thisUri.length - window.location.hash.length);
-	var aelements = document.getElementsByTagName('A');
+	var aelements = document.getElementsByTagName('a');
 	for (var i = 0; i < aelements.length; i++) {
 		var a = aelements[i].href;
 		var slideID = a.match('\#slide[0-9]{1,2}');
@@ -418,43 +427,43 @@ function permaLink() {
 function createControls() {
 	var controlsDiv = document.getElementById("controls");
 	if (!controlsDiv) return;
-	var controlForm = document.createElement('form');
+	var controlForm = createElement('form');
 	controlForm.id = 'controlForm';
 	controlForm.setAttribute('action', '#');
 	if (controlVis == 'hidden') {
 	   controlForm.setAttribute('onmouseover', 'showHide(\'s\');');
 	   controlForm.setAttribute('onmouseout',  'showHide(\'h\');');
 	}
-	var navLinks = document.createElement('div');
+	var navLinks = createElement('div');
 	navLinks.id = 'navLinks';
-	var showNotes = document.createElement('a');
+	var showNotes = createElement('a');
 	showNotes.id = 'show-notes';
 	showNotes.setAttribute('accesskey', 'n');
 	showNotes.setAttribute('href', 'javascript:createNotesWindow();');
 	showNotes.setAttribute('title', 'Show Notes');
 	showNotes.appendChild(document.createTextNode('\u2261'));
-	var toggle =  document.createElement('a');
+	var toggle =  createElement('a');
 	toggle.id = 'toggle';
 	toggle.setAttribute('accesskey', 't');
 	toggle.setAttribute('href', 'javascript:toggle();');
 	toggle.appendChild(document.createTextNode('\u00D8'));
-    var prev =  document.createElement('a');
+    var prev =  createElement('a');
 	prev.id = 'prev';
 	prev.setAttribute('accesskey', 'z');
 	prev.setAttribute('href', 'javascript:go(-1);');
 	prev.appendChild(document.createTextNode('\u00AB'));
-    var next =  document.createElement('a');
+    var next =  createElement('a');
 	next.id = 'next';
 	next.setAttribute('accesskey', 'x');
 	next.setAttribute('href', 'javascript:go(1);');
 	next.appendChild(document.createTextNode('\u00BB'));	
-	var navList =  document.createElement('div');
+	var navList =  createElement('div');
 	navList.id = 'navList';
 	if (controlVis != 'hidden') {
 	   navList.setAttribute('onmouseover', 'showHide(\'s\');');
 	   navList.setAttribute('onmouseout',  'showHide(\'h\');');
 	}
-	var jumplist = document.createElement('select');
+	var jumplist = createElement('select');
 	jumplist.id = 'jumplist';
 	jumplist.setAttribute('onchange', 'go(\'j\');');
 	navList.appendChild(jumplist);
@@ -503,7 +512,7 @@ function fontScale() {  // causes layout problems in FireFox that get fixed if b
 function fontSize(value) {
 	if (!(s5ss = document.getElementById('s5ss'))) {
 		if (!document.createStyleSheet) {
-			document.getElementsByTagName('head')[0].appendChild(s5ss = document.createElement('style'));
+			document.getElementsByTagName('head')[0].appendChild(s5ss = createElement('style'));
 			s5ss.setAttribute('media','screen, projection');
 			s5ss.setAttribute('id','s5ss');
 		} else {
@@ -782,6 +791,14 @@ function readTime(val) {
 		var total = (hours * 60) + mins;
 		return total;
 	}
+}
+
+function createElement(element) {
+  if (typeof document.createElementNS != 'undefined') {
+    return document.createElementNS('http://www.w3.org/1999/xhtml', element);
+  } else {
+    return document.createElement(element);
+  }
 }
 
 function windowChange() {
