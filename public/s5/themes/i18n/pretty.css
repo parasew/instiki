@@ -1,0 +1,97 @@
+/* Following is i18n theme -- edit away! */
+
+html {background:#95A7D4 url(bodybg.jpg) no-repeat;}
+body {color:#210;font:25px Arial, sans-serif}
+a {text-decoration:none;color:#336;border-bottom:1px dotted}
+:link, :visited {text-decoration:none;color:#00C}
+html, body {margin:0;padding:0}
+h1, h2, h3, h4, h5, h6 {font-size:1em;margin:0}
+h1 abbr {font-variant:small-caps}
+em {color:#c60}
+strong {font-weight:bold}
+ul {margin-left:1em;padding-left:0}
+li {margin-bottom:0.66em}
+li li {margin:0.33em 0;font-size:smaller}
+
+blockquote, q {font-style:italic}
+blockquote {padding:0 2em 0.5em;margin:0 1.5em 0.5em;
+  text-align:center;font-size:1em}
+blockquote p {margin:0}
+blockquote i {font-style:normal}
+blockquote b {display:block;margin-top:0.5em;font-weight:normal;
+  font-size:smaller;font-style:normal}
+blockquote b i {font-style:italic}
+
+kbd {font-weight:bold;font-size:1em}
+sup {font-size:0.75em;font-weight:normal;vertical-align:0.5em;line-height:1px}
+
+.slide code {padding:2px 0.25em;font-weight:bold;color:#533}
+.slide code.bad, code del {color:red}
+.slide code.old {color:silver}
+.slide pre {padding:0;margin:0.25em 0 0.5em 0.5em;color:#533;font-size:90%}
+.slide pre code {display:block}
+.slide ul {margin-left:5%;margin-right:7%;list-style:disc}
+.slide li {margin-top:0.75em;margin-right:0}
+.slide ul ul {line-height:1}
+.slide ul ul li {margin:.2em;font-size:85%;list-style:square}
+.slide img.leader {display:block;margin:0 auto}
+
+div#header, div#footer, div.slide {width:100%;top:0px;left:0px}
+div#header, div#footer {color:#AAB;font-size:0.5em}
+div#header {background:#666;color:#BBB;height:1em;padding-bottom:.5em}
+div#footer {background:#666;color:#BBB;height:3.25em;top:auto;bottom:0px;}
+#footer h1, #footer h2 {display:block;padding:0.5em 0.75em;
+  font-weight:normal;font-style:italic}
+#footer h1 {left:0;font-size:1em;letter-spacing:1px}
+#footer h2 {position:absolute;bottom:0;left:0}
+
+div.slide {top:0px;width:92%;padding:.5em 4% 4%}
+div.slide h1 {font-size:1.66em;line-height:1;letter-spacing:-1px;
+  margin:0px;padding:0.25em 0px;border-bottom:2px solid rgb(90,94,120)}
+div.slide h3 {font-size:130%}
+div.long {font-size:0.75em}
+
+#controls :active {color:#88A !important}
+#controls :focus {outline:1px dotted #227}
+div#controls {position:absolute;left:50%;bottom:0;width:50%;
+  text-align:right;font:bold 0.7em Verdana, Helvetica, sans-serif}
+html>body div#controls {position:fixed;padding:0 0 1em 0;top:auto}
+div#controls form {position:absolute;bottom:0;right:0;width:100%;
+  margin:0;padding:0}
+#controls #navLinks a {padding:0;margin:0 0.5em 0;background:#666;
+  border:none;color:#AAC;cursor:pointer}
+#controls #navList {height:1em}
+#controls #navList #jumplist {position:absolute;bottom:0;right:0;
+  background:#DDD;color:#227}
+
+#currentSlide {font-size:0.5em}
+#currentSlide span {font-size:13px;color:#fff}
+#currentSlide #csSep {display:none}
+#currentSlide #csHere {font-weight:bold}
+#currentSlide #csHere:before {content:"#";font-weight:normal}
+#currentSlide #csTotal:before {content:" of "}
+
+#slide0 {padding-top:3.5em;font-size:90%}
+#slide0 h1 {position:static;margin:1em 0 0;padding:0;
+  font:bold 2em Helvetica, sans-serif;white-space:normal;
+  color:#000;background:transparent}
+#slide0 h2 {font:bold italic 1em Helvetica, sans-serif;margin:0.25em}
+#slide0 h3 {margin-top:1.5em;font-size:1.5em}
+#slide0 h4 {margin-top:0;font-size:1em}
+
+ul.urls {list-style:none;display:inline;margin:0}
+.urls li {display:inline;margin:0}
+.note {display:none}
+.external {border-bottom:1px dotted gray}
+html>body .external {border-bottom:none}
+.external:after {content:" \274F";font-size:smaller;color:#77B}
+
+.incremental, .incremental *, .incremental *:after, .incremental code
+  {color:#95A7D8;visibility:visible}
+img.incremental {visibility:hidden}
+.slide .current {color:#B02}
+.flushtop {margin-top:0px}
+
+/* diagnostics
+li:after {content:" [" attr(class) "]";color:#F88}
+*/
