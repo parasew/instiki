@@ -227,13 +227,13 @@ class WikiController < ApplicationController
   def save
     render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
 
-    author_name = params['author'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
+    author_name = params['author']
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
     raise "Your name was not valid utf-8" if !author_name.is_utf8?
     cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
-      the_content = params['content'].delete("\x01-\x08\x0B\x0C\x0E-\x1F")
+      the_content = params['content']
       raise "Your content was not valid utf-8" if !the_content.is_utf8?
       filter_spam(the_content)
       if @page
@@ -294,16 +294,16 @@ class WikiController < ApplicationController
 
   def s5
     if @web.markup == :markdownMML
-      my_content = Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+      my_content = Maruku.new(@page.content.delete("\r"),
            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}'], :content_only => true,
             :author => @page.author, :title => @page.plain_name})
-      @s5_content = sanitize_xhtml(my_content.to_s5.to_ncr)
+      @s5_content = sanitize_xhtml(my_content.to_s5)
       @s5_theme = my_content.s5_theme
     elsif @web.markup == :markdown
-      my_content = Maruku.new(@page.content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+      my_content = Maruku.new(@page.content.delete("\r"),
            {:math_enabled => false, :content_only => true,
             :author => @page.author, :title => @page.plain_name})
-      @s5_content = sanitize_xhtml(my_content.to_s5.to_ncr)
+      @s5_content = sanitize_xhtml(my_content.to_s5)
       @s5_theme = my_content.s5_theme
     else
       @s5_content = "S5 not supported with this text filter"

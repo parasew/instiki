@@ -11,6 +11,7 @@ module MaRuKu
 	  string.gsub( /&/, "&amp;" ).
 	         gsub( /</, "&lt;" ).
 	         gsub( />/, "&gt;" ).
+	         gsub( /'/, "&#39;" ).
 	         gsub( /"/, "&quot;" )
 	end
 		
