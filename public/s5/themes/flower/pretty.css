@@ -45,7 +45,7 @@ div#footer {background:#fff0cf;top:auto;bottom:0px;
 #footer h2 {font-style:italic}
 
 div.slide {top:0px;left:0px;padding:48px 4% 4%;height:100%;width:92%;
-  background:transparent url(rightbg.jpg) right top no-repeat;overflow:visible
+  background:transparent url(rightbg.jpg) right top no-repeat;overflow:visible;
   font-family:georgia,times,'Times New Roman',serif}
 div.slide h1 {position:absolute;z-index:1;background:transparent;
   margin:0;padding:0.3em 0 0 50px;white-space:nowrap;

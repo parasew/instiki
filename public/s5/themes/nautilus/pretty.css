@@ -45,8 +45,8 @@ div#footer {background:#005;height:2.5em;top:auto;bottom:0px;
 #footer h2 {font-style:italic}
 
 div.slide {top:0px;width:92%;padding:2.5em 4% 4%}
-div.slide h1 {position:absolute;top:0;left:87px;z-index:1;color:#DDE;
-  text-align-left;white-space:nowrap;text-transform:capitalize;
+div.slide h1 {position:absolute;top:0;left:135px;z-index:1;color:#DDE;
+  text-align:left;white-space:nowrap;text-transform:capitalize;
   margin:0px;padding:0.3em 0 0 50px;font:bold 150%/1em Helvetica,sans-serif}
 div.slide h3 {font-size:130%}
 div.long {font-size:0.75em}
@@ -64,6 +64,7 @@ html>body div#controls {position: fixed; padding: 0; top: auto;}
 
 #currentSlide {text-align:center;font-size:0.5em;
   color:#fff;font-family:Verdana,Helvetica,sans-serif;font-weight:bold}
+#currentSlide span {color:#AAB}
 
 #slide0 {padding-top:3.5em;font-size:90%}
 #slide0 h1 {position:static;white-space:normal;
