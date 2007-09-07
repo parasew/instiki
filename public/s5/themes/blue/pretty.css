@@ -46,7 +46,7 @@ div#footer {font-size:0.5em;font-weight:bold;padding:.75em 0;top:auto;
 
 div.slide {top:0px;width:92%;padding:32px 4% 4%;overflow:visible;
   font-family:georgia, Times, 'Times New Roman', serif;
-  background:transparent url(bodybg.gif) repeat-x}
+  background:transparent url(bodybg.gif) -16px 0 repeat-x}
 div.slide h1 {position:absolute;left:87px;z-index:1;
   white-space:nowrap;text-transform:capitalize;top:0;width:80%;
   margin:0px auto;text-align:center;padding:0px;
@@ -81,8 +81,6 @@ html>body div#controls {position: fixed; padding: 0; top: auto;}
   font:2em Georgia, Times, 'Times New Roman', serif;}
 #slide0 h2 {margin:1em 0 2em 0;text-align:center;color:#fff}
 #slide0 h3, #slide0 h4, #slide0 p {margin:0.25em;text-align:center;color:#fff}
-#slide0 h3 {position:absolute:z-index:1:font-size:1.5em}
-#slide0 h4 {position:absolute:z-index:1:font-size:1em}
 #slide0 p {margin-top:0.7em}
 
 ul.urls {list-style:none;display:inline;margin:0}
@@ -94,6 +92,7 @@ ul.urls {list-style:none;display:inline;margin:0}
 img.incremental {visibility:hidden}
 .slide .current {color:#B02}
 .flushtop {margin-top:0px}
+.slide .plaintable td {border:1px solid #FFF!important}
 
 /* diagnostics
 li:after {content:" [" attr(class) "]";color:#F88}
