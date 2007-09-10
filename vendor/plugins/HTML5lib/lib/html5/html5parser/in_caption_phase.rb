@@ -39,7 +39,9 @@ module HTML5
         @tree.generateImpliedEndTags
 
         unless @tree.open_elements[-1].name == 'caption'
-          parse_error(_("Unexpected end tag (caption). Missing end tags."))
+          parse_error("expected-one-end-tag-but-got-another",
+                    {"gotName" => "caption",
+                     "expectedNmae" => @tree.open_elements.last.name})
         end
 
         remove_open_elements_until('caption')
@@ -57,7 +59,7 @@ module HTML5
     end
 
     def endTagIgnore(name)
-      parse_error(_("Unexpected end tag (#{name}). Ignored."))
+      parse_error("unexpected-end-tag", {"name" => name})
     end
 
     def endTagOther(name)

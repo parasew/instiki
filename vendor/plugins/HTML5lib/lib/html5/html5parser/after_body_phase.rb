@@ -12,13 +12,13 @@ module HTML5
     end
 
     def processCharacters(data)
-      parse_error(_('Unexpected non-space characters in the after body phase.'))
+      parse_error("unexpected-char-after-body")
       @parser.phase = @parser.phases[:inBody]
       @parser.phase.processCharacters(data)
     end
 
     def processStartTag(name, attributes)
-      parse_error(_("Unexpected start tag token (#{name}) in the after body phase."))
+      parse_error("unexpected-start-tag-after-body", {"name" => name})
       @parser.phase = @parser.phases[:inBody]
       @parser.phase.processStartTag(name, attributes)
     end
@@ -37,7 +37,7 @@ module HTML5
     end
 
     def endTagOther(name)
-      parse_error(_("Unexpected end tag token (#{name}) in the after body phase."))
+      parse_error("unexpected-end-tag-after-body", {"name" => name})
       @parser.phase = @parser.phases[:inBody]
       @parser.phase.processEndTag(name)
     end

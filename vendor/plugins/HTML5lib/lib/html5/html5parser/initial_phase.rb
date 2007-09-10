@@ -8,7 +8,7 @@ module HTML5
     # "quirks mode". It is expected that a future version of HTML5 will define this.
 
     def process_eof
-      parse_error(_('Unexpected End of file. Expected DOCTYPE.'))
+      parse_error("expected-doctype-but-got-eof")
       @parser.phase = @parser.phases[:rootElement]
       @parser.phase.process_eof
     end
@@ -19,7 +19,7 @@ module HTML5
 
     def processDoctype(name, publicId, systemId, correct)
       if name.downcase != 'html' or publicId or systemId
-        parse_error(_('Erroneous DOCTYPE.'))
+        parse_error("unknown-doctype")
       end
       # XXX need to update DOCTYPE tokens
       @tree.insertDoctype(name, publicId, systemId)
@@ -113,22 +113,21 @@ module HTML5
     end
 
     def processCharacters(data)
-      parse_error(_('Unexpected non-space characters. Expected DOCTYPE.'))
+      parse_error("expected-doctype-but-got-chars")
       @parser.phase = @parser.phases[:rootElement]
       @parser.phase.processCharacters(data)
     end
 
     def processStartTag(name, attributes)
-      parse_error(_("Unexpected start tag (#{name}). Expected DOCTYPE."))
+      parse_error("expected-doctype-but-got-start-tag", {"name" => name})
       @parser.phase = @parser.phases[:rootElement]
       @parser.phase.processStartTag(name, attributes)
     end
 
     def processEndTag(name)
-      parse_error(_("Unexpected end tag (#{name}). Expected DOCTYPE."))
+      parse_error("expected-doctype-but-got-end-tag", {"name" => name})
       @parser.phase = @parser.phases[:rootElement]
       @parser.phase.processEndTag(name)
     end
-
   end
 end

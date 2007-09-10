@@ -42,7 +42,7 @@ module HTML5
     end
 
     def endTagCol(name)
-      parse_error(_('Unexpected end tag (col). col has no end tag.'))
+      parse_error("no-end-tag", {"name" => "col"})
     end
 
     def endTagOther(name)

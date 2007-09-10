@@ -171,7 +171,6 @@ module HTML5
       end
     end
 
-    def _(string); string; end
   end
 
   # Error in serialized tree

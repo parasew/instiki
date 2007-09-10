@@ -20,7 +20,7 @@ module HTML5
     end
 
     def startTagTableCell(name, attributes)
-      parse_error(_("Unexpected table cell start tag (#{name}) in the table body phase."))
+      parse_error("unexpected-cell-in-table-body", {"name" => name})
       startTagTr('tr', {})
       @parser.phase.processStartTag(name, attributes)
     end
@@ -47,7 +47,8 @@ module HTML5
         @tree.open_elements.pop
         @parser.phase = @parser.phases[:inTable]
       else
-        parse_error(_("Unexpected end tag (#{name}) in the table body phase. Ignored."))
+        parse_error("unexpected-end-tag-in-table-body",
+                {"name" => name})
       end
     end
 
@@ -63,7 +64,8 @@ module HTML5
     end
 
     def endTagIgnore(name)
-      parse_error(_("Unexpected end tag (#{name}) in the table body phase. Ignored."))
+      parse_error("unexpected-end-tag-in-table-body",
+            {"name" => name})
     end
 
     def endTagOther(name)
@@ -74,7 +76,8 @@ module HTML5
 
     def clearStackToTableBodyContext
       until %w[tbody tfoot thead html].include?(name = @tree.open_elements.last.name)
-        parse_error(_("Unexpected implied end tag (#{name}) in the table body phase."))
+        parse_error("unexpected-implied-end-tag-in-table",
+                {"name" => @tree.open_elements.last.name})
         @tree.open_elements.pop
       end
     end

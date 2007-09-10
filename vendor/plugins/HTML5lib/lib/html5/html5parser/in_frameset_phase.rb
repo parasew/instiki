@@ -10,7 +10,7 @@ module HTML5
     handle_end 'frameset', 'noframes'
 
     def processCharacters(data)
-      parse_error(_('Unexpected characters in the frameset phase. Characters ignored.'))
+      parse_error("unexpected-char-in-frameset")
     end
 
     def startTagFrameset(name, attributes)
@@ -27,13 +27,14 @@ module HTML5
     end
 
     def startTagOther(name, attributes)
-      parse_error(_("Unexpected start tag token (#{name}) in the frameset phase. Ignored"))
+      parse_error("unexpected-start-tag-in-frameset",
+            {"name" => name})
     end
 
     def endTagFrameset(name)
       if @tree.open_elements.last.name == 'html'
         # inner_html case
-        parse_error(_("Unexpected end tag token (frameset) in the frameset phase (inner_html)."))
+        parse_error("unexpected-frameset-in-frameset-innerhtml")
       else
         @tree.open_elements.pop
       end
@@ -50,8 +51,7 @@ module HTML5
     end
 
     def endTagOther(name)
-      parse_error(_("Unexpected end tag token (#{name}) in the frameset phase. Ignored."))
+      parse_error("unexpected-end-tag-in-frameset", {"name" => name})
     end
-
   end
 end

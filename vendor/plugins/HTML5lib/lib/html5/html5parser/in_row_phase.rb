@@ -62,7 +62,8 @@ module HTML5
     end
 
     def endTagIgnore(name)
-      parse_error(_("Unexpected end tag (#{name}) in the row phase. Ignored."))
+      parse_error("unexpected-end-tag-in-table-row",
+              {"name" => name})
     end
 
     def endTagOther(name)
@@ -74,7 +75,8 @@ module HTML5
     # XXX unify this with other table helper methods
     def clearStackToTableRowContext
       until %w[tr html].include?(name = @tree.open_elements.last.name)
-        parse_error(_("Unexpected implied end tag (#{name}) in the row phase."))
+        parse_error("unexpected-implied-end-tag-in-table-row",
+                {"name" => @tree.open_elements.last.name})
         @tree.open_elements.pop
       end
     end

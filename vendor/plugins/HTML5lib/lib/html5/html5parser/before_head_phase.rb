@@ -34,7 +34,7 @@ module HTML5
     end
 
     def endTagOther(name)
-      parse_error(_("Unexpected end tag (#{name}) after the (implied) root element."))
+      parse_error("end-tag-after-implied-root", {"name" => name})
     end
 
   end

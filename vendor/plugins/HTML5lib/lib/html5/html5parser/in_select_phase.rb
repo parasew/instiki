@@ -26,19 +26,19 @@ module HTML5
     end
 
     def startTagSelect(name, attributes)
-      parse_error(_('Unexpected start tag (select) in the select phase implies select start tag.'))
+      parse_error("unexpected-select-in-select")
       endTagSelect('select')
     end
 
     def startTagOther(name, attributes)
-      parse_error(_('Unexpected start tag token (#{name}) in the select phase. Ignored.'))
+      parse_error("unexpected-start-tag-in-select", {"name" => name})
     end
 
     def endTagOption(name)
       if @tree.open_elements.last.name == 'option'
         @tree.open_elements.pop
       else
-        parse_error(_('Unexpected end tag (option) in the select phase. Ignored.'))
+        parse_error("unexpected-end-tag-in-select", {"name" => "option"})
       end
     end
 
@@ -52,7 +52,8 @@ module HTML5
         @tree.open_elements.pop
       # But nothing else
       else
-        parse_error(_('Unexpected end tag (optgroup) in the select phase. Ignored.'))
+        parse_error("unexpected-end-tag-in-select",
+                {"name" => "optgroup"})
       end
     end
 
@@ -68,7 +69,8 @@ module HTML5
     end
 
     def endTagTableElements(name)
-      parse_error(_("Unexpected table end tag (#{name}) in the select phase."))
+      parse_error("unexpected-end-tag-in-select",
+            {"name" => name})
 
       if in_scope?(name, true)
         endTagSelect('select')

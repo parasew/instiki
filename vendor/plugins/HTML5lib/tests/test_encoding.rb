@@ -10,7 +10,7 @@ class Html5EncodingTestCase < Test::Unit::TestCase
     require 'rubygems'
     require 'UniversalDetector'
 
-    def test_chardet
+    def test_chardet #TODO: can we get rid of this?
       file = File.open(File.join(TESTDATA_DIR, 'encoding', 'chardet', 'test_big5.txt'), 'r')
       stream = HTML5::HTMLInputStream.new(file, :chardet => true)
       assert_equal 'big5', stream.char_encoding.downcase

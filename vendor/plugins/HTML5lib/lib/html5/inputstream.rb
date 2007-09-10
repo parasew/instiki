@@ -198,8 +198,9 @@ module HTML5
         end
       end
 
+      #TODO: huh?
       require 'delegate'
-      @raw_stream = SimpleDelegator.new(@raw_stream)
+      # @raw_stream = SimpleDelegator.new(@raw_stream)
 
       class << @raw_stream
         def read(chars=-1)
@@ -315,8 +316,7 @@ module HTML5
           end
 
         when 0x00
-          @errors.push('null character found in input stream, ' +
-            'replaced with U+FFFD')
+          @errors.push("null-character")
           [0xFFFD].pack('U') # null characters are invalid
 
         else
