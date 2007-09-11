@@ -151,7 +151,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-textile-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
+    assert_match /attachment; filename="wiki1-markdownMML-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end
@@ -665,14 +665,45 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
     assert_response(:success)
     
-    assert_equal "\\documentclass[12pt,titlepage]{article}\n\n\\usepackage{amsmath}" +
-      "\n\\usepackage{amsfonts}\n\\usepackage{graphicx}\n\\usepackage{ucs}\n" +
-      "\\usepackage[utf8x]{inputenc}\n\\usepackage{hyperref}\n\n" +
-      "%-------------------------------------------------------------------\n\n" +
-      "\\begin{document}\n\n%--------------------------------------------------" +
-      "-----------------\n\n\\section*{HomePage}\n\nTeX export only supported with" +
-      " the Markdown text filters.\n\n\\end{document}\n",
-      r.body
+    assert_equal %q!\documentclass[12pt,titlepage]{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{hyperref}
+
+%----Macros----------
+\newcommand{\gt}{>}
+\newcommand{\lt}{<}
+\newcommand{\darr}{\downarrow}
+\newcommand{\nearr}{\nearrow}
+\newcommand{\nwarr}{\nwarrow}
+\newcommand{\searr}{\searrow}
+\newcommand{\swarr}{\swarrow}
+\newcommand{\iff}{\Longleftrightarrow}
+\newcommand{\impliedby}{\Leftarrow}
+\newcommand{\map}{\mapsto}
+\newcommand{\embedsin}{\hookrightarrow}
+\newcommand{\implies}{\Rightarrow}
+\newcommand{\qed}{\blacksquare}
+
+%-------------------------------------------------------------------
+
+\begin{document}
+
+%-------------------------------------------------------------------
+
+\section*{HomePage}
+
+HisWay would be MyWay in kinda ThatWay in HisWay though MyWay $\backslash$OverThere --{} see SmartEngine in that SmartEngineGUI
+
+
+
+\end{document}
+!, r.body
   end
 
 

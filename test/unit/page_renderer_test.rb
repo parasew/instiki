@@ -46,7 +46,7 @@ class PageRendererTest < Test::Unit::TestCase
         'would be <a class="existingWikiWord" href="../show/MyWay">My Way</a> in kinda ' +
         '<a class="existingWikiWord" href="../show/ThatWay">That Way</a> in ' +
         '<span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
-        %{though <a class="existingWikiWord" href="../show/MyWay">My Way</a> OverThere—see } +
+        %{though <a class="existingWikiWord" href="../show/MyWay">My Way</a> OverThere \xE2\x80\x93 see } +
         '<a class="existingWikiWord" href="../show/SmartEngine">Smart Engine</a> in that ' +
         '<span class="newWikiWord">Smart Engine GUI' +
         '<a href="../show/SmartEngineGUI">?</a></span></p>', 
@@ -157,21 +157,21 @@ class PageRendererTest < Test::Unit::TestCase
     assert_markup_parsed_as(
         '<p><em>should we go <a class="existingWikiWord" href="../show/ThatWay">' +
 	    'That Way</a> or <span class="newWikiWord">This Way<a href="../show/ThisWay">?</a>' +
-	    '</span> </em></p>', 
+	    '</span></em></p>', 
         '_should we go ThatWay or ThisWay _')
   end
   
   # wikiwords are invalid as styles, must be in "name: value" form
   def test_content_with_wikiword_in_style_tag
     assert_markup_parsed_as(
-        "<p>That is some <em style=''>Stylish Emphasis</em></p>", 
+        "<p>That is some <em style=\"\">Stylish Emphasis</em></p>", 
 	    'That is some <em style="WikiWord">Stylish Emphasis</em>')
   end
  
   # validates format of style..
   def test_content_with_valid_style_in_style_tag
     assert_markup_parsed_as(
-        "<p>That is some <em style='text-align: right;'>Stylish Emphasis</em></p>", 
+        "<p>That is some <em style=\"text-align: right;\">Stylish Emphasis</em></p>", 
 	    'That is some <em style="text-align: right">Stylish Emphasis</em>')
   end
   
@@ -182,38 +182,38 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_content_with_pre_blocks
     assert_markup_parsed_as(
-      '<p>A <code>class SmartEngine end</code> would not mark up </p><pre>CodeBlocks</pre>', 
-      'A <code>class SmartEngine end</code> would not mark up <pre>CodeBlocks</pre>')
+      '<p>A <code>class SmartEngine end</code> would not mark up </p>\n\n<pre>CodeBlocks</pre>\n\n<p>would it?</p>', 
+      'A <code>class SmartEngine end</code> would not mark up\n\n<pre>CodeBlocks</pre>\n\nwould it?')
   end
   
   def test_content_with_autolink_in_parentheses
     assert_markup_parsed_as(
-      '<p>The <span class=\'caps\'>W3C</span> body (<a href="http://www.w3c.org">' +
+      '<p>The W3C body (<a href="http://www.w3c.org">' +
       'http://www.w3c.org</a>) sets web standards</p>', 
       'The W3C body (http://www.w3c.org) sets web standards')
   end
   
   def test_content_with_link_in_parentheses
     assert_markup_parsed_as(
-      "<p>(<a href='http://wiki.org/wiki.cgi?WhatIsWiki'>What is a wiki?</a>)</p>",
-      '("What is a wiki?":http://wiki.org/wiki.cgi?WhatIsWiki)')
+      "<p>(<a href=\"http://wiki.org/wiki.cgi?WhatIsWiki\">What is a wiki?</a>)</p>",
+      '([What is a wiki?](http://wiki.org/wiki.cgi?WhatIsWiki))')
   end
   
   def test_content_with_image_link
     assert_markup_parsed_as( 
-      "<p>This <img src='http://hobix.com/sample.jpg' alt=''/> is a Textile image link.</p>", 
-      'This !http://hobix.com/sample.jpg! is a Textile image link.')
+      "<p>This <img alt=\"\" src=\"http://hobix.com/sample.jpg\" /> is a Markdown image link.</p>", 
+      'This ![](http://hobix.com/sample.jpg) is a Markdown image link.')
   end
   
   def test_content_with_inlined_img_tag
     assert_markup_parsed_as( 
-      "<p>This <img src='http://hobix.com/sample.jpg' alt=''/> is an inline image link.</p>", 
+      "<p>This <img alt=\"\" src=\"http://hobix.com/sample.jpg\" /> is an inline image link.</p>", 
       'This <img src="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
        
     # currently, upper case HTML elements are not allowed
     assert_markup_parsed_as( 
-      '<p>This &lt;IMG SRC="http://hobix.com/sample.jpg" alt=""&gt; is an inline image link.</p>', 
-      'This <IMG SRC="http://hobix.com/sample.jpg" alt=""> is an inline image link.')
+      '<p>This &lt;IMG SRC="http://hobix.com/sample.jpg" alt=""&gt;&lt;/IMG&gt; is an inline image link.</p>', 
+      'This <IMG SRC="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
   end
   
   def test_nowiki_tag
@@ -244,7 +244,7 @@ class PageRendererTest < Test::Unit::TestCase
         '<a class="existingWikiWord" href="MyWay.html">My Way</a> in kinda ' +
         '<a class="existingWikiWord" href="ThatWay.html">That Way</a> in ' +
         '<span class="newWikiWord">His Way</span> though ' +
-        %{<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere—see } +
+        %{<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere \xE2\x80\x93 see } +
         '<a class="existingWikiWord" href="SmartEngine.html">Smart Engine</a> in that ' +
         '<span class="newWikiWord">Smart Engine GUI</span></p>', 
         test_renderer(@revision).display_content_for_export
@@ -253,14 +253,14 @@ class PageRendererTest < Test::Unit::TestCase
   def test_double_replacing
     @revision.content = "VersionHistory\r\n\r\ncry VersionHistory"
     assert_equal '<p><span class="newWikiWord">Version History' +
-        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
+        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n<p>cry " +
         '<span class="newWikiWord">Version History<a href="../show/VersionHistory">?</a>' +
         '</span></p>', 
         test_renderer(@revision).display_content
   
     @revision.content = "f\r\nVersionHistory\r\n\r\ncry VersionHistory"
-    assert_equal "<p>f<br/><span class=\"newWikiWord\">Version History" +
-        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n\n\t<p>cry " +
+    assert_equal "<p>f <span class=\"newWikiWord\">Version History" +
+        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n<p>cry " +
         "<span class=\"newWikiWord\">Version History<a href=\"../show/VersionHistory\">?</a>" +
         "</span></p>", 
         test_renderer(@revision).display_content
@@ -321,12 +321,12 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_list_with_tildas
     list_with_tildas = <<-EOL
-      * "a":~b
-      * c~ d
+* [a](~b)
+* c~ d
     EOL
   
     assert_markup_parsed_as(
-        "<ul>\n\t<li><a href='~b'>a</a></li>\n\t\t<li>c~ d</li>\n\t</ul>",
+        "<ul>\n<li><a href=\"~b\">a</a></li>\n\n<li>c~ d</li>\n</ul>",
         list_with_tildas)
   end
   

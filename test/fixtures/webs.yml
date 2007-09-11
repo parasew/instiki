@@ -4,7 +4,7 @@ test_wiki:
   updated_at: 2005-08-01
   name: wiki1
   address: wiki1
-  markup: textile
+  markup: markdownMML
 
 instiki:
   id: 2
@@ -12,4 +12,4 @@ instiki:
   updated_at: 2005-08-01
   name: Instiki
   address: instiki
-  markup: textile
+  markup: markdownMML
