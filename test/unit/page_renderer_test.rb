@@ -230,6 +230,12 @@ class PageRendererTest < Test::Unit::TestCase
       "Do not <nowiki>mark \n up [[this text]] \n" +
       "and http://this.url.com </nowiki> but markup [[this]]")
   end
+
+  def test_sanitize_nowiki_tag
+    assert_markup_parsed_as(
+      '<p>[[test]]&amp;<a href=\'a&amp;b\'>shebang</a> &lt;script&gt;alert("xss!");&lt;/script&gt; *foo*</p>',
+      '<nowiki>[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*</nowiki>')
+  end
   
   def test_content_with_bracketted_wiki_word
     set_web_property :brackets_only, true
@@ -367,6 +373,16 @@ class PageRendererTest < Test::Unit::TestCase
     references = new_page.wiki_references(true)
     assert_equal 1, references.size
     assert_equal 'NewPageCategory', references[0].referenced_name
+    assert_equal WikiReference::CATEGORY, references[0].link_type
+  end
+
+  def test_references_creation_sanitized_categories
+    new_page = @web.add_page('NewPage', "Foo\ncategory: <script>alert('XSS');</script>",
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+
+    references = new_page.wiki_references(true)
+    assert_equal 1, references.size
+    assert_equal "&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;", references[0].referenced_name
     assert_equal WikiReference::CATEGORY, references[0].link_type
   end
   
