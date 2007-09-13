@@ -50,8 +50,8 @@ class Html5ParserTestCase < Test::Unit::TestCase
             '', 'Recieved:', actual_output
           ].join("\n")
 
-          actual_errors = parser.errors.map do |(line, col), message|
-            'Line: %i Col: %i %s' % [line, col, message]
+          actual_errors = parser.errors.map do |(line, col), message, datavars|
+            'Line: %i Col: %i %s' % [line, col, E[message] % datavars]
           end
           assert_equal errors.length, parser.errors.length, [
             '', 'Input', input,

@@ -50,7 +50,7 @@ module HTML5
 
       when :EndTag
         if token[:data]
-           parse_error(_("End tag contains unexpected attributes."))
+           parse_error("attributes-in-end-tag")
         end
 
       when :Comment
@@ -81,7 +81,7 @@ module HTML5
       # open and close tags are emitted
       if token[:type]  == :EndTag
         if VOID_ELEMENTS.include? token[:name]
-          if @tree.open_elements[-1].name != token["name"]:
+          if @tree.open_elements[-1].name != token["name"]
             token[:type] = :EmptyTag
             token["data"] ||= {}
           end

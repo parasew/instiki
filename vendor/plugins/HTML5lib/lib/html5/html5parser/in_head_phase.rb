@@ -12,7 +12,7 @@ module HTML5
 
     def process_eof
       if ['title', 'style', 'script'].include?(name = @tree.open_elements.last.name)
-        parse_error(_("Unexpected end of file. Expected end tag (#{name})."))
+        parse_error("expected-named-closing-tag-but-got-eof", {"name" => @tree.open_elements.last.name})
         @tree.open_elements.pop
       end
       anything_else
@@ -29,7 +29,7 @@ module HTML5
     end
 
     def startTagHead(name, attributes)
-      parse_error(_('Unexpected start tag head in existing head. Ignored'))
+      parse_error("two-heads-are-not-better-than-one")
     end
 
     def startTagTitle(name, attributes)
@@ -93,7 +93,7 @@ module HTML5
       if @tree.open_elements.last.name == 'head'
         @tree.open_elements.pop
       else
-        parse_error(_("Unexpected end tag (head). Ignored."))
+        parse_error("unexpected-end-tag", {"name" => "head"})
       end
       @parser.phase = @parser.phases[:afterHead]
     end
@@ -107,12 +107,12 @@ module HTML5
       if @tree.open_elements.last.name == name
         @tree.open_elements.pop
       else
-        parse_error(_("Unexpected end tag (#{name}). Ignored."))
+        parse_error("unexpected-end-tag", {"name" => name})
       end
     end
 
     def endTagOther(name)
-      parse_error(_("Unexpected end tag (#{name}). Ignored."))
+      parse_error("unexpected-end-tag", {"name" => name})
     end
 
     def anything_else

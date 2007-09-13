@@ -100,17 +100,17 @@ module HTML5
         method = 'process%s' % token[:type]
 
         case token[:type]
-          when :Characters, :SpaceCharacters, :Comment
-            @phase.send method, token[:data]
-          when :StartTag
-            @phase.send method, token[:name], token[:data]
-          when :EndTag
-            @phase.send method, token[:name]
-          when :Doctype
-            @phase.send method, token[:name], token[:publicId],
-              token[:systemId], token[:correct]
-          else
-            parse_error(token[:data])
+        when :Characters, :SpaceCharacters, :Comment
+          @phase.send method, token[:data]
+        when :StartTag
+          @phase.send method, token[:name], token[:data]
+        when :EndTag
+          @phase.send method, token[:name]
+        when :Doctype
+          @phase.send method, token[:name], token[:publicId],
+            token[:systemId], token[:correct]
+        else
+          parse_error(token[:data], token[:datavars])
         end
       end
 
@@ -147,9 +147,9 @@ module HTML5
       @tree.get_fragment
     end
 
-    def parse_error(data = 'XXX ERROR MESSAGE NEEDED')
+    def parse_error(code = 'XXX-undefined-error', data = {})
       # XXX The idea is to make data mandatory.
-      @errors.push([@tokenizer.stream.position, data])
+      @errors.push([@tokenizer.stream.position, code, data])
       raise ParseError if @strict
     end
 
@@ -163,7 +163,7 @@ module HTML5
         # thing and if it doesn't it's wrong for everyone.
 
         unless VOID_ELEMENTS.include?(token[:name])
-          parse_error(_('Solidus (/) incorrectly placed in tag.'))
+          parse_error("incorrectly-placed-solidus")
         end
 
         token[:type] = :StartTag
@@ -181,7 +181,7 @@ module HTML5
         end
 
       elsif token[:type] == :EndTag
-        parse_error(_('End tag contains unexpected attributes.')) unless token[:data].empty?
+        parse_error("attributes-in-end-tag") unless token[:data].empty?
         token[:name] = token[:name].downcase
       end
 

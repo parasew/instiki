@@ -1,4 +1,5 @@
 require 'chunks/chunk'
+require 'sanitize'
 
 # The category chunk looks for "category: news" on a line by
 # itself and parses the terms after the ':' as categories.
@@ -8,6 +9,7 @@ require 'chunks/chunk'
 #
 # Category lines can be hidden using ':category: news', for example
 class Category < Chunk::Abstract
+
   CATEGORY_PATTERN = /^(:)?category\s*:(.*)$/i
   def self.pattern() CATEGORY_PATTERN  end
 
@@ -16,7 +18,8 @@ class Category < Chunk::Abstract
 def initialize(match_data, content)
     super(match_data, content)
     @hidden = match_data[1]
-    @list = match_data[2].split(',').map { |c| html_escape(c.strip) }
+    @list = match_data[2].split(',').map { |c| c.to_s.is_utf8? ? html_escape(c.strip) : nil }
+    @list.compact!
     @unmask_text = ''
     if @hidden
       @unmask_text = ''
@@ -28,6 +31,6 @@ def initialize(match_data, content)
 
   # TODO move presentation of page metadata to controller/view
   def url(category)
-    %{<a class="category_link" href="../list/?category=#{category}">#{category}</a>}
+    %{<a class="category_link" href="../list/#{category}">#{category}</a>}
   end
 end

@@ -33,7 +33,7 @@ module HTML5
       if in_scope?(name, true)
         @tree.generateImpliedEndTags(name)
         if @tree.open_elements.last.name != name
-          parse_error("Got table cell end tag (#{name}) while required end tags are missing.")
+          parse_error("unexpected-cell-end-tag", {"name" => name})
 
           remove_open_elements_until(name)
         else
@@ -42,12 +42,12 @@ module HTML5
         @tree.clearActiveFormattingElements
         @parser.phase = @parser.phases[:inRow]
       else
-        parse_error(_("Unexpected end tag (#{name}). Ignored."))
+        parse_error("unexpected-end-tag", {"name" => name})
       end
     end
 
     def endTagIgnore(name)
-      parse_error(_("Unexpected end tag (#{name}). Ignored."))
+      parse_error("unexpected-end-tag", {"name" => name})
     end
 
     def endTagImply(name)

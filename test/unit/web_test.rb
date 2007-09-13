@@ -1,7 +1,8 @@
-require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
+require File.dirname(__FILE__) + '/../test_helper'
+#require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
 class WebTest < Test::Unit::TestCase
-  fixtures :webs, :pages, :revisions, :system, :wiki_references
+  fixtures :system, :webs, :pages, :revisions, :wiki_references
   
   def setup
     @web = webs(:instiki)

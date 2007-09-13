@@ -26,7 +26,7 @@ module HTML5
     end
 
     def startTagFromHead(name, attributes)
-      parse_error(_("Unexpected start tag (#{name}) that can be in head. Moved."))
+      parse_error("unexpected-start-tag-out-of-my-head", {"name" => name})
       @parser.phase = @parser.phases[:inHead]
       @parser.phase.processStartTag(name, attributes)
     end

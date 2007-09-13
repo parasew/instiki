@@ -100,12 +100,12 @@ module HTML5
     end
 
     def startTagTitle(name, attributes)
-      parse_error(_("Unexpected start tag (#{name}) that belongs in the head. Moved."))
+      parse_error("unexpected-start-tag-out-of-my-head", {"name" => name})
       @parser.phases[:inHead].processStartTag(name, attributes)
     end
 
     def startTagBody(name, attributes)
-      parse_error(_('Unexpected start tag (body).'))
+      parse_error("unexpected-start-tag", {"name" => "body"})
 
       if (@tree.open_elements.length == 1 || @tree.open_elements[1].name != 'body')
         assert @parser.inner_html
@@ -126,7 +126,7 @@ module HTML5
 
     def startTagForm(name, attributes)
       if @tree.formPointer
-        parse_error(_('Unexpected start tag (form). Ignored.'))
+        parse_error("Unexpected start tag (form). Ignored.")
       else
         endTagP('p') if in_scope?('p')
         @tree.insert_element(name, attributes)
@@ -143,7 +143,10 @@ module HTML5
         if stopName.include?(node.name)
           poppedNodes = (0..i).collect { @tree.open_elements.pop }
           if i >= 1
-            parse_error(_("Missing end tag%s (%s)" % [(i>1 ? 's' : ''), poppedNodes.reverse.map{|item| item.name}.join(', ')]))
+            parse_error(
+                i == 1 ? "missing-end-tag" : "missing-end-tags",
+                {"name" => poppedNodes[0..-1].collect{|n| n.name}.join(", ")})
+
           end
           break
         end
@@ -169,7 +172,7 @@ module HTML5
       # Uncomment the following for IE7 behavior:
       # HEADING_ELEMENTS.each do |element|
       #   if in_scope?(element)
-      #     parse_error(_("Unexpected start tag (#{name})."))
+      #     parse_error("unexpected-start-tag", {"name" => name})
       # 
       #     remove_open_elements_until do |element|
       #       HEADING_ELEMENTS.include?(element.name)
@@ -183,7 +186,7 @@ module HTML5
 
     def startTagA(name, attributes)
       if afeAElement = @tree.elementInActiveFormattingElements('a')
-        parse_error(_('Unexpected start tag (a) implies end tag (a).'))
+        parse_error("unexpected-start-tag-implies-end-tag", {"startName" => "a", "endName" => "a"})
         endTagFormatting('a')
         @tree.open_elements.delete(afeAElement) if @tree.open_elements.include?(afeAElement)
         @tree.activeFormattingElements.delete(afeAElement) if @tree.activeFormattingElements.include?(afeAElement)
@@ -200,7 +203,7 @@ module HTML5
     def startTagNobr(name, attributes)
       @tree.reconstructActiveFormattingElements
       if in_scope?('nobr')
-        parse_error(_('Unexpected start tag (nobr) implies end tag (nobr).'))
+        parse_error("unexpected-start-tag-implies-end-tag", {"startName" => "nobr", "endName" => "nobr"})
         processEndTag('nobr')
         # XXX Need tests that trigger the following
         @tree.reconstructActiveFormattingElements
@@ -210,7 +213,7 @@ module HTML5
 
     def startTagButton(name, attributes)
       if in_scope?('button')
-        parse_error(_('Unexpected start tag (button) implied end tag (button).'))
+        parse_error("unexpected-start-tag-implies-end-tag", {"startName" => "button", "endName" => "button"})
         processEndTag('button')
         @parser.phase.processStartTag(name, attributes)
       else
@@ -252,7 +255,7 @@ module HTML5
 
     def startTagImage(name, attributes)
       # No really...
-      parse_error(_('Unexpected start tag (image). Treated as img.'))
+      parse_error("unexpected-start-tag-treated-as", {"originalName" => "image", "newName" => "img"})
       processStartTag('img', attributes)
     end
 
@@ -267,7 +270,7 @@ module HTML5
     end
 
     def startTagIsindex(name, attributes)
-      parse_error(_("Unexpected start tag isindex. Don't use it!"))
+      parse_error("deprecated-tag", {"name" => "isindex"})
       return if @tree.formPointer
       processStartTag('form', {})
       processStartTag('hr', {})
@@ -310,13 +313,13 @@ module HTML5
       # "caption", "col", "colgroup", "frame", "frameset", "head",
       # "option", "optgroup", "tbody", "td", "tfoot", "th", "thead",
       # "tr", "noscript"
-      parse_error(_("Unexpected start tag (#{name}). Ignored."))
+      parse_error("unexpected-start-tag-ignored", {"name" => name})
     end
 
     def startTagNew(name, attributes)
       # New HTML5 elements, "event-source", "section", "nav",
       # "article", "aside", "header", "footer", "datagrid", "command"
-      sys.stderr.write("Warning: Undefined behaviour for start tag #{name}")
+      # $stderr.puts("Warning: Undefined behaviour for start tag #{name}")
       startTagOther(name, attributes)
       #raise NotImplementedError
     end
@@ -328,7 +331,7 @@ module HTML5
 
     def endTagP(name)
       @tree.generateImpliedEndTags('p') if in_scope?('p')
-      parse_error(_('Unexpected end tag (p).')) unless @tree.open_elements.last.name == 'p'
+      parse_error("unexpected-end-tag", {"name" => "p"}) unless @tree.open_elements.last.name == 'p'
       if in_scope?('p')
         @tree.open_elements.pop while in_scope?('p')
       else
@@ -347,7 +350,9 @@ module HTML5
         return
       end
       unless @tree.open_elements.last.name == 'body'
-        parse_error(_("Unexpected end tag (body). Missing end tag (#{@tree.open_elements[-1].name})."))
+        parse_error("expected-one-end-tag-but-got-another",
+                {"expectedName" => "body",
+                 "gotName" => @tree.open_elements.last.name})
       end
       @parser.phase = @parser.phases[:afterBody]
     end
@@ -364,7 +369,7 @@ module HTML5
       @tree.generateImpliedEndTags if in_scope?(name)
 
       unless @tree.open_elements.last.name == name
-        parse_error(_("End tag (#{name}) seen too early. Expected other end tag."))
+        parse_error("end-tag-too-early", {"name" => name})
       end
 
       if in_scope?(name)
@@ -377,7 +382,7 @@ module HTML5
         @tree.generateImpliedEndTags
       end
       if @tree.open_elements.last.name != name
-        parse_error(_("End tag (form) seen too early. Ignored."))
+        parse_error("end-tag-too-early-ignored", {"name" => "form"})
       else
         @tree.open_elements.pop
       end
@@ -389,7 +394,7 @@ module HTML5
       @tree.generateImpliedEndTags(name) if in_scope?(name)
 
       unless @tree.open_elements.last.name == name
-        parse_error(_("End tag (#{name}) seen too early. " + 'Expected other end tag.'))
+        parse_error("end-tag-too-early", {"name" => name})
       end
 
       remove_open_elements_until(name) if in_scope?(name)
@@ -404,7 +409,7 @@ module HTML5
       end
 
       unless @tree.open_elements.last.name == name
-        parse_error(_("Unexpected end tag (#{name}). Expected other end tag."))
+        parse_error("end-tag-too-early", {"name" => name})
       end
 
       HEADING_ELEMENTS.each do |element|
@@ -423,18 +428,18 @@ module HTML5
         # Step 1 paragraph 1
         afeElement = @tree.elementInActiveFormattingElements(name)
         if !afeElement or (@tree.open_elements.include?(afeElement) && !in_scope?(afeElement.name))
-          parse_error(_("End tag (#{name}) violates step 1, paragraph 1 of the adoption agency algorithm."))
+          parse_error("adoption-agency-1.1", {"name" => name})
           return
         # Step 1 paragraph 2
         elsif not @tree.open_elements.include?(afeElement)
-          parse_error(_("End tag (#{name}) violates step 1, paragraph 2 of the adoption agency algorithm."))
+          parse_error("adoption-agency-1.2", {"name" => name})
           @tree.activeFormattingElements.delete(afeElement)
           return
         end
 
         # Step 1 paragraph 3
         if afeElement != @tree.open_elements.last
-          parse_error(_("End tag (#{name}) violates step 1, paragraph 3 of the adoption agency algorithm."))
+          parse_error("adoption-agency-1.3", {"name" => name})
         end
 
         # Step 2
@@ -531,7 +536,7 @@ module HTML5
       @tree.generateImpliedEndTags if in_scope?(name)
 
       unless @tree.open_elements.last.name == name
-        parse_error(_("Unexpected end tag (#{name}). Expected other end tag first."))
+        parse_error("end-tag-too-early", {"name" => name})
       end
 
       if in_scope?(name)
@@ -543,11 +548,12 @@ module HTML5
 
     def endTagMisplaced(name)
       # This handles elements with end tags in other insertion modes.
-      parse_error(_("Unexpected end tag (#{name}). Ignored."))
+      parse_error("unexpected-end-tag", {"name" => name})
     end
 
     def endTagBr(name)
-      parse_error(_("Unexpected end tag (br). Treated as br element."))
+      parse_error("unexpected-end-tag-treated-as",
+            {"originalName" => "br", "newName" => "br element"})
       @tree.reconstructActiveFormattingElements
       @tree.insert_element(name, {})
       @tree.open_elements.pop()
@@ -555,21 +561,21 @@ module HTML5
 
     def endTagNone(name)
       # This handles elements with no end tag.
-      parse_error(_("This tag (#{name}) has no end tag"))
+      parse_error("no-end-tag", {"name" => name})
     end
 
     def endTagCdataTextAreaXmp(name)
       if @tree.open_elements.last.name == name
         @tree.open_elements.pop
       else
-        parse_error(_("Unexpected end tag (#{name}). Ignored."))
+        parse_error("unexpected-end-tag", {"name" => name})
       end
     end
 
     def endTagNew(name)
       # New HTML5 elements, "event-source", "section", "nav",
       # "article", "aside", "header", "footer", "datagrid", "command"
-      STDERR.puts "Warning: Undefined behaviour for end tag #{name}"
+      # STDERR.puts "Warning: Undefined behaviour for end tag #{name}"
       endTagOther(name)
       #raise NotImplementedError
     end
@@ -581,7 +587,7 @@ module HTML5
           @tree.generateImpliedEndTags
 
           unless @tree.open_elements.last.name == name
-            parse_error(_("Unexpected end tag (#{name})."))
+            parse_error("unexpected-end-tag", {"name" => name})
           end
 
           remove_open_elements_until {|element| element == node }
@@ -589,7 +595,7 @@ module HTML5
           break
         else
           if (SPECIAL_ELEMENTS + SCOPING_ELEMENTS).include?(node.name)
-            parse_error(_("Unexpected end tag (#{name}). Ignored."))
+            parse_error("unexpected-end-tag", {"name" => name})
             break
           end
         end

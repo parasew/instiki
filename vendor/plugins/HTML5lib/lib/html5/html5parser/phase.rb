@@ -87,13 +87,13 @@ module HTML5
       @tree.generateImpliedEndTags
 
       if @tree.open_elements.length > 2
-        parse_error(_('Unexpected end of file. Missing closing tags.'))
+        parse_error("expected-closing-tag-but-got-eof")
       elsif @tree.open_elements.length == 2 and @tree.open_elements[1].name != 'body'
         # This happens for framesets or something?
-        parse_error(_("Unexpected end of file. Expected end tag (#{@tree.open_elements[1].name}) first."))
+        parse_error("expected-closing-tag-but-got-eof")
       elsif @parser.inner_html and @tree.open_elements.length > 1 
         # XXX This is not what the specification says. Not sure what to do here.
-        parse_error(_('XXX inner_html EOF'))
+        parse_error("eof-in-innerhtml")
       end
       # Betting ends.
     end
@@ -105,7 +105,7 @@ module HTML5
     end
 
     def processDoctype(name, publicId, systemId, correct)
-      parse_error(_('Unexpected DOCTYPE. Ignored.'))
+      parse_error("unexpected-doctype")
     end
 
     def processSpaceCharacters(data)
@@ -118,7 +118,7 @@ module HTML5
 
     def startTagHtml(name, attributes)
       if @parser.first_start_tag == false and name == 'html'
-         parse_error(_('html needs to be the first start tag.'))
+         parse_error("non-html-root")
       end
       # XXX Need a check here to see if the first start tag token emitted is
       # this token... If it's not, invoke parse_error.
@@ -132,10 +132,6 @@ module HTML5
 
     def processEndTag(name)
       send self.class.end_tag_handlers[name], name
-    end
-
-    def _(string)
-      string
     end
 
     def assert(value)

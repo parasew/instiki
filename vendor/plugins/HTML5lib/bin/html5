@@ -81,8 +81,8 @@ def print_output(parser, document, opts)
 
   if opts.error
     errList=[]
-    for pos, message in parser.errors
-        errList << ("Line %i Col %i"%pos + " " + message)
+    for pos, errorcode, datavars in parser.errors
+        errList << "Line %i Col %i"%pos + " " + constants.E.get(errorcode, 'Unknown error "%s"' % errorcode) % datavars
     end
     $stdout.write("\nParse errors:\n" + errList.join("\n")+"\n")
   end

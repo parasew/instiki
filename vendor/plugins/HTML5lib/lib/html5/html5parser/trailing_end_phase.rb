@@ -15,19 +15,19 @@ module HTML5
     end
 
     def processCharacters(data)
-      parse_error(_('Unexpected non-space characters. Expected end of file.'))
+      parse_error("expected-eof-but-got-char")
       @parser.phase = @parser.last_phase
       @parser.phase.processCharacters(data)
     end
 
     def processStartTag(name, attributes)
-      parse_error(_('Unexpected start tag (#{name}). Expected end of file.'))
+      parse_error("expected-eof-but-got-start-tag", {"name" => name})
       @parser.phase = @parser.last_phase
       @parser.phase.processStartTag(name, attributes)
     end
 
     def processEndTag(name)
-      parse_error(_('Unexpected end tag (#{name}). Expected end of file.'))
+      parse_error("expected-eof-but-got-end-tag", {"name" => name})
       @parser.phase = @parser.last_phase
       @parser.phase.processEndTag(name)
     end

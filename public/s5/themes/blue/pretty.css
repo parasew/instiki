@@ -1,0 +1,99 @@
+/* Blue Theme 2004 by Martin Hense :::www.lounge7.de */
+
+html {background:#000294 url(splash.gif) right bottom no-repeat;}
+body {color:#FFF;font-size:1.6em}
+a {text-decoration:none;color:#336;border-bottom:1px dotted}
+:link, :visited {text-decoration:none;color:#F8B73E}
+h1, h2, h3, h4 {font-size:100%;margin:0;padding:0;font-weight:inherit}
+h1 abbr {font-variant:small-caps}
+ul, pre {margin:0;line-height:1em}
+em {color:#c60}
+strong {font-weight:bold}
+html, body {margin:0;padding:0}
+
+blockquote, q {font-style:italic}
+blockquote {padding:0 2em 0.5em;margin:0 1.5em 0.5em;
+  text-align:center;font-size:1em}
+blockquote p {margin:0}
+blockquote i {font-style:normal}
+blockquote b {display:block;margin-top:0.5em;font-weight:normal;
+  font-size:smaller;font-style:normal}
+blockquote b i {font-style:italic}
+
+kbd {font-weight:bold;font-size:1em}
+sup {font-size:smaller;line-height:1px}
+
+.slide code {padding:2px 0.25em;font-weight:bold;color:#AAABF8}
+.slide code.bad, code del {color:red}
+.slide code.old {color:silver}
+.slide pre {padding:0;margin:0.25em 0 0.5em 0.5em;color:#533;font-size:90%}
+.slide pre code {display:block}
+.slide ul {margin-left:5%;margin-right:7%;list-style:disc}
+.slide li {margin-top:0.75em;margin-right:0}
+.slide ul ul {line-height:1}
+.slide ul ul li {margin:.2em;font-size:85%;list-style:square}
+.slide img.leader {display:block;margin:0 auto}
+
+div#header, div#footer {width:100%;top:0;left:0}
+div#header, div#footer {background:#005;color:#9183BF;
+  font-family:Verdana, Helvetica, sans-serif}
+div#header {background:#005 url(bodybg.gif) -16px 0 no-repeat;}
+div#footer {font-size:0.5em;font-weight:bold;padding:.75em 0;top:auto;
+  bottom:0px;border-top:1px solid #08093F;
+  background:#000136 url(footbg.gif) top right no-repeat}
+#footer h1, #footer h2 {display:block;padding:0 1em}
+#footer h2 {font-style:italic}
+
+div.slide {top:0px;width:92%;padding:32px 4% 4%;overflow:visible;
+  font-family:georgia, Times, 'Times New Roman', serif;
+  background:transparent url(bodybg.gif) -16px 0 repeat-x}
+div.slide h1 {position:absolute;left:87px;z-index:1;
+  white-space:nowrap;text-transform:capitalize;top:0;width:80%;
+  margin:0px auto;text-align:center;padding:0px;
+  font:36px georgia, Times, 'Times New Roman', serif;
+  color:#fff;background:transparent}
+div.slide h3 {font-size:130%}
+div.long {font-size:0.75em}
+
+div#controls {position: absolute; left: 60%; bottom: 0;
+  width: 40%;
+  text-align: right; font: bold 0.9em Verdana, Helvetica, sans-serif;}
+html>body div#controls {position: fixed; padding: 0; top: auto;}
+#controls :active {color:#88A !important}
+#controls :focus {outline:1px dotted #227}
+#controls #navLinks a {padding: 0; margin: 0 0.5em; 
+  border: none; color: #779; 
+  cursor: pointer;}
+#controls #navList #jumplist {background: #DDD; color: #227;}
+
+
+#currentSlide {font-size:0.5em;font-family:Verdana,Helvetica,sans-serif;
+  text-align:center;color:#9183BF}
+#currentSlide span {font-size:13px;color:#fff}
+#currentSlide #csSep {display:none}
+#currentSlide #csHere {font-weight:bold}
+#currentSlide #csHere:before {content:"#";font-weight:normal}
+#currentSlide #csTotal:before {content:" of "}
+
+#slide0 {padding:3.5em 0 0.5em 0;font-size:90%;width:100%}
+#slide0 h1 {color:#fff;background:transparent;width:75%;text-align:center;
+  position:static;margin:1em auto;padding:0px;white-space:normal;
+  font:2em Georgia, Times, 'Times New Roman', serif;}
+#slide0 h2 {margin:1em 0 2em 0;text-align:center;color:#fff}
+#slide0 h3, #slide0 h4, #slide0 p {margin:0.25em;text-align:center;color:#fff}
+#slide0 p {margin-top:0.7em}
+
+ul.urls {list-style:none;display:inline;margin:0}
+.urls li {display:inline;margin:0}
+.note {display:none}
+
+.incremental, .incremental *, .incremental *:after, .incremental code
+  {color:#000295;visibility:visible}
+img.incremental {visibility:hidden}
+.slide .current {color:#B02}
+.flushtop {margin-top:0px}
+.slide .plaintable td {border:1px solid #FFF!important}
+
+/* diagnostics
+li:after {content:" [" attr(class) "]";color:#F88}
+*/
