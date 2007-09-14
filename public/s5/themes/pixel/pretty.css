@@ -44,7 +44,7 @@ div#footer {background:#fff;font-size:0.5em;font-weight:bold;padding:.5em 0;
 #footer h1, #footer h2 {display:block;padding:0 1em}
 #footer h2 {font-style:italic}
 
-div.slide {top:0px;width:92%;padding:48px 4% 4%;
+div.slide {top:0px;width:88%;padding:48px 4% 4% 72px;
   font-family:Verdana, Helvetica, Arial, sans-serif}
 div.slide h1 {position:absolute;top:24px;left:64px;z-index:1;color:#FFF;
   background:transparent;margin:0px;padding:0 0 0 50px;white-space:nowrap;
@@ -86,9 +86,9 @@ html>body div#controls {position: fixed; padding: 0; top: auto;}
 #currentSlide #csHere:before {content:"#";font-weight:normal}
 #currentSlide #csTotal:before {content:" of "}
 
-#slide0 {padding-top:3.5em;font-size:90%}
+#slide0 {padding-top:3.5em;3em;font-size:90%; width:96%}
 #slide0 h1 {position:static;white-space:normal;
-  margin:0;padding:60px 60px 0 150px;text-align:right;
+  margin:0;padding:128px 60px 0 150px;text-align:right;
   font:bold 2em Helvetica,sans-serif;white-space:normal;height:281px;
   color:#fff;background:transparent url(slide0bg.gif) no-repeat}
 #slide0 h3 {margin-bottom:20px;margin-top:0.5em;font-size:1.5em}

@@ -40,16 +40,17 @@ div#header, div#footer {width:100%;top:0px;left:0px}
 div#header, div#footer {color:#BA9384;font-family:Verdana,Helvetica,sans-serif}
 div#header {background:transparent;height:10px}
 div#footer {background:#fff0cf;top:auto;bottom:0px;
-  font-size:0.5em;font-weight:bold;padding:.75em 0;border-top:1px solid #999}
+  font-size:0.5em;font-weight:bold;padding:.75em 0;
+  height:2em;border-top:1px solid #999}
 #footer h1, #footer h2 {display:block;padding:0 1em}
 #footer h2 {font-style:italic}
 
-div.slide {top:0px;left:0px;padding:48px 4% 4%;height:100%;width:92%;
+div.slide {top:0px;left:0px;padding:40px 4% 4% 76px;width:88%;
   background:transparent url(rightbg.jpg) right top no-repeat;overflow:visible;
   font-family:georgia,times,'Times New Roman',serif}
 div.slide h1 {position:absolute;z-index:1;background:transparent;
-  margin:0;padding:0.3em 0 0 50px;white-space:nowrap;
-  text-transform:capitalize;top:0;left:60px;color:#4A040A;
+  margin:0;padding:5px 0 0 64px;white-space:nowrap;
+  text-transform:capitalize;top:0;left:64px;color:#4A040A;
   font:150%/1em georgia, times, 'Times New Roman', serif}
 div.slide h3 {font-size:130%}
 div.long {font-size:0.75em}
@@ -58,20 +59,22 @@ div.long {font-size:0.75em}
 #controls :focus {outline:1px dotted #227}
 div#controls {position: absolute; left: 60%; bottom: 0;
   width: 40%;
-  text-align: right; font: bold 0.9em Verdana, Helvetica, sans-serif;}
+  text-align: right; font: bold 0.8em Verdana, Helvetica, sans-serif;}
 html>body div#controls {position: fixed; padding: 0; top: auto;}
 #controls :active {color:#88A !important}
 #controls :focus {outline:1px dotted #227}
+#controls #navlist {padding:0lmargin:0;lineheight: 0.5em}
 #controls #navLinks a {padding: 0; margin: 0 0.5em; 
   border: none; color: #BA9384;
   cursor: pointer;}
+#controls #navList {height:1em}
 #controls #navList #jumplist {background: #DDD; color: #227;}
 
 #currentSlide {text-align:center;font-size:0.5em;
   color:#646587;font-family:Verdana,Helvetica,sans-serif;font-weight:bold}
 
-#slide0 {padding-top:3.5em;font-size:90%}
-#slide0 h1 {position:static;margin:1em 0 1.33em;padding:0;
+#slide0 {padding:96px 128px;font-size:90%}
+#slide0 h1 {position:static;margin:16px 0 24px;padding:0;
   white-space:normal;color:#000;background:transparent;
   font:2em georgia, times, 'Times New Roman', serif}
 #slide0 h3 {margin-top:0.5em;font-size:1.5em}

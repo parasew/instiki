@@ -93,6 +93,7 @@ img.incremental {visibility:hidden}
 .slide .current {color:#B02}
 .flushtop {margin-top:0px}
 .slide .plaintable td {border:1px solid #FFF!important}
+.slide .noborder td, .slide .noborder th {border:0!important}
 
 /* diagnostics
 li:after {content:" [" attr(class) "]";color:#F88}
