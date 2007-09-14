@@ -42,9 +42,19 @@ module Engines
     def mask
       require 'maruku'
       require 'maruku/ext/math'
-      html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
-            {:math_enabled => false}).to_html_tree)
-      html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
+
+      # If the request is for S5, call Maruku accordingly (without math)
+      if @content.options[:mode] == :s5
+        html = Maruku.new(@content.delete("\r"), {:math_enabled => false,
+                            :content_only => true,
+                            :author => @content.options[:engine_opts][:author],
+                            :title => @content.options[:engine_opts][:title]}).to_s5
+        sanitize_xhtml(html)
+      else
+        html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+                                         {:math_enabled => false}).to_html_tree)
+      end
+
     end
   end
 
@@ -54,8 +64,20 @@ module Engines
     def mask
       require 'maruku'
       require 'maruku/ext/math'
-      html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
-            {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html_tree)
+
+      # If the request is for S5, call Maruku accordingly
+      if @content.options[:mode] == :s5
+        html = Maruku.new(@content.delete("\r"), {:math_enabled => true,
+                            :math_numbered => ['\\[','\\begin{equation}'],
+                            :content_only => true,
+                            :author => @content.options[:engine_opts][:author],
+                            :title => @content.options[:engine_opts][:title]}).to_s5
+        sanitize_xhtml(html)
+      else
+        html = sanitize_rexml(Maruku.new(@content.delete("\r\x01-\x08\x0B\x0C\x0E-\x1F"),
+             {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}']}).to_html_tree)
+      end
+
       html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
     end
   end
