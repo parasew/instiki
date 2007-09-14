@@ -293,7 +293,7 @@ class WikiController < ApplicationController
   end
 
   def s5
-    if @page.revisions.last =~ /^slide_theme:\s*(.+)$/
+    if @page.revisions.last.content =~ /^slide_theme:\s*([\w\d]+)/
       @s5_theme = $1
     else
       @s5_theme = "default"
