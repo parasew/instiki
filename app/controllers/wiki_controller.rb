@@ -293,14 +293,10 @@ class WikiController < ApplicationController
   end
 
   def s5
-    if @page.revisions.last.content =~ /^slide_theme:\s*([\w\d]+)/
-      @s5_theme = $1
-    else
-      @s5_theme = "default"
-    end
-
     if @web.markup == :markdownMML || @web.markup == :markdown
-      @s5_content = PageRenderer.new(@page.revisions.last).display_s5
+      my_rendered = PageRenderer.new(@page.revisions.last)
+      @s5_content = my_rendered.display_s5
+      @s5_theme = my_rendered.s5_theme
     else
       @s5_content = "S5 not supported with this text filter"
     end
