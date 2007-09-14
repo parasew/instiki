@@ -117,7 +117,7 @@ class WikiContent < String
 
   DEFAULT_OPTS = {
     :active_chunks       => ACTIVE_CHUNKS,
-    :engine              => Engines::Textile,
+    :engine              => Engines::MarkdownMML,
     :engine_opts         => [],
     :mode                => :show
   }.freeze

@@ -63,6 +63,18 @@ class PageRenderer
     end
   end
 
+  attr :s5_theme
+  def s5_theme=(s)
+    @s5_theme = s
+  end
+
+  # Renders an S5 slideshow
+  def display_s5
+    @display_s5 ||= render(:mode => :s5,
+                           :engine_opts => { :author => @revision.page.author,
+                             :title => @revision.page.plain_name}, :renderer => self)
+  end
+
   # Returns an array of all the WikiIncludes present in the content of this revision.
   def wiki_includes
     unless @wiki_includes_cache 

@@ -293,18 +293,10 @@ class WikiController < ApplicationController
   end
 
   def s5
-    if @web.markup == :markdownMML
-      my_content = Maruku.new(@page.content.delete("\r"),
-           {:math_enabled => true, :math_numbered => ['\\[','\\begin{equation}'], :content_only => true,
-            :author => @page.author, :title => @page.plain_name})
-      @s5_content = sanitize_xhtml(my_content.to_s5)
-      @s5_theme = my_content.s5_theme
-    elsif @web.markup == :markdown
-      my_content = Maruku.new(@page.content.delete("\r"),
-           {:math_enabled => false, :content_only => true,
-            :author => @page.author, :title => @page.plain_name})
-      @s5_content = sanitize_xhtml(my_content.to_s5)
-      @s5_theme = my_content.s5_theme
+    if @web.markup == :markdownMML || @web.markup == :markdown
+      my_rendered = PageRenderer.new(@page.revisions.last)
+      @s5_content = my_rendered.display_s5
+      @s5_theme = my_rendered.s5_theme
     else
       @s5_content = "S5 not supported with this text filter"
       @s5_theme = "default"
