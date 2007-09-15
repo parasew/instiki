@@ -63,11 +63,11 @@ div#controls {position: absolute; left: 60%; bottom: 0;
 html>body div#controls {position: fixed; padding: 0; top: auto;}
 #controls :active {color:#88A !important}
 #controls :focus {outline:1px dotted #227}
-#controls #navlist {padding:0lmargin:0;lineheight: 0.5em}
+#controls #navList {padding:0lmargin:0;lineheight: 0.5em}
 #controls #navLinks a {padding: 0; margin: 0 0.5em; 
   border: none; color: #BA9384;
   cursor: pointer;}
-#controls #navList {height:1em}
+#controls #navList {height:1.25em}
 #controls #navList #jumplist {background: #DDD; color: #227;}
 
 #currentSlide {text-align:center;font-size:0.5em;

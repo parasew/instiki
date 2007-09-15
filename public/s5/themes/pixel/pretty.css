@@ -54,14 +54,13 @@ div.long {font-size:0.75em}
 /*
 #controls :active {color:#88A !important}
 #controls :focus {outline:1px dotted #227}
-div#controls {left:50%;bottom:0;z-index:1;width:50%;text-align:right;
-  height:100%}
+div#controls {position:absolute;left:50%;bottom:0;width:50%;text-align:right;
+  font-size:0.7em;}
 html>body div#controls {position:fixed;padding:0 0 1em 0;top:auto}
 div#controls form {position:absolute;bottom:0;right:0;width:100%;
   margin:0;padding:0}
 div#controls #navLinks a {padding:0;margin:0 0.5em;color:#779;
   border:none;cursor:pointer}
-div#controls #navList {height:1em}
 div#controls #navList #jumplist {position:absolute;bottom:0;right:0;
   background:#DDD;color:#227}
 div#controls select {visibility:hidden;background:#DDD;color:#227}
@@ -76,6 +75,7 @@ html>body div#controls {position: fixed; padding: 0; top: auto;}
 #controls #navLinks a {padding: 0; margin: 0 0.5em; 
   border: none; color: #779; 
   cursor: pointer;}
+#controls #navList {height:1.25em}
 #controls #navList #jumplist {background: #DDD; color: #227;}
 
 #currentSlide {color:#646587;text-align:center;font-size:0.5em;
@@ -86,11 +86,12 @@ html>body div#controls {position: fixed; padding: 0; top: auto;}
 #currentSlide #csHere:before {content:"#";font-weight:normal}
 #currentSlide #csTotal:before {content:" of "}
 
-#slide0 {padding-top:3.5em;3em;font-size:90%; width:96%}
+#slide0 {padding-top:64px;font-size:90%; width:96%}
 #slide0 h1 {position:static;white-space:normal;
-  margin:0;padding:128px 60px 0 150px;text-align:right;
-  font:bold 2em Helvetica,sans-serif;white-space:normal;height:281px;
+  margin:0;padding:128px 60px 0 60px;text-align:right;
+  font:bold 2em Helvetica,sans-serif;white-space:normal;height:200px;
   color:#fff;background:transparent url(slide0bg.gif) no-repeat}
+#slide0 h2 {font-size:1em;padding:0;margin:0.25em;}
 #slide0 h3 {margin-bottom:20px;margin-top:0.5em;font-size:1.5em}
 #slide0 h4 {margin-bottom:4px;margin-top:0;font-size:1em}
 
