@@ -18,6 +18,7 @@ OPTIONS = {
        'svg'  => 'application/svg+xml',
        'tar'  => 'application/x-tar',
        'tex'  => 'application/x-tex',
+       'xhtml'  => 'application/xhtml+xml',
        'xml'  => 'application/xml',
        'xslt' => 'application/xslt+xml'
         })

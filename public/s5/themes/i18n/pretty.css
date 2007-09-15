@@ -61,8 +61,7 @@ div#controls form {position:absolute;bottom:0;right:0;width:100%;
 #controls #navLinks a {padding:0;margin:0 0.5em 0;background:#666;
   border:none;color:#AAC;cursor:pointer}
 #controls #navList {height:1em}
-#controls #navList #jumplist {position:absolute;bottom:0;right:0;
-  background:#DDD;color:#227}
+#controls #navList #jumplist {background:#DDD;color:#227}
 
 #currentSlide {font-size:0.5em}
 #currentSlide span {font-size:13px;color:#fff}

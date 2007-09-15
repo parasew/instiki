@@ -631,7 +631,11 @@ function createNotesWindow() { // creates a window for our notes
 	if (!s5NotesWindow || s5NotesWindow.closed) { // Create the window if it doesn't exist
 		s5NotesWindowLoaded = false;
 		// Note: Safari has a tendency to ignore window options preferring to default to the settings of the parent window, grr.
-		s5NotesWindow = window.open('/s5/ui/s5-notes.html', 's5NotesWindow', 'top=0,left=0,resizable=yes,scrollbars=auto');
+		if (isIE) {
+		  s5NotesWindow = window.open('/s5/ui/s5-notes.html', 's5NotesWindow', 'top=0,left=0,resizable=yes,scrollbars=auto');
+		} else {
+		  s5NotesWindow = window.open('/s5/ui/s5-notes.xhtml', 's5NotesWindow', 'top=0,left=0,resizable=yes,scrollbars=auto');
+		}
 	}
 	if (s5NotesWindowLoaded) { // Load the current note if the Note HTML has loaded
 		loadNote();
