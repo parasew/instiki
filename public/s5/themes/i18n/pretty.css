@@ -1,7 +1,7 @@
 /* Following is i18n theme -- edit away! */
 
 html {background:#95A7D4 url(bodybg.jpg) no-repeat;}
-body {color:#210;font:25px Arial, sans-serif}
+body {color:#210;font-family: Arial, sans-serifi;font-size: 1.5em}
 a {text-decoration:none;color:#336;border-bottom:1px dotted}
 :link, :visited {text-decoration:none;color:#00C}
 html, body {margin:0;padding:0}
@@ -30,7 +30,7 @@ sup {font-size:0.75em;font-weight:normal;vertical-align:0.5em;line-height:1px}
 .slide code.old {color:silver}
 .slide pre {padding:0;margin:0.25em 0 0.5em 0.5em;color:#533;font-size:90%}
 .slide pre code {display:block}
-.slide ul {margin-left:5%;margin-right:7%;list-style:disc}
+.slide ul {margin-left:5%;margin-right:5%;list-style:disc}
 .slide li {margin-top:0.75em;margin-right:0}
 .slide ul ul {line-height:1}
 .slide ul ul li {margin:.2em;font-size:85%;list-style:square}
@@ -38,8 +38,8 @@ sup {font-size:0.75em;font-weight:normal;vertical-align:0.5em;line-height:1px}
 
 div#header, div#footer, div.slide {width:100%;top:0px;left:0px}
 div#header, div#footer {color:#AAB;font-size:0.5em}
-div#header {background:#666;color:#BBB;height:1em;padding-bottom:.5em}
-div#footer {background:#666;color:#BBB;height:3.25em;top:auto;bottom:0px;}
+div#header {background:#666;color:#BBB;height:.25em;padding-bottom:.5em}
+div#footer {background:#666;height:3.5em;color:#BBB;top:auto;bottom:0px;}
 #footer h1, #footer h2 {display:block;padding:0.5em 0.75em;
   font-weight:normal;font-style:italic}
 #footer h1 {left:0;font-size:1em;letter-spacing:1px}
@@ -47,7 +47,7 @@ div#footer {background:#666;color:#BBB;height:3.25em;top:auto;bottom:0px;}
 
 div.slide {top:0px;width:92%;padding:.5em 4% 4%}
 div.slide h1 {font-size:1.66em;line-height:1;letter-spacing:-1px;
-  margin:0px;padding:0.25em 0px;border-bottom:2px solid rgb(90,94,120)}
+  margin:0px;padding:0.125em 0px;border-bottom:2px solid rgb(90,94,120)}
 div.slide h3 {font-size:130%}
 div.long {font-size:0.75em}
 
@@ -60,9 +60,8 @@ div#controls form {position:absolute;bottom:0;right:0;width:100%;
   margin:0;padding:0}
 #controls #navLinks a {padding:0;margin:0 0.5em 0;background:#666;
   border:none;color:#AAC;cursor:pointer}
-#controls #navList {height:1em}
-#controls #navList #jumplist {position:absolute;bottom:0;right:0;
-  background:#DDD;color:#227}
+#controls #navList {height:1.25em}
+#controls #navList #jumplist {background:#DDD;color:#227}
 
 #currentSlide {font-size:0.5em}
 #currentSlide span {font-size:13px;color:#fff}

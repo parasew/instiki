@@ -1,6 +1,7 @@
 /* Following are the note styles -- edit away! */
 
-body {
+html { background: #333; color: #FFF; }
+body { 
 	margin: 0;
 	padding: 1.0em;
 	background: #333; 
