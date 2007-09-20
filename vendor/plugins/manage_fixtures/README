@@ -1,0 +1,68 @@
+= Description
+
+This plugin is a super lightweight tool used to manage all your fixtures, whether it is exporting or importing them.
+
+So if you want to export all your data from your production server into your development environment, this will simplify the process without having to load up your database manager. 
+
+Similarly, if you want to import a selected set of Models, you can do that using the appropriate tasks.
+
+= INSTALLATION
+
+  [%] script/plugin discover
+  [%] script/plugin install manage_fixtures
+
+= USAGE
+
+Create YAML test fixtures from data in an existing database. Defaults to development database. Set RAILS_ENV to override. 
+  [%] rake db:fixtures:export_all
+
+Create YAML test fixtures for a specific table(s) from data in an existing database. Defaults to development database. Set RAILS_ENV to override. 
+  [%] rake db:fixtures:export_for_tables TABLES=foos[,bars] 
+
+Create YAML text fixtures based on a specific SQL query
+  [%] rake db:fixtures:export_using_query SQL="select * from foo where id='bar'" FIXTURE_NAME=foo
+
+Import the YAML test fixtures for specific models from data in an existing database. Defaults to development database. Set RAILS_ENV to override.
+  [%] rake db:fixtures:import_for_models MODELS=Foo[,Bar,Land]
+
+Import all YAML test fixtures for all of the tables from data in an existing database. Defaults to development database. Set RAILS_ENV to override.
+  [%] rake db:fixtures:import_all
+
+Import all YAML test fixtures for all of the tables from data in an existing database. Defaults to development database. Set RAILS_ENV to override.
+  [%] rake db:fixtures:import_for_tables TABLES=foos[,bars,land]
+
+= AUTHORS
+
+Nathaniel Brown - nshb@inimit.com
+Chris McGrath
+
+= BUGS
+
+Please report any bugs or feature enhancements to http://dev.toolbocks.com
+
+= LICENSE
+
+Copyright (c) 2006 Nathaniel Brown
+Copyright (c) 2006 Chris McGrath
+
+This is the MIT license, the license Ruby on Rails itself is licensed 
+under.
+
+Permission is hereby granted, free of charge, to any person obtaining 
+a copy of this software and associated documentation files (the 
+"Software"), to deal in the Software without restriction, including 
+without limitation the rights to use, copy, modify, merge, publish, 
+distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the 
+following conditions:
+
+The above copyright notice and this permission notice shall be included 
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
