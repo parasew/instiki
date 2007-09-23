@@ -74,6 +74,14 @@ module Chunk
       @content.delete_chunk(self)
     end
 
+    def  html_escape(string)
+      string.gsub( /&/, "&amp;" ).
+             gsub( /</, "&lt;" ).
+             gsub( />/, "&gt;" ).
+             gsub( /'/, "&#39;" ).
+             gsub( /"/, "&quot;" )
+    end
+
   end
 
 end
