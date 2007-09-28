@@ -14,7 +14,7 @@ class NoWikiTest < Test::Unit::TestCase
 
   def test_sanitized_nowiki
        match(NoWiki, 'This sentence contains <nowiki><span>a b</span> <script>alert("XSS!");</script></nowiki>. Do not touch!',
-               :plain_text => '<span>a b</span> &lt;script&gt;alert("XSS!");&lt;/script&gt;'
+               :plain_text => '<span>a b</span> &lt;script>alert("XSS!");&lt;/script>'
        )
   end
 

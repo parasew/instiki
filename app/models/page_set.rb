@@ -31,17 +31,17 @@ class PageSet < Array
   end
   
   def pages_that_reference(page_name)
-    all_referring_pages = WikiReference.pages_that_reference(page_name)
+    all_referring_pages = WikiReference.pages_that_reference(@web, page_name)
     self.select { |page| all_referring_pages.include?(page.name) }
   end
   
   def pages_that_link_to(page_name)
-    all_linking_pages = WikiReference.pages_that_link_to(page_name)
+    all_linking_pages = WikiReference.pages_that_link_to(@web, page_name)
     self.select { |page| all_linking_pages.include?(page.name) }
   end
 
   def pages_that_include(page_name)
-    all_including_pages = WikiReference.pages_that_include(page_name)
+    all_including_pages = WikiReference.pages_that_include(@web, page_name)
     self.select { |page| all_including_pages.include?(page.name) }
   end
 
@@ -85,7 +85,7 @@ class PageSet < Array
 
   def wiki_words
     self.inject([]) { |wiki_words, page|
-      wiki_words + page.wiki_words
+        wiki_words + page.wiki_words
     }.flatten.uniq.sort
   end
 
