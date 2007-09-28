@@ -34,11 +34,11 @@
     | Views: 
     <%= link_to('Print',
             { :web => @web.address, :action => 'print', :id => @page.name },
-            { :accesskey => 'p', :id => 'view_print' }) %>
+            { :accesskey => 'p', :id => 'view_print', :rel => 'nofollow' }) %>
   <% if @web.markup == :markdownMML or @web.markup == :markdown %>
     | 
     <%= link_to 'TeX', {:web => @web.address, :action => 'tex', :id => @page.name}, 
-            {:id => 'view_tex'} %>
+            {:id => 'view_tex', :rel => 'nofollow' } %>
    <% if WikiReference.pages_in_category(@web, 'S5-slideshow').map.include?(@page.name) %>
     |
     <%= link_to 'S5', {:web => @web.address, :action => 's5', :id => @page.name},
