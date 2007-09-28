@@ -1,10 +1,10 @@
-require 'cgi'
+require_dependency 'cgi'
 require 'chunks/engines'
 require 'chunks/category'
-require 'chunks/include'
-require 'chunks/wiki'
-require 'chunks/literal'
-require 'chunks/uri'
+require_dependency 'chunks/include'
+require_dependency 'chunks/wiki'
+require_dependency 'chunks/literal'
+require_dependency 'chunks/uri'
 require 'chunks/nowiki'
 
 # Wiki content is just a string that can process itself with a chain of
