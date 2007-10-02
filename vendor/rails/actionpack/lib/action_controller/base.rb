@@ -829,14 +829,6 @@ module ActionController #:nodoc:
         else
           response.body = text
         end
-        if response.headers['Status'] == "200 OK" && response.body.size > 0 
-          response.headers['Etag'] = "\"#{MD5.new(text).to_s}\"" 
-           
-          if request.headers['HTTP_IF_NONE_MATCH'] == response.headers['Etag'] 
-            response.headers['Status'] = "304 Not Modified" 
-            response.body = '' 
-          end 
-        end 
          
         response.body 
       end

@@ -206,7 +206,7 @@ end
 module Mime
   # Fix HTML
   #HTML  = Type.new "text/html", :html, %w( application/xhtml+xml )
-  HTML  = Type.new "text/html", :html
+  self.class.const_set("HTML", Type.new("text/html", :html) )
 
   # Add XHTML
   XHTML  = Type.new "application/xhtml+xml", :xhtml
