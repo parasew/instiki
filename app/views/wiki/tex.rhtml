@@ -10,10 +10,35 @@
 \usepackage{hyperref}
 
 %----Macros----------
+%
+% Unresolved issues:
+%
+%  \binom{}{}
+%
+%  \righttoleftarrow
+%  \lefttorightarrow
 
 % Because of conflicts, \space and \mathop are converted to
 % \itexspace and \operatorname during preprocessing.
 % \over is simply unsupported.
+
+% itex: \space{ht}{dp}{wd}
+%
+% Height and baseline depth measurements are in units of tenths of an ex while
+% the width is measured in tenths of an em.
+\makeatletter
+\newdimen\itex@wd%
+\newdimen\itex@dp%
+\newdimen\itex@thd%
+\def\itexspace#1#2#3{\itex@wd=#3em%
+\itex@wd=0.1\itex@wd%
+\itex@dp=#2ex%
+\itex@dp=0.1\itex@dp%
+\itex@thd=#1ex%
+\itex@thd=0.1\itex@thd%
+\advance\itex@thd\the\itex@dp%
+\makebox[\the\itex@wd]{\rule[-\the\itex@dp]{0cm}{\the\itex@thd}}}
+\makeatother
 
 % \tensor and \multiscript
 \makeatletter
