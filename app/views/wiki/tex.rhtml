@@ -4,6 +4,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{color}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{hyperref}
@@ -13,6 +14,21 @@
 % Because of conflicts, \space and \mathop are converted to
 % \itexspace and \operatorname during preprocessing.
 % \over is simply unsupported.
+
+% \tensor and \multiscript
+\makeatletter
+\newif\if@sup
+\newtoks\@sups
+\def\append@sup#1{\edef\act{\noexpand\@sups={\the\@sups #1}}\act}%
+\def\reset@sup{\@supfalse\@sups={}}%
+\def\mk@scripts#1#2{\if #2/ \if@sup ^{\the\@sups}\fi \else%
+  \ifx #1_ \if@sup ^{\the\@sups}\reset@sup \fi {}_{#2}%
+  \else \append@sup#2 \@suptrue \fi%
+  \expandafter\mk@scripts\fi}
+\def\tensor#1#2{\reset@sup#1\mk@scripts#2_/}
+\def\multiscripts#1#2#3{\reset@sup{}\mk@scripts#1_/#2%
+  \reset@sup\mk@scripts#3_/}
+\makeatother
 
 % \slash
 \makeatletter
