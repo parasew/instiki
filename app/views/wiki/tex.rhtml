@@ -4,24 +4,152 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{color}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{hyperref}
 
 %----Macros----------
-\newcommand{\gt}{>}
-\newcommand{\lt}{<}
+
+% Because of conflicts, \space and \mathop are converted to
+% \itexspace and \operatorname during preprocessing.
+% \over is simply unsupported.
+
+% \tensor and \multiscript
+\makeatletter
+\newif\if@sup
+\newtoks\@sups
+\def\append@sup#1{\edef\act{\noexpand\@sups={\the\@sups #1}}\act}%
+\def\reset@sup{\@supfalse\@sups={}}%
+\def\mk@scripts#1#2{\if #2/ \if@sup ^{\the\@sups}\fi \else%
+  \ifx #1_ \if@sup ^{\the\@sups}\reset@sup \fi {}_{#2}%
+  \else \append@sup#2 \@suptrue \fi%
+  \expandafter\mk@scripts\fi}
+\def\tensor#1#2{\reset@sup#1\mk@scripts#2_/}
+\def\multiscripts#1#2#3{\reset@sup{}\mk@scripts#1_/#2%
+  \reset@sup\mk@scripts#3_/}
+\makeatother
+
+% \slash
+\makeatletter
+\newbox\slashbox \setbox\slashbox=\hbox{$/$}
+\def\itex@pslash#1{\setbox\@tempboxa=\hbox{$#1$}
+  \@tempdima=0.5\wd\slashbox \advance\@tempdima 0.5\wd\@tempboxa
+  \copy\slashbox \kern-\@tempdima \box\@tempboxa}
+\def\slash{\protect\itex@pslash}
+\makeatother
+
+% Renames \sqrt as \oldsqrt and redefine root to result in \sqrt[#1]{#2}
+\let\oldroot\root
+\def\root#1#2{\oldroot #1 \of{#2}}
+
+% Manually declare the txfonts symbolsC font
+\DeclareSymbolFont{symbolsC}{U}{txsyc}{m}{n}
+\SetSymbolFont{symbolsC}{bold}{U}{txsyc}{bx}{n}
+\DeclareFontSubstitution{U}{txsyc}{m}{n}
+
+% Declare specific arrows from txfonts without loading the full package
+\makeatletter
+\def\re@DeclareMathSymbol#1#2#3#4{%
+    \let#1=\undefined
+    \DeclareMathSymbol{#1}{#2}{#3}{#4}}
+\re@DeclareMathSymbol{\neArrow}{\mathrel}{symbolsC}{116}
+\re@DeclareMathSymbol{\neArr}{\mathrel}{symbolsC}{116}
+\re@DeclareMathSymbol{\seArrow}{\mathrel}{symbolsC}{117}
+\re@DeclareMathSymbol{\seArr}{\mathrel}{symbolsC}{117}
+\re@DeclareMathSymbol{\nwArrow}{\mathrel}{symbolsC}{118}
+\re@DeclareMathSymbol{\nwArr}{\mathrel}{symbolsC}{118}
+\re@DeclareMathSymbol{\swArrow}{\mathrel}{symbolsC}{119}
+\re@DeclareMathSymbol{\swArr}{\mathrel}{symbolsC}{119}
+\makeatother
+
+% Widecheck
+\makeatletter
+\DeclareRobustCommand\widecheck[1]{{\mathpalette\@widecheck{#1}}}
+\def\@widecheck#1#2{%
+    \setbox\z@\hbox{\m@th$#1#2$}%
+    \setbox\tw@\hbox{\m@th$#1%
+       \widehat{%
+          \vrule\@width\z@\@height\ht\z@
+          \vrule\@height\z@\@width\wd\z@}$}%
+    \dp\tw@-\ht\z@
+    \@tempdima\ht\z@ \advance\@tempdima2\ht\tw@ \divide\@tempdima\thr@@
+    \setbox\tw@\hbox{%
+       \raise\@tempdima\hbox{\scalebox{1}[-1]{\lower\@tempdima\box
+\tw@}}}%
+    {\ooalign{\box\tw@ \cr \box\z@}}}
+\makeatother
+
+% udots (taken from yhmath)
+\makeatletter
+\def\udots{\mathinner{\mkern2mu\raise\p@\hbox{.}
+\mkern2mu\raise4\p@\hbox{.}\mkern1mu
+\raise7\p@\vbox{\kern7\p@\hbox{.}}\mkern1mu}}
+\makeatother
+
+%% Renaming existing commands
+\newcommand{\underoverset}[3]{\underset{#1}{\overset{#2}{#3}}}
+\newcommand{\widevec}{\overrightarrow}
 \newcommand{\darr}{\downarrow}
 \newcommand{\nearr}{\nearrow}
 \newcommand{\nwarr}{\nwarrow}
 \newcommand{\searr}{\searrow}
 \newcommand{\swarr}{\swarrow}
-\newcommand{\iff}{\Longleftrightarrow}
-\newcommand{\impliedby}{\Leftarrow}
+\newcommand{\curvearrowbotright}{\curvearrowright}
+\newcommand{\uparr}{\uparrow}
+\newcommand{\downuparrow}{\updownarrow}
+\newcommand{\duparr}{\updownarrow}
+\newcommand{\updarr}{\updownarrow}
+\newcommand{\gt}{>}
+\newcommand{\lt}{<}
 \newcommand{\map}{\mapsto}
 \newcommand{\embedsin}{\hookrightarrow}
-\newcommand{\implies}{\Rightarrow}
+\newcommand{\Alpha}{A}
+\newcommand{\Beta}{B}
+\newcommand{\Zeta}{Z}
+\newcommand{\Eta}{H}
+\newcommand{\Iota}{I}
+\newcommand{\Kappa}{K}
+\newcommand{\Mu}{M}
+\newcommand{\Nu}{N}
+\newcommand{\Rho}{P}
+\newcommand{\Tau}{T}
+\newcommand{\Upsi}{\Upsilon}
+\newcommand{\omicron}{o}
+\newcommand{\lang}{\langle}
+\newcommand{\rang}{\rangle}
+\newcommand{\Union}{\bigcup}
+\newcommand{\Intersection}{\bigcap}
+\newcommand{\Oplus}{\bigoplus}
+\newcommand{\Otimes}{\bigotimes}
+\newcommand{\Wedge}{\bigwedge}
+\newcommand{\Vee}{\bigvee}
+\newcommand{\coproduct}{\coprod}
+\newcommand{\product}{\prod}
+\newcommand{\closure}{\overline}
+\newcommand{\integral}{\int}
+\newcommand{\doubleintegral}{\iint}
+\newcommand{\tripleintegral}{\iiint}
+\newcommand{\quadrupleintegral}{\iiiint}
+\newcommand{\conint}{\oint}
+\newcommand{\contourintegral}{\oint}
 \newcommand{\qed}{\blacksquare}
+\newcommand{\infinity}{\infty}
+\renewcommand{\empty}{\emptyset}
+\newcommand{\bottom}{\bot}
+\newcommand{\minusb}{\boxminus}
+\newcommand{\plusb}{\boxplus}
+\newcommand{\timesb}{\boxtimes}
+\newcommand{\intersection}{\cap}
+\newcommand{\union}{\cup}
+\newcommand{\Del}{\nabla}
+\newcommand{\odash}{\circleddash}
+\newcommand{\negspace}{\!}
+\newcommand{\widebar}{\overline}
+\newcommand{\textsize}{\normalsize}
+\renewcommand{\scriptsize}{\scriptstyle}
+\newcommand{\scriptscriptsize}{\scriptscriptstyle}
+\newcommand{\mathfr}{\mathfrak}
 
 %-------------------------------------------------------------------
 
