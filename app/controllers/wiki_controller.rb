@@ -300,6 +300,7 @@ class WikiController < ApplicationController
       @s5_theme = my_rendered.s5_theme
     else
       @s5_content = "S5 not supported with this text filter"
+      @s5_theme = "default"
     end
   end
 
