@@ -4,7 +4,7 @@ require 'chunks/category'
 require_dependency 'chunks/include'
 require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
-require_dependency 'chunks/uri'
+#require_dependency 'chunks/uri'
 require 'chunks/nowiki'
 
 # Wiki content is just a string that can process itself with a chain of
@@ -37,7 +37,7 @@ require 'chunks/nowiki'
 module ChunkManager
   attr_reader :chunks_by_type, :chunks_by_id, :chunks, :chunk_id
 
-  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link, URIChunk, LocalURIChunk,
+  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link,
                     WikiChunk::Word ]
 
   HIDE_CHUNKS = [ Literal::Pre, Literal::Tags ]
