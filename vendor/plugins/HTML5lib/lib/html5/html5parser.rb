@@ -69,15 +69,15 @@ module HTML5
 
       if inner_html
         case @inner_html = container.downcase
-          when 'title', 'textarea'
-            @tokenizer.content_model_flag = :RCDATA
-          when 'style', 'script', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript'
-            @tokenizer.content_model_flag = :CDATA
-          when 'plaintext'
-            @tokenizer.content_model_flag = :PLAINTEXT
-          else
+        when 'title', 'textarea'
+          @tokenizer.content_model_flag = :RCDATA
+        when 'style', 'script', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript'
+          @tokenizer.content_model_flag = :CDATA
+        when 'plaintext'
+          @tokenizer.content_model_flag = :PLAINTEXT
+        else
           # content_model_flag already is PCDATA
-          #@tokenizer.content_model_flag = :PCDATA
+          @tokenizer.content_model_flag = :PCDATA
         end
       
         @phase = @phases[:rootElement]

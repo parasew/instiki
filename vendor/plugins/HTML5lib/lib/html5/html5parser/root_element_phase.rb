@@ -33,10 +33,9 @@ module HTML5
 
     def insert_html_element
       element = @tree.createElement('html', {})
-      @tree.open_elements.push(element)
+      @tree.open_elements << element
       @tree.document.appendChild(element)
       @parser.phase = @parser.phases[:beforeHead]
     end
-
   end
 end

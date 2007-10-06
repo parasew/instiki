@@ -110,13 +110,13 @@ module HTML5
     def sanitize_token(token)
         case token[:type]
         when :StartTag, :EndTag, :EmptyTag
-          if ALLOWED_ELEMENTS.include?(token[:name])
+          if self.class.const_get("ALLOWED_ELEMENTS").include?(token[:name])
             if token.has_key? :data
               attrs = Hash[*token[:data].flatten]
-              attrs.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
+              attrs.delete_if { |attr,v| !self.class.const_get("ALLOWED_ATTRIBUTES").include?(attr) }
               ATTR_VAL_IS_URI.each do |attr|
                 val_unescaped = CGI.unescapeHTML(attrs[attr].to_s).gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
-                if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0])
+                if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !self.class.const_get("ALLOWED_PROTOCOLS").include?(val_unescaped.split(':')[0])
                   attrs.delete attr
                 end
               end
@@ -160,14 +160,14 @@ module HTML5
       style.scan(/([-\w]+)\s*:\s*([^:;]*)/) do |prop, val|
         next if val.empty?
         prop.downcase!
-        if ALLOWED_CSS_PROPERTIES.include?(prop)
+        if self.class.const_get("ALLOWED_CSS_PROPERTIES").include?(prop)
           clean << "#{prop}: #{val};"
         elsif %w[background border margin padding].include?(prop.split('-')[0])
           clean << "#{prop}: #{val};" unless val.split().any? do |keyword|
-            !ALLOWED_CSS_KEYWORDS.include?(keyword) and
+            !self.class.const_get("ALLOWED_CSS_KEYWORDS").include?(keyword) and
             keyword !~ /^(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)$/
           end
-        elsif ALLOWED_SVG_PROPERTIES.include?(prop)
+        elsif self.class.const_get("ALLOWED_SVG_PROPERTIES").include?(prop)
           clean << "#{prop}: #{val};"
         end
       end

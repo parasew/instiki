@@ -73,7 +73,7 @@ module HTML5
         elsif [:Characters, :SpaceCharacters].include? type
           if type == :SpaceCharacters or in_cdata
             if in_cdata and token[:data].include?("</")
-              serialize_error(_("Unexpected </ in CDATA"))
+              serialize_error("Unexpected </ in CDATA")
             end
             result << token[:data]
           else

@@ -60,15 +60,11 @@ module HTML5
       if @char_encoding == 'windows-1252'
         @win1252 = true
       elsif @char_encoding != 'utf-8'
+        require 'iconv'
         begin
-          require 'iconv'
-          begin
-            @buffer << @raw_stream.read unless @raw_stream.eof?
-            @buffer = Iconv.iconv('utf-8', @char_encoding, @buffer).first
-          rescue
-            @win1252 = true
-          end
-        rescue LoadError
+          @buffer << @raw_stream.read unless @raw_stream.eof?
+          @buffer = Iconv.iconv('utf-8', @char_encoding, @buffer).first
+        rescue
           @win1252 = true
         end
       end
@@ -88,12 +84,11 @@ module HTML5
     def open_stream(source)
       # Already an IO like object
       if source.respond_to?(:read)
-        @stream = source
+        source
       else
         # Treat source as a string and wrap in StringIO
-        @stream = StringIO.new(source)
+        StringIO.new(source)
       end
-      return @stream
     end
 
     def detect_encoding
@@ -138,14 +133,12 @@ module HTML5
         encoding = @DEFAULT_ENCODING
       end
     
-      #Substitute for equivalent encodings
-      encoding_sub = {'iso-8859-1' => 'windows-1252'}
-
-      if encoding_sub.has_key?(encoding.downcase)
-        encoding = encoding_sub[encoding.downcase]
+      #Substitute for equivalent encoding
+      if 'iso-8859-1' == encoding.downcase
+        encoding = 'windows-1252'
       end
 
-      return encoding
+      encoding
     end
 
     # Attempts to detect at BOM at the start of the stream. If
@@ -153,9 +146,9 @@ module HTML5
     # encoding otherwise return nil
     def detect_bom
       bom_dict = {
-        "\xef\xbb\xbf" => 'utf-8',
-        "\xff\xfe" => 'utf-16le',
-        "\xfe\xff" => 'utf-16be',
+        "\xef\xbb\xbf"     => 'utf-8',
+        "\xff\xfe"         => 'utf-16le',
+        "\xfe\xff"         => 'utf-16be',
         "\xff\xfe\x00\x00" => 'utf-32le',
         "\x00\x00\xfe\xff" => 'utf-32be'
       }
@@ -200,7 +193,7 @@ module HTML5
 
       #TODO: huh?
       require 'delegate'
-      # @raw_stream = SimpleDelegator.new(@raw_stream)
+      @raw_stream = SimpleDelegator.new(@raw_stream)
 
       class << @raw_stream
         def read(chars=-1)
@@ -251,7 +244,7 @@ module HTML5
           col -= 1
         end 
       end
-      return [line+1, col]
+      return [line + 1, col]
     end
 
     # Read one character from the stream or queue if available. Return
@@ -260,9 +253,9 @@ module HTML5
       unless @queue.empty?
         return @queue.shift
       else
-        if @tell + 3 > @buffer.length and !@raw_stream.eof?
+        if @tell + 3 > @buffer.length && !@raw_stream.eof?
           # read next block
-          @buffer = @buffer[@tell .. -1] + @raw_stream.read(@NUM_BYTES_BUFFER)
+          @buffer = @buffer[@tell..-1] + @raw_stream.read(@NUM_BYTES_BUFFER)
           @tell = 0
         end
 
@@ -270,7 +263,7 @@ module HTML5
         @tell += 1
 
         case c
-        when 0x01 .. 0x7F
+        when 0x01..0x7F
           if c == 0x0D
             # normalize newlines
             @tell += 1 if @buffer[@tell] == 0x0A
@@ -288,7 +281,7 @@ module HTML5
 
           c.chr
 
-        when 0x80 .. 0xBF
+        when 0x80..0xBF
           if !@win1252
             [0xFFFD].pack('U') # invalid utf-8
           elsif c <= 0x9f
@@ -297,10 +290,11 @@ module HTML5
             "\xC2" + c.chr # convert to utf-8
           end
 
-        when 0xC0 .. 0xFF
+        when 0xC0..0xFF
           if instance_variables.include?("@win1252") && @win1252
-            "\xC3" + (c-64).chr # convert to utf-8
-          elsif @buffer[@tell-1 .. @tell+3] =~ /^
+            "\xC3" + (c - 64).chr # convert to utf-8
+          # from http://www.w3.org/International/questions/qa-forms-utf-8.en.php
+          elsif @buffer[@tell - 1..@tell + 3] =~ /^
                 ( [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
                 |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
                 | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte

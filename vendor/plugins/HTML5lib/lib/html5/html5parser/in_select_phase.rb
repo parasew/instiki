@@ -69,8 +69,7 @@ module HTML5
     end
 
     def endTagTableElements(name)
-      parse_error("unexpected-end-tag-in-select",
-            {"name" => name})
+      parse_error("unexpected-end-tag-in-select", {"name" => name})
 
       if in_scope?(name, true)
         endTagSelect('select')
@@ -79,7 +78,7 @@ module HTML5
     end
 
     def endTagOther(name)
-      parse_error(_("Unexpected end tag token (#{name}) in the select phase. Ignored."))
+      parse_error("unexpected-end-tag-in-select", {"name" => name})
     end
 
   end

@@ -68,6 +68,14 @@ class Base
     end
 
     alias walk each
+
+    def to_ary
+      a = []
+      each do |i|
+        a << i
+      end
+      a
+    end
 end
 
 class NonRecursiveTreeWalker < TreeWalkers::Base
