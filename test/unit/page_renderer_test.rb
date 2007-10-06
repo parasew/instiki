@@ -137,14 +137,14 @@ class PageRendererTest < Test::Unit::TestCase
         test_renderer(@revision).display_content
   end
   
-  def test_content_with_auto_links
-    assert_markup_parsed_as(
-        '<p><a href="http://www.loudthinking.com/">http://www.loudthinking.com/</a> ' +
-        'points to <a class="existingWikiWord" href="../show/ThatWay">That Way</a> from ' +
-        '<a href="mailto:david@loudthinking.com">david@loudthinking.com</a></p>', 
-        'http://www.loudthinking.com/ points to ThatWay from david@loudthinking.com')
-  
-  end  
+#  def test_content_with_auto_links
+#    assert_markup_parsed_as(
+#        '<p><a href="http://www.loudthinking.com/">http://www.loudthinking.com/</a> ' +
+#        'points to <a class="existingWikiWord" href="../show/ThatWay">That Way</a> from ' +
+#        '<a href="mailto:david@loudthinking.com">david@loudthinking.com</a></p>', 
+#        'http://www.loudthinking.com/ points to ThatWay from david@loudthinking.com')
+#  
+#  end  
   
   def test_content_with_aliased_links
     assert_markup_parsed_as(
@@ -186,12 +186,12 @@ class PageRendererTest < Test::Unit::TestCase
       'A <code>class SmartEngine end</code> would not mark up\n\n<pre>CodeBlocks</pre>\n\nwould it?')
   end
   
-  def test_content_with_autolink_in_parentheses
-    assert_markup_parsed_as(
-      '<p>The W3C body (<a href="http://www.w3c.org">' +
-      'http://www.w3c.org</a>) sets web standards</p>', 
-      'The W3C body (http://www.w3c.org) sets web standards')
-  end
+#  def test_content_with_autolink_in_parentheses
+#    assert_markup_parsed_as(
+#      '<p>The W3C body (<a href="http://www.w3c.org">' +
+#      'http://www.w3c.org</a>) sets web standards</p>', 
+#      'The W3C body (http://www.w3c.org) sets web standards')
+#  end
   
   def test_content_with_link_in_parentheses
     assert_markup_parsed_as(
@@ -321,8 +321,8 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_wiki_link_with_colon
   	assert_markup_parsed_as(
-  	  '<p><span class="newWikiWord">With:Colon<a href="../show/With%3AColon">?</a></span></p>',
-  	  '[[With:Colon]]')
+  	  '<p><span class="newWikiWord">Instiki:Colon<a href="../../instiki/show/Colon">?</a></span></p>',
+  	  '[[Instiki:Colon]]')
   end
   
   def test_list_with_tildas

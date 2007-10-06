@@ -11,46 +11,46 @@ require 'chunks/nowiki'
 # actions. The actions can modify wiki content so that certain parts of
 # it are protected from being rendered by later actions.
 #
-# When wiki content is rendered, it can be interrogated to find out 
-# which chunks were rendered. This means things like categories, wiki 
+# When wiki content is rendered, it can be interrogated to find out
+# which chunks were rendered. This means things like categories, wiki
 # links, can be determined.
 #
-# Exactly how wiki content is rendered is determined by a number of 
+# Exactly how wiki content is rendered is determined by a number of
 # settings that are optionally passed in to a constructor. The current
 # options are:
-#  * :engine 
+#  * :engine
 #    => The structural markup engine to use (Textile, Markdown, RDoc)
 #  * :engine_opts
 #    => A list of options to pass to the markup engines (safe modes, etc)
 #  * :pre_engine_actions
 #    => A list of render actions or chunks to be processed before the
-#       markup engine is applied. By default this is:    
-#       Category, Include, URIChunk, WikiChunk::Link, WikiChunk::Word        
+#       markup engine is applied. By default this is:
+#       Category, Include, URIChunk, WikiChunk::Link, WikiChunk::Word
 #  * :post_engine_actions
-#    => A list of render actions or chunks to apply after the markup 
-#       engine. By default these are:    
+#    => A list of render actions or chunks to apply after the markup
+#       engine. By default these are:
 #       Literal::Pre, Literal::Tags
 #  * :mode
-#    => How should the content be rendered? For normal display (show), 
+#    => How should the content be rendered? For normal display (show),
 #       publishing (:publish) or export (:export)?
 
 module ChunkManager
   attr_reader :chunks_by_type, :chunks_by_id, :chunks, :chunk_id
-  
-  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link, 
-                    WikiChunk::Word ] 
+
+  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link,
+                    WikiChunk::Word ]
 
   HIDE_CHUNKS = [ Literal::Pre, Literal::Tags ]
 
-  MASK_RE = { 
+  MASK_RE = {
     ACTIVE_CHUNKS => Chunk::Abstract.mask_re(ACTIVE_CHUNKS),
     HIDE_CHUNKS => Chunk::Abstract.mask_re(HIDE_CHUNKS)
   }
-  
+
   def init_chunk_manager
     @chunks_by_type = Hash.new
-    Chunk::Abstract::derivatives.each{|chunk_type| 
-      @chunks_by_type[chunk_type] = Array.new 
+    Chunk::Abstract::derivatives.each{|chunk_type|
+      @chunks_by_type[chunk_type] = Array.new
     }
     @chunks_by_id = Hash.new
     @chunks = []
@@ -77,20 +77,20 @@ module ChunkManager
   def scan_chunkid(text)
     text.scan(MASK_RE[ACTIVE_CHUNKS]){|a| yield a[0] }
   end
-  
+
   def find_chunks(chunk_type)
     @chunks.select { |chunk| chunk.kind_of?(chunk_type) and chunk.rendered? }
   end
 
 end
 
-# A simplified version of WikiContent. Useful to avoid recursion problems in 
+# A simplified version of WikiContent. Useful to avoid recursion problems in
 # WikiContent.new
 class WikiContentStub < String
-  
+
   attr_reader :options
   include ChunkManager
-  
+
   def initialize(content, options)
     super(content)
     @options = options
@@ -99,15 +99,15 @@ class WikiContentStub < String
 
   # Detects the mask strings contained in the text of chunks of type chunk_types
   # and yields the corresponding chunk ids
-  # example: content = "chunk123categorychunk <pre>chunk456categorychunk</pre>" 
+  # example: content = "chunk123categorychunk <pre>chunk456categorychunk</pre>"
   # inside_chunks(Literal::Pre) ==> yield 456
   def inside_chunks(chunk_types)
     chunk_types.each{|chunk_type|  chunk_type.apply_to(self) }
-    
+
     chunk_types.each{|chunk_type| @chunks_by_type[chunk_type].each{|hide_chunk|
         scan_chunkid(hide_chunk.text){|id| yield id }
       }
-    } 
+    }
   end
 end
 
@@ -132,12 +132,12 @@ class WikiContent < String
     @web = @revision.page.web
 
     @options = DEFAULT_OPTS.dup.merge(options)
-    @options[:engine] = Engines::MAP[@web.markup] 
+    @options[:engine] = Engines::MAP[@web.markup]
     @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode?
     @options[:active_chunks] = (ACTIVE_CHUNKS - [WikiChunk::Word] ) if @web.brackets_only?
-    
+
     @not_rendered = @pre_rendered = nil
-    
+
     super(@revision.content)
     init_chunk_manager
     build_chunks
@@ -145,9 +145,10 @@ class WikiContent < String
   end
 
   # Call @web.page_link using current options.
-  def page_link(name, text, link_type)
+  def page_link(web_name, name, text, link_type)
+    web = Web.find_by_name(web_name) || Web.find_by_address(web_name) || @web
     @options[:link_type] = (link_type || :show)
-    @url_generator.make_link(name, @web, text, @options)
+    @url_generator.make_link(name, web, text, @options)
   end
 
   def build_chunks
@@ -158,7 +159,7 @@ class WikiContent < String
     # Handle hiding contexts like "pre" and "code" etc..
     # The markup (textile, rdoc etc) can produce such contexts with its own syntax.
     # To reveal them, we work on a copy of the content.
-    # The copy is rendered and used to detect the chunks that are inside protecting context  
+    # The copy is rendered and used to detect the chunks that are inside protecting context
     # These chunks are reverted on the original content string.
 
     copy = WikiContentStub.new(self, @options)
@@ -170,25 +171,25 @@ class WikiContent < String
   end
 
   def pre_render!
-    unless @pre_rendered 
+    unless @pre_rendered
       @chunks_by_type[Include].each{|chunk| chunk.unmask }
       @pre_rendered = String.new(self)
     end
-    @pre_rendered 
+    @pre_rendered
   end
 
   def render!
     pre_render!
     @options[:engine].apply_to(self)
     # unmask in one go. $~[1] is the chunk id
-    gsub!(MASK_RE[ACTIVE_CHUNKS]) do 
+    gsub!(MASK_RE[ACTIVE_CHUNKS]) do
       chunk = @chunks_by_id[$~[1].to_i]
-      if chunk.nil? 
+      if chunk.nil?
         # if we match a chunkmask that existed in the original content string
         # just keep it as it is
         $~[0]
-      else 
-        chunk.unmask_text 
+      else
+        chunk.unmask_text
       end
     end
     self
