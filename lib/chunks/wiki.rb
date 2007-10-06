@@ -13,18 +13,21 @@ module WikiChunk
 
     # Name of the referenced page
     attr_reader :page_name
-    
+
+    # Name of the referenced page
+    attr_reader :web_name
+
     # the referenced page
     def refpage
       @content.web.page(@page_name)
     end
-  
+
   end
 
   # A wiki link is the top-level class for links that refers to
   # another wiki page.
   class WikiLink < WikiReference
- 
+
     attr_reader :link_text, :link_type
 
     def initialize(match_data, content)
@@ -49,11 +52,16 @@ module WikiChunk
       not @textile_link_suffix.nil?
     end
 
+    def interweb_link?
+      not @web_name.nil? and Web.find_by_name(@web_name) or
+        Web.find_by_address(@web_name)
+    end
+
     # replace any sequence of whitespace characters with a single space
     def normalize_whitespace(line)
       line.gsub(/\s+/, ' ')
     end
-  
+
   end
 
   # This chunk matches a WikiWord. WikiWords can be escaped
@@ -63,7 +71,7 @@ module WikiChunk
   class Word < WikiLink
 
     attr_reader :escaped_text
-    
+
     unless defined? WIKI_WORD
       WIKI_WORD = Regexp.new('(":)?(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, "utf-8")
     end
@@ -75,7 +83,7 @@ module WikiChunk
     def initialize(match_data, content)
       super
       @textile_link_suffix, @escape, @page_name = match_data[1..3]
-      if @escape 
+      if @escape
         @unmask_mode = :escape
         @escaped_text = @page_name
       else
@@ -87,7 +95,7 @@ module WikiChunk
 
   end
 
-  # This chunk handles [[bracketted wiki words]] and 
+  # This chunk handles [[bracketted wiki words]] and
   # [[AliasedWords|aliased wiki words]]. The first part of an
   # aliased wiki word must be a WikiWord. If the WikiWord
   # is aliased, the +link_text+ field will contain the
@@ -95,15 +103,16 @@ module WikiChunk
   # contents within the double brackets.
   #
   # NOTE: This chunk must be tested before WikiWord since
-  #       a WikiWords can be a substring of a WikiLink. 
+  #       a WikiWords can be a substring of a WikiLink.
   class Link < WikiLink
-    
+
     unless defined? WIKI_LINK
       WIKI_LINK = /(":)?\[\[\s*([^\]\s][^\]]+?)\s*\]\]/
       LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic))$', 0, 'utf-8')
       ALIAS_SEPARATION = Regexp.new('^(.+)\|(.+)$', 0, 'utf-8')
-    end    
-        
+      WEB_SEPARATION = Regexp.new('^(.+):(.+)$', 0, 'utf-8')
+    end
+
     def self.pattern() WIKI_LINK end
 
     def initialize(match_data, content)
@@ -112,12 +121,13 @@ module WikiChunk
       @link_text = @page_name = normalize_whitespace(match_data[2])
       separate_link_type
       separate_alias
-      @unmask_text = @content.page_link(@page_name, @link_text, @link_type)
+      separate_web
+      @unmask_text = @content.page_link(@web_name, @page_name, @link_text, @link_type)
     end
 
     private
 
-    # if link wihin the brackets has a form of [[filename:file]] or [[filename:pic]], 
+    # if link wihin the brackets has a form of [[filename:file]] or [[filename:pic]],
     # this means a link to a picture or a file
     def separate_link_type
       link_type_match = LINK_TYPE_SEPARATION.match(@page_name)
@@ -135,9 +145,19 @@ module WikiChunk
         @link_text = alias_match[2]
       end
       # note that [[filename|link text:file]] is also supported
-    end  
-  
+    end
+
+    # Interweb links have the form [[Web Name:Page Name]] or
+    # [[address:PageName]]. Alternate text links of the form
+    # [[address:PageName|Other text]] are also supported.
+    def separate_web
+      web_match = WEB_SEPARATION.match(@page_name)
+      if web_match
+        @web_name = normalize_whitespace(web_match[1])
+        @page_name = web_match[2]
+      end
+    end
+
   end
 
-  
 end
