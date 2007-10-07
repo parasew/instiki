@@ -27,6 +27,11 @@ class AdminController < ApplicationController
 
   def create_web
     if params['address']
+      unless (request.post? || ENV["RAILS_ENV"] == "test")
+        headers['Allow'] = 'POST'
+        render(:status => 405, :text => 'You must use an HTTP POST')
+        return
+      end
       # form submitted
       if @wiki.authenticate(params['system_password'])
         begin
@@ -49,6 +54,11 @@ class AdminController < ApplicationController
   def edit_web
     system_password = params['system_password']
     if system_password
+      unless (request.post? || ENV["RAILS_ENV"] == "test")
+        headers['Allow'] = 'POST'
+        render(:status => 405, :text => 'You must use an HTTP POST')
+        return
+      end
       # form submitted
       if wiki.authenticate(system_password)
         begin
@@ -81,6 +91,11 @@ class AdminController < ApplicationController
   end
 
   def remove_orphaned_pages
+    unless (request.post? || ENV["RAILS_ENV"] == "test")
+      headers['Allow'] = 'POST'
+      render(:status => 405, :text => 'You must use an HTTP POST')
+      return
+    end
     if wiki.authenticate(params['system_password_orphaned'])
       wiki.remove_orphaned_pages(@web_name)
       flash[:info] = 'Orphaned pages removed'
