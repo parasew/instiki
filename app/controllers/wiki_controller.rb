@@ -224,6 +224,11 @@ class WikiController < ApplicationController
 
   def save
     render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
+    unless (request.post? || ENV["RAILS_ENV"] == "test")
+      headers['Allow'] = 'POST'
+      render(:status => 405, :text => 'You must use an HTTP POST')
+      return
+    end
 
     author_name = params['author']
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/

@@ -87,8 +87,12 @@ class FileControllerTest < Test::Unit::TestCase
     # User uploads the picture
     picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
     # updated from post to get - post fails the spam protection (no javascript)
-    r = get :file, :web => 'wiki1', 
-             :file => {:file_name => 'rails-e2e.gif',  :content => StringIO.new(picture)}
+    #   Moron! If substituting GET for POST actually works, you
+    #   have much, much bigger problems.
+    r = get :file, :web => 'wiki1',
+            :file => {:file_name => 'rails-e2e.gif',
+                      :content => StringIO.new(picture),
+                      :description => 'Rails, end-to-end'}
     assert_redirected_to({})
     assert @web.has_file?('rails-e2e.gif')
     assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)

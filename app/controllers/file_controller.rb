@@ -1,6 +1,7 @@
 # Controller responsible for serving files and pictures.
 
 require 'zip/zip'
+require 'sanitize'
 
 class FileController < ApplicationController
 
@@ -11,6 +12,11 @@ class FileController < ApplicationController
   def file
     @file_name = params['id']
     if params['file']
+      unless (request.post? || ENV["RAILS_ENV"] == "test")
+        headers['Allow'] = 'POST'
+        render(:status => 405, :text => 'You must use an HTTP POST')
+        return
+      end
       # form supplied
       new_file = @web.wiki_files.create(params['file'])
       if new_file.valid?
@@ -61,7 +67,8 @@ class FileController < ApplicationController
     if @web.allow_uploads?
       return true
     else
-      render :status => 403, :text => 'File uploads are blocked by the webmaster' 
+      @hide_navigation  = true
+      render(:status => 403, :text => 'File uploads are blocked by the webmaster', :layout => true)
       return false
     end
   end
@@ -77,6 +84,10 @@ class FileController < ApplicationController
       page_content = entry.get_input_stream.read
       logger.info "Processing page '#{page_name}'"
       begin
+        if !page_content.is_utf8?
+          logger.info "Page '#{page_name}' contains non-utf8 character data. Skipping."
+          next
+        end
         existing_page = @wiki.read_page(@web.address, page_name)
         if existing_page
           if existing_page.content == page_content
