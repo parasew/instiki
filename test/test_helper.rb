@@ -133,7 +133,11 @@ class StubUrlGenerator < AbstractUrlGenerator
       if known_page
         %{<a class="existingWikiWord" href="../show/#{link}">#{text}</a>}
       else 
-        %{<span class="newWikiWord">#{text}<a href="../show/#{link}">?</a></span>}
+        if web_address == 'instiki'
+           %{<span class="newWikiWord">#{text}<a href="../../#{web_address}/show/#{link}">?</a></span>}
+        else
+           %{<span class="newWikiWord">#{text}<a href="../show/#{link}">?</a></span>}
+        end
       end
     end
   end

@@ -6,45 +6,45 @@ module HTML5
     # http://www.whatwg.org/specs/web-apps/current-work/#in-body
 
     handle_start 'html'
-    handle_start %w( base link meta script style ) => 'ProcessInHead'
+    handle_start %w(base link meta script style) => 'ProcessInHead'
     handle_start 'title'
 
     handle_start 'body', 'form', 'plaintext', 'a', 'button', 'xmp', 'table', 'hr', 'image'
 
-    handle_start 'input', 'textarea', 'select', 'isindex', %w( marquee object )
+    handle_start 'input', 'textarea', 'select', 'isindex', %w(marquee object)
 
-    handle_start %w( li dd dt ) => 'ListItem'
-      
-    handle_start %w( address blockquote center dir div dl fieldset listing menu ol p pre ul ) => 'CloseP'
+    handle_start %w(li dd dt) => 'ListItem'
 
-    handle_start %w( b big em font i s small strike strong tt u ) => 'Formatting'
+    handle_start %w(address blockquote center dir div dl fieldset listing menu ol p pre ul) => 'CloseP'
+
+    handle_start %w(b big em font i s small strike strong tt u) => 'Formatting'
     handle_start 'nobr'
 
-    handle_start %w( area basefont bgsound br embed img param spacer wbr ) => 'VoidFormatting'
+    handle_start %w(area basefont bgsound br embed img param spacer wbr) => 'VoidFormatting'
 
-    handle_start %w( iframe noembed noframes noscript ) => 'Cdata', HEADING_ELEMENTS => 'Heading'
+    handle_start %w(iframe noembed noframes noscript) => 'Cdata', HEADING_ELEMENTS => 'Heading'
 
-    handle_start %w( caption col colgroup frame frameset head option optgroup tbody td tfoot th thead tr ) => 'Misplaced'
+    handle_start %w(caption col colgroup frame frameset head option optgroup tbody td tfoot th thead tr) => 'Misplaced'
 
-    handle_start %w( event-source section nav article aside header footer datagrid command ) => 'New'
+    handle_start %w(event-source section nav article aside header footer datagrid command) => 'New'
 
-    handle_end 'p', 'body', 'html', 'form', %w( button marquee object ), %w( dd dt li ) => 'ListItem'
+    handle_end 'p', 'body', 'html', 'form', %w(button marquee object), %w(dd dt li) => 'ListItem'
 
-    handle_end %w( address blockquote center div dl fieldset listing menu ol pre ul ) => 'Block'
+    handle_end %w(address blockquote center div dl fieldset listing menu ol pre ul) => 'Block'
 
     handle_end HEADING_ELEMENTS => 'Heading'
 
-    handle_end %w( a b big em font i nobr s small strike strong tt u ) => 'Formatting'
+    handle_end %w(a b big em font i nobr s small strike strong tt u) => 'Formatting'
 
-    handle_end %w( head frameset select optgroup option table caption colgroup col thead tfoot tbody tr td th ) => 'Misplaced' 
+    handle_end %w(head frameset select optgroup option table caption colgroup col thead tfoot tbody tr td th) => 'Misplaced'
 
     handle_end 'br'
 
-    handle_end %w( area basefont bgsound embed hr image img input isindex param spacer wbr frame ) => 'None'
+    handle_end %w(area basefont bgsound embed hr image img input isindex param spacer wbr frame) => 'None'
 
-    handle_end %w( noframes noscript noembed textarea xmp iframe ) => 'CdataTextAreaXmp'
+    handle_end %w(noframes noscript noembed textarea xmp iframe ) => 'CdataTextAreaXmp'
 
-    handle_end %w( event-source section nav article aside header footer datagrid command ) => 'New'
+    handle_end %w(event-source section nav article aside header footer datagrid command) => 'New'
 
     def initialize(parser, tree)
       super(parser, tree)
@@ -107,7 +107,7 @@ module HTML5
     def startTagBody(name, attributes)
       parse_error("unexpected-start-tag", {"name" => "body"})
 
-      if (@tree.open_elements.length == 1 || @tree.open_elements[1].name != 'body')
+      if @tree.open_elements.length == 1 || @tree.open_elements[1].name != 'body'
         assert @parser.inner_html
       else
         attributes.each do |attr, value|
@@ -126,11 +126,11 @@ module HTML5
 
     def startTagForm(name, attributes)
       if @tree.formPointer
-        parse_error("Unexpected start tag (form). Ignored.")
+        parse_error("unexpected-start-tag", {"name" => name})
       else
         endTagP('p') if in_scope?('p')
         @tree.insert_element(name, attributes)
-        @tree.formPointer = @tree.open_elements[-1]
+        @tree.formPointer = @tree.open_elements.last
       end
     end
 

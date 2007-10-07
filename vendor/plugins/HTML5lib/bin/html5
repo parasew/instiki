@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'core_ext/string'
 $:.unshift File.dirname(__FILE__), 'lib'
 
 def parse(opts, args)
@@ -82,7 +83,7 @@ def print_output(parser, document, opts)
   if opts.error
     errList=[]
     for pos, errorcode, datavars in parser.errors
-        errList << "Line %i Col %i"%pos + " " + constants.E.get(errorcode, 'Unknown error "%s"' % errorcode) % datavars
+      errList << "Line #{pos[0]} Col #{pos[1]} " + (HTML5::E[errorcode] || "Unknown error \"#{errorcode}\"") % datavars
     end
     $stdout.write("\nParse errors:\n" + errList.join("\n")+"\n")
   end

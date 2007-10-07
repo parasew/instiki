@@ -8,9 +8,11 @@ else
   TESTDATA_DIR = File.join(File.dirname(File.dirname(File.expand_path(__FILE__))), 'testdata')
 end
 
-$:.unshift File.join(File.dirname(File.dirname(__FILE__)),'lib')
+# $:.unshift File.join(File.dirname(File.dirname(__FILE__)), 'lib')
 
-$:.unshift File.dirname(__FILE__)
+# $:.unshift File.dirname(__FILE__)
+
+require 'core_ext/string'
 
 def html5_test_files(subdirectory)
   Dir[File.join(TESTDATA_DIR, subdirectory, '*.*')]
@@ -42,7 +44,7 @@ module HTML5
     
       def each
         data = {}
-        key=nil
+        key = nil
         @f.each_line do |line|
           if line[0] == ?# and @sections.include?(line[1..-2])
             heading = line[1..-2]
@@ -65,24 +67,6 @@ module HTML5
         data.keys.each { |key| data[key].chomp! }
         @sections.map {|heading| data[heading]}
       end
-    end
-  end
-end
-
-class String
-  alias old_format %
-  define_method("%") do |data|
-    unless data.kind_of?(Hash)
-      $VERBOSE = false
-      r = old_format(data)
-      $VERBOSE = true
-      r
-    else
-      ret = self.clone
-      data.each do |k,v|
-        ret.gsub!(/\%\(#{k}\)/, v)
-      end
-      ret
     end
   end
 end

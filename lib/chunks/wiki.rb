@@ -90,7 +90,7 @@ module WikiChunk
         @escaped_text = nil
       end
       @link_text = WikiWords.separate(@page_name)
-      @unmask_text = (@escaped_text || @content.page_link(@page_name, @link_text, @link_type))
+      @unmask_text = (@escaped_text || @content.page_link(@web_name, @page_name, @link_text, @link_type))
     end
 
   end

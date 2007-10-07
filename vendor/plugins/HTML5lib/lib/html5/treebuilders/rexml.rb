@@ -99,12 +99,13 @@ module HTML5
           super nil
         end
 
-        def appendChild node
-           if node.kind_of? Element and node.name == 'html'
-             node.rxobj.add_namespace('http://www.w3.org/1999/xhtml')
-           end
-           super node
-        end
+        # ryansking: not sure why this was here. removing it doesn't cause any tests to fail
+        # def appendChild node
+        #    if node.kind_of? Element and node.name == 'html'
+        #      node.rxobj.add_namespace('http://www.w3.org/1999/xhtml')
+        #    end
+        #    super node
+        # end
 
         def printTree indent=0
           tree = "#document"

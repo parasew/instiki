@@ -47,31 +47,29 @@ class TestTreeWalkers < Test::Unit::TestCase
     indent = 0
     concatenateCharacterTokens(tokens) do |token|
       case token[:type]
-        when :StartTag, :EmptyTag
-            output << "#{' '*indent}<#{token[:name]}>"
-            indent += 2
-            for name, value in token[:data].to_a.sort
-                next if name=='xmlns'
-                output << "#{' '*indent}#{name}=\"#{value}\""
-            end
-            indent -= 2 if token[:type] == :EmptyTag
-        when :EndTag
-            indent -= 2
-        when :Comment
-            output << "#{' '*indent}<!-- #{token[:data]} -->"
-        when :Doctype
-            if token[:name] and token[:name].any?
-              output << "#{' '*indent}<!DOCTYPE #{token[:name]}>"
-            else
-              output << "#{' '*indent}<!DOCTYPE >"
-            end
-        when :Characters, :SpaceCharacters
-            output << "#{' '*indent}\"#{token[:data]}\""
+      when :StartTag, :EmptyTag
+        output << "#{' '*indent}<#{token[:name]}>"
+        indent += 2
+        for name, value in token[:data].to_a.sort
+          next if name=='xmlns'
+          output << "#{' '*indent}#{name}=\"#{value}\""
+        end
+        indent -= 2 if token[:type] == :EmptyTag
+      when :EndTag
+        indent -= 2
+      when :Comment
+        output << "#{' '*indent}<!-- #{token[:data]} -->"
+      when :Doctype
+        if token[:name] and token[:name].any?
+          output << "#{' '*indent}<!DOCTYPE #{token[:name]}>"
         else
-            # TODO: what to do with errors?
+          output << "#{' '*indent}<!DOCTYPE >"
+        end
+      when :Characters, :SpaceCharacters
+        output << "#{' '*indent}\"#{token[:data]}\""
       end
     end
-    return output.join("\n")
+    output.join("\n")
   end
 
   html5_test_files('tree-construction').each do |test_file|
@@ -113,4 +111,25 @@ class TestTreeWalkers < Test::Unit::TestCase
       end
    end
   end
+
+  def test_all_tokens
+    expected = [
+        {:data => [], :type => :StartTag, :name => 'html'},
+        {:data => [], :type => :StartTag, :name => 'head'},
+        {:data => [], :type => :EndTag,   :name => 'head'},
+        {:data => [], :type => :StartTag, :name => 'body'},
+        {:data => [], :type => :EndTag,   :name => 'body'},
+        {:data => [], :type => :EndTag,   :name => 'html'}]
+    for treeName, tree_class in $tree_types_to_test
+      p = HTML5::HTMLParser.new(:tree => tree_class[:builder])
+      document = p.parse("<html></html>")
+      # document = tree_class.get(:adapter)(document)
+      output = tree_class[:walker].new(document)
+      expected.zip(output) do |expected_token, output_token|
+        assert_equal(expected_token, output_token)
+      end
+    end
+  end
+
+
 end

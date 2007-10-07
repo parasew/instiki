@@ -176,7 +176,7 @@ module HTML5
 
         def get_fragment
           @document = super
-          @document.childNodes
+          @document
         end
       end
 

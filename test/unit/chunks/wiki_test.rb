@@ -47,6 +47,11 @@ class WikiTest < Test::Unit::TestCase
 	      :page_name => 'Sperberg-McQueen')
   end
   
+  def test_interweb_links
+	match(WikiChunk::Link, 'This is a tricky link [[Froogle:Sperberg-McQueen]]', 
+	      {:page_name => 'Sperberg-McQueen', :web_name => 'Froogle'})
+  end
+  
   def test_include_chunk_pattern
     content = 'This is a [[!include pagename]] and [[!include WikiWord]] but [[blah]]'
     recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
@@ -81,7 +86,7 @@ class WikiTest < Test::Unit::TestCase
     # empty link type
     assert_link_parsed_as 'page name', 'link?:', :show, '[[page name|link?:]]'
     # unknown link type
-    assert_link_parsed_as 'page name:create_system', 'page name:create_system', :show, 
+    assert_link_parsed_as 'create_system', 'page name:create_system', :show, 
         '[[page name:create_system]]'
   end
 
