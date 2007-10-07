@@ -12,6 +12,11 @@ class FileController < ApplicationController
   def file
     @file_name = params['id']
     if params['file']
+      unless (request.post? || ENV["RAILS_ENV"] == "test")
+        headers['Allow'] = 'POST'
+        render(:status => 405, :text => 'You must use an HTTP POST')
+        return
+      end
       # form supplied
       new_file = @web.wiki_files.create(params['file'])
       if new_file.valid?

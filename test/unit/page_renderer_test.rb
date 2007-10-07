@@ -181,9 +181,13 @@ class PageRendererTest < Test::Unit::TestCase
   end
   
   def test_content_with_pre_blocks
+    set_web_property :markup, :markdownMML
     assert_markup_parsed_as(
-      '<p>A <code>class SmartEngine end</code> would not mark up </p>\n\n<pre>CodeBlocks</pre>\n\n<p>would it?</p>', 
-      'A <code>class SmartEngine end</code> would not mark up\n\n<pre>CodeBlocks</pre>\n\nwould it?')
+      "<p>A <code>class SmartEngine</code> would not mark up</p>\n\n<pre><code>CodeBlocks</code></pre>\n\n<p>would it?</p>", 
+      "A `class SmartEngine` would not mark up\n\n    CodeBlocks\n\nwould it?")
+    assert_markup_parsed_as(
+      "<p>A <code>class SmartEngine</code> would not mark up</p>\n<pre>CodeBlocks</pre>\n<p>would it?</p>", 
+      "A <code>class SmartEngine</code> would not mark up\n\n<pre>CodeBlocks</pre>\n\nwould it?")
   end
   
 #  def test_content_with_autolink_in_parentheses
