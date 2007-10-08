@@ -8,7 +8,20 @@ OPTIONS = {
   :ip          => "0.0.0.0",
   :environment => "production",
   :server_root => File.expand_path(File.dirname(__FILE__) + "/../public/"),
-  :server_type => WEBrick::SimpleServer
+  :server_type => WEBrick::SimpleServer,
+  :mime_types  => WEBrick::HTTPUtils::DefaultMimeTypes.merge({
+       'avi'  => 'video/x-msvideo',
+       'gz'   => 'application/x-gzip',
+       'js'   => 'application/x-javascript',
+       'nb'   => 'application/mathematica',
+       'pdf'  => 'application/pdf',
+       'svg'  => 'application/svg+xml',
+       'tar'  => 'application/x-tar',
+       'tex'  => 'application/x-tex',
+       'xhtml'  => 'application/xhtml+xml',
+       'xml'  => 'application/xml',
+       'xslt' => 'application/xslt+xml'
+        })
 }
 
 ARGV.options do |opts|
