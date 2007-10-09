@@ -17,15 +17,16 @@ class AbstractUrlGenerator
       known_page = web.has_page?(name)
     else
       known_page = web.has_file?(name)
+      description = web.description(name)
     end
     
     case link_type
     when :show
       page_link(mode, name, text, web.address, known_page)
     when :file
-      file_link(mode, name, text, web.address, known_page)
+      file_link(mode, name, text, web.address, known_page, description)
     when :pic
-      pic_link(mode, name, text, web.address, known_page)
+      pic_link(mode, name, text, web.address, known_page, description)
     else
       raise "Unknown link type: #{link_type}"
     end
@@ -37,11 +38,12 @@ class UrlGenerator < AbstractUrlGenerator
 
   private
 
-  def file_link(mode, name, text, web_address, known_file)
+  def file_link(mode, name, text, web_address, known_file, description)
+    title = CGI::escapeHTML(CGI::unescapeHTML( description || text))
     case mode
     when :export
       if known_file
-        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.html">#{text}</a>}
+        %{<a class="existingWikiWord" title="#{title}" href="#{CGI.escape(name)}.html">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
@@ -49,7 +51,7 @@ class UrlGenerator < AbstractUrlGenerator
       if known_file 
         href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
             :id => name
-        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+        %{<a class="existingWikiWord"  title="#{title}" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
@@ -57,7 +59,7 @@ class UrlGenerator < AbstractUrlGenerator
       href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
           :id => name
       if known_file
-        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+        %{<a class="existingWikiWord"  title="#{title}" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>}
       end
@@ -93,17 +95,18 @@ class UrlGenerator < AbstractUrlGenerator
     end
   end
 
-  def pic_link(mode, name, text, web_address, known_pic)
+  def pic_link(mode, name, text, web_address, known_pic, description)
+    alt_text = CGI::escapeHTML(CGI::unescapeHTML( description || text))
     case mode
     when :export
       if known_pic 
-        %{<img alt="#{text}" src="#{CGI.escape(name)}" />}
+        %{<img alt="#{alt_text}" src="#{CGI.escape(name)}" />}
       else 
         %{<img alt="#{text}" src="no image" />}
       end
     when :publish
       if known_pic 
-        %{<img alt="#{text}" src="#{CGI.escape(name)}" />}
+        %{<img alt="#{alt_text}" src="#{CGI.escape(name)}" />}
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
@@ -111,7 +114,7 @@ class UrlGenerator < AbstractUrlGenerator
       href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
           :id => name
       if known_pic 
-        %{<img alt="#{text}" src="#{href}" />}
+        %{<img alt="#{alt_text}" src="#{href}" />}
       else 
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
       end

@@ -47,6 +47,11 @@ class Web < ActiveRecord::Base
     WikiFile.find_by_file_name(file_name) != nil
   end
 
+  def description(file_name)
+    file = WikiFile.find_by_file_name(file_name)
+    file.description if file
+  end
+
   def markup
     read_attribute('markup').to_sym
   end
