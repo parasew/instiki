@@ -102,18 +102,19 @@ class StubUrlGenerator < AbstractUrlGenerator
     super(:doesnt_need_controller)
   end
 
-  def file_link(mode, name, text, web_name, known_file)
+  def file_link(mode, name, text, web_name, known_file, description)
+    title = CGI::escapeHTML(CGI::unescapeHTML( description || text))
     link = CGI.escape(name)
     case mode
     when :export
-      if known_file then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
+      if known_file then %{<a class="existingWikiWord" title="#{title}" href="#{link}.html">#{text}</a>}
       else %{<span class="newWikiWord">#{text}</span>} end
     when :publish
-      if known_file then %{<a class="existingWikiWord" href="../published/#{link}">#{text}</a>}
+      if known_file then %{<a class="existingWikiWord" title="#{title}" href="../published/#{link}">#{text}</a>}
       else %{<span class=\"newWikiWord\">#{text}</span>} end
     else 
       if known_file
-        %{<a class=\"existingWikiWord\" href=\"../file/#{link}\">#{text}</a>}
+        %{<a class=\"existingWikiWord\" title="#{title}" href=\"../file/#{link}\">#{text}</a>}
       else 
         %{<span class=\"newWikiWord\">#{text}<a href=\"../file/#{link}\">?</a></span>}
       end
@@ -142,17 +143,18 @@ class StubUrlGenerator < AbstractUrlGenerator
     end
   end
 
-  def pic_link(mode, name, text, web_name, known_pic)
+  def pic_link(mode, name, text, web_name, known_pic, description)
+    alt_text = CGI::escapeHTML(CGI::unescapeHTML( description || text))
     link = CGI.escape(name)
     case mode.to_sym
     when :export
-      if known_pic then %{<img alt="#{text}" src="#{link}" />}
+      if known_pic then %{<img alt="#{alt_text}" src="#{link}" />}
       else %{<img alt="#{text}" src="no image" />} end
     when :publish
-      if known_pic then %{<img alt="#{text}" src="#{link}" />}
+      if known_pic then %{<img alt="#{alt_text}" src="#{link}" />}
       else %{<span class="newWikiWord">#{text}</span>} end
     else 
-      if known_pic then %{<img alt="#{text}" src="../file/#{link}" />}
+      if known_pic then %{<img alt="#{alt_text}" src="../file/#{link}" />}
       else %{<span class="newWikiWord">#{text}<a href="../file/#{link}">?</a></span>} end
     end
   end
