@@ -9,7 +9,6 @@ class AbstractUrlGenerator
   # on the render mode in options and whether the page (file) exists
   # in the web.
   def make_link(name, web, text = nil, options = {})
-    text = CGI.escapeHTML(text || WikiWords.separate(name))
     mode = (options[:mode] || :show).to_sym
     link_type = (options[:link_type] || :show).to_sym
 
@@ -17,7 +16,14 @@ class AbstractUrlGenerator
       known_page = web.has_page?(name)
     else
       known_page = web.has_file?(name)
+      description = web.description(name)
     end
+    if (text == name)
+      text = description || text
+    else
+      text = text || description
+    end
+    text = CGI.escapeHTML(CGI.unescapeHTML(text || WikiWords.separate(name)))
     
     case link_type
     when :show
@@ -41,7 +47,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_file
-        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.html">#{text}</a>}
+        %{<a class="existingWikiWord" title="#{text}" href="#{CGI.escape(name)}.html">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
@@ -49,7 +55,7 @@ class UrlGenerator < AbstractUrlGenerator
       if known_file 
         href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
             :id => name
-        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+        %{<a class="existingWikiWord"  title="#{text}" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
@@ -57,7 +63,7 @@ class UrlGenerator < AbstractUrlGenerator
       href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
           :id => name
       if known_file
-        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+        %{<a class="existingWikiWord"  title="#{text}" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>}
       end

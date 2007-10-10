@@ -9,7 +9,7 @@
         { 'multipart' => true , 'accept-charset' => 'utf-8' }) do %>
   <div class="inputFieldWithPrompt">
     <%= hidden_field 'file', 'file_name' %>
-    <label for="file_content"><b>Content of <%= h @file_name %> to upload</b> (required):</label>
+    <label for="file_content"><b>Content of <%= h @file_name %> to upload</b>:</label>
     <br />
     <input type="file" id="file_content" name="file[content]" size="40" />
     <br />
@@ -18,7 +18,7 @@
     <%= link_to :back %> and edit the wiki page that refers to the file.
   </div>
   <div class="inputFieldWithPrompt">
-    <label for="file_description"><b>Description</b> (optional):</label>
+    <label for="file_description"><b>Description</b>:</label>
     <br/>
     <%= text_field "file", "description", "size" => 40 %>
   </div>

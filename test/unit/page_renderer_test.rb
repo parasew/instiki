@@ -305,10 +305,10 @@ class PageRendererTest < Test::Unit::TestCase
     FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
     @web.wiki_files.create(:file_name => 'square.jpg', :description => 'Square', :content => 'never mind')
     assert_markup_parsed_as(
-      '<p><img alt="Square" src="../file/square.jpg" /></p>',
-      '[[square.jpg|Square:pic]]')
+      '<p><img alt="Blue Square" src="../file/square.jpg" /></p>',
+      '[[square.jpg|Blue Square:pic]]')
     assert_markup_parsed_as( 
-      '<p><img alt="square.jpg" src="../file/square.jpg" /></p>',
+      '<p><img alt="Square" src="../file/square.jpg" /></p>',
       '[[square.jpg:pic]]')
   end
   
