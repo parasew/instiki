@@ -299,7 +299,7 @@ class PageRendererTest < Test::Unit::TestCase
       '[[doc.pdf:file]]')
   end
   
-  def test_link_to_pic
+  def test_link_to_pic_and_file
     WikiFile.delete_all
     require 'fileutils'
     FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
@@ -310,6 +310,31 @@ class PageRendererTest < Test::Unit::TestCase
     assert_markup_parsed_as( 
       '<p><img alt="Square" src="../file/square.jpg" /></p>',
       '[[square.jpg:pic]]')
+    assert_markup_parsed_as(
+      '<p><a class="existingWikiWord" title="Square" href="../file/square.jpg">Blue Square</a></p>',
+      '[[square.jpg|Blue Square:file]]')
+    assert_markup_parsed_as( 
+      '<p><a class="existingWikiWord" title="Square" href="../file/square.jpg">Square</a></p>',
+      '[[square.jpg:file]]')
+  end
+  
+  def test_link_to_pic_and_file_null_desc
+    WikiFile.delete_all
+    require 'fileutils'
+    FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
+    @web.wiki_files.create(:file_name => 'square.jpg', :description => '', :content => 'never mind')
+    assert_markup_parsed_as(
+      '<p><img alt="Blue Square" src="../file/square.jpg" /></p>',
+      '[[square.jpg|Blue Square:pic]]')
+    assert_markup_parsed_as( 
+      '<p><img alt="" src="../file/square.jpg" /></p>',
+      '[[square.jpg:pic]]')
+    assert_markup_parsed_as(
+      '<p><a class="existingWikiWord" title="" href="../file/square.jpg">Blue Square</a></p>',
+      '[[square.jpg|Blue Square:file]]')
+    assert_markup_parsed_as( 
+      '<p><a class="existingWikiWord" title="" href="../file/square.jpg"></a></p>',
+      '[[square.jpg:file]]')
   end
   
   def test_link_to_non_existant_pic
