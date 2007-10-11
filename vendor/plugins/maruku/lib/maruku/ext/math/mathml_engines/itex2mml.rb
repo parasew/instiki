@@ -14,8 +14,8 @@ module MaRuKu; module Out; module HTML
 			doc = Document.new(mathml, {:respect_whitespace =>:all}).root
 			return doc
 		rescue LoadError => e
-			maruku_error "Could not load package 'itex2mml'.\n"+
-			"Please install it."
+			maruku_error "Could not load package 'itex2mml'.\n"+ "Please install it." 			unless $already_warned_itex2mml 
+			$already_warned_itex2mml = true
 		rescue REXML::ParseException => e
 			maruku_error "Invalid MathML TeX: \n#{add_tabs(tex,1,'tex>')}"+
 				"\n\n #{e.inspect}"

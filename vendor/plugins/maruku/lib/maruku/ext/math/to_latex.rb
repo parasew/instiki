@@ -1,9 +1,9 @@
-module MaRuKu; module Out; module Latex
-
 require 'maruku/ext/math/latex_fix'
 
+module MaRuKu; module Out; module Latex
+
 	def to_latex_inline_math
-		s = "$#{self.math.strip}$".fix_latex
+		"$#{self.math.strip}$".fix_latex
 	end
 
 	def to_latex_equation
