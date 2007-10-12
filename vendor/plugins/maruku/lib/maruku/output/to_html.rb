@@ -18,8 +18,15 @@
 #   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #++
 
-
 require 'rexml/document'
+
+begin
+	require 'rexml/formatters/pretty'
+	require 'rexml/formatters/default'
+	$rexml_new_version = true
+rescue LoadError
+	$rexml_new_version = false	
+end
 
 class String
 	# A string is rendered into HTML by creating
@@ -30,11 +37,6 @@ class String
 end
 
 
-class REXML::Element
-	# We only want to output the children in Maruku::to_html
-	 public :write_children 
-end
-
 # This module groups all functions related to HTML export.
 module MaRuKu; module Out; module HTML
 	include REXML
@@ -42,7 +44,7 @@ module MaRuKu; module Out; module HTML
 	# Render as an HTML fragment (no head, just the content of BODY). (returns a string)
 	def to_html(context={})
 		indent = context[:indent] || -1
-		ie_hack = context[:ie_hack] ||true
+		ie_hack = context[:ie_hack] || true
 		
 		div = Element.new 'dummy'
 			children_to_html.each do |e|
@@ -60,7 +62,21 @@ module MaRuKu; module Out; module HTML
 		# REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
 		# containing code.
 		xml =""
-		div.write_children(xml,indent,transitive=true,ie_hack)
+
+		if $rexml_new_version
+			formatter = if indent > -1
+	          REXML::Formatters::Pretty.new( indent, ie_hack )
+	        else
+	          REXML::Formatters::Default.new( ie_hack )
+	        end
+			formatter.write( div, xml)
+		else
+			div.write(xml,indent,transitive=true,ie_hack)
+		end
+
+		xml.gsub!(/\A<dummy>\s*/,'')
+		xml.gsub!(/\s*<\/dummy>\Z/,'')
+		xml.gsub!(/\A<dummy\s*\/>/,'')
 		xml
 	end
 	
@@ -141,6 +157,23 @@ Synonim for `title`.
 =end
 
 
+	# Render to an HTML fragment (returns a REXML document tree)
+	def to_html_tree
+		div = Element.new 'div'
+			div.attributes['class'] = 'maruku_wrapper_div'
+				children_to_html.each do |e|
+						  div << e
+				end
+
+				# render footnotes
+				if @doc.footnotes_order.size > 0
+						  div << render_footnotes
+				end
+
+		 doc = Document.new(nil,{:respect_whitespace =>:all})
+		 doc << div
+	end
+
 =begin maruku_doc
 Attribute: css
 Scope: document
@@ -150,26 +183,11 @@ Summary: Activates CSS stylesheets for HTML.
 `css` should be a space-separated list of urls.
 
 Example:
-	
+
 	CSS: style.css math.css
 
 =end
-	# Render to an HTML fragment (returns a REXML document tree)
-	def to_html_tree
-		div = Element.new 'div'
-			div.attributes['class'] = 'maruku_wrapper_div'
-                        children_to_html.each do |e|
-                                div << e
-                        end
 
-                        # render footnotes
-                        if @doc.footnotes_order.size > 0
-                                div << render_footnotes
-                        end
-
-                doc = Document.new(nil,{:respect_whitespace =>:all})
-                doc << div
-	end
 
 	# Render to a complete HTML document (returns a REXML document tree)
 	def to_html_document_tree
@@ -465,7 +483,7 @@ by Maruku, to have the same results in both HTML and LaTeX.
 	end
 
 	def source2html(source)
-		source = source.gsub(/&/,'&amp;')
+#		source = source.gsub(/&/,'&amp;')
 		source = Text.normalize(source)
 		source = source.gsub(/\&apos;/,'&#39;') # IE bug
 		source = source.gsub(/'/,'&#39;') # IE bug
@@ -591,7 +609,7 @@ of the form `#ff00ff`.
 		code = Element.new 'code', pre
 		s = source
 		
-		s  = s.gsub(/&/,'&amp;')
+#		s  = s.gsub(/&/,'&amp;')
 		s = Text.normalize(s)
 		s  = s.gsub(/\&apos;/,'&#39;') # IE bug
 		s  = s.gsub(/'/,'&#39;') # IE bug
@@ -892,7 +910,7 @@ If true, raw HTML is discarded from the output.
 #			Entity.new(entity_name)
 			Text.new('&#%d;' % [entity_name],  false, nil, true)
 		else
-			Text.new('&%s;' % [entity_name])
+			Text.new('&%s;' % [entity_name],  false, nil, true)
 		end
 	end
 

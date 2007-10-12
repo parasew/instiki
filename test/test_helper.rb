@@ -102,18 +102,18 @@ class StubUrlGenerator < AbstractUrlGenerator
     super(:doesnt_need_controller)
   end
 
-  def file_link(mode, name, text, web_name, known_file)
+  def file_link(mode, name, text, web_name, known_file, description)
     link = CGI.escape(name)
     case mode
     when :export
-      if known_file then %{<a class="existingWikiWord" title="#{title}" href="#{link}.html">#{text}</a>}
+      if known_file then %{<a class="existingWikiWord" title="#{description}" href="#{link}.html">#{text}</a>}
       else %{<span class="newWikiWord">#{text}</span>} end
     when :publish
-      if known_file then %{<a class="existingWikiWord" title="#{title}" href="../published/#{link}">#{text}</a>}
+      if known_file then %{<a class="existingWikiWord" title="#{description}" href="../published/#{link}">#{text}</a>}
       else %{<span class=\"newWikiWord\">#{text}</span>} end
     else 
       if known_file
-        %{<a class=\"existingWikiWord\" title="#{title}" href=\"../file/#{link}\">#{text}</a>}
+        %{<a class=\"existingWikiWord\" title="#{description}" href=\"../file/#{link}\">#{text}</a>}
       else 
         %{<span class=\"newWikiWord\">#{text}<a href=\"../file/#{link}\">?</a></span>}
       end
