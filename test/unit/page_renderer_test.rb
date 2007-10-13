@@ -164,14 +164,14 @@ class PageRendererTest < Test::Unit::TestCase
   # wikiwords are invalid as styles, must be in "name: value" form
   def test_content_with_wikiword_in_style_tag
     assert_markup_parsed_as(
-        "<p>That is some <em style=\"\">Stylish Emphasis</em></p>", 
+        "<p>That is some <em style=''>Stylish Emphasis</em></p>", 
 	    'That is some <em style="WikiWord">Stylish Emphasis</em>')
   end
  
   # validates format of style..
   def test_content_with_valid_style_in_style_tag
     assert_markup_parsed_as(
-        "<p>That is some <em style=\"text-align: right;\">Stylish Emphasis</em></p>", 
+        "<p>That is some <em style='text-align: right;'>Stylish Emphasis</em></p>", 
 	    'That is some <em style="text-align: right">Stylish Emphasis</em>')
   end
   
@@ -199,24 +199,24 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_content_with_link_in_parentheses
     assert_markup_parsed_as(
-      "<p>(<a href=\"http://wiki.org/wiki.cgi?WhatIsWiki\">What is a wiki?</a>)</p>",
+      "<p>(<a href='http://wiki.org/wiki.cgi?WhatIsWiki'>What is a wiki?</a>)</p>",
       '([What is a wiki?](http://wiki.org/wiki.cgi?WhatIsWiki))')
   end
   
   def test_content_with_image_link
     assert_markup_parsed_as( 
-      "<p>This <img alt=\"\" src=\"http://hobix.com/sample.jpg\" /> is a Markdown image link.</p>", 
+      "<p>This <img src='http://hobix.com/sample.jpg' alt=''/> is a Markdown image link.</p>", 
       'This ![](http://hobix.com/sample.jpg) is a Markdown image link.')
   end
   
   def test_content_with_inlined_img_tag
     assert_markup_parsed_as( 
-      "<p>This <img alt=\"\" src=\"http://hobix.com/sample.jpg\" /> is an inline image link.</p>", 
+      "<p>This <img src='http://hobix.com/sample.jpg' alt=''/> is an inline image link.</p>", 
       'This <img src="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
        
     # currently, upper case HTML elements are not allowed
     assert_markup_parsed_as( 
-      '<p>This &lt;IMG SRC="http://hobix.com/sample.jpg" alt=""&gt;&lt;/IMG&gt; is an inline image link.</p>', 
+      '<p>This &lt;IMG SRC="http://hobix.com/sample.jpg" alt=""/&gt; is an inline image link.</p>', 
       'This <IMG SRC="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
   end
   
@@ -361,7 +361,7 @@ class PageRendererTest < Test::Unit::TestCase
     EOL
   
     assert_markup_parsed_as(
-        "<ul>\n<li><a href=\"~b\">a</a></li>\n\n<li>c~ d</li>\n</ul>",
+        "<ul>\n<li><a href='~b'>a</a></li>\n\n<li>c~ d</li>\n</ul>",
         list_with_tildas)
   end
   

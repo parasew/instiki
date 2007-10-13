@@ -680,10 +680,25 @@ class WikiControllerTest < Test::Unit::TestCase
 %
 % Unresolved issues:
 %
-%  \binom{}{}
-%
 %  \righttoleftarrow
 %  \lefttorightarrow
+%
+%  \color{} with HTML colorspec
+%  \bgcolor
+%  \array
+
+% Of the standard HTML named colors, white, black, red, green, blue and yellow
+% are predefined in the color package. Here are the rest.
+\definecolor{aqua}{rgb}{0, 1.0, 1.0}
+\definecolor{fuschia}{rgb}{1.0, 0, 1.0}
+\definecolor{gray}{rgb}{0.502, 0.502, 0.502}
+\definecolor{lime}{rgb}{0, 1.0, 0}
+\definecolor{maroon}{rgb}{0.502, 0, 0}
+\definecolor{navy}{rgb}{0, 0, 0.502}
+\definecolor{olive}{rgb}{0.502, 0.502, 0}
+\definecolor{purple}{rgb}{0.502, 0, 0.502}
+\definecolor{silver}{rgb}{0.753, 0.753, 0.753}
+\definecolor{teal}{rgb}{0, 0.502, 0.502}
 
 % Because of conflicts, \space and \mathop are converted to
 % \itexspace and \operatorname during preprocessing.
@@ -842,6 +857,8 @@ class WikiControllerTest < Test::Unit::TestCase
 \renewcommand{\scriptsize}{\scriptstyle}
 \newcommand{\scriptscriptsize}{\scriptscriptstyle}
 \newcommand{\mathfr}{\mathfrak}
+\newcommand{\statusline}[2]{#2}
+\newcommand{\toggle}[2]{#1}
 
 %-------------------------------------------------------------------
 

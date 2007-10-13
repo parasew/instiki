@@ -57,8 +57,15 @@ module Sanitize
         instance_variable_set("@#{name}", value)
       end
     end
-    parsed = XHTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
-      :encoding => @encoding, :tree => @treebuilder })
+    if @encoding == 'utf-8'
+      parsed = XHTMLParser.parse_fragment(html.to_utf8, {:tokenizer => HTMLSanitizer,
+        :lowercase_element_name => false, :lowercase_attr_name => false,
+        :encoding => @encoding, :tree => @treebuilder })
+    else
+      parsed = XHTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
+        :lowercase_element_name => false, :lowercase_attr_name => false,
+        :encoding => @encoding, :tree => @treebuilder })
+    end      
     return parsed if @to_tree
     return parsed.to_s
   end
@@ -86,8 +93,13 @@ module Sanitize
         instance_variable_set("@#{name}", value)
       end
     end
-    parsed = HTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
-      :encoding => @encoding, :tree => @treebuilder })
+    if @encoding == 'utf-8'
+      parsed = HTMLParser.parse_fragment(html.to_utf8, {:tokenizer => HTMLSanitizer,
+        :encoding => @encoding, :tree => @treebuilder })
+    else
+      parsed = HTMLParser.parse_fragment(html.to_ncr, {:tokenizer => HTMLSanitizer,
+        :encoding => @encoding, :tree => @treebuilder })
+    end 
     return parsed if @to_tree
     return parsed.to_s
   end
@@ -98,7 +110,7 @@ module Sanitize
 #    sanitize_rexml(tree)                    -> string
 #
   def sanitize_rexml(tree)
-    tokens = TreeWalkers.get_tree_walker('rexml').new(tree.to_ncr)
+    tokens = TreeWalkers.get_tree_walker('rexml').new(tree.to_utf8)
     XHTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
       :space_before_trailing_solidus => true,
       :inject_meta_charset => false,
@@ -2273,6 +2285,25 @@ class String
        self.gsub!(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_ncr}
     end
 
+# Converts XHTML+MathML named entities to UTF-8
+#
+#  :call-seq:
+#     string.to_utf8  -> string
+#
+    def to_utf8
+       self.gsub(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_utf8}
+    end
+
+# Converts XHTML+MathML named entities to UTF-8
+#
+#  :call-seq:
+#     string.to_ncr!  -> str or nil
+#
+# Substitution is done in-place.
+    def to_utf8!
+       self.gsub!(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_utf8}
+    end
+
   protected
 
     def convert_to_ncr #:nodoc:
@@ -2280,6 +2311,13 @@ class String
       name = $1
       return MATHML_ENTITIES.has_key?(name) ? MATHML_ENTITIES[name] : "&amp;" + name + ";"
     end
+
+    def convert_to_utf8 #:nodoc:
+      self =~ /^&([a-zA-Z0-9]+);$/
+      name = $1
+      return MATHML_ENTITIES.has_key?(name) ? MATHML_ENTITIES[name].split(';').collect {|s| s.gsub(/^&#x([A-F0-9]+)$/, '\1').hex }.pack('U*') : "&amp;" + name + ";"
+    end
+
 
 end
 
@@ -2305,5 +2343,23 @@ module REXML #:nodoc:
       }
       return self
     end
+    
+# Convert XHTML+MathML Named Entities in a REXML::Element to UTF-8
+#
+#  :call-seq:
+#     tree.to_utf8  -> REXML::Element
+#
+    def to_utf8
+      XPath.each(self, '//*') { |el|
+        el.texts.each_index  {|i|
+          el.texts[i].value = el.texts[i].to_s.to_utf8
+        }
+        el.attributes.each { |name,val|
+          el.attributes[name] = val.to_utf8
+        }
+      }
+      return self
+    end
+
   end
 end
