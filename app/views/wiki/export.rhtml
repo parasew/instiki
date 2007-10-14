@@ -5,8 +5,4 @@
 <ul id="feedsList">
   <li><%= link_to 'HTML', :web => @web.address, :action => 'export_html' %></li>
   <li><%= link_to "Markup (#{@web.markup.to_s.capitalize})", :web => @web.address, :action => 'export_markup' %></li>
-<% if OPTIONS[:pdflatex] && @web.markup == :textile %>
-  <li><%= link_to 'TeX', :web => @web.address, :action => 'export_tex' %></li>
-  <li><%= link_to 'PDF', :web => @web.address, :action => 'export_pdf' %></li>
-<% end %>
 </ul>
