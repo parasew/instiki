@@ -116,19 +116,19 @@ class PageRenderer
       else
         link_type = WikiReference.link_type(@revision.page.web, referenced_name)
       end
-      references.create :referenced_name => referenced_name, :link_type => link_type
+      references.build :referenced_name => referenced_name, :link_type => link_type
     end
     
     include_chunks = rendering_result.find_chunks(Include)
     includes = include_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     includes.each do |included_page_name|
-      references.create :referenced_name => included_page_name, 
+      references.build :referenced_name => included_page_name, 
           :link_type => WikiReference::INCLUDED_PAGE
     end
     
     categories = rendering_result.find_chunks(Category).map { |cat| cat.list }.flatten
     categories.each do |category|
-      references.create :referenced_name => category, :link_type => WikiReference::CATEGORY
+      references.build :referenced_name => category, :link_type => WikiReference::CATEGORY
     end
   end
 end
