@@ -110,7 +110,7 @@ module Sanitize
 #    sanitize_rexml(tree)                    -> string
 #
   def sanitize_rexml(tree)
-    tokens = TreeWalkers.get_tree_walker('rexml').new(tree.to_utf8)
+    tokens = TreeWalkers.get_tree_walker('rexml2').new(tree)
     XHTMLSerializer.serialize(tokens, {:encoding=>'utf-8',
       :space_before_trailing_solidus => true,
       :inject_meta_charset => false,
@@ -2333,13 +2333,14 @@ module REXML #:nodoc:
 # REXML, typically, converts NCRs to utf-8 characters, which is what you'll see when you
 # access the resulting REXML document.
     def to_ncr
-      XPath.each(self, '//*') { |el|
+      self.each_element { |el|
         el.texts.each_index  {|i|
           el.texts[i].value = el.texts[i].to_s.to_ncr
         }
         el.attributes.each { |name,val|
           el.attributes[name] = val.to_ncr
         }
+        el.to_ncr if el.has_elements?
       }
       return self
     end
@@ -2350,16 +2351,84 @@ module REXML #:nodoc:
 #     tree.to_utf8  -> REXML::Element
 #
     def to_utf8
-      XPath.each(self, '//*') { |el|
+      self.each_element { |el|
         el.texts.each_index  {|i|
           el.texts[i].value = el.texts[i].to_s.to_utf8
         }
         el.attributes.each { |name,val|
           el.attributes[name] = val.to_utf8
         }
+        el.to_utf8 if el.has_elements?
       }
       return self
     end
 
+  end
+end
+
+module HTML5 #:nodoc:
+  module TreeWalkers
+
+    private
+
+    class << self
+      def [](name)
+        case name.to_s.downcase
+        when 'rexml'
+          require 'html5/treewalkers/rexml'
+          REXML::TreeWalker
+        when 'rexml2'
+          REXML2::TreeWalker
+        else
+          raise "Unknown TreeWalker #{name}"
+        end
+      end
+
+      alias :get_tree_walker :[]
+    end
+
+    module REXML2
+      class TreeWalker < HTML5::TreeWalkers::NonRecursiveTreeWalker
+
+        private
+
+        def node_details(node)
+          case node
+          when ::REXML::Document
+            [:DOCUMENT]
+          when ::REXML::Element
+            if !node.name
+              [:DOCUMENT_FRAGMENT]
+            else
+              [:ELEMENT, node.name,
+                node.attributes.map {|name,value| [name,value.to_utf8]},
+                node.has_elements? || node.has_text?]
+            end
+          when ::REXML::Text
+            [:TEXT, node.value.to_utf8]
+          when ::REXML::Comment
+            [:COMMENT, node.string]
+          when ::REXML::DocType
+            [:DOCTYPE, node.name, node.public, node.system]
+          when ::REXML::XMLDecl
+            [nil]
+          else
+            [:UNKNOWN, node.class.inspect]
+          end
+        end
+
+        def first_child(node)
+          node.children.first
+        end
+
+        def next_sibling(node)
+          node.next_sibling
+        end
+
+        def parent(node)
+          node.parent
+        end
+      end
+    end
   end
 end

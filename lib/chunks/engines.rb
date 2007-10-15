@@ -77,9 +77,9 @@ module Engines
         @content.options[:renderer].s5_theme = my_content.s5_theme
         sanitize_xhtml(my_content.to_s5)
       else
-        html = sanitize_xhtml(Maruku.new(@content.delete("\r"),
+        html = sanitize_rexml(Maruku.new(@content.delete("\r"),
              {:math_enabled => true,
-              :math_numbered => ['\\[','\\begin{equation}']}).to_html)
+              :math_numbered => ['\\[','\\begin{equation}']}).to_html_tree)
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
 
