@@ -37,7 +37,8 @@ if you are running Windows 95, 98 or ME and cannot get instiki to run, try Versi
 
 Since the Apple guys really screwed it up, having an old Ruby Version (1.8.2) and a broken Readline Library with MacOSX Tiger, you have to
 
-- get the *One-Click Ruby Installer Package for OSX* from [ftp://ftp.math.ohio-state.edu/osx/pkgs/unix/Ruby-1.8.5-1-ub.mpkg.dmg]
+- use the Ruby One-Click-Installer for OSX ( http://rubyosx.com ) if you don't already have macports' Ruby
+- make sure you read http://instiki.5uper.net/instiki/show/SQLite+issues+on+OSX
 - run "ruby instiki.rb" via command-line in the directory 
 
 
