@@ -1,4 +1,23 @@
- * TRUNK:
+------------------------------------------------------------------------------
+ * 0.12.0:
+ 
+ 0.12 is mainly a bugfix release. We recommend all instiki Users to upgrade.
+ In this version, some security holes where fixed
+	- An XSS vulnerability in categories
+	- An XSS vulnerability in <nowiki>
+	- fixes that Instiki allows "dangerous" operations as HTTP GETs
+
+ as well as some other small improvements.
+	- fixes for instiki running on mongrel
+	- fixes for instiki running on mongrel_cluster
+
+ We added a lot of tests, synced with Jacques Distler's version and fixed 
+ small bugs as well. A note to Mac OSX users: use the Ruby One-Click-Installer
+ for OSX ( http://rubyosx.com ) or make sure you are not running into problems
+ with sqlite (see http://instiki.5uper.net/instiki/show/SQLite+issues+on+OSX)
+
+------------------------------------------------------------------------------
+ * 0.11.pl1
 
  - ANTISPAM: 
    - updated and included spam_patterns.txt
@@ -20,8 +39,7 @@
  - UPDATES:
    - Rails 1.2.1 tested and packaged with instiki
    - updated RubyZip to 0.9.1
-   - updated RedCloth to 3.0.4
-   - updated packaged sqlite3-ruby to 1.2.0
+   - updated packaged sqlite3-ruby
 
  - FEATURES:
    - fix: being logged in on more Webs at once works now [Jaques Distler]

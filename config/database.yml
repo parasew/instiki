@@ -2,16 +2,15 @@
 # "Out of the box", Instiki stores it's data in sqlite3 database. Other options are listed below.
 
 development:
-    adapter: sqlite3
-    database: db/development.db
+    production
 
 test:
     adapter: sqlite3
     database: db/test.db.sqlite3
 
 production:
-  adapter: sqlite3
-  database: db/production.db.sqlite3
+    adapter: sqlite3
+    database: db/production.db.sqlite3
   
 # MySQL (default setup).  Versions 4.1 and 5.0 are recommended.
 #
