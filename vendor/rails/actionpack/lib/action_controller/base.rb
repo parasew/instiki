@@ -7,7 +7,6 @@ require 'action_controller/url_rewriter'
 require 'action_controller/status_codes'
 require 'drb'
 require 'set'
-require 'md5' 
 
 module ActionController #:nodoc:
   class ActionControllerError < StandardError #:nodoc:
@@ -293,6 +292,10 @@ module ActionController #:nodoc:
     # Turn on +ignore_missing_templates+ if you want to unit test actions without making the associated templates.
     cattr_accessor :ignore_missing_templates
 
+    # Controls the resource action separator
+    @@resource_action_separator = "/"
+    cattr_accessor :resource_action_separator
+
     # Holds the request object that's primarily used to get environment variables through access like
     # <tt>request.env["REQUEST_URI"]</tt>.
     attr_internal :request
@@ -394,7 +397,8 @@ module ActionController #:nodoc:
             elsif value.is_a?(Hash)
               filtered_parameters[key] = filter_parameters(value)
             elsif block_given?
-              key, value = key.dup, value.dup
+              key = key.dup
+              value = value.dup if value
               yield key, value
               filtered_parameters[key] = value
             else
@@ -539,6 +543,7 @@ module ActionController #:nodoc:
         self.class.controller_path
       end
 
+      # Test whether the session is enabled for this request.
       def session_enabled?
         request.session_options && request.session_options[:disabled] != false
       end
@@ -600,12 +605,6 @@ module ActionController #:nodoc:
       # _Deprecation_ _notice_: This used to have the signatures
       # <tt>render_partial(partial_path = default_template_name, object = nil, local_assigns = {})</tt> and
       # <tt>render_partial_collection(partial_name, collection, partial_spacer_template = nil, local_assigns = {})</tt>.
-      # == Automatic etagging 
-      # 
-      # Rendering will automatically insert the etag header on 200 OK responses. The etag is calculated using MD5 of the 
-      # response body. If a request comes in that has a matching etag, the response will be changed to a 304 Not Modified 
-      # and the response body will be set to an empty string. 
-      # 
       #
       # === Rendering a template
       #
@@ -829,8 +828,6 @@ module ActionController #:nodoc:
         else
           response.body = text
         end
-         
-        response.body 
       end
 
       def render_javascript(javascript, status = nil, append_response = true) #:nodoc:

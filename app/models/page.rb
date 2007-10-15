@@ -25,7 +25,7 @@ class Page < ActiveRecord::Base
     if (revisions_size > 0) && continous_revision?(time, author)
       current_revision.update_attributes(:content => content, :revised_at => time)
     else
-      revisions.create(:content => content, :author => author, :revised_at => time)
+      revisions.build(:content => content, :author => author, :revised_at => time)
     end
     save
     self

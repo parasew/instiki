@@ -1,5 +1,6 @@
 require 'yaml'
 require 'time'
+require 'md5'
 
 module ActionController
   class AbstractResponse #:nodoc:
