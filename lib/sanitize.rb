@@ -2266,7 +2266,7 @@ class String
   }
 #:startdoc:
 
-# Converts XHTML+MathML named entities to Numeric Character References
+# Converts XHTML+MathML named entities in string to Numeric Character References
 #
 #  :call-seq:
 #     string.to_ncr  -> string
@@ -2275,17 +2275,18 @@ class String
        self.gsub(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_ncr}
     end
 
-# Converts XHTML+MathML named entities to Numeric Character References
+# Converts XHTML+MathML named entities in string to Numeric Character References
 #
 #  :call-seq:
 #     string.to_ncr!  -> str or nil
 #
 # Substitution is done in-place.
+#
     def to_ncr!
        self.gsub!(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_ncr}
     end
 
-# Converts XHTML+MathML named entities to UTF-8
+# Converts XHTML+MathML named entities in string to UTF-8
 #
 #  :call-seq:
 #     string.to_utf8  -> string
@@ -2294,12 +2295,13 @@ class String
        self.gsub(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_utf8}
     end
 
-# Converts XHTML+MathML named entities to UTF-8
+# Converts XHTML+MathML named entities in string to UTF-8
 #
 #  :call-seq:
 #     string.to_ncr!  -> str or nil
 #
 # Substitution is done in-place.
+#
     def to_utf8!
        self.gsub!(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_utf8}
     end
@@ -2332,6 +2334,11 @@ module REXML #:nodoc:
 #
 # REXML, typically, converts NCRs to utf-8 characters, which is what you'll see when you
 # access the resulting REXML document.
+#
+# Note that this method needs to traverse the entire tree, converting text nodes and attributes
+# for each element. This can be SLOW. It will often be faster to serialize to a string and then
+# use String.to_ncr instead.
+#
     def to_ncr
       self.each_element { |el|
         el.texts.each_index  {|i|
@@ -2350,6 +2357,10 @@ module REXML #:nodoc:
 #  :call-seq:
 #     tree.to_utf8  -> REXML::Element
 #
+# Note that this method needs to traverse the entire tree, converting text nodes and attributes 
+# for each element. This can be SLOW. It will often be faster to serialize to a string and then
+# use String.to_utf8 instead.
+#
     def to_utf8
       self.each_element { |el|
         el.texts.each_index  {|i|
@@ -2366,7 +2377,7 @@ module REXML #:nodoc:
   end
 end
 
-module HTML5 #:nodoc:
+module HTML5 #:nodoc: all
   module TreeWalkers
 
     private
