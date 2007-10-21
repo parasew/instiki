@@ -26,9 +26,10 @@ module HTML5
       strike strong sub sup table tbody td textarea tfoot th thead tr tt u
       ul var]
 
-    MATHML_ELEMENTS = %w[maction math merror mfrac mi mmultiscripts mn mo
-      mover mpadded mphantom mprescripts mroot mrow mspace msqrt mstyle msub
-      msubsup msup mtable mtd mtext mtr munder munderover none]
+    MATHML_ELEMENTS = %w[annotation annotation-xml maction math merror mfrac
+      mi mmultiscripts mn mo mover mpadded mphantom mprescripts mroot mrow
+      mspace msqrt mstyle msub msubsup msup mtable mtd mtext mtr munder
+      munderover none semantics]
 
     SVG_ELEMENTS = %w[a animate animateColor animateMotion animateTransform
       circle defs desc ellipse font-face font-face-name font-face-src g
@@ -47,8 +48,8 @@ module HTML5
 
     MATHML_ATTRIBUTES = %w[actiontype align columnalign columnalign
       columnalign columnlines columnspacing columnspan depth display
-      displaystyle equalcolumns equalrows fence fontstyle fontweight frame
-      height linethickness lspace mathbackground mathcolor mathvariant
+      displaystyle encoding equalcolumns equalrows fence fontstyle fontweight
+      frame height linethickness lspace mathbackground mathcolor mathvariant
       mathvariant maxsize minsize other rowalign rowalign rowalign rowlines
       rowspacing rowspan rspace scriptlevel selection separator stretchy
       width width xlink:href xlink:show xlink:type xmlns xmlns:xlink]
