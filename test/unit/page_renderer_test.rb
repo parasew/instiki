@@ -66,6 +66,16 @@ class PageRendererTest < Test::Unit::TestCase
         %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
         "#My Headline#\n\nthat SmartEngineGUI")
   
+    assert_markup_parsed_as(
+        %{ecuasi\303\263n <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>} +
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math>},
+        "ecuasi\303\263n $\\sin(x)$")
+  
+    assert_markup_parsed_as(
+        %{ecuasi\303\263n <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>} +
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics><annotation-xml encoding="SVG1.1"><svg/></annotation-xml></semantics></math>},
+        "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
+  
     code_block = [ 
       'This is a code block:',
         '',
