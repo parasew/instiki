@@ -43,7 +43,10 @@ class PageRendererTest < Test::Unit::TestCase
 
   def test_content_with_wiki_links
     assert_equal '<p><span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
-        'would be <a class="existingWikiWord" href="../show/MyWay">My Way</a> in kinda ' +
+        'would be <a class="existingWikiWord" href="../show/MyWay">My Way</a> <span class="maruku-inline">' +
+        '<math class="maruku-mathml" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">' +
+        '<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics>' +
+        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math></span> in kinda ' +
         '<a class="existingWikiWord" href="../show/ThatWay">That Way</a> in ' +
         '<span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
         %{though <a class="existingWikiWord" href="../show/MyWay">My Way</a> OverThere \xE2\x80\x93 see } +
@@ -261,7 +264,10 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_content_for_export
     assert_equal '<p><span class="newWikiWord">His Way</span> would be ' +
-        '<a class="existingWikiWord" href="MyWay.html">My Way</a> in kinda ' +
+        '<a class="existingWikiWord" href="MyWay.html">My Way</a> <span class="maruku-inline">' +
+        '<math class="maruku-mathml" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">' +
+        '<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics>' +
+        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math></span> in kinda ' +
         '<a class="existingWikiWord" href="ThatWay.html">That Way</a> in ' +
         '<span class="newWikiWord">His Way</span> though ' +
         %{<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere \xE2\x80\x93 see } +
