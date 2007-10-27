@@ -144,7 +144,7 @@ module HTML5
 
         elsif type == :Comment
           data = token[:data]
-          serialize_error(_("Comment contains --")) if data.index("--")
+          serialize_error("Comment contains --") if data.index("--")
           comment = "<!--%s-->" % token[:data]
           result << comment
 

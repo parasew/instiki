@@ -33,7 +33,7 @@ module HTML5
         @parser.phase.processStartTag(name, attributes)
       else
         # inner_html case
-        parse_error
+        parse_error "unexpected-start-tag", {:name => name}
       end
     end
 
@@ -47,8 +47,7 @@ module HTML5
         @tree.open_elements.pop
         @parser.phase = @parser.phases[:inTable]
       else
-        parse_error("unexpected-end-tag-in-table-body",
-                {"name" => name})
+        parse_error("unexpected-end-tag-in-table-body", {"name" => name})
       end
     end
 
@@ -59,13 +58,12 @@ module HTML5
         @parser.phase.processEndTag(name)
       else
         # inner_html case
-        parse_error
+        parse_error "unexpected-end-tag", {:name => name}
       end
     end
 
     def endTagIgnore(name)
-      parse_error("unexpected-end-tag-in-table-body",
-            {"name" => name})
+      parse_error("unexpected-end-tag-in-table-body", {"name" => name})
     end
 
     def endTagOther(name)

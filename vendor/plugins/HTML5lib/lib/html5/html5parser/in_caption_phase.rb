@@ -5,9 +5,9 @@ module HTML5
 
     # http://www.whatwg.org/specs/web-apps/current-work/#in-caption
 
-    handle_start 'html', %w( caption col colgroup tbody td tfoot th thead tr ) => 'TableElement'
+    handle_start 'html', %w(caption col colgroup tbody td tfoot th thead tr) => 'TableElement'
 
-    handle_end 'caption', 'table', %w( body col colgroup html tbody td tfoot th thead tr ) => 'Ignore'
+    handle_end 'caption', 'table', %w(body col colgroup html tbody td tfoot th thead tr) => 'Ignore'
 
     def ignoreEndTagCaption
       !in_scope?('caption', true)
@@ -18,7 +18,7 @@ module HTML5
     end
 
     def startTagTableElement(name, attributes)
-      parse_error
+      parse_error "unexpected-end-tag", {"name" => name}
       #XXX Have to duplicate logic here to find out if the tag is ignored
       ignoreEndTag = ignoreEndTagCaption
       @parser.phase.processEndTag('caption')
@@ -33,7 +33,7 @@ module HTML5
       if ignoreEndTagCaption
         # inner_html case
         assert @parser.inner_html
-        parse_error
+        parse_error "unexpected-end-tag", {"name" => name}
       else
         # AT this code is quite similar to endTagTable in "InTable"
         @tree.generateImpliedEndTags
@@ -41,7 +41,7 @@ module HTML5
         unless @tree.open_elements[-1].name == 'caption'
           parse_error("expected-one-end-tag-but-got-another",
                     {"gotName" => "caption",
-                     "expectedNmae" => @tree.open_elements.last.name})
+                     "expectedName" => @tree.open_elements.last.name})
         end
 
         remove_open_elements_until('caption')
@@ -52,7 +52,7 @@ module HTML5
     end
 
     def endTagTable(name)
-      parse_error
+      parse_error "unexpected-end-table-in-caption"
       ignoreEndTag = ignoreEndTagCaption
       @parser.phase.processEndTag('caption')
       @parser.phase.processEndTag(name) unless ignoreEndTag
@@ -65,6 +65,5 @@ module HTML5
     def endTagOther(name)
       @parser.phases[:inBody].processEndTag(name)
     end
-
   end
 end

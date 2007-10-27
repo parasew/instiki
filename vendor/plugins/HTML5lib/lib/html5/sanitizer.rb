@@ -78,6 +78,9 @@ module HTML5
 
     ATTR_VAL_IS_URI = %w[href src cite action longdesc xlink:href xml:base]
 
+    SVG_ATTR_VAL_ALLOWS_REF = %w[clip-path fill filter marker marker-start
+      marker-mid marker-end mask stroke textpath]
+
     ACCEPTABLE_CSS_PROPERTIES = %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
       border-right-color border-top-color clear color cursor direction
@@ -119,6 +122,9 @@ module HTML5
                 val_unescaped = CGI.unescapeHTML(attrs[attr].to_s).gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
                 if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !self.class.const_get("ALLOWED_PROTOCOLS").include?(val_unescaped.split(':')[0])
                   attrs.delete attr
+                end
+                SVG_ATTR_VAL_ALLOWS_REF.each do |attr|
+                  attrs.delete attr if attrs[attr].to_s.downcase =~ /url\(\s*[^#]/m
                 end
               end
               if attrs['style']

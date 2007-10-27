@@ -34,7 +34,7 @@ module HTML5
       if ignoreEndTagColgroup
         # inner_html case
         assert @parser.inner_html
-        parse_error
+        parse_error "unexpected-end-tag", {:name => name}
       else
         @tree.open_elements.pop
         @parser.phase = @parser.phases[:inTable]

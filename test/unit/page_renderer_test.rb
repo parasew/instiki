@@ -57,7 +57,13 @@ class PageRendererTest < Test::Unit::TestCase
   end
 
   def test_markdown
-    set_web_property :markup, :markdown
+    set_web_property :markup, :markdownMML
+  
+    assert_markup_parsed_as(
+        %{<p>equation <span class="maruku-inline"><math class="maruku-mathml" } +
+        %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></p>},
+        "equation $\\sin(x)$")
   
     assert_markup_parsed_as(
         %{<h1 id="my_headline">My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
@@ -70,13 +76,11 @@ class PageRendererTest < Test::Unit::TestCase
         "#My Headline#\n\nthat SmartEngineGUI")
   
     assert_markup_parsed_as(
-        %{ecuasi\303\263n <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math>},
-        "ecuasi\303\263n $\\sin(x)$")
-  
-    assert_markup_parsed_as(
-        %{ecuasi\303\263n <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics><annotation-xml encoding="SVG1.1"><svg/></annotation-xml></semantics></math>},
+        %{<div class="maruku-equation"><math class="maruku-mathml" display="block" } +
+        %{xmlns="http://www.w3.org/1998/Math/MathML"><mi>sin</mi><mo stretchy="false">} +
+        %{(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics><annotation-xml encoding="SVG1.1">} +
+        %{<svg></svg></annotation-xml></semantics></math><div class="maruku-eq-tex"><code style="display: none;">} +
+        %{\\sin(x) \\begin{svg}<svg></svg>\\end{svg}</code></div></div>},
         "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
   
     code_block = [ 
@@ -92,6 +96,14 @@ class PageRendererTest < Test::Unit::TestCase
         %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
         %{return ThatWay</code></pre>\n\n<p>Nice!</p>}, 
         code_block)
+
+#FIXME
+    assert_markup_parsed_as(
+        %{<p>ecuasi\303\263n <span class="maruku-inline"><math class="maruku-mathml" } +
+        %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></p>},
+        "ecuasi\303\263n $\\sin(x)$")
+  
   end
   
   def test_markdown_hyperlink_with_slash

@@ -27,8 +27,7 @@ module HTML5
     end
 
     def startTagOther(name, attributes)
-      parse_error("unexpected-start-tag-in-frameset",
-            {"name" => name})
+      parse_error("unexpected-start-tag-in-frameset", {"name" => name})
     end
 
     def endTagFrameset(name)

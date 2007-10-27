@@ -867,7 +867,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
 \section*{HomePage}
 
-HisWay would be MyWay $\sin(x) $ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere --{} see SmartEngine in that SmartEngineGUI
+HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere --{} see SmartEngine in that SmartEngineGUI
 
 
 
