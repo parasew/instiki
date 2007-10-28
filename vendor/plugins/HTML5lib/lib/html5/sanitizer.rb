@@ -123,9 +123,9 @@ module HTML5
                 if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !self.class.const_get("ALLOWED_PROTOCOLS").include?(val_unescaped.split(':')[0])
                   attrs.delete attr
                 end
-                SVG_ATTR_VAL_ALLOWS_REF.each do |attr|
-                  attrs.delete attr if attrs[attr].to_s.downcase =~ /url\(\s*[^#]/m
-                end
+              end
+              SVG_ATTR_VAL_ALLOWS_REF.each do |attr|
+                attrs[attr] = attrs[attr].to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/m, ' ') if attrs[attr]
               end
               if attrs['style']
                 attrs['style'] = sanitize_css(attrs['style'])
