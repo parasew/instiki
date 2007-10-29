@@ -33,7 +33,7 @@ module HTML5
 
     SVG_ELEMENTS = %w[a animate animateColor animateMotion animateTransform
       circle defs desc ellipse font-face font-face-name font-face-src g
-      glyph hkern image linearGradient line marker metadata missing-glyph
+      glyph hkern linearGradient line marker metadata missing-glyph
       mpath path polygon polyline radialGradient rect set stop svg switch
       text title tspan use]
 
