@@ -56,7 +56,7 @@ module HTML5
         @parser.phase.processEndTag(name)
       else
         # sometimes inner_html case
-        parse_error
+        parse_error "unexpected-end-tag", {:name => name}
       end
     end
 

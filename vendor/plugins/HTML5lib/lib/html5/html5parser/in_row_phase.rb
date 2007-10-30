@@ -35,7 +35,7 @@ module HTML5
       if ignoreEndTagTr
         # inner_html case
         assert @parser.inner_html
-        parse_error
+        parse_error "unexpected-end-tag", {:name => name}
       else
         clearStackToTableRowContext
         @tree.open_elements.pop
@@ -57,7 +57,7 @@ module HTML5
         @parser.phase.processEndTag(name)
       else
         # inner_html case
-        parse_error
+        parse_error "unexpected-end-tag", {:name => name}
       end
     end
 
@@ -75,8 +75,7 @@ module HTML5
     # XXX unify this with other table helper methods
     def clearStackToTableRowContext
       until %w[tr html].include?(name = @tree.open_elements.last.name)
-        parse_error("unexpected-implied-end-tag-in-table-row",
-                {"name" => @tree.open_elements.last.name})
+        parse_error("unexpected-implied-end-tag-in-table-row", {"name" => @tree.open_elements.last.name})
         @tree.open_elements.pop
       end
     end

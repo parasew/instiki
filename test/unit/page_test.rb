@@ -117,6 +117,6 @@ class PageTest < Test::Unit::TestCase
     assert_equal 3, @page.revisions(true).length, "Should have three revisions"
     @page.current_revision(true)
     @page.rollback(0, Time.now, '127.0.0.1', test_renderer)
-    assert_equal "HisWay would be MyWay in kinda ThatWay in HisWay though MyWay \\\\OverThere -- see SmartEngine in that SmartEngineGUI", @page.current_revision(true).content
+    assert_equal "HisWay would be MyWay $\\sin(x)\\begin{svg}<svg/>\\end{svg}\\includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay \\\\OverThere -- see SmartEngine in that SmartEngineGUI", @page.current_revision(true).content
   end
 end

@@ -82,7 +82,7 @@ module HTML5
       else
         # inner_html case
         assert @parser.inner_html
-        parse_error
+        parse_error "unexpected-end-tag", {:name => name}
       end
     end
 

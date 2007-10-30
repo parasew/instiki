@@ -39,7 +39,7 @@ def parse(opts, args)
   if opts.parsemethod == :parse
     args = [f, encoding]
   else
-    args = [f, 'div', encoding]
+    args = [f, (opts.container || 'div'), encoding]
   end
 
   if opts.profile
@@ -113,8 +113,9 @@ opts = OptionParser.new do |opts|
     options.treebuilder = treebuilder
   end
 
-  opts.on("-f", "--fragment", "Parse as a fragment") do |parse|
+  opts.on("-f", "--fragment CONTAINER", "Parse as a fragment") do |container|
     options.parsemethod = :parse_fragment
+    options.container = container if container
   end
 
   opts.separator ""

@@ -33,7 +33,7 @@ module HTML5
 
     SVG_ELEMENTS = %w[a animate animateColor animateMotion animateTransform
       circle defs desc ellipse font-face font-face-name font-face-src g
-      glyph hkern image linearGradient line marker metadata missing-glyph
+      glyph hkern linearGradient line marker metadata missing-glyph
       mpath path polygon polyline radialGradient rect set stop svg switch
       text title tspan use]
 
@@ -78,6 +78,9 @@ module HTML5
 
     ATTR_VAL_IS_URI = %w[href src cite action longdesc xlink:href xml:base]
 
+    SVG_ATTR_VAL_ALLOWS_REF = %w[clip-path fill filter marker marker-start
+      marker-mid marker-end mask stroke textpath]
+
     ACCEPTABLE_CSS_PROPERTIES = %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
       border-right-color border-top-color clear color cursor direction
@@ -120,6 +123,9 @@ module HTML5
                 if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !self.class.const_get("ALLOWED_PROTOCOLS").include?(val_unescaped.split(':')[0])
                   attrs.delete attr
                 end
+              end
+              SVG_ATTR_VAL_ALLOWS_REF.each do |attr|
+                attrs[attr] = attrs[attr].to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/m, ' ') if attrs[attr]
               end
               if attrs['style']
                 attrs['style'] = sanitize_css(attrs['style'])

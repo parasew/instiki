@@ -1,4 +1,5 @@
 require 'html5/html5parser/phase'
+require 'core_ext/kernel'
 
 module HTML5
   class InBodyPhase < Phase
@@ -50,13 +51,12 @@ module HTML5
       super(parser, tree)
 
       # for special handling of whitespace in <pre>
-      @processSpaceCharactersDropNewline = false
       if $-w
         $-w = false
-        alias processSpaceCharactersNonPre processSpaceCharacters
+        class << self; alias processSpaceCharactersNonPre processSpaceCharacters; end
         $-w = true
       else
-        alias processSpaceCharactersNonPre processSpaceCharacters
+        class << self; alias processSpaceCharactersNonPre processSpaceCharacters; end
       end
     end
 
@@ -65,10 +65,18 @@ module HTML5
 
       if $-w
         $-w = false
-        alias processSpaceCharacters processSpaceCharactersNonPre
+        class << self
+          silence do
+            alias processSpaceCharacters processSpaceCharactersNonPre
+          end
+        end
         $-w = true
       else
-        alias processSpaceCharacters processSpaceCharactersNonPre
+        class << self
+          silence do
+            alias processSpaceCharacters processSpaceCharactersNonPre
+          end
+        end
       end
 
       if (data.length > 0 and data[0] == ?\n && 
@@ -121,7 +129,13 @@ module HTML5
     def startTagCloseP(name, attributes)
       endTagP('p') if in_scope?('p')
       @tree.insert_element(name, attributes)
-      @processSpaceCharactersDropNewline = true if name == 'pre'
+      if name == 'pre'
+        class << self
+          silence do
+            alias processSpaceCharacters processSpaceCharactersDropNewline
+          end
+        end
+      end
     end
 
     def startTagForm(name, attributes)
@@ -291,8 +305,7 @@ module HTML5
       # XXX Form element pointer checking here as well...
       @tree.insert_element(name, attributes)
       @parser.tokenizer.content_model_flag = :RCDATA
-      @processSpaceCharactersDropNewline = true
-      alias processSpaceCharacters processSpaceCharactersDropNewline
+      class << self; alias processSpaceCharacters processSpaceCharactersDropNewline; end
     end
 
     # iframe, noembed noframes, noscript(if scripting enabled)
@@ -344,9 +357,9 @@ module HTML5
       # XXX Need to take open <p> tags into account here. We shouldn't imply
       # </p> but we should not throw a parse error either. Specification is
       # likely to be updated.
-      unless @tree.open_elements[1].name == 'body'
+      unless @tree.open_elements[1] && @tree.open_elements[1].name == 'body'
         # inner_html case
-        parse_error
+        parse_error "unexpected-end-tag", {:name => 'body'}
         return
       end
       unless @tree.open_elements.last.name == 'body'
@@ -364,7 +377,14 @@ module HTML5
 
     def endTagBlock(name)
       #Put us back in the right whitespace handling mode
-      @processSpaceCharactersDropNewline = false if name == 'pre'
+      if name == 'pre'
+        class << self; 
+          silence do
+            alias processSpaceCharacters processSpaceCharactersNonPre;
+          end
+        end
+      end
+      
 
       @tree.generateImpliedEndTags if in_scope?(name)
 

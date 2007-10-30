@@ -999,7 +999,7 @@ module HTML5
          _("Unexpected select start tag in the select phase " +
            "implies select start tag."),
       "unexpected-start-tag-in-select" =>
-         _("Unexpected start tag token (%(name) in the select phase. " +
+         _("Unexpected start tag token (%(name)) in the select phase. " +
            "Ignored."),
       "unexpected-end-tag-in-select" =>
          _("Unexpected end tag (%(name)) in the select phase. Ignored."),
@@ -1039,6 +1039,8 @@ module HTML5
       "expected-eof-but-got-end-tag" =>
          _("Unexpected end tag (%(name))" +
            ". Expected end of file."),
+      "unexpected-end-table-in-caption" =>
+        _("Unexpected end table tag in caption. Generates implied end caption.")
   }
 
 end
