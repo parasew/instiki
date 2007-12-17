@@ -144,7 +144,7 @@ module HTML5
 
     def remove_open_elements_until(name=nil)
       finished = false
-      until finished
+      until finished || @tree.open_elements.length == 0
         element = @tree.open_elements.pop
         finished = name.nil? ? yield(element) : element.name == name
       end

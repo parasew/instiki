@@ -8,6 +8,6 @@ module HTML5
   end
 
   def self.parse_fragment(stream, options={})
-    HTMLParser.parse(stream, options)
+    HTMLParser.parse_fragment(stream, options)
   end
 end

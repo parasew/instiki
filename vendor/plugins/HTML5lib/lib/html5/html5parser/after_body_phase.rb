@@ -25,7 +25,7 @@ module HTML5
 
     def endTagHtml(name)
       if @parser.inner_html
-        parse_error
+        parse_error "end-html-in-innerhtml"
       else
         # XXX: This may need to be done, not sure
         # Don't set last_phase to the current phase but to the inBody phase
