@@ -110,6 +110,37 @@ class SanitizeTest < Test::Unit::TestCase
     end
   end
 
+  HTMLSanitizer::SVG_ALLOW_LOCAL_HREF.each do |tag_name|
+    next unless HTMLSanitizer::ALLOWED_ELEMENTS.include?(tag_name)
+    define_method "test_#{tag_name}_should_allow_local_href" do
+      input = %(<#{tag_name} xlink:href="#foo"/>)
+      output = "<#{tag_name.downcase} xlink:href='#foo'/>"
+      xhtmloutput = "<#{tag_name} xlink:href='#foo'></#{tag_name}>"
+      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_allow_local_href_with_newline" do
+      input = %(<#{tag_name} xlink:href="\n#foo"/>)
+      output = "<#{tag_name.downcase} xlink:href='\n#foo'/>"
+      xhtmloutput = "<#{tag_name} xlink:href='\n#foo'></#{tag_name}>"
+      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_forbid_nonlocal_href" do
+      input = %(<#{tag_name} xlink:href="http://bad.com/foo"/>)
+      output = "<#{tag_name.downcase}/>"
+      xhtmloutput = "<#{tag_name}></#{tag_name}>"
+      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_forbid_nonlocal_href_with_newline" do
+      input = %(<#{tag_name} xlink:href="\nhttp://bad.com/foo"/>)
+      output = "<#{tag_name.downcase}/>"
+      xhtmloutput = "<#{tag_name}></#{tag_name}>"
+      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+    end
+  end
+
   def test_should_handle_astral_plane_characters
     input = "<p>&#x1d4b5; &#x1d538;</p>"
     output = "<p>\360\235\222\265 \360\235\224\270</p>"

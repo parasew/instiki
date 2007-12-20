@@ -908,7 +908,7 @@ module HTML5
       "eof-in-bogus-doctype" =>
          _("Unexpected end of file in bogus doctype."),
       "eof-in-innerhtml" =>
-         _("XXX innerHTML EOF"),
+         _("Unexpected EOF in inner html mode."),
       "unexpected-doctype" =>
          _("Unexpected DOCTYPE. Ignored."),
       "non-html-root" =>
@@ -1040,7 +1040,8 @@ module HTML5
          _("Unexpected end tag (%(name))" +
            ". Expected end of file."),
       "unexpected-end-table-in-caption" =>
-        _("Unexpected end table tag in caption. Generates implied end caption.")
+        _("Unexpected end table tag in caption. Generates implied end caption."),
+      "end-html-in-innerhtml" => _("Unexpected html end tag in inner html mode.")
   }
 
 end

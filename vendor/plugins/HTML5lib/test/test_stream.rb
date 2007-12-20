@@ -42,9 +42,10 @@ class HTMLInputStreamTest < Test::Unit::TestCase
     require 'iconv'
 
     def test_utf_16
-      stream = HTMLInputStream.new("\xff\xfe" + " \x00"*1025)
-      assert(stream.char_encoding, 'utf-16-le')
-      assert_equal(1025, stream.chars_until(' ',true).length)
+      input = Iconv.new('utf-16', 'utf-8').iconv(' '*1025)
+      stream = HTMLInputStream.new(input)
+      assert('utf-16-le', stream.char_encoding)
+      assert_equal(1025, stream.chars_until(' ', true).length)
     end
   rescue LoadError
     puts "iconv not found, skipping iconv tests"

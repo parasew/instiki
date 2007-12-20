@@ -14,4 +14,13 @@ class TestHtml5Inputstream < Test::Unit::TestCase
     1022.times{stream.char}
     assert_equal "i", stream.char
   end
+  
+  def test_chars_until
+    stream = HTML5::HTMLInputStream.new("aaaaaaab")
+    assert_equal "aaaaaaa", stream.chars_until("b")
+
+    stream = HTML5::HTMLInputStream.new("aaaaaaab")
+    assert_equal "aaaaaaab", stream.chars_until("c")
+    
+  end
 end

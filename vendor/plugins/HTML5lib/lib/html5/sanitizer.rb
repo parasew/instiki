@@ -78,8 +78,12 @@ module HTML5
 
     ATTR_VAL_IS_URI = %w[href src cite action longdesc xlink:href xml:base]
 
-    SVG_ATTR_VAL_ALLOWS_REF = %w[clip-path fill filter marker marker-start
-      marker-mid marker-end mask stroke textpath]
+    SVG_ATTR_VAL_ALLOWS_REF = %w[clip-path color-profile cursor fill
+      filter marker marker-start marker-mid marker-end mask stroke]
+
+    SVG_ALLOW_LOCAL_HREF = %w[altGlyph animate animateColor animateMotion
+      animateTransform cursor feImage filter linearGradient pattern
+      radialGradient textpath tref set use]
 
     ACCEPTABLE_CSS_PROPERTIES = %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
@@ -126,6 +130,9 @@ module HTML5
               end
               SVG_ATTR_VAL_ALLOWS_REF.each do |attr|
                 attrs[attr] = attrs[attr].to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/m, ' ') if attrs[attr]
+              end
+              if SVG_ALLOW_LOCAL_HREF.include?(token[:name]) && attrs['xlink:href'] && attrs['xlink:href'] =~ /^\s*[^#\s].*/m
+                 attrs.delete 'xlink:href'
               end
               if attrs['style']
                 attrs['style'] = sanitize_css(attrs['style'])

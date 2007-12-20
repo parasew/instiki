@@ -2,15 +2,14 @@ require 'test/unit'
 
 HTML5_BASE = File.dirname(File.dirname(File.dirname(File.expand_path(__FILE__)))) 
 
-if File.exists?(File.join(HTML5_BASE, 'testdata'))
-  TESTDATA_DIR = File.join(HTML5_BASE, 'testdata')
+if File.exists?(File.join(HTML5_BASE, 'ruby', 'testdata'))
+  TESTDATA_DIR = File.join(HTML5_BASE, 'ruby', 'testdata')
 else
-  TESTDATA_DIR = File.join(File.dirname(File.dirname(File.expand_path(__FILE__))), 'testdata')
+  TESTDATA_DIR = File.join(HTML5_BASE, 'testdata')
 end
 
-# $:.unshift File.join(File.dirname(File.dirname(__FILE__)), 'lib')
-
-# $:.unshift File.dirname(__FILE__)
+$:.unshift File.join(File.dirname(File.dirname(__FILE__)), 'lib')
+$:.unshift File.dirname(__FILE__)
 
 require 'core_ext/string'
 

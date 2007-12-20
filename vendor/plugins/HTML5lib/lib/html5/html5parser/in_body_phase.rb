@@ -51,34 +51,22 @@ module HTML5
       super(parser, tree)
 
       # for special handling of whitespace in <pre>
-      if $-w
-        $-w = false
-        class << self; alias processSpaceCharactersNonPre processSpaceCharacters; end
-        $-w = true
-      else
-        class << self; alias processSpaceCharactersNonPre processSpaceCharacters; end
+      silence do
+        class << self
+          alias processSpaceCharactersNonPre processSpaceCharacters
+        end
       end
     end
 
     def processSpaceCharactersDropNewline(data)
       # #Sometimes (start of <pre> blocks) we want to drop leading newlines
 
-      if $-w
-        $-w = false
-        class << self
-          silence do
-            alias processSpaceCharacters processSpaceCharactersNonPre
-          end
-        end
-        $-w = true
-      else
-        class << self
-          silence do
-            alias processSpaceCharacters processSpaceCharactersNonPre
-          end
+      class << self
+        silence do
+          alias processSpaceCharacters processSpaceCharactersNonPre
         end
       end
-
+      
       if (data.length > 0 and data[0] == ?\n && 
         %w[pre textarea].include?(@tree.open_elements.last.name) && !@tree.open_elements.last.hasContent)
         data = data[1..-1]
@@ -376,16 +364,6 @@ module HTML5
     end
 
     def endTagBlock(name)
-      #Put us back in the right whitespace handling mode
-      if name == 'pre'
-        class << self; 
-          silence do
-            alias processSpaceCharacters processSpaceCharactersNonPre;
-          end
-        end
-      end
-      
-
       @tree.generateImpliedEndTags if in_scope?(name)
 
       unless @tree.open_elements.last.name == name

@@ -18,16 +18,16 @@ end
 
 require 'rcov/rcovtask'
 
-namespace :test do 
+namespace :test do
   namespace :coverage do
     desc "Delete aggregate coverage data."
     task(:clean) { rm_f "coverage.data" }
   end
   desc 'Aggregate code coverage for unit, functional and integration tests'
   Rcov::RcovTask.new(:coverage => "test:coverage:clean") do |t|
-    t.libs << "tests"
-    t.test_files = FileList["tests/test_*.rb"]
-    t.output_dir = "tests/coverage/"
+    t.libs << "test"
+    t.test_files = FileList["test/test_*.rb"]
+    t.output_dir = "test/coverage/"
     t.verbose = true
   end
 end
