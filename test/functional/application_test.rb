@@ -19,7 +19,7 @@ class ApplicationTest < Test::Unit::TestCase
   
   def test_utf8_header
     get :show, :web => 'wiki1', :id => 'HomePage'
-    assert_equal 'text/html; charset=UTF-8', @response.headers['Content-Type']
+    assert_equal 'text/html; charset=UTF-8', @response.headers['type']
   end
   
   def test_connect_to_model_unknown_wiki

@@ -110,6 +110,12 @@ class PageRendererTest < Test::Unit::TestCase
         %{<div class="maruku-eq-tex"><code style="display: none;">\\sin(x)</code></div></div>}, 
         "ecuasi\303\263n\n$$\\sin(x)$$")
   
+    assert_markup_parsed_as(
+        %{<p>ecuasi\303\263n</p>\n\n<p><span class="maruku-inline"><math class="maruku-mathml" } +
+        %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></p>},
+        "ecuasi\303\263n \n\n$\\sin(x)$")
+  
 #FIXME
     assert_markup_parsed_as(
         %{<p>ecuasi\303\263n <span class="maruku-inline"><math class="maruku-mathml" } +

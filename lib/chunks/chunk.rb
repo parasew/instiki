@@ -11,7 +11,7 @@ module Chunk
 
 # Rails's default utf-8 support causes problems here. So, for Chunk::Abstract class, turn off
 # multibyte character support.
-    $KCODE = 'iso-8859-1'
+    $KCODE = 'n'
 
     # automatically construct the array of derivatives of Chunk::Abstract
     @derivatives = [] 
