@@ -76,6 +76,11 @@ class PageRendererTest < Test::Unit::TestCase
         "#My Headline#\n\nthat SmartEngineGUI")
   
     assert_markup_parsed_as(
+        %{<p>SVG <animateColor title="MathML"><span class="newWikiWord">} +
+        %{Math ML<a href="../show/MathML">?</a></span></animateColor></p>}, 
+        "SVG <animateColor title='MathML'>MathML</animateColor>")
+  
+    assert_markup_parsed_as(
         %{<div class="maruku-equation"><math class="maruku-mathml" display="block" } +
         %{xmlns="http://www.w3.org/1998/Math/MathML"><mi>sin</mi><mo stretchy="false">} +
         %{(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics><annotation-xml encoding="SVG1.1">} +
