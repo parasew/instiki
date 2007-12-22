@@ -1,7 +1,16 @@
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
+require 'rails_generator/secret_key_generator'
 
 Rails::Initializer.run do |config|
+
+  # Secret session key
+  generator = Rails::SecretKeyGenerator.new("Instiki")
+  config.action_controller.session = { 
+     :session_key => "instiki_session",
+     :secret => generator.generate_secret
+   } 
+
   # Skip frameworks you're not going to use
   config.frameworks -= [ :action_web_service, :action_mailer ]
 

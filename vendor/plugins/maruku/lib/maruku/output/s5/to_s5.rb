@@ -105,7 +105,12 @@ module MaRuKu
 
 		xml  = "" 
 		if (content_only)
-		   body.write(xml,indent,transitive=true,ie_hack);
+		   if $rexml_new_version
+		     formatter = REXML::Formatters::Default.new(ie_hack)
+                     formatter.write(body, xml)
+		   else
+		     body.write(xml,indent,transitive=true,ie_hack);
+		  end
 		else
 		  doc2 = Document.new("<div>"+S5_external+"</div>",{:respect_whitespace =>:all})
 		  doc2.root.children.each{ |child| head << child }

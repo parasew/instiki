@@ -112,7 +112,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_html', 'web' => 'wiki1'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'application/zip', r.headers['Content-Type']
+    assert_equal 'application/zip', r.headers['type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
@@ -140,7 +140,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_html', 'web' => 'wiki1', 'layout' => 'no'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'application/zip', r.headers['Content-Type']
+    assert_equal 'application/zip', r.headers['type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
@@ -150,7 +150,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_markup', 'web' => 'wiki1'
 
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'application/zip', r.headers['Content-Type']
+    assert_equal 'application/zip', r.headers['type']
     assert_match /attachment; filename="wiki1-markdownMML-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
@@ -162,7 +162,7 @@ class WikiControllerTest < Test::Unit::TestCase
 #    def test_export_pdf
 #      r = process 'export_pdf', 'web' => 'wiki1'
 #      assert_response(:success, bypass_body_parsing = true)
-#      assert_equal 'application/pdf', r.headers['Content-Type']
+#      assert_equal 'application/pdf', r.headers['type']
 #      assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
 #          r.headers['Content-Disposition']
 #      assert_equal '%PDF', r.body[0..3]
@@ -179,7 +179,7 @@ class WikiControllerTest < Test::Unit::TestCase
 #    r = process 'export_tex', 'web' => 'wiki1'
 #
 #    assert_response(:success, bypass_body_parsing = true)
-#    assert_equal 'application/octet-stream', r.headers['Content-Type']
+#    assert_equal 'application/octet-stream', r.headers['type']
 #    assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
 #        r.headers['Content-Disposition']
 #    assert_equal '\documentclass', r.body[0..13], 'Content is not a TeX file'
@@ -259,7 +259,7 @@ class WikiControllerTest < Test::Unit::TestCase
 #      assert_equal '%PDF', r.body[0..3]
 #      assert_equal "EOF\n", r.body[-4..-1]
 #
-#      assert_equal 'application/pdf', r.headers['Content-Type']
+#      assert_equal 'application/pdf', r.headers['type']
 #      assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
 #          r.headers['Content-Disposition']
 #    end
@@ -633,8 +633,8 @@ class WikiControllerTest < Test::Unit::TestCase
   end
 
   def test_show_page
-    r = process('show', 'id' => 'Oak', 'web' => 'wiki1')
-    assert_response(:success)
+    r = process 'show', 'id' => 'Oak', 'web' => 'wiki1'
+    assert_response :success
     assert_tag :content => /All about oak/
   end
 
@@ -644,7 +644,7 @@ class WikiControllerTest < Test::Unit::TestCase
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
-    assert_response(:success)
+    assert_response :success
     assert_match /Second revision of the <a.*HomePage.*<\/a> end/, r.body
   end
 

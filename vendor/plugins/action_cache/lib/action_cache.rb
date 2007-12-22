@@ -150,7 +150,7 @@ module ActionController
         def send_not_modified(controller)
           controller.logger.info "Send Not Modified"
           controller.response.headers['ETag'] = %{"#{MD5.new(fragment_body(controller)).to_s}"}
-          controller.render(:text => "", :status => 304)
+          controller.send(:render, {:text => "", :status => 304})
         end
         
         def client_has_latest?(cache_entry, controller)

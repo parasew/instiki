@@ -36,7 +36,7 @@ class FileControllerTest < Test::Unit::TestCase
     
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
-    assert_equal 'text/plain', r.headers['Content-Type']
+    assert_equal 'text/plain', r.headers['type']
   end
 
   def test_file_download_pdf_file
@@ -47,7 +47,7 @@ class FileControllerTest < Test::Unit::TestCase
     
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "aaa\nbbb\n", r.body
-    assert_equal 'application/pdf', r.headers['Content-Type']
+    assert_equal 'application/pdf', r.headers['type']
   end
 
   def test_pic_download_gif
@@ -57,7 +57,7 @@ class FileControllerTest < Test::Unit::TestCase
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'image/gif', r.headers['Content-Type']
+    assert_equal 'image/gif', r.headers['type']
     assert_equal pic.size, r.body.size
     assert_equal pic, r.body
   end

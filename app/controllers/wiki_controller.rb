@@ -136,8 +136,8 @@ class WikiController < ApplicationController
     if rss_with_content_allowed? 
       render_atom(hide_description = false)
     else
-      render_text 'Atom feed with content for this web is blocked for security reasons. ' +
-        'The web is password-protected and not published', '403 Forbidden'
+      render :text => 'Atom feed with content for this web is blocked for security reasons. ' +
+        'The web is password-protected and not published', :status => 403
     end
   end
 
@@ -268,7 +268,7 @@ class WikiController < ApplicationController
       begin
         @renderer = PageRenderer.new(@page.revisions.last)
         @show_diff = (params[:mode] == 'diff')
-        render_action 'page'
+        render :action => 'page'
       # TODO this rescue should differentiate between errors due to rendering and errors in 
       # the application itself (for application errors, it's better not to rescue the error at all)
       rescue => e
@@ -284,7 +284,7 @@ class WikiController < ApplicationController
       if not @page_name.nil? and not @page_name.empty?
         redirect_to :web => @web_name, :action => 'new', :id => @page_name
       else
-        render_text 'Page name is not specified', '404 Not Found'
+        render :text => 'Page name is not specified', :status => 404
       end
     end
   end

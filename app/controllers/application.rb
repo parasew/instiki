@@ -148,16 +148,16 @@ class ApplicationController < ActionController::Base
 
   def set_content_type_header
     if %w(atom_with_content atom_with_headlines).include?(action_name)
-      response.headers['Content-Type'] = 'application/atom+xml; charset=UTF-8'
+      response.headers['type'] = 'application/atom+xml; charset=UTF-8'
     elsif %w(tex).include?(action_name)
-      response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
+      response.headers['type'] = 'text/plain; charset=UTF-8'
     elsif request.env['HTTP_USER_AGENT'] =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
            Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)  
-      response.headers['Content-Type'] = 'application/xhtml+xml; charset=UTF-8'
+      response.headers['type'] = 'application/xhtml+xml; charset=UTF-8'
     elsif request.env['HTTP_USER_AGENT'] =~ /MathPlayer/ 
-      response.headers['Content-Type'] = 'application/xhtml+xml'
+      response.headers['type'] = 'application/xhtml+xml'
     else
-      response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+      response.headers['type'] = 'text/html; charset=UTF-8'
     end
   end
 
