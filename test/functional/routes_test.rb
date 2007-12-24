@@ -46,8 +46,8 @@ class RoutesTest < Test::Unit::TestCase
   end
 
   def test_cases_broken_by_routes
-#    assert_routing('web/show/Page+With+Spaces', 
-#        :controller => 'wiki', :web => 'web', :action => 'show', :id => 'Page With Spaces')
+   assert_routing('web/show/Page+With+Spaces', 
+       :controller => 'wiki', :web => 'web', :action => 'show', :id => 'Page With Spaces')
 #    assert_routing('web/show/HomePage%2Fsomething_else', 
 #        :controller => 'wiki', :web => 'web', :action => 'show', :id => 'HomePage/something_else')
   end
