@@ -8,7 +8,17 @@ Rails::Initializer.run do |config|
   generator = Rails::SecretKeyGenerator.new("Instiki")
   config.action_controller.session = { 
      :session_key => "instiki_session",
+  #####
+  ### This one generates a secret key automatically at launch.
+  ###     advantage: secure, no configuration necessary
+  ###  disadvantage: restart the server, and all existing
+  ###                session keys become invalid.
      :secret => generator.generate_secret
+  ###
+  ###  Alternatively, you can set your own unchanging secret key
+  ###  by editing and then uncommenting the following line, instead:
+  #  : secret => "a_very_long_string_of_random_letter_and_numbers"
+  #####
    } 
 
   # Skip frameworks you're not going to use
