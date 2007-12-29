@@ -1,5 +1,13 @@
 # This module groups all functions related to HTML export.
 module MaRuKu
+
+begin
+        require 'rexml/formatters/pretty'
+        require 'rexml/formatters/default'
+        $rexml_new_version = true
+rescue LoadError
+        $rexml_new_version = false      
+end
 	 
 	class MDDocument
 
