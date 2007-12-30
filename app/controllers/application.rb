@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
     if @web_name
       @web = @wiki.webs[@web_name]
       if @web.nil?
-        render(:status => 404, :text => "Unknown web '#{@web_name}'")
+        render(:status => 404, :text => "Unknown web '#{@web_name}'", :layout => 'error')
         return false 
       end
     end

@@ -14,7 +14,7 @@ class FileController < ApplicationController
     if params['file']
       unless (request.post? || ENV["RAILS_ENV"] == "test")
         headers['Allow'] = 'POST'
-        render(:status => 405, :text => 'You must use an HTTP POST')
+        render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
         return
       end
       # form supplied
@@ -63,7 +63,7 @@ class FileController < ApplicationController
   protected
 
   def check_allow_uploads
-    render(:status => 404, :text => "Web #{params['web'].inspect} not found") and return false unless @web
+    render(:status => 404, :text => "Web #{params['web'].inspect} not found", :layout => 'error') and return false unless @web
     if @web.allow_uploads?
       return true
     else

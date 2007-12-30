@@ -29,7 +29,7 @@ class AdminController < ApplicationController
     if params['address']
       unless (request.post? || ENV["RAILS_ENV"] == "test")
         headers['Allow'] = 'POST'
-        render(:status => 405, :text => 'You must use an HTTP POST')
+        render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
         return
       end
       # form submitted
@@ -56,7 +56,7 @@ class AdminController < ApplicationController
     if system_password
       unless (request.post? || ENV["RAILS_ENV"] == "test")
         headers['Allow'] = 'POST'
-        render(:status => 405, :text => 'You must use an HTTP POST')
+        render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
         return
       end
       # form submitted
@@ -93,7 +93,7 @@ class AdminController < ApplicationController
   def remove_orphaned_pages
     unless (request.post? || ENV["RAILS_ENV"] == "test")
       headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST')
+      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
       return
     end
     if wiki.authenticate(params['system_password_orphaned'])
