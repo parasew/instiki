@@ -115,13 +115,17 @@ class ApplicationController < ActionController::Base
   end
 
   def rescue_action_in_public(exception)
-    render :status => 500, :text => <<-EOL
-      <html xmlns="http://www.w3.org/1999/xhtml"><body>
-        <h2>Internal Error</h2>
-        <p>An application error occurred while processing your request.</p>
-        <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n -->
-      </body></html>
-    EOL
+    if exception.instance_of?(CGI::Session::CookieStore::TamperedWithCookie)
+      render :text => 'Stale session. Please reload the page.', :status =>500, :layout => 'error'
+    else
+      render :status => 500, :text => <<-EOL
+        <html xmlns="http://www.w3.org/1999/xhtml"><body>
+          <h2>Internal Error</h2>
+          <p>An application error occurred while processing your request.</p>
+          <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n -->
+        </body></html>
+      EOL
+    end
   end
 
   def return_to_last_remembered
