@@ -137,7 +137,7 @@ class WikiController < ApplicationController
       render_atom(hide_description = false)
     else
       render :text => 'Atom feed with content for this web is blocked for security reasons. ' +
-        'The web is password-protected and not published', :status => 403
+        'The web is password-protected and not published', :status => 403, :layout => 'error'
     end
   end
 
@@ -147,6 +147,7 @@ class WikiController < ApplicationController
 
   def search
     @query = params['query']
+    render(:text => "Your query string was not valid utf-8", :layout => 'error', :status => 400) and return if !@query.is_utf8?
     @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     all_pages_found = (@results + @title_results).uniq
@@ -203,14 +204,14 @@ class WikiController < ApplicationController
 
   def published
     if not @web.published?
-      render(:text => "Published version of web '#{@web_name}' is not available", :status => 404)
+      render(:text => "Published version of web '#{@web_name}' is not available", :status => 404, :layout => 'error')
       return 
     end
 
     @page_name ||= 'HomePage'
     @page ||= wiki.read_page(@web_name, @page_name)
     @link_mode ||= :publish
-    render(:text => "Page '#{@page_name}' not found", :status => 404) and return unless @page
+    render(:text => "Page '#{@page_name}' not found", :status => 404, :layout => 'error') and return unless @page
     
     @renderer = PageRenderer.new(@page.revisions.last)
   end
@@ -226,20 +227,20 @@ class WikiController < ApplicationController
   end
 
   def save
-    render(:status => 404, :text => 'Undefined page name') and return if @page_name.nil?
+    render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil?
     unless (request.post? || ENV["RAILS_ENV"] == "test")
       headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST')
+      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
       return
     end
     author_name = params['author']
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
-    raise "Your name was not valid utf-8" if !author_name.is_utf8?
+    render(:text => "Your name was not valid utf-8", :layout => 'error', :status => 400) and return if !author_name.is_utf8?
     cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
       the_content = params['content']
-      raise "Your content was not valid utf-8" if !the_content.is_utf8?
+      render(:text => "Your content was not valid utf-8", :layout => 'error', :status => 400) and return if !the_content.is_utf8?
       filter_spam(the_content)
       if @page
         wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
@@ -284,7 +285,7 @@ class WikiController < ApplicationController
       if not @page_name.nil? and not @page_name.empty?
         redirect_to :web => @web_name, :action => 'new', :id => @page_name
       else
-        render :text => 'Page name is not specified', :status => 404
+        render :text => 'Page name is not specified', :status => 404, :layout => 'error'
       end
     end
   end
