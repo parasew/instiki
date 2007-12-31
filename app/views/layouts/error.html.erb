@@ -8,8 +8,6 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="robots" content="<%= @robots_metatag_value %>" />
   
-  <%= javascript_include_tag 'page_helper' %>
- 
   <style type="text/css">
     h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, #TextileHelp h3 { 
       color: #<%= @web ? @web.color : "393" %>; 
@@ -23,26 +21,21 @@
     <%= @style_additions %>
     <%= @web ? @web.additional_style : '' %>
   </style>
-  <%= javascript_include_tag :defaults %>
-  <% if @web %>
-  	<%= auto_discovery_link_tag(:atom, :controller => 'wiki', :web => @web.address, :action => 'atom_with_headlines') %>
-  	<%= auto_discovery_link_tag(:atom, :controller => 'wiki', :web => @web.address, :action => 'atom_with_content') %>
-  <% end %>
 </head>
 
 <body>
 
-<div id="Container">
-<div id="Content">
+<div id="Error-Container">
   <h1>
     <%= h headers['Status']  %>
   </h1>
 
+<div id="Error-Content">
 <%= h @content_for_layout %>
 
-</div> <!-- Content -->
+</div> <!-- Error-Content -->
 
-</div> <!-- Container -->
+</div> <!-- Error-Container -->
 
 </body>
 </html>
