@@ -632,6 +632,28 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal [], r.template_objects['title_results']
   end
 
+  def test_search_null_in_query
+    r = process 'search', 'web' => 'wiki1', 'query' => "\x00"
+    
+    assert_response(400)
+    assert_match /Your query string was not valid utf-8/, r.body
+  end
+
+  def test_search_FFFF_in_query
+    r = process 'search', 'web' => 'wiki1', 'query' => "\xEF\xBF\xBF"
+    
+    assert_response(400)
+    assert_match /Your query string was not valid utf-8/, r.body
+  end
+
+  def test_search_FFFD_in_query
+    r = process 'search', 'web' => 'wiki1', 'query' => "\xEF\xBF\xBD"
+    
+    assert_response(:success)
+    assert_equal [], r.template_objects['results']
+    assert_equal [], r.template_objects['title_results']
+  end
+
   def test_show_page
     r = process 'show', 'id' => 'Oak', 'web' => 'wiki1'
     assert_response :success
