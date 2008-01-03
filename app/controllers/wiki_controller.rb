@@ -1,5 +1,4 @@
 require 'fileutils'
-#require 'redcloth_for_tex'
 require 'maruku'
 require 'parsedate'
 require 'zip/zip'
@@ -147,7 +146,7 @@ class WikiController < ApplicationController
 
   def search
     @query = params['query']
-    render(:text => "Your query string was not valid utf-8", :layout => 'error', :status => 400) and return if !@query.is_utf8?
+    render(:text => "Your query string was not valid utf-8", :layout => 'error', :status => 400) and return unless @query.is_utf8?
     @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     all_pages_found = (@results + @title_results).uniq
@@ -235,20 +234,32 @@ class WikiController < ApplicationController
     end
     author_name = params['author']
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
-    render(:text => "Your name was not valid utf-8", :layout => 'error', :status => 400) and return if !author_name.is_utf8?
+    render(:text => "Your name was not valid utf-8", :layout => 'error', :status => 400) and return unless author_name.is_utf8?
     cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
       the_content = params['content']
-      render(:text => "Your content was not valid utf-8", :layout => 'error', :status => 400) and return if !the_content.is_utf8?
       filter_spam(the_content)
       if @page
-        wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
-            Author.new(author_name, remote_ip), PageRenderer.new)
-        @page.unlock
+        if the_content.is_utf8?
+          wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
+              Author.new(author_name, remote_ip), PageRenderer.new)
+          @page.unlock
+        else
+          flash[:error] = 'Your content was not valid utf-8.'
+          @page.unlock
+          redirect_to :back
+          return
+        end
       else
-        wiki.write_page(@web_name, @page_name, the_content, Time.now, 
-            Author.new(author_name, remote_ip), PageRenderer.new)
+        if the_content.is_utf8?
+          wiki.write_page(@web_name, @page_name, the_content, Time.now, 
+              Author.new(author_name, remote_ip), PageRenderer.new)
+        else
+          flash[:error] = 'Your content was not valid utf-8.'
+          redirect_to :back
+          return
+        end
       end
       redirect_to_page @page_name
     rescue => e

@@ -552,6 +552,33 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal 'AuthorOfNewPage', new_page.author
   end
 
+  def test_save_not_utf8
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n\000", 
+      'author' => 'AuthorOfNewPage'
+    
+    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
+    assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
+    assert_equal Time.utc(2030), r.cookies['author'].expires
+  end
+
+  def test_save_not_utf8_ncr
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#xfffe;", 
+      'author' => 'AuthorOfNewPage'
+    
+    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
+    assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
+    assert_equal Time.utc(2030), r.cookies['author'].expires
+  end
+
+  def test_save_not_utf8_dec_ncr
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#65535;", 
+      'author' => 'AuthorOfNewPage'
+    
+    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
+    assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
+    assert_equal Time.utc(2030), r.cookies['author'].expires
+  end
+
   def test_save_new_revision_of_existing_page
     @home.lock(Time.now, 'Batman')
     current_revisions = @home.revisions.size
