@@ -1,6 +1,5 @@
 $:.unshift File.dirname(__FILE__), 'lib'
 require 'html5'
-require 'core_ext/string'
 require 'ostruct'
 require 'optparse'
 
@@ -190,7 +189,7 @@ module HTML5::CLI
       t1 = Time.new
       print_output(p, document, opts)
       t2 = Time.new
-      puts "\n\nRun took: %fs (plus %fs to print the output)"%[t1-t0, t2-t1]
+      puts "\n\nRun took: #{t1-t0}s (plus #{t2-t1}s to print the output)"
     else
       document = p.send(opts.parsemethod, *args)
       print_output(p, document, opts)
@@ -218,9 +217,27 @@ module HTML5::CLI
     if opts.error
       errList=[]
       for pos, errorcode, datavars in parser.errors
-        errList << "Line #{pos[0]} Col #{pos[1]} " + (HTML5::E[errorcode] || "Unknown error \"#{errorcode}\"") % datavars
+        formatstring = HTML5::E[errorcode] || 'Unknown error "%(errorcode)"'
+        message = PythonicTemplate.new(formatstring).to_s(datavars)
+        errList << "Line #{pos[0]} Col #{pos[1]} " + message
       end
       $stdout.write("\nParse errors:\n" + errList.join("\n")+"\n")
+    end
+  end
+
+  class PythonicTemplate
+    # convert Python format string into a Ruby string, ready to eval
+    def initialize format
+      @format = format
+      @format.gsub!('"', '\\"')
+      @format.gsub!(/%\((\w+)\)/, '#{@_\1}')
+      @format = '"' + @format + '"'
+    end
+
+    # evaluate string
+    def to_s(vars=nil)
+      vars.each {|var,value| eval "@_#{var}=#{value.dump}"} if vars
+      eval @format
     end
   end
 

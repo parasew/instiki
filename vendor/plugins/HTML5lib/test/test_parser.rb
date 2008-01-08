@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'preamble')
 
 require 'html5/treebuilders'
 require 'html5/html5parser'
-
+require 'html5/cli'
 
 $tree_types_to_test = ['simpletree', 'rexml']
 
@@ -45,7 +45,8 @@ class Html5ParserTestCase < Test::Unit::TestCase
           ].join("\n")
 
           actual_errors = parser.errors.map do |(line, col), message, datavars|
-            'Line: %i Col: %i %s' % [line, col, E[message] % datavars]
+            message = CLI::PythonicTemplate.new(E[message]).to_s(datavars)
+            "Line: #{line} Col: #{col} #{message}"
           end
 
           assert_equal errors, actual_errors, [

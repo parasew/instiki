@@ -33,6 +33,11 @@ module HTML5
 
       options.each {|name, value| instance_variable_set("@#{name}", value) }
 
+      # partial Ruby 1.9 support
+      if @encoding and source.respond_to? :force_encoding
+        source.force_encoding(@encoding) rescue nil
+      end
+
       # Raw Stream
       @raw_stream = open_stream(source)
 
@@ -265,6 +270,38 @@ module HTML5
         @tell += 1
 
         case c
+
+        when String
+          # partial Ruby 1.9 support
+          case c
+          when "\0"
+            @errors.push("null-character")
+            c = "\uFFFD" # null characters are invalid
+          when "\r"
+            @tell += 1 if @buffer[@tell] == "\n"
+            c = "\n"
+          when "\x80" .. "\x9F"
+            c = ''.force_encoding('UTF-8') << ENTITIES_WINDOWS1252[c.ord-0x80]
+          end
+
+          if c == "\x0D"
+            # normalize newlines
+            @tell += 1 if @buffer[@tell] == 0x0A
+            c = 0x0A
+          end
+
+          # update position in stream
+          if c == "\x0a"
+            @line_lengths << @col
+            @line += 1
+            @col = 0
+          else
+            @col += 1
+          end
+
+          # binary utf-8
+          c.ord > 126 ? [c.ord].pack('U') : c
+
         when 0x01..0x7F
           if c == 0x0D
             # normalize newlines
@@ -293,7 +330,7 @@ module HTML5
           end
 
         when 0xC0..0xFF
-          if instance_variables.include?("@win1252") && @win1252
+          if instance_variable_defined?("@win1252") && @win1252
             "\xC3" + (c - 64).chr # convert to utf-8
           # from http://www.w3.org/International/questions/qa-forms-utf-8.en.php
           elsif @buffer[@tell - 1..@tell + 3] =~ /^
@@ -340,7 +377,12 @@ module HTML5
     end
 
     def unget(characters)
-      @queue.unshift(*characters.to_a) unless characters == :EOF
+      return if characters == :EOF
+      if characters.respond_to? :to_a
+        @queue.unshift(*characters.to_a)
+      else
+        characters.reverse.each_char {|c| @queue.unshift(c)}
+      end
     end
   end
 

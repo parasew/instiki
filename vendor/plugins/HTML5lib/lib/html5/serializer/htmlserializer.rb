@@ -31,7 +31,7 @@ module HTML5
       @inject_meta_charset = true
 
       options.each do |name, value|
-        next unless instance_variables.include?("@#{name}")
+        next unless instance_variable_defined?("@#{name}")
         @use_best_quote_char = false if name.to_s == 'quote_char'
         instance_variable_set("@#{name}", value)
       end

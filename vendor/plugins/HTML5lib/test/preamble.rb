@@ -5,13 +5,12 @@ HTML5_BASE = File.dirname(File.dirname(File.dirname(File.expand_path(__FILE__)))
 if File.exists?(File.join(HTML5_BASE, 'ruby', 'testdata'))
   TESTDATA_DIR = File.join(HTML5_BASE, 'ruby', 'testdata')
 else
-  TESTDATA_DIR = File.join(HTML5_BASE, 'testdata')
+  HTML5_BASE_RUBY = File.dirname(File.dirname(File.expand_path(__FILE__)))
+  TESTDATA_DIR = File.join(HTML5_BASE_RUBY, 'testdata')
 end
 
 $:.unshift File.join(File.dirname(File.dirname(__FILE__)), 'lib')
 $:.unshift File.dirname(__FILE__)
-
-require 'core_ext/string'
 
 def html5_test_files(subdirectory)
   Dir[File.join(TESTDATA_DIR, subdirectory, '*.*')]

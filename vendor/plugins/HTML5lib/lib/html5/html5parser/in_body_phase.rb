@@ -1,5 +1,4 @@
 require 'html5/html5parser/phase'
-require 'core_ext/kernel'
 
 module HTML5
   class InBodyPhase < Phase
@@ -51,10 +50,8 @@ module HTML5
       super(parser, tree)
 
       # for special handling of whitespace in <pre>
-      silence do
-        class << self
-          alias processSpaceCharactersNonPre processSpaceCharacters
-        end
+      class << self
+        alias processSpaceCharactersNonPre processSpaceCharacters
       end
     end
 
@@ -62,9 +59,8 @@ module HTML5
       # #Sometimes (start of <pre> blocks) we want to drop leading newlines
 
       class << self
-        silence do
-          alias processSpaceCharacters processSpaceCharactersNonPre
-        end
+        remove_method :processSpaceCharacters rescue nil
+        alias processSpaceCharacters processSpaceCharactersNonPre
       end
       
       if (data.length > 0 and data[0] == ?\n && 
@@ -119,9 +115,8 @@ module HTML5
       @tree.insert_element(name, attributes)
       if name == 'pre'
         class << self
-          silence do
-            alias processSpaceCharacters processSpaceCharactersDropNewline
-          end
+          remove_method :processSpaceCharacters rescue nil
+          alias processSpaceCharacters processSpaceCharactersDropNewline
         end
       end
     end
@@ -293,7 +288,10 @@ module HTML5
       # XXX Form element pointer checking here as well...
       @tree.insert_element(name, attributes)
       @parser.tokenizer.content_model_flag = :RCDATA
-      class << self; alias processSpaceCharacters processSpaceCharactersDropNewline; end
+      class << self
+        remove_method :processSpaceCharacters rescue nil
+        alias processSpaceCharacters processSpaceCharactersDropNewline
+      end
     end
 
     # iframe, noembed noframes, noscript(if scripting enabled)

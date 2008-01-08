@@ -271,7 +271,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			extension_meta(src, con, break_on_chars)
 		else
 			stuff = read_simple(src, escaped=[?}], break_on_chars, [])
-			if stuff =~ /^(\w+\s|[^\w])/
+			if stuff =~ /^(\w+\s|[^\w])/u
 				extension_id = $1.strip
 				if false
 				else
