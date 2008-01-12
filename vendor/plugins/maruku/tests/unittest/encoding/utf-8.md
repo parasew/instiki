@@ -30,4 +30,11 @@ Japanese: マルク
 <p>Japanese: マルク</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Italian: àèìòù.
+ </p>
+ <p>
+  Japanese: マルク
+ </p>
+</div>

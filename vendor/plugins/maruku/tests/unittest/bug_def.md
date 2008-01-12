@@ -26,4 +26,8 @@ test:
 <p>[test][]:</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  [test][]:
+ </p>
+</div>

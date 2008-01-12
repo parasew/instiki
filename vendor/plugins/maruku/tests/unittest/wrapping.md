@@ -85,4 +85,25 @@ Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum dolor amet</li>
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem
+  ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum
+  dolor amet. Break: 
+  <br/>
+   Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem
+  ipsum dolor amet. 
+ </p>
+ <ul>
+  <li>
+   Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem
+   ipsum dolor amet Lorem ipsum Break: 
+   <br/>
+    Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum dolor amet
+  </li>
+  <li>
+   Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem ipsum dolor amet. Lorem
+   ipsum dolor amet
+  </li>
+ </ul>
+</div>

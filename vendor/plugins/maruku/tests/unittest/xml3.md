@@ -41,4 +41,13 @@ md_el(:document,[
 </table>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <table markdown='1'>
+   Blah 
+  <thead>
+   <td>
+    *em*
+   </td>
+  </thead>
+ </table>
+</div>

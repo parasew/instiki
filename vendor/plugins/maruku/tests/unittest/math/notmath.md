@@ -32,9 +32,24 @@ This is not $math$.[ \alpha ]
 
 
 *** Output of Markdown.pl ***
-<p>This is not $math$.</p>
+<p>This is not <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mi>math</mi></math>.</p>
 
-<p>[ \alpha ]</p>
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>&alpha;</mi></math>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  This is not 
+  <math display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>
+   <mi>
+    math
+   </mi>
+  </math>
+  .
+ </p>
+ <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mi>
+   &alpha;
+  </mi>
+ </math>
+</div>

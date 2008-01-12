@@ -43,4 +43,13 @@ This is an image.This is an image.
 <p>This is an ![image].</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  This is an 
+  <img src='image.jpg' alt='image'/>
+  .
+ </p>
+ <p>
+  This is an ![image].
+ </p>
+</div>

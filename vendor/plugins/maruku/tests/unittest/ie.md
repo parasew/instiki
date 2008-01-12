@@ -79,4 +79,50 @@ md_el(:document,[
 <p>{:html<em>use</em>syntax=true lang=xml}</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  <code>
+   &lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt;
+  </code>
+ </p>
+ <pre>
+  <code>
+   &lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt; 
+  </code>
+ </pre>
+ <p>
+  {:}
+ </p>
+ <pre>
+  <code>
+   &lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt; 
+  </code>
+ </pre>
+ <p>
+  {:lang=xml}
+ </p>
+ <pre>
+  <code>
+   &lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt; 
+  </code>
+ </pre>
+ <p>
+  {:html
+  <em>
+   use
+  </em>
+  syntax=true lang=not_supported}
+ </p>
+ <pre>
+  <code>
+   &lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt; 
+  </code>
+ </pre>
+ <p>
+  {:html
+  <em>
+   use
+  </em>
+  syntax=true lang=xml}
+ </p>
+</div>

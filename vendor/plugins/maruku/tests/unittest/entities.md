@@ -121,4 +121,49 @@ Maruku translates HTML entities to the equivalent in LaTeX:EntityResultabEntity-
 <p>It should read just like this: <code>&amp;copy;</code>.</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Maruku translates HTML entities to the equivalent in LaTeX:
+ </p>
+ <p>
+  Entity | Result ------------|---------- 
+  <code>
+   &amp;copy;
+  </code>
+   | &copy; 
+  <code>
+   &amp;pound;
+  </code>
+   | &pound; 
+  <code>
+   a&amp;nbsp;b
+  </code>
+   | a&nbsp;b 
+  <code>
+   &amp;lambda;
+  </code>
+   | &lambda; 
+  <code>
+   &amp;mdash;
+  </code>
+   | &mdash;
+ </p>
+ <p>
+  Entity-substitution does not happen in code blocks or inline code.
+ </p>
+ <p>
+  The following should not be translated:
+ </p>
+ <pre>
+  <code>
+   &amp;copy; 
+  </code>
+ </pre>
+ <p>
+  It should read just like this: 
+  <code>
+   &amp;copy;
+  </code>
+  .
+ </p>
+</div>

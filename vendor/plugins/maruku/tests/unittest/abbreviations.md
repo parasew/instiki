@@ -69,4 +69,17 @@ The HTML specification is maintained by the W3C.Operation Tigra Genesis is going
 <p>*[Tigra Genesis]:</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  The HTML specification is maintained by the W3C.
+ </p>
+ <p>
+  *[HTML]: Hyper Text Markup Language *[W3C]: World Wide Web Consortium
+ </p>
+ <p>
+  Operation Tigra Genesis is going well.
+ </p>
+ <p>
+  *[Tigra Genesis]:
+ </p>
+</div>

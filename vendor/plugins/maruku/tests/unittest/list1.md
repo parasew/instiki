@@ -63,4 +63,17 @@ A list item with a blockquote:This is a blockquote inside a list item.
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <ul>
+  <li>
+   <p>
+    A list item with a blockquote:
+   </p>
+   <blockquote>
+    <p>
+     This is a blockquote inside a list item.
+    </p>
+   </blockquote>
+  </li>
+ </ul>
+</div>

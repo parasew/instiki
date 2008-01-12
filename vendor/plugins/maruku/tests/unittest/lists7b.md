@@ -133,4 +133,21 @@ aa1a2b
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <ul>
+  <li>
+   a 
+   <ul>
+    <li>
+     a1
+    </li>
+    <li>
+     a2
+    </li>
+   </ul>
+  </li>
+  <li>
+   b
+  </li>
+ </ul>
+</div>

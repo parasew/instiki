@@ -35,4 +35,11 @@ Paragraph2
 <p>{paragraph}: .maruku-par</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Paragraph2 {#2}
+ </p>
+ <p>
+  {paragraph}: .maruku-par
+ </p>
+</div>

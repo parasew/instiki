@@ -69,4 +69,23 @@ Targets    Inside:  last
 <p>Inside: <?mrk puts "Inside: Hello" ?> last</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+<? noTarget?>
+<?php ?>
+<?xml ?>
+<?mrk ?>
+ </p>
+ <p>
+  Targets 
+<? noTarget?>
+<?php ?>
+<?xml ?>
+<?mrk ?>
+ </p>
+ <p>
+  Inside: 
+<?mrk puts "Inside: Hello"?>
+   last
+ </p>
+</div>

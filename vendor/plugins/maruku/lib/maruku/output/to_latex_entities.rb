@@ -215,7 +215,7 @@ module MaRuKu; module Out; module Latex
 	  <char num='8835' name='sup' convertTo='$\\supset$' />
 <!--	  <char num='8838' name='sube' convertTo='$\\subseteq$' />-->
 	  <char num='8839' name='supe' convertTo='$\\supseteq$' />
-<!--	  <char num='8836' name='nsub' convertTo='$\\nsubset$'  /> <!-- only AMS -->
+<!--	  <char num='8836' name='nsub' convertTo='$\\nsubset$'  /> --><!-- only AMS -->
 
 	  <char num='8853' name='oplus' convertTo='$\\oplus$' />
 	  <char num='8855' name='otimes' convertTo='$\\otimes$' />
@@ -276,7 +276,7 @@ module MaRuKu; module Out; module Latex
 	  <char num='174' name='reg' convertTo='\\textregistered' />
 	  <char num='170' name='ordf' convertTo='\\textordfeminine' />
 	  <char num='172' name='not' convertTo='$\\neg$' />
-	<!--  <char num='176' name='deg' convertTo='$\\degree$' /> <!-- mathabx -->
+	<!--  <char num='176' name='deg' convertTo='$\\degree$' /> --><!-- mathabx -->
 	  <char num='176' name='deg' convertTo='\\textdegree' package='textcomp'/>
 
 	  <char num='177' name='plusmn' convertTo='$\\pm$' />

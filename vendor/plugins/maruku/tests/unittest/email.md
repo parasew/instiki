@@ -27,7 +27,7 @@ This is an email address:
 
 
 *** Output of Markdown.pl ***
-<p>This is an email address: <a href="&#x6D;&#97;&#x69;&#x6C;&#116;&#x6F;:&#97;&#x6E;&#x64;&#114;&#x65;&#97;&#64;&#105;&#110;&#118;&#97;li&#100;&#46;&#x69;&#116;">&#97;&#x6E;&#x64;&#114;&#x65;&#97;&#64;&#105;&#110;&#118;&#97;li&#100;&#46;&#x69;&#116;</a></p>
+<p>This is an email address: <a href="&#109;&#x61;&#x69;&#108;&#116;&#111;:&#97;&#x6E;&#100;&#114;&#x65;&#x61;&#64;&#105;&#110;&#x76;&#97;&#x6C;&#x69;&#100;&#46;&#x69;&#x74;">&#97;&#x6E;&#100;&#114;&#x65;&#x61;&#64;&#105;&#110;&#x76;&#97;&#x6C;&#x69;&#100;&#46;&#x69;&#x74;</a></p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+Error: #<TypeError: no implicit conversion from nil to integer>

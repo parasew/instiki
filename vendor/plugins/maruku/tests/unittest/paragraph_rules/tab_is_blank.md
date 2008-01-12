@@ -36,4 +36,11 @@ Paragraph1Paragraph2
 <p>Paragraph2</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Paragraph1
+ </p>
+ <p>
+  Paragraph2
+ </p>
+</div>

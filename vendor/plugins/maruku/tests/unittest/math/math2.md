@@ -57,9 +57,7 @@ md_el(:document,[
 
 
 *** Output of Markdown.pl ***
-<p>[
-    \alpha
-]</p>
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>&alpha;</mi></math>
 
 <p>\begin{equation}
     \alpha
@@ -71,4 +69,19 @@ md_el(:document,[
 <p>\begin{equation} \gamma \end{equation}</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mi>
+   &alpha;
+  </mi>
+ </math>
+ <p>
+  \begin{equation} \alpha \end{equation}
+ </p>
+ <p>
+  \begin{equation} \beta \end{equation}
+ </p>
+ <p>
+  \begin{equation} \gamma \end{equation}
+ </p>
+</div>

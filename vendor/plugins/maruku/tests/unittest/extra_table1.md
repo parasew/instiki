@@ -52,4 +52,12 @@ Content Cell  | Content Cell
 Content Cell  | Content Cell</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  CSS: style.css
+ </p>
+ <p>
+  First Header | Second Header ------------- | ------------- Content Cell |
+  Content Cell Content Cell | Content Cell
+ </p>
+</div>

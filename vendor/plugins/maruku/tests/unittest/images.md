@@ -111,4 +111,28 @@ This page does not uilizes Cascading Style SheetsPlease mouseover to see the tit
    style="border:0;width:188px;height:131px"</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  This page does not uilizes 
+  <img title='' src='http://jigsaw.w3.org/css-validator/images/vcss' alt='Cascading Style Sheets'/>
+ </p>
+ <p>
+  Please mouseover to see the title: 
+  <img title='Title ok!' src='http://jigsaw.w3.org/css-validator/images/vcss' alt='Cascading Style Sheets'/>
+ </p>
+ <p>
+  Please mouseover to see the title: 
+  <img title='Title ok!' src='http://jigsaw.w3.org/css-validator/images/vcss' alt='Cascading Style Sheets'/>
+ </p>
+ <p>
+  I'll say it one more time: this page does not use 
+  <img title='Optional title attribute' src='http://jigsaw.w3.org/css-validator/images/vcss' alt='Cascading Style Sheets'/>
+ </p>
+ <p>
+  This is double size: ![Cascading Style Sheets] [css2]
+ </p>
+ <p>
+  [css2]: http://jigsaw.w3.org/css-validator/images/vcss "Optional title
+  attribute" class=external style="border:0;width:188px;height:131px"
+ </p>
+</div>

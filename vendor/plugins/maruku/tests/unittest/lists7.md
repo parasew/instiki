@@ -76,4 +76,23 @@ CiaoTab * Tab * Tab
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Ciao
+ </p>
+ <ul>
+  <li>
+   Tab 
+   <ul>
+    <li>
+     Tab 
+     <ul>
+      <li>
+       Tab
+      </li>
+     </ul>
+    </li>
+   </ul>
+  </li>
+ </ul>
+</div>

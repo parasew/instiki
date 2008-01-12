@@ -1,5 +1,14 @@
+#####
 # Bootstrap the Rails environment, frameworks, and default configuration
+####
+
+# Make sure we are using the latest rexml
+system_rexml_version = `ruby -r 'rexml/rexml' -e 'p REXML::VERSION'`.split('.').collect {|n| n.to_i}
+bundled_rexml_version = `ruby -r 'vendor/plugins/rexml/lib/rexml/rexml' -e 'p REXML::VERSION'`.split('.').collect {|n| n.to_i}
+$:.unshift('vendor/plugins/rexml/lib') if (system_rexml_version <=> bundled_rexml_version) == -1
+
 require File.join(File.dirname(__FILE__), 'boot')
+
 require 'rails_generator/secret_key_generator'
 
 Rails::Initializer.run do |config|

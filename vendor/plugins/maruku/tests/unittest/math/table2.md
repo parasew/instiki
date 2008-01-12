@@ -57,4 +57,12 @@ SymbolMeaningcomments The firstI like it. The firstI like it.
 <p>{:r: scope='row'}</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Symbol | Meaning | comments ------------|---------|--------- {:r} &alpha; |
+  The first | I like it. {:r} &aleph; | The first | I like it.
+ </p>
+ <p>
+  {:r: scope='row'}
+ </p>
+</div>

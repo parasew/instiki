@@ -82,4 +82,24 @@ DuetretretreDue
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <ul>
+  <li>
+   Due 
+   <ol>
+    <li>
+     tre
+    </li>
+    <li>
+     tre
+    </li>
+    <li>
+     tre
+    </li>
+   </ol>
+  </li>
+  <li>
+   Due
+  </li>
+ </ul>
+</div>

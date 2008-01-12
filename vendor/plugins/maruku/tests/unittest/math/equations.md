@@ -54,16 +54,58 @@ $$ x = y $$$$ x$$ x = y $$$$ x = y $$
 
 
 *** Output of Markdown.pl ***
-<p>$$ x = y $$</p>
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
 
-<p>$$ x 
-= y $$</p>
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
 
-<p>$$ 
-x = y $$</p>
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
 
-<p>$$ x = y 
-$$</p>
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mi>
+   x
+  </mi>
+  <mo>
+   =
+  </mo>
+  <mi>
+   y
+  </mi>
+ </math>
+ <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mi>
+   x
+  </mi>
+  <mo>
+   =
+  </mo>
+  <mi>
+   y
+  </mi>
+ </math>
+ <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mi>
+   x
+  </mi>
+  <mo>
+   =
+  </mo>
+  <mi>
+   y
+  </mi>
+ </math>
+ <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mi>
+   x
+  </mi>
+  <mo>
+   =
+  </mo>
+  <mi>
+   y
+  </mi>
+ </math>
+</div>

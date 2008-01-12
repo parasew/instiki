@@ -27,4 +27,8 @@ bar
 <p><img src="/foo.jpg" alt="bar" title="" /></p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  <img title='' src='/foo.jpg' alt='bar'/>
+ </p>
+</div>

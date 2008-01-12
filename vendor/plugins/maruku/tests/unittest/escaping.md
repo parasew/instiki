@@ -74,7 +74,7 @@ Hello: ! ! ` { } [ ] ( ) # . ! * * *Ora, emphasis, bold, * <- due asterischi-> *
 
 
 *** Output of Markdown.pl ***
-<p>Hello: ! ! ` { } [ ] ( ) # . ! * * *</p>
+<p>Hello: ! ! ` { } <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><merror><mtext></mtext></merror></math> ( ) # . ! * * *</p>
 
 <p>Ora, <em>emphasis</em>, <strong>bold</strong>, * &lt;- due asterischi-> * , un underscore-> _ , <em>emphasis</em>,
  incre<em>dible</em>e!</p>
@@ -86,4 +86,52 @@ Hello: ! ! ` { } [ ] ( ) # . ! * * *Ora, emphasis, bold, * <- due asterischi-> *
 <p>End of <code>paragraph</code></p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Hello: ! ! ` { } 
+  <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
+   <merror>
+    <mtext/>
+   </merror>
+  </math>
+   ( ) # . ! * * *
+ </p>
+ <p>
+  Ora, 
+  <em>
+   emphasis
+  </em>
+  , 
+  <strong>
+   bold
+  </strong>
+  , * &lt;- due asterischi-> * , un underscore-> _ , 
+  <em>
+   emphasis
+  </em>
+  , incre
+  <em>
+   dible
+  </em>
+  e!
+ </p>
+ <p>
+  This is 
+  <code>
+   Code with a special: -&gt; ` &lt;-
+  </code>
+  (after)
+ </p>
+ <p>
+  <code>
+   Start
+  </code>
+   of paragraph
+ </p>
+ <p>
+  End of 
+  <code>
+   paragraph
+  </code>
+ </p>
+</div>

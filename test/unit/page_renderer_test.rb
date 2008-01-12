@@ -420,7 +420,7 @@ class PageRendererTest < Test::Unit::TestCase
   def test_textile_image_in_mixed_wiki
     set_web_property :markup, :mixed
     assert_markup_parsed_as(
-      "<p><img src='http://google.com' alt=''/>\nss</p>",
+      "<p><img alt='' src='http://google.com'/>\nss</p>",
       "!http://google.com!\r\nss")
   end
 

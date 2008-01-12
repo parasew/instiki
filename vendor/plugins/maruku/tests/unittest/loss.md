@@ -26,4 +26,9 @@ md_el(:document,[md_html("<br />")],{},[])
 <p><br/>123</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  <br/>
+  123
+ </p>
+</div>

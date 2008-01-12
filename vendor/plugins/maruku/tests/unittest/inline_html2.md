@@ -33,4 +33,11 @@ md_el(:document,[
 <p markdown="1">Test **bold**</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <div markdown='1'>
+  Test **bold**
+ </div>
+ <p markdown='1'>
+  Test **bold**
+ </p>
+</div>

@@ -204,7 +204,18 @@ def run_test(filename, its_ok, verbose=true)
 		})
 		div = doc.root
 		xml =""
-		div.write_children(xml,indent=1,transitive=true,ie_hack=false)
+		indent=1
+		if $rexml_new_version
+                        formatter = if indent > -1
+				REXML::Formatters::Pretty.new( indent, ie_hack=false )
+			  else
+				REXML::Formatters::Default.new( ie_hack=false )
+			  end
+                        formatter.write( div, xml)
+                else
+                        div.write(xml,indent,transitive=true,ie_hack=false)
+                end
+                xml.gsub!("\A<div>(.*)</div>\Z", "\1")
 		f.write xml
 	rescue Exception=>e
 		f.puts "Error: #{e.inspect}"

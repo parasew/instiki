@@ -25,4 +25,15 @@ Hello! how are you?
 <p><em>Hello!</em> how are <strong>you</strong>?</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  <em>
+   Hello!
+  </em>
+   how are 
+  <strong>
+   you
+  </strong>
+  ?
+ </p>
+</div>

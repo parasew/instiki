@@ -50,4 +50,13 @@ end tell
 </code></pre>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Here is an example of AppleScript:
+ </p>
+ <pre>
+  <code>
+   tell application "Foo" beep end tell tab 
+  </code>
+ </pre>
+</div>

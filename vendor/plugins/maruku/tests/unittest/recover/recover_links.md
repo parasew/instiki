@@ -25,4 +25,8 @@ Search on Google imagesGoOgle search ]
 <p>Search on [Google images][  GoOgle search ]</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Search on [Google images][ GoOgle search ]
+ </p>
+</div>

@@ -91,11 +91,61 @@ Here are some formulas:Thats it, nothing else is supported.
 <p>Here are some formulas:</p>
 
 <ul>
-<li>$\alpha$</li>
-<li>$x^{n}+y^{n} \neq z^{n}$</li>
+<li><math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mi>&alpha;</mi></math></li>
+<li><math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><msup><mi>x</mi> <mi>n</mi></msup><mo>+</mo><msup><mi>y</mi> <mi>n</mi></msup><mo>&ne;</mo><msup><mi>z</mi> <mi>n</mi></msup></math></li>
 </ul>
 
 <p>That's it, nothing else is supported.</p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <p>
+  Here are some formulas:
+ </p>
+ <ul>
+  <li>
+   <math display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>
+    <mi>
+     &alpha;
+    </mi>
+   </math>
+  </li>
+  <li>
+   <math display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>
+    <msup>
+     <mi>
+      x
+     </mi>
+     <mi>
+      n
+     </mi>
+    </msup>
+    <mo>
+     +
+    </mo>
+    <msup>
+     <mi>
+      y
+     </mi>
+     <mi>
+      n
+     </mi>
+    </msup>
+    <mo>
+     &ne;
+    </mo>
+    <msup>
+     <mi>
+      z
+     </mi>
+     <mi>
+      n
+     </mi>
+    </msup>
+   </math>
+  </li>
+ </ul>
+ <p>
+  That's it, nothing else is supported.
+ </p>
+</div>

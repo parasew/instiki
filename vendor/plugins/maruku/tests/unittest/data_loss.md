@@ -39,4 +39,10 @@ ijkl</li>
 </ol>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <ol>
+  <li>
+   abcd efgh ijkl
+  </li>
+ </ol>
+</div>

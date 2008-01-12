@@ -48,11 +48,28 @@ md_el(:document,[
 
 *** Output of Markdown.pl ***
 <table markdown='1'>
-    $\alpha$
+    <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mi>&alpha;</mi></math>
     <thead>
-        <td>$\beta$</td>
+        <td><math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mi>&beta;</mi></math></td>
     </thead>
 </table>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <table markdown='1'>
+  <math display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>
+   <mi>
+    &alpha;
+   </mi>
+  </math>
+  <thead>
+   <td>
+    <math display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>
+     <mi>
+      &beta;
+     </mi>
+    </math>
+   </td>
+  </thead>
+ </table>
+</div>

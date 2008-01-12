@@ -28,4 +28,10 @@ md_el(:document,[md_par(["- \316\255\316\275\316\261"])],{},[])
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>
+<div>
+ <ul>
+  <li>
+   ένα
+  </li>
+ </ul>
+</div>
