@@ -9,7 +9,7 @@ namespace :db do
   end
 end
  
-desc 'use rake db:fixtures:export_for_tables TABLES=foos[,bars,lands] Create YAML test fixtures for a specific table(s) from data in an existing database. Defaults to development database. Set RAILS_ENV to override. ' 
+desc 'use rake db:fixtures:export_for_tables TABLES=foos[,bars,lands] Create YAML dump fixtures for a specific table(s) from data in an existing database. Defaults to development database. Set RAILS_ENV to override. ' 
 namespace :db do  
   namespace :fixtures do
     task :export_for_tables => :environment do 
@@ -24,7 +24,7 @@ namespace :db do
 end 
  
  
-desc ' Create YAML test fixtures from data in an existing database. Defaults to development database. Set RAILS_ENV to override. ' 
+desc ' Create YAML dump fixtures from data in an existing database. Defaults to development database. Set RAILS_ENV to override. ' 
 namespace :db do  
   namespace :fixtures do
     task :export_all => :environment do 
@@ -33,7 +33,7 @@ namespace :db do
       ActiveRecord::Base.establish_connection 
       (ActiveRecord::Base.connection.tables - skip_tables).each do |table_name| 
         i = "000" 
-        File.open("#{RAILS_ROOT}/test/fixtures/#{table_name}.yml", 'w' ) do |file| 
+        File.open("#{RAILS_ROOT}/dump/fixtures/#{table_name}.yml", 'w' ) do |file| 
           write_yaml_fixtures_to_file(sql % table_name, table_name)
         end 
       end 
@@ -41,7 +41,7 @@ namespace :db do
   end
 end 
 
-desc 'use rake db:fixtures:import_for_models MODELS=Foo[,Bar,Land] to import the YAML test fixtures for a specific models from data in an existing database. Defaults to development database. Set RAILS_ENV to override. '
+desc 'use rake db:fixtures:import_for_models MODELS=Foo[,Bar,Land] to import the YAML dump fixtures for a specific models from data in an existing database. Defaults to development database. Set RAILS_ENV to override. '
 namespace :db do
   namespace :fixtures do
     task :import_for_models => :environment do
@@ -55,7 +55,7 @@ namespace :db do
 end
 
 
-desc 'use rake db:fixtures:import_for_tables TABLES=foos[,bars,lands] to import the YAML test fixtures for a specific tables from data in an existing database. Defaults to development database. Set RAILS_ENV to override. '
+desc 'use rake db:fixtures:import_for_tables TABLES=foos[,bars,lands] to import the YAML dump fixtures for a specific tables from data in an existing database. Defaults to development database. Set RAILS_ENV to override. '
 namespace :db do
   namespace :fixtures do
     task :import_for_tables => :environment do
@@ -68,13 +68,13 @@ namespace :db do
   end
 end
 
-desc 'use rake db:fixtures:import_all to import all YAML test fixtures for all of the tables from data in an existing database. Defaults to development database. Set RAILS_ENV to override. '
+desc 'use rake db:fixtures:import_all to import all YAML dump fixtures for all of the tables from data in an existing database. Defaults to development database. Set RAILS_ENV to override. '
 namespace :db do
   namespace :fixtures do
     task :import_all => :environment do
       ActiveRecord::Base.establish_connection
-      Dir.glob(File.join(RAILS_ROOT,'test','fixtures',"*.yml")).each do |f|
-        table_name = f.gsub(File.join(RAILS_ROOT,'test','fixtures', ''), '').gsub('.yml', '')
+      Dir.glob(File.join(RAILS_ROOT,'dump','fixtures',"*.yml")).each do |f|
+        table_name = f.gsub(File.join(RAILS_ROOT,'dump','fixtures', ''), '').gsub('.yml', '')
         import_table_fixture(table_name)
       end
     end

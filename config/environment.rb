@@ -3,9 +3,9 @@
 ####
 
 # Make sure we are using the latest rexml
-system_rexml_version = `ruby -r 'rexml/rexml' -e 'p REXML::VERSION'`.split('.').collect {|n| n.to_i}
-bundled_rexml_version = `ruby -r 'vendor/plugins/rexml/lib/rexml/rexml' -e 'p REXML::VERSION'`.split('.').collect {|n| n.to_i}
-$:.unshift('vendor/plugins/rexml/lib') if (system_rexml_version <=> bundled_rexml_version) == -1
+rexml_versions = ['', 'vendor/plugins/rexml/lib/'].collect { |v| 
+  `ruby -r #{v + 'rexml/rexml'} -e 'p REXML::VERSION'`.split('.').collect {|n| n.to_i} }
+$:.unshift('vendor/plugins/rexml/lib') if (rexml_versions[0] <=> rexml_versions[1]) == -1
 
 require File.join(File.dirname(__FILE__), 'boot')
 
