@@ -4,13 +4,14 @@ module MaRuKu; module Out; module HTML
 	def convert_to_mathml_itex2mml(kind, tex)
 		begin
 			if not $itex2mml_parser
+				require 'sanitize'
 				require 'itextomml'
 				$itex2mml_parser =  Itex2MML::Parser.new
 			end
 			
 			itex_method = {:equation=>:block_filter,:inline=>:inline_filter}
 			
-			mathml =  $itex2mml_parser.send(itex_method[kind], tex)
+			mathml =  $itex2mml_parser.send(itex_method[kind], tex).to_utf8
 			doc = Document.new(mathml, {:respect_whitespace =>:all}).root
 			return doc
 		rescue LoadError => e

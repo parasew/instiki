@@ -1,0 +1,12 @@
+---
+.avi: video/avi
+.gz: application/x-gzip
+.js: application/x-javascript
+.nb: application/mathematica
+.pdf: application/pdf
+.svg: application/svg+xml
+.tar: application/x-tar
+.tex: application/x-tex
+.xhtml: application/xhtml+xml
+.xml: application/xml
+.xslt: application/xslt+xml

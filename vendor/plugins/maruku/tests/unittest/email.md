@@ -27,7 +27,11 @@ This is an email address:
 
 
 *** Output of Markdown.pl ***
-<p>This is an email address: <a href="&#109;&#x61;&#x69;&#108;&#116;&#111;:&#97;&#x6E;&#100;&#114;&#x65;&#x61;&#64;&#105;&#110;&#x76;&#97;&#x6C;&#x69;&#100;&#46;&#x69;&#x74;">&#97;&#x6E;&#100;&#114;&#x65;&#x61;&#64;&#105;&#110;&#x76;&#97;&#x6C;&#x69;&#100;&#46;&#x69;&#x74;</a></p>
+<p>This is an email address: <a href="&#109;&#97;&#x69;&#108;&#116;&#x6F;:&#97;&#110;&#x64;&#114;&#101;&#x61;&#64;&#x69;&#x6E;&#118;&#x61;&#108;&#x69;&#x64;&#x2E;&#x69;&#116;">&#97;&#110;&#x64;&#114;&#101;&#x61;&#64;&#x69;&#x6E;&#118;&#x61;&#108;&#x69;&#x64;&#x2E;&#x69;&#116;</a></p>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<TypeError: no implicit conversion from nil to integer>
+<div
+    ><p>This is an email address: <a href='&amp;#109;&amp;#97;&amp;#x69;&amp;#108;&amp;#116;&amp;#x6F;:&amp;#97;&amp;#110;&amp;#x64;&amp;#114;&amp;#101;&amp;#x61;&amp;#64;&amp;#x69;&amp;#x6E;&amp;#118;&amp;#x61;&amp;#108;&amp;#x69;&amp;#x64;&amp;#x2E;&amp;#x69;&amp;#116;'>&#97;&#110;&#x64;&#114;&#101;&#x61;&#64;&#x69;&#x6E;&#118;&#x61;&#108;&#x69;&#x64;&#x2E;&#x69;&#116;</a
+    ></p
+  ></div
+>

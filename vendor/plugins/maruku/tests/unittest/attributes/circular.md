@@ -40,11 +40,10 @@ Paragraph
 {:b: a}</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph {:a}
- </p>
- <p>
-  {:a: b} {:b: a}
- </p>
-</div>
+<div
+    ><p>Paragraph
+{:a}</p
+    ><p>{:a: b}
+{:b: a}</p
+  ></div
+>

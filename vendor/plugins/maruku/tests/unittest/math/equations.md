@@ -54,58 +54,25 @@ $$ x = y $$$$ x$$ x = y $$$$ x = y $$
 
 
 *** Output of Markdown.pl ***
-<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
+<p>$$ x = y $$</p>
 
-<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
+<p>$$ x 
+= y $$</p>
 
-<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
+<p>$$ 
+x = y $$</p>
 
-<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>x</mi><mo>=</mo><mi>y</mi></math>
+<p>$$ x = y 
+$$</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mi>
-   x
-  </mi>
-  <mo>
-   =
-  </mo>
-  <mi>
-   y
-  </mi>
- </math>
- <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mi>
-   x
-  </mi>
-  <mo>
-   =
-  </mo>
-  <mi>
-   y
-  </mi>
- </math>
- <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mi>
-   x
-  </mi>
-  <mo>
-   =
-  </mo>
-  <mi>
-   y
-  </mi>
- </math>
- <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mi>
-   x
-  </mi>
-  <mo>
-   =
-  </mo>
-  <mi>
-   y
-  </mi>
- </math>
-</div>
+<div
+    ><p>$$ x = y $$</p
+    ><p>$$ x 
+= y $$</p
+    ><p>$$ 
+x = y $$</p
+    ><p>$$ x = y 
+$$</p
+  ></div
+>

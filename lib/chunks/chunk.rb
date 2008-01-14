@@ -1,4 +1,4 @@
-require 'uri/common'
+#require 'uri/common'
 
 # A chunk is a pattern of text that can be protected
 # and interrogated by a renderer. Each Chunk class has a 

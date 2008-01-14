@@ -50,13 +50,14 @@ end tell
 </code></pre>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Here is an example of AppleScript:
- </p>
- <pre>
-  <code>
-   tell application "Foo" beep end tell tab 
-  </code>
- </pre>
-</div>
+<div
+    ><p>Here is an example of AppleScript:</p
+    ><pre
+      ><code>tell application "Foo"
+    beep
+end tell
+    tab
+</code
+    ></pre
+  ></div
+>

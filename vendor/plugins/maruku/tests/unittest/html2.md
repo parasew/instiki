@@ -35,14 +35,12 @@ One 123
 <p><div></div>123</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  One 
-  <div/>
-  123
- </p>
- <p>
-  <div/>
-  123
- </p>
-</div>
+<div
+    ><p>One
+<div
+      />123</p
+    ><p
+      ><div
+      />123</p
+  ></div
+>

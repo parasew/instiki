@@ -42,11 +42,10 @@ Paragraph1Paragraph2
 Paragraph2</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph1 {:#par1}
- </p>
- <p>
-  {:#par2} Paragraph2
- </p>
-</div>
+<div
+    ><p>Paragraph1
+{:#par1}</p
+    ><p>{:#par2}
+Paragraph2</p
+  ></div
+>

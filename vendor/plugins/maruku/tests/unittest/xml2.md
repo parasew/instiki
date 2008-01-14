@@ -31,8 +31,8 @@ md_el(:document,[md_html("<!--\n<\n-->")],{},[])
 -->
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <!--
+<div
+    >    <!--
 <
--->
-</div>
+--></div
+>

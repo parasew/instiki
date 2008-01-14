@@ -149,16 +149,16 @@ Line:
 Position: 
 Last 80 unconsumed characters:
   <pre><code>She was 6\"12\'. </code></pre>  <blockquote>   <p>She was 6\"12\'.</>
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/baseparser.rb:320:in `pull'
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/treeparser.rb:21:in `parse'
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/document.rb:204:in `build'
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/document.rb:42:in `initialize'
+/sw/lib/ruby/1.8/rexml/parsers/baseparser.rb:320:in `pull'
+/sw/lib/ruby/1.8/rexml/parsers/treeparser.rb:21:in `parse'
+/sw/lib/ruby/1.8/rexml/document.rb:190:in `build'
+/sw/lib/ruby/1.8/rexml/document.rb:45:in `initialize'
 bin/marutest:200:in `new'
 bin/marutest:200:in `run_test'
-bin/marutest:275:in `marutest'
-bin/marutest:272:in `each'
-bin/marutest:272:in `marutest'
-bin/marutest:347
+bin/marutest:274:in `marutest'
+bin/marutest:271:in `each'
+bin/marutest:271:in `marutest'
+bin/marutest:346
 ...
 Missing end tag for 'here' (got "p")
 Line: 

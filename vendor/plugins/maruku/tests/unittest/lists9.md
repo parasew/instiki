@@ -82,24 +82,21 @@ DuetretretreDue
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <ul>
-  <li>
-   Due 
-   <ol>
-    <li>
-     tre
-    </li>
-    <li>
-     tre
-    </li>
-    <li>
-     tre
-    </li>
-   </ol>
-  </li>
-  <li>
-   Due
-  </li>
- </ul>
-</div>
+<div
+    ><ul>
+<li>Due
+<ol>
+<li>tre</li
+          >
+<li>tre</li
+          >
+<li>tre</li
+          >
+</ol
+      ></li
+      >
+<li>Due</li
+      >
+</ul
+  ></div
+>

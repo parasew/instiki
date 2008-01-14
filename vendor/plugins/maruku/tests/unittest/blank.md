@@ -36,11 +36,8 @@ Linea 1Linea 2
 <p>Linea 2</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Linea 1
- </p>
- <p>
-  Linea 2
- </p>
-</div>
+<div
+    ><p>Linea 1</p
+    ><p>Linea 2</p
+  ></div
+>

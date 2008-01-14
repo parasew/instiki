@@ -31,8 +31,8 @@ md_el(:document,[
 {:b: a}</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  {a}: a {:b: a}
- </p>
-</div>
+<div
+    ><p>{a}: a
+{:b: a}</p
+  ></div
+>

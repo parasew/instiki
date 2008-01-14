@@ -39,10 +39,11 @@ md_el(:document,[
 </div>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <div class='frame'>
-  <a href='http://www.flickr.com/photos/censi/54757256/' class='photo'>
-   <img src='http://static.flickr.com/27/54757256_1a2c1d2a95_m.jpg' moz-do-not-send='true' alt=''/>
-  </a>
- </div>
-</div>
+<div
+    ><div class='frame'
+      ><a href='http://www.flickr.com/photos/censi/54757256/' class='photo'
+        ><img src='http://static.flickr.com/27/54757256_1a2c1d2a95_m.jpg' moz-do-not-send='true' alt=''
+        /></a
+    ></div
+  ></div
+>

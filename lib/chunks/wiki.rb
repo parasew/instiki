@@ -1,7 +1,4 @@
-require 'wiki_words'
 require 'chunks/chunk'
-require 'chunks/wiki'
-require 'cgi'
 
 # Contains all the methods for finding and replacing wiki related links.
 module WikiChunk

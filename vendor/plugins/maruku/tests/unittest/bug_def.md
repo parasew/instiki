@@ -26,8 +26,7 @@ test:
 <p>[test][]:</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  [test][]:
- </p>
-</div>
+<div
+    ><p>[test][]:</p
+  ></div
+>

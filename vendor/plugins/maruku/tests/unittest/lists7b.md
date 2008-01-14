@@ -133,21 +133,19 @@ aa1a2b
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <ul>
-  <li>
-   a 
-   <ul>
-    <li>
-     a1
-    </li>
-    <li>
-     a2
-    </li>
-   </ul>
-  </li>
-  <li>
-   b
-  </li>
- </ul>
-</div>
+<div
+    ><ul>
+<li>a
+<ul>
+<li>a1</li
+          >
+<li>a2</li
+          >
+</ul
+      ></li
+      >
+<li>b</li
+      >
+</ul
+  ></div
+>

@@ -54,8 +54,9 @@ Paragraph
 Paragraph</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph Paragraph Paragraph
- </p>
-</div>
+<div
+    ><p>Paragraph
+Paragraph
+Paragraph</p
+  ></div
+>

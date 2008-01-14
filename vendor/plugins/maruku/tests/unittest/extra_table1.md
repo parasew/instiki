@@ -52,12 +52,11 @@ Content Cell  | Content Cell
 Content Cell  | Content Cell</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  CSS: style.css
- </p>
- <p>
-  First Header | Second Header ------------- | ------------- Content Cell |
-  Content Cell Content Cell | Content Cell
- </p>
-</div>
+<div
+    ><p>CSS: style.css</p
+    ><p>First Header | Second Header
+------------- | -------------
+Content Cell | Content Cell
+Content Cell | Content Cell</p
+  ></div
+>

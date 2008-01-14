@@ -24,9 +24,8 @@ module Engines
   end
 
   class Textile < AbstractEngine
-    require 'sanitize'
-    include Sanitize
     def mask
+      require 'sanitize'
       require 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
@@ -37,9 +36,8 @@ module Engines
   end
 
   class Markdown < AbstractEngine
-    require 'sanitize'
-    include Sanitize
     def mask
+      require 'sanitize'
       require 'maruku'
       require 'maruku/ext/math'
 
@@ -61,9 +59,8 @@ module Engines
   end
 
   class MarkdownMML < AbstractEngine
-    require 'sanitize'
-    include Sanitize
     def mask
+      require 'sanitize'
       require 'maruku'
       require 'maruku/ext/math'
 
@@ -87,9 +84,8 @@ module Engines
   end
 
   class Mixed < AbstractEngine
-    require 'sanitize'
-    include Sanitize
     def mask
+      require 'sanitize'
       require 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
@@ -100,9 +96,8 @@ module Engines
   end
 
   class RDoc < AbstractEngine
-    require 'sanitize'
-    include Sanitize
     def mask
+      require 'sanitize'
       require_dependency 'rdocsupport'
       html = RDocSupport::RDocFormatter.new(@content).to_html
       sanitize_xhtml(html)

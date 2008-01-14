@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
-require 'wiki_words'
 
 class WikiWordsTest < Test::Unit::TestCase
   

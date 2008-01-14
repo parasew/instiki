@@ -27,8 +27,9 @@ bar
 <p><img src="/foo.jpg" alt="bar" title="" /></p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  <img title='' src='/foo.jpg' alt='bar'/>
- </p>
-</div>
+<div
+    ><p
+      ><img title='' src='/foo.jpg' alt='bar'
+      /></p
+  ></div
+>

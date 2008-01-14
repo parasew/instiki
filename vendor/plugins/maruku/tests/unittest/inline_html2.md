@@ -33,11 +33,8 @@ md_el(:document,[
 <p markdown="1">Test **bold**</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <div markdown='1'>
-  Test **bold**
- </div>
- <p markdown='1'>
-  Test **bold**
- </p>
-</div>
+<div
+    ><div markdown='1'>Test **bold**</div
+    ><p markdown='1'>Test **bold**</p
+  ></div
+>

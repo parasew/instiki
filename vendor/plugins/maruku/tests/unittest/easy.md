@@ -25,15 +25,10 @@ Hello! how are you?
 <p><em>Hello!</em> how are <strong>you</strong>?</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  <em>
-   Hello!
-  </em>
-   how are 
-  <strong>
-   you
-  </strong>
-  ?
- </p>
-</div>
+<div
+    ><p
+      ><em>Hello!</em
+      > how are <strong>you</strong
+      >?</p
+  ></div
+>

@@ -85,36 +85,16 @@ inspiration for Markdown's syntax is the format of plain text email.</p>
 <p>To this end, Markdown's syntax is comprised entirely of punctuation</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  filters -- including 
-  <a href='http://docutils.sourceforge.net/mirror/setext.html'>
-   Setext
-  </a>
-  , 
-  <a href='http://www.aaronsw.com/2002/atx/'>
-   atx
-  </a>
-  , 
-  <a href='http://textism.com/tools/textile/'>
-   Textile
-  </a>
-  , 
-  <a href='http://docutils.sourceforge.net/rst.html'>
-   reStructuredText
-  </a>
-  , 
-  <a href='http://www.triptico.com/software/grutatxt.html'>
-   Grutatext
-  </a>
-  , and 
-  <a href='http://ettext.taint.org/doc/'>
-   EtText
-  </a>
-   -- the single biggest source of inspiration for Markdown's syntax is the
-  format of plain text email.
- </p>
- <p>
-  To this end, Markdown's syntax is comprised entirely of punctuation
- </p>
-</div>
+<div
+    ><p>filters -- including <a href='http://docutils.sourceforge.net/mirror/setext.html'>Setext</a
+      >, <a href='http://www.aaronsw.com/2002/atx/'>atx</a
+      >, <a href='http://textism.com/tools/textile/'>Textile</a
+      >, <a href='http://docutils.sourceforge.net/rst.html'>reStructuredText</a
+      >,
+<a href='http://www.triptico.com/software/grutatxt.html'>Grutatext</a
+      >, and <a href='http://ettext.taint.org/doc/'>EtText</a
+      > -- the single biggest source of
+inspiration for Markdown's syntax is the format of plain text email.</p
+    ><p>To this end, Markdown's syntax is comprised entirely of punctuation</p
+  ></div
+>

@@ -78,23 +78,12 @@ ParagraphheaderParagraphheaderParagraphheader
 <h1>header</h1>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph
- </p>
- <h3>
-  header
- </h3>
- <p>
-  Paragraph
- </p>
- <h2>
-  header
- </h2>
- <p>
-  Paragraph
- </p>
- <h1>
-  header
- </h1>
-</div>
+<div
+    ><p>Paragraph</p
+    ><h3>header</h3
+    ><p>Paragraph</p
+    ><h2>header</h2
+    ><p>Paragraph</p
+    ><h1>header</h1
+  ></div
+>

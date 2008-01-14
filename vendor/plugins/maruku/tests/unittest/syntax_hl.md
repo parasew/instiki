@@ -63,8 +63,38 @@ This is ruby code:This is ruby code:
 
 <pre><code>require 'maruku'
 
-puts Maruku.new(&lt;math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'&gt;&lt;mi&gt;stdin&lt;/mi&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;mo&gt;.&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;to&lt;/mi&gt; &lt;mi&gt;html&lt;/mi&gt;&lt;/msub&gt;&lt;mi&gt;This&lt;/mi&gt;&lt;mi&gt;is&lt;/mi&gt;&lt;mi&gt;ruby&lt;/mi&gt;&lt;mi&gt;code&lt;/mi&gt;&lt;mo&gt;:&lt;/mo&gt;&lt;mi&gt;require&lt;/mi&gt;&lt;mo&gt;&amp;prime;&lt;/mo&gt;&lt;mi&gt;maruku&lt;/mi&gt;&lt;mo&gt;&amp;prime;&lt;/mo&gt;&lt;mrow&gt;&lt;mo&gt;:&lt;/mo&gt;&lt;mi&gt;lang&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;ruby&lt;/mi&gt;&lt;msub&gt;&lt;mi&gt;html&lt;/mi&gt; &lt;mi&gt;use&lt;/mi&gt;&lt;/msub&gt;&lt;msub&gt;&lt;mo&gt;&lt;/mo&gt;&lt;mi&gt;syntax&lt;/mi&gt;&lt;/msub&gt;&lt;/mrow&gt;&lt;mi&gt;puts&lt;/mi&gt;&lt;mi&gt;Maruku&lt;/mi&gt;&lt;mo&gt;.&lt;/mo&gt;&lt;mi&gt;new&lt;/mi&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;/math&gt;stdin).to_html
+puts Maruku.new($stdin).to_html
+</code></pre>
+
+<p>This is ruby code:</p>
+
+<pre><code>require 'maruku'
+</code></pre>
+
+<p>{: lang=ruby html<em>use</em>syntax}</p>
+
+<pre><code>puts Maruku.new($stdin).to_html
 </code></pre>
 
 *** Output of Markdown.pl (parsed) ***
-Error: #<TypeError: no implicit conversion from nil to integer>
+<div
+    ><p>This is ruby code:</p
+    ><pre
+      ><code>require 'maruku'
+
+puts Maruku.new($stdin).to_html
+</code
+    ></pre
+    ><p>This is ruby code:</p
+    ><pre
+      ><code>require 'maruku'
+</code
+    ></pre
+    ><p>{: lang=ruby html<em>use</em
+      >syntax}</p
+    ><pre
+      ><code>puts Maruku.new($stdin).to_html
+</code
+    ></pre
+  ></div
+>

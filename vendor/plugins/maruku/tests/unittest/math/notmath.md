@@ -32,24 +32,13 @@ This is not $math$.[ \alpha ]
 
 
 *** Output of Markdown.pl ***
-<p>This is not <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mi>math</mi></math>.</p>
+<p>This is not $math$.</p>
 
-<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'><mi>&alpha;</mi></math>
+<p>[ \alpha ]</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  This is not 
-  <math display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>
-   <mi>
-    math
-   </mi>
-  </math>
-  .
- </p>
- <math display='block' xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mi>
-   &alpha;
-  </mi>
- </math>
-</div>
+<div
+    ><p>This is not $math$.</p
+    ><p>[ \alpha ]</p
+  ></div
+>
