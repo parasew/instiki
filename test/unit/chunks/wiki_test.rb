@@ -52,6 +52,19 @@ class WikiTest < Test::Unit::TestCase
 	      {:page_name => 'Sperberg-McQueen', :web_name => 'Froogle'})
   end
   
+  def test_void_include
+    # double brackets with only spaces inside are not a WikiInclude
+    no_match(Include, "This [[!include ]] are [[!include]] no [[!include \t ]] links")
+  end
+
+  def test_include_strip_spaces
+    content = "This is a [[!include Sperberg-McQueen \t ]] link with trailing spaces to strip. " +
+              "This is a [[!include \t Gross-Mende]] link with leading spaces to strip." +
+              "This is a [[!include Milo Miles  ]] link with spaces around it to strip"
+    recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
+    assert_equal ['Sperberg-McQueen', 'Gross-Mende', 'Milo Miles'], recognized_includes
+  end
+
   def test_include_chunk_pattern
     content = 'This is a [[!include pagename]] and [[!include WikiWord]] but [[blah]]'
     recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
