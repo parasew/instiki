@@ -8,7 +8,9 @@ module ActionView
           if name == :form && @protect_form_from_spam
             session[:form_keys] ||= {}
             form_key = Digest::SHA1.hexdigest(self.object_id.to_s + rand.to_s)
-            session[:form_keys][form_key] = 0
+            session[:form_keys][form_key] = [Time.now, 0]
+            first = session[:form_keys].values.sort { |a,b| a[0] <=> b[0] } [0]
+            session[:form_keys].delete(session[:form_keys].index(first)) if session[:form_keys].length > 30
             out << domEnkode(form_key)
           end
         end
