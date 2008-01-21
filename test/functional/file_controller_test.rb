@@ -15,6 +15,11 @@ class FileControllerTest < Test::Unit::TestCase
     @controller = FileController.new
     @request = ActionController::TestRequest.new
     @response = ActionController::TestResponse.new
+    class << @request.session
+      attr_accessor :dbman
+    end
+    # simulate a cookie session store
+    @request.session.dbman = FakeSessionDbMan
     @web = webs(:test_wiki)
     @wiki = Wiki.new
     WikiFile.delete_all

@@ -7,9 +7,9 @@ module Sniffer
 
     while pos < s.length
       case s[pos]
-      when 0x09, 0x20, 0x0A, 0x0D # tab, space, LF, CR
+      when ?\t, ?\ , ?\n, ?\r # 0x09, 0x20, 0x0A, 0x0D == tab, space, LF, CR
         pos += 1
-      when  0x3C # "<"
+      when ?< # 0x3C
         pos += 1
         if s[pos..pos+2] == "!--" # [0x21, 0x2D, 0x2D]
           pos += 3
@@ -17,13 +17,13 @@ module Sniffer
             pos += 1
           end
           pos += 3
-        elsif s[pos] == 0x21 # "!"
+        elsif s[pos] == ?! # 0x21
           pos += 1
-          until s[pos] == 0x3E or pos >= s.length # ">"
+          until s[pos] == ?> or pos >= s.length # 0x3E
             pos += 1 
           end
           pos += 1
-        elsif s[pos] == 0x3F # "?"
+        elsif s[pos] == ?? # 0x3F
           until s[pos..pos+1] == "?>" or pos >= s.length # [0x3F, 0x3E]
             pos +=  1
           end

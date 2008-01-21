@@ -9,7 +9,11 @@ def assert_xml_equal(input, expected=nil, parser=HTML5::XMLParser)
   document = parser.parse(input.chomp, :lowercase_attr_name => false, :lowercase_element_name => false).root
   if not expected
     expected = input.chomp.gsub(XMLELEM,&sortattrs)
-    expected = expected.gsub(/&#(\d+);/) {[$1.to_i].pack('U')}
+    if expected.respond_to? :force_encoding
+      expected = expected.gsub(/&#(\d+);/) {$1.to_i.chr('utf-8')}
+    else
+      expected = expected.gsub(/&#(\d+);/) {[$1.to_i].pack('U')}
+    end
     output = document.to_s.gsub(/'/,'"').gsub(XMLELEM,&sortattrs)
     assert_equal(expected, output)
   else

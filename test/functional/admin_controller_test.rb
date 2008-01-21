@@ -13,6 +13,11 @@ class AdminControllerTest < Test::Unit::TestCase
     @controller = AdminController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    class << @request.session
+      attr_accessor :dbman
+    end
+    # simulate a cookie session store
+    @request.session.dbman = FakeSessionDbMan
     @wiki = Wiki.new
     @oak = pages(:oak)
     @elephant = pages(:elephant)

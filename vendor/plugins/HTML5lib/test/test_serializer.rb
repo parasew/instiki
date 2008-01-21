@@ -50,7 +50,7 @@ class Html5SerializeTestcase < Test::Unit::TestCase
           flunk("Expected: #{expected.inspect}, Received: #{result.inspect}")
         end
 
-        return if test_name == 'optionaltags'
+        next if test_name == 'optionaltags'
 
         result = HTML5::XHTMLSerializer.
           serialize(JsonWalker.new(test["input"]), (test["options"] || {}))
@@ -60,7 +60,6 @@ class Html5SerializeTestcase < Test::Unit::TestCase
         elsif !expected.include?(result)
           flunk("Expected: #{expected.inspect}, Received: #{result.inspect}")
         end
-
       end
 
     end

@@ -8,10 +8,16 @@ require 'application'
 require 'test/unit'
 require 'active_record/fixtures'
 require 'action_controller/test_process'
-#require 'action_web_service/test_invoke'
-#require 'breakpoint'
 require 'wiki_content'
 require 'url_generator'
+require 'digest/sha1'
+
+# simulates cookie session store
+class FakeSessionDbMan
+  def self.generate_digest(data)
+    Digest::SHA1.hexdigest("secure")
+  end
+end
 
 Test::Unit::TestCase.pre_loaded_fixtures = false
 Test::Unit::TestCase.use_transactional_fixtures = true

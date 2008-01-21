@@ -118,7 +118,11 @@ module HTML5
       end
 
       if 0 < charAsInt and charAsInt <= 1114111 and not (55296 <= charAsInt and charAsInt <= 57343)
-        char = [charAsInt].pack('U')
+        if String.method_defined? :force_encoding
+          char = charAsInt.chr('utf-8')
+        else
+          char = [charAsInt].pack('U')
+        end
       else
         char = [0xFFFD].pack('U')
         @token_queue << {:type => :ParseError, :data => "cant-convert-numeric-entity", :datavars => {"charAsInt" => charAsInt}}

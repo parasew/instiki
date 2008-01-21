@@ -20,6 +20,11 @@ class WikiControllerTest < Test::Unit::TestCase
     @controller = WikiController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    class << @request.session
+      attr_accessor :dbman
+    end
+    # simulate a cookie session store
+    @request.session.dbman = FakeSessionDbMan
     @wiki = Wiki.new
     @web = webs(:test_wiki)
     @home = @page = pages(:home_page)

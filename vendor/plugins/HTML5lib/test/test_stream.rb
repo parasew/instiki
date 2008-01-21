@@ -5,6 +5,14 @@ require 'html5/inputstream'
 class HTMLInputStreamTest < Test::Unit::TestCase
   include HTML5
 
+  def getc stream
+    if String.method_defined? :force_encoding
+      stream.char.force_encoding('binary')
+    else
+      stream.char
+    end
+  end
+
   def test_char_ascii
     stream = HTMLInputStream.new("'", :encoding=>'ascii')
     assert_equal('ascii', stream.char_encoding)
@@ -13,23 +21,23 @@ class HTMLInputStreamTest < Test::Unit::TestCase
 
   def test_char_null
     stream = HTMLInputStream.new("\x00")
-    assert_equal("\xef\xbf\xbd", stream.char)
+    assert_equal("\xef\xbf\xbd", getc(stream))
   end
 
   def test_char_utf8
     stream = HTMLInputStream.new("\xe2\x80\x98", :encoding=>'utf-8')
     assert_equal('utf-8', stream.char_encoding)
-    assert_equal("\xe2\x80\x98", stream.char)
+    assert_equal("\xe2\x80\x98", getc(stream))
   end
 
   def test_char_win1252
     stream = HTMLInputStream.new("\xa2\xc5\xf1\x92\x86")
     assert_equal('windows-1252', stream.char_encoding)
-    assert_equal("\xc2\xa2", stream.char)
-    assert_equal("\xc3\x85", stream.char)
-    assert_equal("\xc3\xb1", stream.char)
-    assert_equal("\xe2\x80\x99", stream.char)
-    assert_equal("\xe2\x80\xa0", stream.char)
+    assert_equal("\xc2\xa2", getc(stream))
+    assert_equal("\xc3\x85", getc(stream))
+    assert_equal("\xc3\xb1", getc(stream))
+    assert_equal("\xe2\x80\x99", getc(stream))
+    assert_equal("\xe2\x80\xa0", getc(stream))
   end
 
   def test_bom

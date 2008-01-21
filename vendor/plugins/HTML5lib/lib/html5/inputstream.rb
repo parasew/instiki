@@ -281,7 +281,11 @@ module HTML5
             @tell += 1 if @buffer[@tell] == "\n"
             c = "\n"
           when "\x80" .. "\x9F"
-            c = ''.force_encoding('UTF-8') << ENTITIES_WINDOWS1252[c.ord-0x80]
+            c = ENTITIES_WINDOWS1252[c.ord-0x80].chr('utf-8')
+          when "\xA0" .. "\xFF"
+            if c.encoding == Encoding::ASCII_8BIT
+              c = c.encode('utf-8','iso-8859-1')
+            end
           end
 
           if c == "\x0D"
@@ -299,8 +303,7 @@ module HTML5
             @col += 1
           end
 
-          # binary utf-8
-          c.ord > 126 ? [c.ord].pack('U') : c
+          c
 
         when 0x01..0x7F
           if c == 0x0D

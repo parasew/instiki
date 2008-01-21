@@ -13,20 +13,18 @@ require 'test/test_cli'
 
 require 'test/test_input_stream'
 
-# incompatible encoding regexp match
-# require 'test/test_lxp'
+require 'test/test_lxp'
 
 require 'test/test_parser'
 
 # warning: method redefined; discarding old test
 # warning: instance variable @expanded_name not initialized
+# SimpleDelegator.class
 # require 'test/test_sanitizer'
 
-# warning: instance variable @delegate_sd_obj not initialized
-# require 'test/test_serializer'
+require 'test/test_serializer'
 
-# undebugged
-# require 'test/test_sniffer'
+require 'test/test_sniffer'
 
 require 'test/test_stream'
 
