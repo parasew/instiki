@@ -163,7 +163,7 @@ class WikiController < ApplicationController
   end
 
   def edit
-    if @page.nil?
+    if @page.nil? or not @page_name.is_utf8?
       redirect_home
     elsif @page.locked?(Time.now) and not params['break_lock']
       redirect_to :web => @web_name, :action => 'locked', :id => @page_name
@@ -173,10 +173,12 @@ class WikiController < ApplicationController
   end
   
   def locked
+    render(:text => 'Page name is not valid utf-8.', :status => 400, :layout => 'error') unless @page_name.is_utf8? 
     # to template
   end
   
   def new
+    render(:text => 'Page name is not valid utf-8.', :status => 400, :layout => 'error') unless @page_name.is_utf8? 
     # to template
   end
 
@@ -226,7 +228,7 @@ class WikiController < ApplicationController
   end
 
   def save
-    render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil?
+    render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil? or not @page_name.is_utf8?
     unless (request.post? || ENV["RAILS_ENV"] == "test")
       headers['Allow'] = 'POST'
       render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
@@ -293,7 +295,7 @@ class WikiController < ApplicationController
         end
       end
     else
-      if not @page_name.nil? and not @page_name.empty?
+      if not @page_name.nil? and @page_name.is_utf8? and not @page_name.empty?
         redirect_to :web => @web_name, :action => 'new', :id => @page_name
       else
         render :text => 'Page name is not specified', :status => 404, :layout => 'error'
