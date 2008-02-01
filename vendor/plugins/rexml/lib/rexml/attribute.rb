@@ -17,8 +17,6 @@ module REXML
 		attr_writer :normalized	
 		PATTERN = /\s*(#{NAME_STR})\s*=\s*(["'])(.*?)\2/um
 
-    NEEDS_A_SECOND_CHECK = /(<|&((#{Entity::NAME});|(#0*((?:\d+)|(?:x[a-fA-F0-9]+)));)?)/um
-
 		# Constructor.
     # FIXME: The parser doesn't catch illegal characters in attributes
     #
@@ -150,7 +148,7 @@ module REXML
 			@element = element
 
       if @normalized
-        Text.check( @normalized, NEEDS_A_SECOND_CHECK, doctype )
+        Text.check( @normalized, Text::NEEDS_A_SECOND_CHECK, doctype )
       end
 
 			self

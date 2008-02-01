@@ -53,7 +53,9 @@ module MaRuKu; module Strings
 			keys[:data] = $'
 			headers = $1
 			headers.split("\n").each do |l| 
-				k, v = l.split(':')
+# Fails if there are other ':' characters.
+#				k, v = l.split(':')
+				k, v = l.split(':', 2)
 				k, v = normalize_key_and_value(k, v)
 				k = k.to_sym
 #				puts "K = #{k}, V=#{v}"
