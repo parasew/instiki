@@ -990,7 +990,9 @@ module REXML
     end
 
     def to_a
-      values.flatten
+      attributes = []
+      each_attribute {|attr| attributes << attr}
+      attributes
     end
 
     # Returns the number of attributes the owning Element contains.

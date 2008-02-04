@@ -27,13 +27,13 @@ module HTML5
       ul var]
 
     MATHML_ELEMENTS = %w[annotation annotation-xml maction math merror mfrac
-      mi mmultiscripts mn mo mover mpadded mphantom mprescripts mroot mrow
+      mfenced mi mmultiscripts mn mo mover mpadded mphantom mprescripts mroot mrow
       mspace msqrt mstyle msub msubsup msup mtable mtd mtext mtr munder
       munderover none semantics]
 
     SVG_ELEMENTS = %w[a animate animateColor animateMotion animateTransform
-      circle defs desc ellipse font-face font-face-name font-face-src g
-      glyph hkern linearGradient line marker metadata missing-glyph
+      circle defs desc ellipse font-face font-face-name font-face-src foreignObject
+      g glyph hkern linearGradient line marker metadata missing-glyph
       mpath path polygon polyline radialGradient rect set stop svg switch
       text title tspan use]
 
@@ -46,13 +46,13 @@ module HTML5
       selected shape size span src start style summary tabindex target title
       type usemap valign value vspace width xml:lang]
 
-    MATHML_ATTRIBUTES = %w[actiontype align columnalign columnalign
+    MATHML_ATTRIBUTES = %w[actiontype align close columnalign columnalign
       columnalign columnlines columnspacing columnspan depth display
       displaystyle encoding equalcolumns equalrows fence fontstyle fontweight
       frame height linethickness lspace mathbackground mathcolor mathvariant
-      mathvariant maxsize minsize other rowalign rowalign rowalign rowlines
-      rowspacing rowspan rspace scriptlevel selection separator stretchy
-      width width xlink:href xlink:show xlink:type xmlns xmlns:xlink]
+      mathvariant maxsize minsize open other rowalign rowalign rowalign rowlines
+      rowspacing rowspan rspace scriptlevel selection separator separators
+      stretchy width width xlink:href xlink:show xlink:type xmlns xmlns:xlink]
 
     SVG_ATTRIBUTES = %w[accent-height accumulate additive alphabetic
        arabic-form ascent attributeName attributeType baseProfile bbox begin

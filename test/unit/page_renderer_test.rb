@@ -43,10 +43,10 @@ class PageRendererTest < Test::Unit::TestCase
 
   def test_content_with_wiki_links
     assert_equal '<p><span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
-        'would be <a class="existingWikiWord" href="../show/MyWay">My Way</a> <span class="maruku-inline">' +
+        'would be <a class="existingWikiWord" href="../show/MyWay">My Way</a> ' +
         '<math class="maruku-mathml" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">' +
         '<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics>' +
-        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math></span> in kinda ' +
+        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math> in kinda ' +
         '<a class="existingWikiWord" href="../show/ThatWay">That Way</a> in ' +
         '<span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
         %{though <a class="existingWikiWord" href="../show/MyWay">My Way</a> OverThere \xE2\x80\x93 see } +
@@ -60,9 +60,9 @@ class PageRendererTest < Test::Unit::TestCase
     set_web_property :markup, :markdownMML
   
     assert_markup_parsed_as(
-        %{<p>equation <span class="maruku-inline"><math class="maruku-mathml" } +
+        %{<p>equation <math class="maruku-mathml" } +
         %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></p>},
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></p>},
         "equation $\\sin(x)$")
   
     assert_markup_parsed_as(
@@ -103,9 +103,9 @@ class PageRendererTest < Test::Unit::TestCase
         code_block)
 
     assert_markup_parsed_as(
-        %{<p><span class="maruku-inline"><math class="maruku-mathml" } +
+        %{<p><math class="maruku-mathml" } +
         %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span> ecuasi\303\263n</p>},
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math> ecuasi\303\263n</p>},
         "$\\sin(x)$ ecuasi\303\263n")
    
     assert_markup_parsed_as(
@@ -116,16 +116,16 @@ class PageRendererTest < Test::Unit::TestCase
         "ecuasi\303\263n\n$$\\sin(x)$$")
   
     assert_markup_parsed_as(
-        %{<p>ecuasi\303\263n</p>\n\n<p><span class="maruku-inline"><math class="maruku-mathml" } +
+        %{<p>ecuasi\303\263n</p>\n\n<p><math class="maruku-mathml" } +
         %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></p>},
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></p>},
         "ecuasi\303\263n \n\n$\\sin(x)$")
   
 #FIXME
     assert_markup_parsed_as(
-        %{<p>ecuasi\303\263n <span class="maruku-inline"><math class="maruku-mathml" } +
+        %{<p>ecuasi\303\263n <math class="maruku-mathml" } +
         %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></p>},
+        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></p>},
         "ecuasi\303\263n $\\sin(x)$")
   
   end
@@ -300,10 +300,10 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_content_for_export
     assert_equal '<p><span class="newWikiWord">His Way</span> would be ' +
-        '<a class="existingWikiWord" href="MyWay.html">My Way</a> <span class="maruku-inline">' +
+        '<a class="existingWikiWord" href="MyWay.html">My Way</a> ' +
         '<math class="maruku-mathml" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">' +
         '<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics>' +
-        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math></span> in kinda ' +
+        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math> in kinda ' +
         '<a class="existingWikiWord" href="ThatWay.html">That Way</a> in ' +
         '<span class="newWikiWord">His Way</span> though ' +
         %{<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere \xE2\x80\x93 see } +
