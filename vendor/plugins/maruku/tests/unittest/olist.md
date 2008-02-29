@@ -61,15 +61,19 @@ This is a list:onetwothree
 </ol>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>This is a list:</p
-    ><ol>
-<li>one</li
-      >
-<li>two</li
-      >
-<li>three</li
-      >
-</ol
-  ></div
->
+<div>
+ <p>
+  This is a list:
+ </p>
+ <ol>
+  <li>
+   one
+  </li>
+  <li>
+   two
+  </li>
+  <li>
+   three
+  </li>
+ </ol>
+</div>

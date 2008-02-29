@@ -51,5 +51,4 @@ md_el(:document,[],{},[])
 
 
 *** Output of Markdown.pl (parsed) ***
-<div
-  />
+<div/>

@@ -1,19 +1,22 @@
 Write a comment here
 *** Parameters: ***
-{} # params 
+require 'maruku/ext/div'; {} # params 
 *** Markdown input: ***
-[test][]:
-
++--
+ciao
+=--
 *** Output of inspect ***
-md_el(:document,[md_par([md_link(["test"],"test"), ":"])],{},[])
+md_el(:document,[md_el(:div,[md_par(["ciao"])],{},[])],{},[])
 *** Output of to_html ***
-<p><span>test</span>:</p>
+<div>
+<p>ciao</p>
+</div>
 *** Output of to_latex ***
-test:
+
 *** Output of to_md ***
-test:
+ciao
 *** Output of to_s ***
-test:
+ciao
 *** EOF ***
 
 
@@ -23,11 +26,9 @@ test:
 
 
 *** Output of Markdown.pl ***
-<p>[test][]:</p>
+<p>+--
+ciao
+=--</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  [test][]:
- </p>
-</div>
+Error: #<NoMethodError: private method `write_children' called for <div> ... </>:REXML::Element>

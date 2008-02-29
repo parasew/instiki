@@ -57,11 +57,10 @@ md_el(:document,[
 <hr />
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><hr
-    /><hr
-    /><hr
-    /><hr
-    /><hr
-    /></div
->
+<div>
+ <hr/>
+ <hr/>
+ <hr/>
+ <hr/>
+ <hr/>
+</div>

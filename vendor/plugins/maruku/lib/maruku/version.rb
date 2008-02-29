@@ -19,7 +19,7 @@
 #++
 
 module MaRuKu
-	Version = '0.5.7'
+	Version = '0.5.8'
 	
 	MarukuURL = 'http://maruku.rubyforge.org/'
 	

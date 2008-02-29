@@ -203,33 +203,53 @@ Paragraph, list with no space: * ciaoParagraph, list with 1 space: * ciaoParagra
 <h2>header</h2>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>Paragraph, list with no space:
-* ciao</p
-    ><p>Paragraph, list with 1 space:
- * ciao</p
-    ><p>Paragraph, list with 3 space:
- * ciao</p
-    ><p>Paragraph, list with 4 spaces:
- * ciao</p
-    ><p>Paragraph, list with 1 tab:
- * ciao</p
-    ><p>Paragraph (1 space after), list with no space: 
-* ciao</p
-    ><p>Paragraph (2 spaces after), list with no space: <br
-      />
-* ciao</p
-    ><p>Paragraph (3 spaces after), list with no space: <br
-      />
-* ciao</p
-    ><p>Paragraph with block quote:</p
-    ><blockquote>
- <p>Quoted</p
-      >
-</blockquote
-    ><p>Paragraph with header:</p
-    ><h3>header</h3
-    ><p>Paragraph with header on two lines:</p
-    ><h2>header</h2
-  ></div
->
+<div>
+ <p>
+  Paragraph, list with no space: * ciao
+ </p>
+ <p>
+  Paragraph, list with 1 space: * ciao
+ </p>
+ <p>
+  Paragraph, list with 3 space: * ciao
+ </p>
+ <p>
+  Paragraph, list with 4 spaces: * ciao
+ </p>
+ <p>
+  Paragraph, list with 1 tab: * ciao
+ </p>
+ <p>
+  Paragraph (1 space after), list with no space: * ciao
+ </p>
+ <p>
+  Paragraph (2 spaces after), list with no space: 
+  <br/>
+   * ciao
+ </p>
+ <p>
+  Paragraph (3 spaces after), list with no space: 
+  <br/>
+   * ciao
+ </p>
+ <p>
+  Paragraph with block quote:
+ </p>
+ <blockquote>
+  <p>
+   Quoted
+  </p>
+ </blockquote>
+ <p>
+  Paragraph with header:
+ </p>
+ <h3>
+  header
+ </h3>
+ <p>
+  Paragraph with header on two lines:
+ </p>
+ <h2>
+  header
+ </h2>
+</div>

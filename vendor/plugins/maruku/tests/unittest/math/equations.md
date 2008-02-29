@@ -66,13 +66,17 @@ x = y $$</p>
 $$</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>$$ x = y $$</p
-    ><p>$$ x 
-= y $$</p
-    ><p>$$ 
-x = y $$</p
-    ><p>$$ x = y 
-$$</p
-  ></div
->
+<div>
+ <p>
+  $$ x = y $$
+ </p>
+ <p>
+  $$ x = y $$
+ </p>
+ <p>
+  $$ x = y $$
+ </p>
+ <p>
+  $$ x = y $$
+ </p>
+</div>

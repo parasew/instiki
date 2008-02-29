@@ -76,21 +76,23 @@ CiaoTab * Tab * Tab
 </ul>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>Ciao</p
-    ><ul>
-<li>Tab
-<ul>
-<li>Tab
-<ul>
-<li>Tab</li
-              >
-</ul
-          ></li
-          >
-</ul
-      ></li
-      >
-</ul
-  ></div
->
+<div>
+ <p>
+  Ciao
+ </p>
+ <ul>
+  <li>
+   Tab 
+   <ul>
+    <li>
+     Tab 
+     <ul>
+      <li>
+       Tab
+      </li>
+     </ul>
+    </li>
+   </ul>
+  </li>
+ </ul>
+</div>

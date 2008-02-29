@@ -508,7 +508,9 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 	end
 	
 	def split_cells(s)
-		s.strip.split('|').select{|x|x.strip.size>0}.map{|x|x.strip}
+#		s.strip.split('|').select{|x|x.strip.size>0}.map{|x|x.strip}
+# changed to allow empty cells
+		s.strip.split('|').select{|x|x.size>0}.map{|x|x.strip}
 	end
 
 	def read_table(src)

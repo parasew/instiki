@@ -69,10 +69,23 @@ Targets    Inside:  last
 <p>Inside: <?mrk puts "Inside: Hello" ?> last</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p
-      >      <? noTarget?>      <?php ?>      <?xml ?>      <?mrk ?></p
-    ><p>Targets       <? noTarget?>      <?php ?>      <?xml ?>      <?mrk ?></p
-    ><p>Inside:       <?mrk puts "Inside: Hello"?> last</p
-  ></div
->
+<div>
+ <p>
+<? noTarget?>
+<?php ?>
+<?xml ?>
+<?mrk ?>
+ </p>
+ <p>
+  Targets 
+<? noTarget?>
+<?php ?>
+<?xml ?>
+<?mrk ?>
+ </p>
+ <p>
+  Inside: 
+<?mrk puts "Inside: Hello"?>
+   last
+ </p>
+</div>

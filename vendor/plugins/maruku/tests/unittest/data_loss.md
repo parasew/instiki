@@ -39,12 +39,10 @@ ijkl</li>
 </ol>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><ol>
-<li>abcd
-efgh
-ijkl</li
-      >
-</ol
-  ></div
->
+<div>
+ <ol>
+  <li>
+   abcd efgh ijkl
+  </li>
+ </ol>
+</div>

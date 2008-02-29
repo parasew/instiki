@@ -43,15 +43,15 @@ Code
 </blockquote>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><blockquote>
- <p>Code</p
-      >
-<pre
-        ><code>Ciao
-</code
-      ></pre
-      >
-</blockquote
-  ></div
->
+<div>
+ <blockquote>
+  <p>
+   Code
+  </p>
+  <pre>
+   <code>
+    Ciao 
+   </code>
+  </pre>
+ </blockquote>
+</div>

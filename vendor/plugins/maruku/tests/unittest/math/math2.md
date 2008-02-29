@@ -107,15 +107,17 @@ md_el(:document,[
 <p>\begin{equation} \gamma \end{equation}</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>[
- \alpha
-]</p
-    ><p>\begin{equation}
- \alpha
-\end{equation}</p
-    ><p>\begin{equation} \beta
-\end{equation}</p
-    ><p>\begin{equation} \gamma \end{equation}</p
-  ></div
->
+<div>
+ <p>
+  [ \alpha ]
+ </p>
+ <p>
+  \begin{equation} \alpha \end{equation}
+ </p>
+ <p>
+  \begin{equation} \beta \end{equation}
+ </p>
+ <p>
+  \begin{equation} \gamma \end{equation}
+ </p>
+</div>

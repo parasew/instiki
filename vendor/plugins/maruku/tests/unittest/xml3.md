@@ -41,14 +41,13 @@ md_el(:document,[
 </table>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><table markdown='1'>
- Blah
- <thead>
- <td>*em*</td
-        >
- </thead
-      >
-</table
-  ></div
->
+<div>
+ <table markdown='1'>
+   Blah 
+  <thead>
+   <td>
+    *em*
+   </td>
+  </thead>
+ </table>
+</div>

@@ -35,9 +35,11 @@ Paragraph2
 <p>{paragraph}: .maruku-par</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>Paragraph2 
-{#2}</p
-    ><p>{paragraph}: .maruku-par</p
-  ></div
->
+<div>
+ <p>
+  Paragraph2 {#2}
+ </p>
+ <p>
+  {paragraph}: .maruku-par
+ </p>
+</div>

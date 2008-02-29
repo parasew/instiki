@@ -36,8 +36,11 @@ Paragraph1Paragraph2
 <p>Paragraph2</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>Paragraph1</p
-    ><p>Paragraph2</p
-  ></div
->
+<div>
+ <p>
+  Paragraph1
+ </p>
+ <p>
+  Paragraph2
+ </p>
+</div>

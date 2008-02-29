@@ -25,7 +25,8 @@ One line
 <p>One line</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>One line</p
-  ></div
->
+<div>
+ <p>
+  One line
+ </p>
+</div>

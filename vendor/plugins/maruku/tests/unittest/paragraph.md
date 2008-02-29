@@ -26,7 +26,8 @@ Paragraph
 <p>Paragraph</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>Paragraph</p
-  ></div
->
+<div>
+ <p>
+  Paragraph
+ </p>
+</div>

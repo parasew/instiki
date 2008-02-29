@@ -162,7 +162,7 @@ Search on GoogleSearch on GoogleSearch on GoogleSearch on GoogleSearch on Google
 
 <p>Inline with title: <a href="http://google.com  "Title"">Google images</a></p>
 
-<p>Search on <a href="http://www.gogole.com">http://www.gogole.com</a> or <a href="http://Here.com">http://Here.com</a> or ask <a href="m&#97;i&#x6C;&#116;o:&#x62;&#105;&#x6C;&#x6C;&#64;&#x67;&#111;&#x6F;g&#x6C;&#101;&#x2E;&#x63;&#x6F;&#109;">&#x62;&#105;&#x6C;&#x6C;&#64;&#x67;&#111;&#x6F;g&#x6C;&#101;&#x2E;&#x63;&#x6F;&#109;</a>
+<p>Search on <a href="http://www.gogole.com">http://www.gogole.com</a> or <a href="http://Here.com">http://Here.com</a> or ask <a href="&#109;&#x61;&#105;l&#116;o:&#x62;&#x69;&#108;l&#64;&#x67;&#111;&#111;&#103;&#x6C;&#x65;&#46;&#99;&#x6F;&#x6D;">&#x62;&#x69;&#108;l&#64;&#x67;&#111;&#111;&#103;&#x6C;&#x65;&#46;&#99;&#x6F;&#x6D;</a>
 or you might ask bill@google.com.</p>
 
 <p>If all else fails, ask <a href="http://www.google.com">Google</a></p>
@@ -175,10 +175,10 @@ Line:
 Position: 
 Last 80 unconsumed characters:
 >
-/sw/lib/ruby/1.8/rexml/parsers/baseparser.rb:320:in `pull'
-/sw/lib/ruby/1.8/rexml/parsers/treeparser.rb:21:in `parse'
-/sw/lib/ruby/1.8/rexml/document.rb:190:in `build'
-/sw/lib/ruby/1.8/rexml/document.rb:45:in `initialize'
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/baseparser.rb:320:in `pull'
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/treeparser.rb:21:in `parse'
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/document.rb:204:in `build'
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/document.rb:42:in `initialize'
 bin/marutest:200:in `new'
 bin/marutest:200:in `run_test'
 bin/marutest:274:in `marutest'

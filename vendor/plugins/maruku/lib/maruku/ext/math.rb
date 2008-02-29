@@ -33,7 +33,7 @@ Summary: Math openings which should be numerated
 
 Array containing any of `'\\['`, `'\\begin{equation}'`, `'$$'`.
 
-	MaRuKu::Globals[math_numbered] = ['\\[']
+	MaRuKu::Globals[:math_numbered] = ['\\[']
 	
 =end
 

@@ -271,7 +271,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			extension_meta(src, con, break_on_chars)
 		else
 			stuff = read_simple(src, escaped=[?}], break_on_chars, [])
-			if stuff =~ /^(\w+\s|[^\w])/u
+			if stuff =~ /^(\w+\s|[^\w])/
 				extension_id = $1.strip
 				if false
 				else
@@ -594,7 +594,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 				return
 			end
 		else # empty [link]
-			id = children.to_s.downcase.gsub(' ','_')
+			id = sanitize_ref_id(children.to_s) #. downcase.gsub(' ','_')
 			con.push_element md_link(children, id)
 		end
 	end # read link
@@ -647,14 +647,19 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			con.push_element md_im_image(alt_text, url, title)
 		when ?[ # link ref
 			ref_id = read_ref_id(src,con)
-			if ref_id.size == 0
-				ref_id =  alt_text.to_s.downcase.gsub(' ','_')
-			else
-				ref_id = ref_id.downcase
+			if not ref_id # TODO: check around
+				error('Reference not closed.', src, con)
+				ref_id = ""
 			end
+			if ref_id.size == 0
+				ref_id =  alt_text.to_s
+			end
+
+			ref_id = sanitize_ref_id(ref_id)
+
 			con.push_element md_image(alt_text, ref_id)
 		else # no stuff
-			ref_id =  alt_text.to_s.downcase.gsub(' ','_')
+			ref_id =  sanitize_ref_id(alt_text.to_s)
 			con.push_element md_image(alt_text, ref_id)
 		end
 	end # read link

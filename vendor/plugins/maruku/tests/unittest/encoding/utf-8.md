@@ -30,8 +30,11 @@ Japanese: マルク
 <p>Japanese: マルク</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>Italian: àèìòù.</p
-    ><p>Japanese: マルク</p
-  ></div
->
+<div>
+ <p>
+  Italian: àèìòù.
+ </p>
+ <p>
+  Japanese: マルク
+ </p>
+</div>

@@ -37,8 +37,11 @@ This is not $math$.[ \alpha ]
 <p>[ \alpha ]</p>
 
 *** Output of Markdown.pl (parsed) ***
-<div
-    ><p>This is not $math$.</p
-    ><p>[ \alpha ]</p
-  ></div
->
+<div>
+ <p>
+  This is not $math$.
+ </p>
+ <p>
+  [ \alpha ]
+ </p>
+</div>
