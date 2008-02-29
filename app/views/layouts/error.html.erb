@@ -17,10 +17,10 @@
 
   <%= stylesheet_link_tag 'instiki' unless @inline_style %>
 
-  <style type="text/css">
+  <style type="text/css"><!--/*--><![CDATA[/*><!--*/
     <%= @style_additions %>
     <%= @web ? @web.additional_style : '' %>
-  </style>
+  /*]]>*/--></style>
 </head>
 
 <body>
