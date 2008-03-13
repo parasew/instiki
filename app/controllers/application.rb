@@ -122,7 +122,7 @@ class ApplicationController < ActionController::Base
         <html xmlns="http://www.w3.org/1999/xhtml"><body>
           <h2>Internal Error</h2>
           <p>An application error occurred while processing your request.</p>
-          <!-- \n#{exception}\n#{exception.backtrace.join("\n")}\n -->
+          <!-- \n#{exception.to_s.is_utf8? ? exception.to_s.gsub!(/-{2,}/, '- -') : ''}\n#{exception.backtrace.join("\n")}\n -->
         </body></html>
       EOL
     end
