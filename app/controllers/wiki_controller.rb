@@ -2,6 +2,7 @@ require 'fileutils'
 require 'redcloth_for_tex'
 require 'parsedate'
 require 'zip/zip'
+require 'resolv'
 
 class WikiController < ApplicationController
 
@@ -381,7 +382,7 @@ class WikiController < ApplicationController
   def remote_ip
     ip = request.remote_ip
     logger.info(ip)
-    ip
+    ip.gsub!(Regexp.union(Resolv::IPv4::Regex, Resolv::IPv6::Regex), '\0') || 'bogus address'
   end
 
   def render_rss(hide_description = false, limit = 15, start_date = nil, end_date = nil)
