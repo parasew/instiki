@@ -412,7 +412,7 @@ class WikiController < ApplicationController
   def remote_ip
     ip = request.remote_ip
     logger.info(ip)
-    ip
+    ip.gsub!(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/, '\1')
   end
 
   def render_atom(hide_description = false, limit = 15)
