@@ -1,5 +1,5 @@
 <% 
-  @title = "Creating #{WikiWords.separate(@page_name)}"
+  @title = "Creating #{CGI.escapeHTML(WikiWords.separate(@page_name))}"
   @content_width = 720
   @hide_navigation = true
 %>
