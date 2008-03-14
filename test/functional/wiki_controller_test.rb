@@ -822,6 +822,8 @@ class WikiControllerTest < Test::Unit::TestCase
 \re@DeclareMathSymbol{\swArrow}{\mathrel}{symbolsC}{119}
 \re@DeclareMathSymbol{\swArr}{\mathrel}{symbolsC}{119}
 \re@DeclareMathSymbol{\nequiv}{\mathrel}{symbolsC}{46}
+\re@DeclareMathSymbol{\Perp}{\mathrel}{symbolsC}{121}
+\re@DeclareMathSymbol{\Vbar}{\mathrel}{symbolsC}{121}
 \makeatother
 
 % Widecheck
