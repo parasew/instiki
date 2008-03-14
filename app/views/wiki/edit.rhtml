@@ -1,5 +1,5 @@
 <% 
-  @title = "Editing #{@page.name}"
+  @title = "Editing #{CGI.escapeHTML(@page.name)}"
   @content_width = 720
   @hide_navigation = true
 %>
