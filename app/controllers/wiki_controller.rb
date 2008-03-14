@@ -3,6 +3,7 @@ require 'maruku'
 require 'parsedate'
 require 'zip/zip'
 require 'sanitize'
+require 'resolv'
 
 class WikiController < ApplicationController
 
@@ -412,7 +413,7 @@ class WikiController < ApplicationController
   def remote_ip
     ip = request.remote_ip
     logger.info(ip)
-    ip.gsub!(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/, '\1')
+    ip.gsub!(Regexp.union(Resolv::IPv4::Regex, Resolv::IPv6::Regex), '\0') || 'bogus address'
   end
 
   def render_atom(hide_description = false, limit = 15)
