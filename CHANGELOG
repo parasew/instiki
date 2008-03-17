@@ -1,3 +1,9 @@
+ * 0.13.0:
+
+ Mainly a Bugfix Release, which fixes two XSS Vulnerabilities.
+ More information can be found on Jacques Distler's Blog:
+ http://golem.ph.utexas.edu/~distler/blog/archives/001634.html
+
 ------------------------------------------------------------------------------
  * 0.12.0:
  
