@@ -11,8 +11,8 @@
 #
 # Main page:: http://www.germane-software.com/software/rexml
 # Author:: Sean Russell <serATgermaneHYPHENsoftwareDOTcom>
-# Version:: 3.1.7.2
-# Date:: 2007/275
+# Version:: 3.1.7.4
+# Date:: 2008/100
 # 
 # This API documentation can be downloaded from the REXML home page, or can
 # be accessed online[http://www.germane-software.com/software/rexml_doc]
@@ -21,10 +21,10 @@
 # or can be accessed 
 # online[http://www.germane-software.com/software/rexml/docs/tutorial.html]
 module REXML
-  COPYRIGHT = "Copyright © 2001-2007 Sean Russell <ser@germane-software.com>"
-  DATE = "2007/275"
-  VERSION = "3.1.7.2"
-  REVISION = "$Revision: 1284 $".gsub(/\$Revision:|\$/,'').strip
+  COPYRIGHT = "Copyright © 2001-2008 Sean Russell <ser@germane-software.com>"
+  DATE = "2008/100"
+  VERSION = "3.1.7.4"
+  REVISION = "$Revision: 1312 $".gsub(/\$Revision:|\$/,'').strip
 
   Copyright = COPYRIGHT
   Version = VERSION

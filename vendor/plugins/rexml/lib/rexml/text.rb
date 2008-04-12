@@ -50,7 +50,7 @@ module REXML
          |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
          | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
          |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-       )*$/x; 
+       )*$/nx; 
     end
 
     # Constructor
@@ -139,7 +139,7 @@ module REXML
             end
           end
         else
-          string.scan(/[\x00-\x7F]|[\x80-\xBF][\xC0-\xF0]*|[\xC0-\xF0]/) do |c|
+          string.scan(/[\x00-\x7F]|[\x80-\xBF][\xC0-\xF0]*|[\xC0-\xF0]/n) do |c|
             case c.unpack('U')
             when *VALID_CHAR
             else
@@ -345,7 +345,7 @@ module REXML
         copy.gsub!( SETUTITSBUS[2], SLAICEPS[2] )
         copy.gsub!( SETUTITSBUS[3], SLAICEPS[3] )
         copy.gsub!( SETUTITSBUS[4], SLAICEPS[4] )
-        copy.gsub!( /&#0*((?:\d+)|(?:x[a-f0-9]+));/ ) {|m|
+        copy.gsub!( /&#0*((?:\d+)|(?:x[a-f0-9]+));/ ) {
           m=$1
           #m='0' if m==''
           m = "0#{m}" if m[0] == ?x
@@ -380,7 +380,8 @@ module REXML
 
     # Unescapes all possible entities
     def Text::unnormalize( string, doctype=nil, filter=nil, illegal=nil )
-      string.gsub( /\r\n?/, "\n" ).gsub( REFERENCE ) { |ref|
+      string.gsub( /\r\n?/, "\n" ).gsub( REFERENCE ) {
+        ref = $&
         if ref[1] == ?#
           if ref[2] == ?x
             [ref[3...-1].to_i(16)].pack('U*')

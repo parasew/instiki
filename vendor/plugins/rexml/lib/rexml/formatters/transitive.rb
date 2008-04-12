@@ -12,8 +12,9 @@ module REXML
     # formatted.  Since this formatter does not alter whitespace nodes, the
     # results of formatting already formatted XML will be odd.
     class Transitive < Default
-      def initialize( indentation=2 )
+      def initialize( indentation=2, ie_hack=false )
         @indentation = indentation
+		@ie_hack = ie_hack
         @level = 0
       end
 
@@ -29,6 +30,7 @@ module REXML
         output << "\n"
         output << ' '*@level
         if node.children.empty?
+		  output << " " if @ie_hack
           output << "/" 
         else
           output << ">"
