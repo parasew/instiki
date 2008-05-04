@@ -525,13 +525,15 @@ class WikiControllerTest < Test::Unit::TestCase
 
   def test_atom_title_with_ampersand
     # was ticket:143
+    # Since we're declaring <title> to be of type="html", the content is unescaped once before interpreting.
+    # Evidently, the desired behaviour is that the final result be HTML-encoded. Hence the double-encoding here.
     @wiki.write_page('wiki1', 'Title&With&Ampersands', 
       'About spaces', 1.hour.ago, Author.new('NitPicker', '127.0.0.3'), test_renderer)
 
     r = process 'atom_with_headlines', 'web' => 'wiki1'
 
     assert r.body.include?('<title type="html">Home Page</title>')
-    assert r.body.include?('<title type="html">Title&amp;With&amp;Ampersands</title>')
+    assert r.body.include?('<title type="html">Title&amp;amp;With&amp;amp;Ampersands</title>')
   end
 
   def test_atom_timestamp    

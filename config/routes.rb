@@ -11,11 +11,11 @@ end
 ActionController::Routing::Routes.draw do |map|
   map.connect 'create_system', :controller => 'admin', :action => 'create_system'
   map.connect 'create_web', :controller => 'admin', :action => 'create_web'
-  map.connect 'remove_orphaned_pages', :controller => 'admin', :action => 'remove_orphaned_pages'
   map.connect 'delete_web', :controller => 'admin', :action => 'delete_web'
   map.connect 'web_list', :controller => 'wiki', :action => 'web_list'
 
   connect_to_web map, ':web/edit_web', :controller => 'admin', :action => 'edit_web'
+  connect_to_web map, ':web/remove_orphaned_pages', :controller => 'admin', :action => 'remove_orphaned_pages'
   connect_to_web map, ':web/files/:id', :controller => 'file', :action => 'file', :requirements => {:id => /[-._\w]+/}, :id => nil
   connect_to_web map, ':web/import/:id', :controller => 'file', :action => 'import'
   connect_to_web map, ':web/login', :controller => 'wiki', :action => 'login'
