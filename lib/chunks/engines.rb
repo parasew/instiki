@@ -25,19 +25,16 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
-      require 'sanitize'
       require 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
       html = redcloth.to_html(:textile)
-      sanitize_xhtml(html)
     end
   end
 
   class Markdown < AbstractEngine
     def mask
-      require 'sanitize'
       require 'maruku'
       require 'maruku/ext/math'
 
@@ -48,10 +45,8 @@ module Engines
                             :author => @content.options[:engine_opts][:author],
                             :title => @content.options[:engine_opts][:title]})
         @content.options[:renderer].s5_theme = my_content.s5_theme
-        sanitize_xhtml(my_content.to_s5)
       else
-        html = sanitize_rexml(Maruku.new(@content.delete("\r"),
-                           {:math_enabled => false}).to_html_tree)
+        html = Maruku.new(@content.delete("\r"), {:math_enabled => false}).to_html
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
 
@@ -60,7 +55,6 @@ module Engines
 
   class MarkdownMML < AbstractEngine
     def mask
-      require 'sanitize'
       require 'maruku'
       require 'maruku/ext/math'
 
@@ -72,35 +66,30 @@ module Engines
                             :author => @content.options[:engine_opts][:author],
                             :title => @content.options[:engine_opts][:title]})
         @content.options[:renderer].s5_theme = my_content.s5_theme
-        sanitize_xhtml(my_content.to_s5)
+        my_content.to_s5
       else
-        html = sanitize_rexml(Maruku.new(@content.delete("\r"),
+        html = Maruku.new(@content.delete("\r"),
              {:math_enabled => true,
-              :math_numbered => ['\\[','\\begin{equation}']}).to_html_tree)
+              :math_numbered => ['\\[','\\begin{equation}']}).to_html
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
-
     end
   end
 
   class Mixed < AbstractEngine
     def mask
-      require 'sanitize'
       require 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
       html = redcloth.to_html
-      sanitize_xhtml(html)
     end
   end
 
   class RDoc < AbstractEngine
     def mask
-      require 'sanitize'
       require_dependency 'rdocsupport'
       html = RDocSupport::RDocFormatter.new(@content).to_html
-      sanitize_xhtml(html)
     end
   end
 

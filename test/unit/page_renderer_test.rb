@@ -14,14 +14,14 @@ class PageRendererTest < Test::Unit::TestCase
     @web.add_page('SecondPage', 'Yo, yo. Have you EverBeenHated', 
                    Time.now, 'DavidHeinemeierHansson', test_renderer)
     
-    assert_equal('<p>Yo, yo. Have you <span class="newWikiWord">Ever Been Hated' + 
-        '<a href="../show/EverBeenHated">?</a></span></p>', 
+    assert_equal("<p>Yo, yo. Have you <span class='newWikiWord'>Ever Been Hated" + 
+        "<a href='../show/EverBeenHated'>?</a></span></p>", 
         rendered_content(@web.page("SecondPage")))
     
     @web.add_page('EverBeenHated', 'Yo, yo. Have you EverBeenHated', Time.now, 
                   'DavidHeinemeierHansson', test_renderer)
-    assert_equal('<p>Yo, yo. Have you <a class="existingWikiWord" ' +
-        'href="../show/EverBeenHated">Ever Been Hated</a></p>', 
+    assert_equal("<p>Yo, yo. Have you <a class='existingWikiWord' " +
+        "href='../show/EverBeenHated'>Ever Been Hated</a></p>", 
         rendered_content(@web.page("SecondPage")))
   end
   
@@ -42,17 +42,17 @@ class PageRendererTest < Test::Unit::TestCase
   end
 
   def test_content_with_wiki_links
-    assert_equal '<p><span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
-        'would be <a class="existingWikiWord" href="../show/MyWay">My Way</a> ' +
-        '<math class="maruku-mathml" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">' +
-        '<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics>' +
-        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math> in kinda ' +
-        '<a class="existingWikiWord" href="../show/ThatWay">That Way</a> in ' +
-        '<span class="newWikiWord">His Way<a href="../show/HisWay">?</a></span> ' +
-        %{though <a class="existingWikiWord" href="../show/MyWay">My Way</a> OverThere \xE2\x80\x93 see } +
-        '<a class="existingWikiWord" href="../show/SmartEngine">Smart Engine</a> in that ' +
-        '<span class="newWikiWord">Smart Engine GUI' +
-        '<a href="../show/SmartEngineGUI">?</a></span></p>', 
+    assert_equal "<p><span class='newWikiWord'>His Way<a href='../show/HisWay'>?</a></span> " +
+        "would be <a class='existingWikiWord' href='../show/MyWay'>My Way</a> " +
+        "<math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>" +
+        "<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics>" +
+        "<annotation-xml encoding='SVG1.1'><svg/></annotation-xml></semantics></math> in kinda " +
+        "<a class='existingWikiWord' href='../show/ThatWay'>That Way</a> in " +
+        "<span class='newWikiWord'>His Way<a href='../show/HisWay'>?</a></span> " +
+        %{though <a class='existingWikiWord' href='../show/MyWay'>My Way</a> OverThere \xE2\x80\x93 see } +
+        "<a class='existingWikiWord' href='../show/SmartEngine'>Smart Engine</a> in that " +
+        "<span class='newWikiWord'>Smart Engine GUI" +
+        "<a href='../show/SmartEngineGUI'>?</a></span></p>", 
         test_renderer(@revision).display_content
   end
 
@@ -60,31 +60,31 @@ class PageRendererTest < Test::Unit::TestCase
     set_web_property :markup, :markdownMML
   
     assert_markup_parsed_as(
-        %{<p>equation <math class="maruku-mathml" } +
-        %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></p>},
+        %{<p>equation <math class='maruku-mathml' } +
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
         "equation $\\sin(x)$")
   
     assert_markup_parsed_as(
-        %{<h1 id="my_headline">My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
-        %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
+        %{<h1 id='my_headline'>My Headline</h1>\n\n<p>that <span class='newWikiWord'>} +
+        %{Smart Engine GUI<a href='../show/SmartEngineGUI'>?</a></span></p>}, 
         "My Headline\n===========\n\nthat SmartEngineGUI")
   
     assert_markup_parsed_as(
-        %{<h1 id="my_headline">My Headline</h1>\n\n<p>that <span class="newWikiWord">} +
-        %{Smart Engine GUI<a href="../show/SmartEngineGUI">?</a></span></p>}, 
+        %{<h1 id='my_headline'>My Headline</h1>\n\n<p>that <span class='newWikiWord'>} +
+        %{Smart Engine GUI<a href='../show/SmartEngineGUI'>?</a></span></p>}, 
         "#My Headline#\n\nthat SmartEngineGUI")
   
     assert_markup_parsed_as(
-        %{<p>SVG <animateColor title="MathML"><span class="newWikiWord">} +
-        %{Math ML<a href="../show/MathML">?</a></span></animateColor></p>}, 
+        %{<p>SVG <animateColor title='MathML'><span class='newWikiWord'>} +
+        %{Math ML<a href='../show/MathML'>?</a></span></animateColor></p>}, 
         "SVG <animateColor title='MathML'>MathML</animateColor>")
   
     assert_markup_parsed_as(
-        %{<div class="maruku-equation"><math class="maruku-mathml" display="block" } +
-        %{xmlns="http://www.w3.org/1998/Math/MathML"><mi>sin</mi><mo stretchy="false">} +
-        %{(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics><annotation-xml encoding="SVG1.1">} +
-        %{<svg></svg></annotation-xml></semantics></math><div class="maruku-eq-tex"><code style="display: none;">} +
+        %{<div class='maruku-equation'><math class='maruku-mathml' display='block' } +
+        %{xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi><mo stretchy='false'>} +
+        %{(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics><annotation-xml encoding='SVG1.1'>} +
+        %{<svg/></annotation-xml></semantics></math><div class='maruku-eq-tex'><code style='display: none;'>} +
         %{\\sin(x) \\begin{svg}<svg></svg>\\end{svg}</code></div></div>},
         "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
   
@@ -103,29 +103,28 @@ class PageRendererTest < Test::Unit::TestCase
         code_block)
 
     assert_markup_parsed_as(
-        %{<p><math class="maruku-mathml" } +
-        %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math> ecuasi\303\263n</p>},
+        %{<p><math class='maruku-mathml' } +
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math> ecuasi\303\263n</p>},
         "$\\sin(x)$ ecuasi\303\263n")
    
     assert_markup_parsed_as(
-        %{<p>ecuasi\303\263n</p>\n<div class="maruku-equation"><math class="maruku-mathml" } +
-        %{display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mi>sin</mi>} +
-        %{<mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math>} +
-        %{<div class="maruku-eq-tex"><code style="display: none;">\\sin(x)</code></div></div>}, 
+        %{<p>ecuasi\303\263n</p>\n<div class='maruku-equation'><math class='maruku-mathml' } +
+        %{display='block' xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi>} +
+        %{<mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math>} +
+        %{<div class='maruku-eq-tex'><code style='display: none;'>\\sin(x)</code></div></div>}, 
         "ecuasi\303\263n\n$$\\sin(x)$$")
   
     assert_markup_parsed_as(
-        %{<p>ecuasi\303\263n</p>\n\n<p><math class="maruku-mathml" } +
-        %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></p>},
+        %{<p>ecuasi\303\263n</p>\n\n<p><math class='maruku-mathml' } +
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
         "ecuasi\303\263n \n\n$\\sin(x)$")
   
-#FIXME
     assert_markup_parsed_as(
-        %{<p>ecuasi\303\263n <math class="maruku-mathml" } +
-        %{display="inline" xmlns="http://www.w3.org/1998/Math/MathML">} +
-        %{<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></p>},
+        %{<p>ecuasi\303\263n <math class='maruku-mathml' } +
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
         "ecuasi\303\263n $\\sin(x)$")
   
   end
@@ -135,7 +134,7 @@ class PageRendererTest < Test::Unit::TestCase
     set_web_property :markup, :markdown
   
     assert_markup_parsed_as(
-        '<p><a href="http://example/with/slash">text</a></p>', 
+        "<p><a href='http://example/with/slash'>text</a></p>", 
         '[text](http://example/with/slash)')
   end
   
@@ -154,7 +153,7 @@ class PageRendererTest < Test::Unit::TestCase
     
     set_web_property :markup, :markdown
     assert_markup_parsed_as(
-      "<h1 id=\"markdown_heading\">Markdown heading</h1>\n\n" +
+      "<h1 id='markdown_heading'>Markdown heading</h1>\n\n" +
       "<p>h2. Textile heading</p>\n\n" +
       "<p><em>some</em> <strong>text</strong> <em>with</em> -styles-</p>\n\n" +
       "<ul>\n<li>list 1</li>\n\n<li>list 2</li>\n</ul>",
@@ -181,8 +180,8 @@ class PageRendererTest < Test::Unit::TestCase
     @revision = Revision.new(:page => @page, :content => '+hello+ that SmartEngineGUI', 
         :author => Author.new('DavidHeinemeierHansson'))
   
-    assert_equal "<tt>hello</tt> that <span class=\"newWikiWord\">Smart Engine GUI" +
-        "<a href=\"../show/SmartEngineGUI\">?</a></span>\n\n", 
+    assert_equal "<tt>hello</tt> that <span class='newWikiWord'>Smart Engine GUI" +
+        "<a href='../show/SmartEngineGUI'>?</a></span>\n\n", 
         test_renderer(@revision).display_content
   end
   
@@ -197,15 +196,15 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_content_with_aliased_links
     assert_markup_parsed_as(
-        '<p>Would a <a class="existingWikiWord" href="../show/SmartEngine">clever motor' +
+        "<p>Would a <a class='existingWikiWord' href='../show/SmartEngine'>clever motor" +
 	    '</a> go by any other name?</p>',
         'Would a [[SmartEngine|clever motor]] go by any other name?')
   end
   
   def test_content_with_wikiword_in_em
     assert_markup_parsed_as(
-        '<p><em>should we go <a class="existingWikiWord" href="../show/ThatWay">' +
-	    'That Way</a> or <span class="newWikiWord">This Way<a href="../show/ThisWay">?</a>' +
+        "<p><em>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
+	    "That Way</a> or <span class='newWikiWord'>This Way<a href='../show/ThisWay'>?</a>" +
 	    '</span></em></p>', 
         '_should we go ThatWay or ThisWay _')
   end
@@ -213,15 +212,15 @@ class PageRendererTest < Test::Unit::TestCase
   # wikiwords are invalid as styles, must be in "name: value" form
   def test_content_with_wikiword_in_style_tag
     assert_markup_parsed_as(
-        '<p>That is some <em style="">Stylish Emphasis</em></p>', 
-	    'That is some <em style="WikiWord">Stylish Emphasis</em>')
+        "<p>That is some <em style=''>Stylish Emphasis</em></p>", 
+	    "That is some <em style='WikiWord'>Stylish Emphasis</em>")
   end
  
   # validates format of style..
   def test_content_with_valid_style_in_style_tag
     assert_markup_parsed_as(
-        '<p>That is some <em style="text-align: right;">Stylish Emphasis</em></p>', 
-	    'That is some <em style="text-align: right">Stylish Emphasis</em>')
+        "<p>That is some <em style='text-align: right;'>Stylish Emphasis</em></p>", 
+	    "That is some <em style='text-align: right'>Stylish Emphasis</em>")
   end
   
   def test_content_with_escaped_wikiword
@@ -248,24 +247,24 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_content_with_link_in_parentheses
     assert_markup_parsed_as(
-      '<p>(<a href="http://wiki.org/wiki.cgi?WhatIsWiki">What is a wiki?</a>)</p>',
+      "<p>(<a href='http://wiki.org/wiki.cgi?WhatIsWiki'>What is a wiki?</a>)</p>",
       '([What is a wiki?](http://wiki.org/wiki.cgi?WhatIsWiki))')
   end
   
   def test_content_with_image_link
     assert_markup_parsed_as( 
-      '<p>This <img alt="" src="http://hobix.com/sample.jpg" /> is a Markdown image link.</p>', 
+      "<p>This <img alt='' src='http://hobix.com/sample.jpg'/> is a Markdown image link.</p>", 
       'This ![](http://hobix.com/sample.jpg) is a Markdown image link.')
   end
   
   def test_content_with_inlined_img_tag
     assert_markup_parsed_as( 
-      '<p>This <img alt="" src="http://hobix.com/sample.jpg" /> is an inline image link.</p>', 
+      "<p>This <img alt='' src='http://hobix.com/sample.jpg'/> is an inline image link.</p>", 
       'This <img src="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
        
     # currently, upper case HTML elements are not allowed
     assert_markup_parsed_as( 
-      '<p>This &lt;IMG SRC="http://hobix.com/sample.jpg" alt=""&gt;&lt;/IMG&gt; is an inline image link.</p>', 
+      "<p>This &lt;IMG SRC=\"http://hobix.com/sample.jpg\" alt=\"\"/&gt; is an inline image link.</p>", 
       'This <IMG SRC="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
   end
   
@@ -279,7 +278,7 @@ class PageRendererTest < Test::Unit::TestCase
   def test_multiline_nowiki_tag
     assert_markup_parsed_as( 
       "<p>Do not mark \n up [[this text]] \nand http://this.url.com  but markup " +
-      '<span class="newWikiWord">this<a href="../show/this">?</a></span></p>',
+      "<span class='newWikiWord'>this<a href='../show/this'>?</a></span></p>",
       "Do not <nowiki>mark \n up [[this text]] \n" +
       "and http://this.url.com </nowiki> but markup [[this]]")
   end
@@ -293,45 +292,45 @@ class PageRendererTest < Test::Unit::TestCase
   def test_content_with_bracketted_wiki_word
     set_web_property :brackets_only, true
     assert_markup_parsed_as( 
-      '<p>This is a WikiWord and a tricky name <span class="newWikiWord">' +
-      'Sperberg-McQueen<a href="../show/Sperberg-McQueen">?</a></span>.</p>', 
+      "<p>This is a WikiWord and a tricky name <span class='newWikiWord'>" +
+      "Sperberg-McQueen<a href='../show/Sperberg-McQueen'>?</a></span>.</p>", 
       'This is a WikiWord and a tricky name [[Sperberg-McQueen]].')
   end
   
   def test_content_for_export
-    assert_equal '<p><span class="newWikiWord">His Way</span> would be ' +
-        '<a class="existingWikiWord" href="MyWay.html">My Way</a> ' +
-        '<math class="maruku-mathml" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">' +
-        '<mi>sin</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><semantics>' +
-        '<annotation-xml encoding="SVG1.1"><svg></svg></annotation-xml></semantics></math> in kinda ' +
-        '<a class="existingWikiWord" href="ThatWay.html">That Way</a> in ' +
-        '<span class="newWikiWord">His Way</span> though ' +
-        %{<a class="existingWikiWord" href="MyWay.html">My Way</a> OverThere \xE2\x80\x93 see } +
-        '<a class="existingWikiWord" href="SmartEngine.html">Smart Engine</a> in that ' +
-        '<span class="newWikiWord">Smart Engine GUI</span></p>', 
+    assert_equal "<p><span class='newWikiWord'>His Way</span> would be " +
+        "<a class='existingWikiWord' href='MyWay.html'>My Way</a> " +
+        "<math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>" +
+        "<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics>" +
+        "<annotation-xml encoding='SVG1.1'><svg/></annotation-xml></semantics></math> in kinda " +
+        "<a class='existingWikiWord' href='ThatWay.html'>That Way</a> in " +
+        "<span class='newWikiWord'>His Way</span> though " +
+        %{<a class='existingWikiWord' href='MyWay.html'>My Way</a> OverThere \xE2\x80\x93 see } +
+        "<a class='existingWikiWord' href='SmartEngine.html'>Smart Engine</a> in that " +
+        "<span class='newWikiWord'>Smart Engine GUI</span></p>", 
         test_renderer(@revision).display_content_for_export
   end
   
   def test_double_replacing
     @revision.content = "VersionHistory\r\n\r\ncry VersionHistory"
-    assert_equal '<p><span class="newWikiWord">Version History' +
-        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n<p>cry " +
-        '<span class="newWikiWord">Version History<a href="../show/VersionHistory">?</a>' +
+    assert_equal "<p><span class='newWikiWord'>Version History" +
+        "<a href='../show/VersionHistory'>?</a></span></p>\n\n<p>cry " +
+        "<span class='newWikiWord'>Version History<a href='../show/VersionHistory'>?</a>" +
         '</span></p>', 
         test_renderer(@revision).display_content
   
     @revision.content = "f\r\nVersionHistory\r\n\r\ncry VersionHistory"
-    assert_equal "<p>f <span class=\"newWikiWord\">Version History" +
-        "<a href=\"../show/VersionHistory\">?</a></span></p>\n\n<p>cry " +
-        "<span class=\"newWikiWord\">Version History<a href=\"../show/VersionHistory\">?</a>" +
+    assert_equal "<p>f <span class='newWikiWord'>Version History" +
+        "<a href='../show/VersionHistory'>?</a></span></p>\n\n<p>cry " +
+        "<span class='newWikiWord'>Version History<a href='../show/VersionHistory'>?</a>" +
         "</span></p>", 
         test_renderer(@revision).display_content
   end  
   
   def test_difficult_wiki_words
     @revision.content = "[[It's just awesome GUI!]]"
-    assert_equal "<p><span class=\"newWikiWord\">It's just awesome GUI!" +
-        "<a href=\"../show/It%27s+just+awesome+GUI%21\">?</a></span></p>", 
+    assert_equal "<p><span class='newWikiWord'>It's just awesome GUI!" +
+        "<a href='../show/It%27s+just+awesome+GUI%21'>?</a></span></p>", 
         test_renderer(@revision).display_content
   end
   
@@ -347,7 +346,7 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_link_to_file
     assert_markup_parsed_as( 
-      '<p><span class="newWikiWord">doc.pdf<a href="../file/doc.pdf">?</a></span></p>',
+      "<p><span class='newWikiWord'>doc.pdf<a href='../file/doc.pdf'>?</a></span></p>",
       '[[doc.pdf:file]]')
   end
   
@@ -357,16 +356,16 @@ class PageRendererTest < Test::Unit::TestCase
     FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
     @web.wiki_files.create(:file_name => 'square.jpg', :description => 'Square', :content => 'never mind')
     assert_markup_parsed_as(
-      '<p><img alt="Blue Square" src="../file/square.jpg" /></p>',
+      "<p><img alt='Blue Square' src='../file/square.jpg'/></p>",
       '[[square.jpg|Blue Square:pic]]')
     assert_markup_parsed_as( 
-      '<p><img alt="Square" src="../file/square.jpg" /></p>',
+      "<p><img alt='Square' src='../file/square.jpg'/></p>",
       '[[square.jpg:pic]]')
     assert_markup_parsed_as(
-      '<p><a class="existingWikiWord" title="Square" href="../file/square.jpg">Blue Square</a></p>',
+      "<p><a class='existingWikiWord' href='../file/square.jpg' title='Square'>Blue Square</a></p>",
       '[[square.jpg|Blue Square:file]]')
     assert_markup_parsed_as( 
-      '<p><a class="existingWikiWord" title="Square" href="../file/square.jpg">Square</a></p>',
+      "<p><a class='existingWikiWord' href='../file/square.jpg' title='Square'>Square</a></p>",
       '[[square.jpg:file]]')
   end
   
@@ -376,33 +375,33 @@ class PageRendererTest < Test::Unit::TestCase
     FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
     @web.wiki_files.create(:file_name => 'square.jpg', :description => '', :content => 'never mind')
     assert_markup_parsed_as(
-      '<p><img alt="Blue Square" src="../file/square.jpg" /></p>',
+      "<p><img alt='Blue Square' src='../file/square.jpg'/></p>",
       '[[square.jpg|Blue Square:pic]]')
     assert_markup_parsed_as( 
-      '<p><img alt="" src="../file/square.jpg" /></p>',
+      "<p><img alt='' src='../file/square.jpg'/></p>",
       '[[square.jpg:pic]]')
     assert_markup_parsed_as(
-      '<p><a class="existingWikiWord" title="" href="../file/square.jpg">Blue Square</a></p>',
+      "<p><a class='existingWikiWord' href='../file/square.jpg' title=''>Blue Square</a></p>",
       '[[square.jpg|Blue Square:file]]')
     assert_markup_parsed_as( 
-      '<p><a class="existingWikiWord" title="" href="../file/square.jpg"></a></p>',
+      "<p><a class='existingWikiWord' href='../file/square.jpg' title=''></a></p>",
       '[[square.jpg:file]]')
   end
   
   def test_link_to_non_existant_pic
   	assert_markup_parsed_as(
-  	    '<p><span class="newWikiWord">NonExistant<a href="../file/NonExistant.jpg">?</a>' +
+  	    "<p><span class='newWikiWord'>NonExistant<a href='../file/NonExistant.jpg'>?</a>" +
   	    '</span></p>',
         '[[NonExistant.jpg|NonExistant:pic]]')
   	assert_markup_parsed_as(
-  	    '<p><span class="newWikiWord">NonExistant.jpg<a href="../file/NonExistant.jpg">?</a>' +
+  	    "<p><span class='newWikiWord'>NonExistant.jpg<a href='../file/NonExistant.jpg'>?</a>" +
   	    '</span></p>',
         '[[NonExistant.jpg:pic]]')
   end
   
   def test_wiki_link_with_colon
   	assert_markup_parsed_as(
-  	  '<p><span class="newWikiWord">Instiki:Colon<a href="../../instiki/show/Colon">?</a></span></p>',
+  	  "<p><span class='newWikiWord'>Instiki:Colon<a href='../../instiki/show/Colon'>?</a></span></p>",
   	  '[[Instiki:Colon]]')
   end
   
@@ -413,7 +412,7 @@ class PageRendererTest < Test::Unit::TestCase
     EOL
   
     assert_markup_parsed_as(
-        "<ul>\n<li><a href=\"~b\">a</a></li>\n\n<li>c~ d</li>\n</ul>",
+        "<ul>\n<li><a href='~b'>a</a></li>\n\n<li>c~ d</li>\n</ul>",
         list_with_tildas)
   end
   
@@ -471,11 +470,11 @@ class PageRendererTest < Test::Unit::TestCase
     included = @web.add_page('Included', 'link to HomePage', Time.now, 'AnAuthor', test_renderer)
     main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', test_renderer)
     
-    assert_equal '<p>link to <a class="existingWikiWord" href="../show/HomePage">Home Page</a></p>', 
+    assert_equal "<p>link to <a class='existingWikiWord' href='../show/HomePage'>Home Page</a></p>", 
                  test_renderer(main).display_content
-    assert_equal '<p>link to <a class="existingWikiWord" href="../published/HomePage">Home Page</a></p>',
+    assert_equal "<p>link to <a class='existingWikiWord' href='../published/HomePage'>Home Page</a></p>",
                  test_renderer(main).display_published
-    assert_equal '<p>link to <a class="existingWikiWord" href="HomePage.html">Home Page</a></p>', 
+    assert_equal "<p>link to <a class='existingWikiWord' href='HomePage.html'>Home Page</a></p>", 
                  test_renderer(main).display_content_for_export
   end
 

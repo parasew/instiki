@@ -80,7 +80,7 @@ class FileControllerTest < Test::Unit::TestCase
     renderer = PageRenderer.new
     @wiki.revise_page('wiki1', 'HomePage', '[[rails-e2e.gif:pic]]', 
         Time.now, 'AnonymousBrave', renderer)
-    assert_equal "<p><span class=\"newWikiWord\">rails-e2e.gif<a href=\"../file/rails-e2e.gif\">" +
+    assert_equal "<p><span class='newWikiWord'>rails-e2e.gif<a href='../file/rails-e2e.gif'>" +
         "?</a></span></p>",
         renderer.display_content
   

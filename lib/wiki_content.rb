@@ -4,8 +4,8 @@ require 'chunks/category'
 require_dependency 'chunks/include'
 require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
-#require_dependency 'chunks/uri'
 require 'chunks/nowiki'
+require 'sanitize'
 
 # Wiki content is just a string that can process itself with a chain of
 # actions. The actions can modify wiki content so that certain parts of
@@ -192,7 +192,7 @@ class WikiContent < String
         chunk.unmask_text
       end
     end
-    self
+    self.replace sanitize_xhtml(self)
   end
 
   def page_name
