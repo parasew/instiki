@@ -288,6 +288,12 @@ class PageRendererTest < Test::Unit::TestCase
       '<p>[[test]]&amp;<a href=\'a&amp;b\'>shebang</a> &lt;script&gt;alert("xss!");&lt;/script&gt; *foo*</p>',
       '<nowiki>[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*</nowiki>')
   end
+
+  def test_entities
+    assert_markup_parsed_as(
+      "<p>Known: \342\210\256. Pass-through: &amp;. Unknown: &amp;foo;.</p>",
+      "Known: &conint;. Pass-through: &amp;. Unknown: &foo;.")
+  end
   
   def test_content_with_bracketted_wiki_word
     set_web_property :brackets_only, true
