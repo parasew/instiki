@@ -131,8 +131,12 @@ class String
 #--
    def is_utf8?
      #expand NCRs to utf-8
-     text = self.gsub(/&#x([a-fA-F0-9]+);/) {|m| [$1.hex].pack('U*') }
-     text.gsub!(/&#(\d+);/) {|m| [$1.to_i].pack('U*') }
+     pieces = self.split(/&#[xX]([a-fA-F0-9]+);/)
+     1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].hex].pack('U*')}
+     text = pieces.join
+     pieces = text.split(/&#(\d+);/)
+     1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].to_i].pack('U*')}
+     text = pieces.join     
      #ensure the resulting string of bytes is valid utf-8
      text =~  /\A(
          [\x09\x0A\x0D\x20-\x7E]            # ASCII
@@ -2280,7 +2284,9 @@ class String
 #     string.to_ncr  -> string
 #
     def to_ncr
-       self.gsub(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_ncr}
+       pieces = self.split(/&([a-zA-Z0-9]+);/)
+       1.step(pieces.length-1, 2) {|i| pieces[i].convert_to_ncr}
+       pieces.join
     end
 
 # Converts XHTML+MathML named entities in string to Numeric Character References
@@ -2291,7 +2297,9 @@ class String
 # Substitution is done in-place.
 #
     def to_ncr!
-       self.gsub!(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_ncr}
+       pieces = self.split(/&([a-zA-Z0-9]+);/)
+       1.step(pieces.length-1, 2) {|i| pieces[i].convert_to_ncr}
+       self.replace pieces.join
     end
 
 # Converts XHTML+MathML named entities in string to UTF-8
@@ -2300,7 +2308,9 @@ class String
 #     string.to_utf8  -> string
 #
     def to_utf8
-       self.gsub(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_utf8}
+       pieces = self.split(/&([a-zA-Z0-9]+);/)
+       1.step(pieces.length-1, 2) {|i| pieces[i].convert_to_utf8}
+       pieces.join
     end
 
 # Converts XHTML+MathML named entities in string to UTF-8
@@ -2311,21 +2321,31 @@ class String
 # Substitution is done in-place.
 #
     def to_utf8!
-       self.gsub!(/&(?:(lt|gt|amp|quot|apos)|[a-zA-Z0-9]+);/){|s| $1 ? s : s.convert_to_utf8}
+       pieces = self.split(/&([a-zA-Z0-9]+);/)
+       1.step(pieces.length-1, 2) {|i| pieces[i].convert_to_utf8}
+       self.replace pieces.join
     end
 
   protected
 
     def convert_to_ncr #:nodoc:
-      self =~ /^&([a-zA-Z0-9]+);$/
-      name = $1
-      return MATHML_ENTITIES.has_key?(name) ? MATHML_ENTITIES[name] : "&amp;" + name + ";"
+      if self =~ /^(lt|gt|amp|quot|apos)$/
+        self.replace "&" + self + ";"
+      elsif MATHML_ENTITIES.has_key?(self)
+        self.replace MATHML_ENTITIES[self]
+      else
+        self.replace "&amp;" + self + ";"
+      end
     end
 
     def convert_to_utf8 #:nodoc:
-      self =~ /^&([a-zA-Z0-9]+);$/
-      name = $1
-      return MATHML_ENTITIES.has_key?(name) ? MATHML_ENTITIES[name].split(';').collect {|s| s.gsub(/^&#x([A-F0-9]+)$/, '\1').hex }.pack('U*') : "&amp;" + name + ";"
+      if self =~ /^(lt|gt|amp|quot|apos)$/
+        self.replace "&" + self + ";"
+      elsif MATHML_ENTITIES.has_key?(self)         
+        self.replace MATHML_ENTITIES[self].split(';').collect {|s| s.gsub(/^&#x([A-F0-9]+)$/, '\1').hex }.pack('U*')
+      else
+        self.replace "&amp;" + self + ";"
+      end
     end
 
 

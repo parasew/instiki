@@ -14,9 +14,6 @@ require 'chunks/chunk'
 # Author: Mark Reid <mark at threewordslong dot com>
 # Created: 8th June 2004
 
-require 'sanitize'
-include Sanitize
-
 class NoWiki < Chunk::Abstract
 
   NOWIKI_PATTERN = Regexp.new('<nowiki>(.*?)</nowiki>', Regexp::MULTILINE)
@@ -26,7 +23,7 @@ class NoWiki < Chunk::Abstract
 
   def initialize(match_data, content)
     super
-    @plain_text = @unmask_text = sanitize_xhtml(match_data[1])
+    @plain_text = @unmask_text = match_data[1]
   end
 
 end

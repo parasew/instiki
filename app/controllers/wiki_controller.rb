@@ -13,8 +13,6 @@ class WikiController < ApplicationController
 
   layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :tex, :s5, :export_html]
 
-  include Sanitize
-
   def index
     if @web_name
       redirect_home

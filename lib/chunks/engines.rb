@@ -1,6 +1,8 @@
 $: << File.dirname(__FILE__) + "../../lib"
 
 require_dependency 'chunks/chunk'
+require 'sanitize'
+
 
 # The markup engines are Chunks that call the one of RedCloth
 # or RDoc to convert text. This markup occurs when the chunk is required
@@ -40,13 +42,13 @@ module Engines
 
       # If the request is for S5, call Maruku accordingly (without math)
       if @content.options[:mode] == :s5
-        my_content = Maruku.new(@content.delete("\r"), {:math_enabled => false,
-                            :content_only => true,
+        my_content = Maruku.new(@content.delete("\r").to_utf8,
+                           {:math_enabled => false, :content_only => true,
                             :author => @content.options[:engine_opts][:author],
                             :title => @content.options[:engine_opts][:title]})
         @content.options[:renderer].s5_theme = my_content.s5_theme
       else
-        html = Maruku.new(@content.delete("\r"), {:math_enabled => false}).to_html
+        html = Maruku.new(@content.delete("\r").to_utf8, {:math_enabled => false}).to_html
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
 
@@ -60,7 +62,8 @@ module Engines
 
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
-        my_content = Maruku.new(@content.delete("\r"), {:math_enabled => true,
+        my_content = Maruku.new(@content.delete("\r").to_utf8,
+                           {:math_enabled => true,
                             :math_numbered => ['\\[','\\begin{equation}'],
                             :content_only => true,
                             :author => @content.options[:engine_opts][:author],
@@ -68,7 +71,7 @@ module Engines
         @content.options[:renderer].s5_theme = my_content.s5_theme
         my_content.to_s5
       else
-        html = Maruku.new(@content.delete("\r"),
+        html = Maruku.new(@content.delete("\r").to_utf8,
              {:math_enabled => true,
               :math_numbered => ['\\[','\\begin{equation}']}).to_html
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')

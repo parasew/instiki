@@ -344,6 +344,13 @@ class PageRendererTest < Test::Unit::TestCase
         "</ins> and lovely morning<ins class='diffins'> today</ins></span></p>", test_renderer(@page.revisions.last).display_diff
   end
   
+  def test_nowiki_sanitization
+    assert_markup_parsed_as('<p>This sentence contains <span>a &amp; b</span> ' +
+     '&lt;script&gt;alert("XSS!");&lt;/script&gt;. Do not touch!</p>',
+      'This sentence contains <nowiki><span>a & b</span> <script>alert("XSS!");' +
+      '</script></nowiki>. Do not touch!')
+  end
+  
   def test_link_to_file
     assert_markup_parsed_as( 
       "<p><span class='newWikiWord'>doc.pdf<a href='../file/doc.pdf'>?</a></span></p>",
