@@ -133,8 +133,7 @@ class String
      #expand NCRs to utf-8
      pieces = self.split(/&#[xX]([a-fA-F0-9]+);/)
      1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].hex].pack('U*')}
-     text = pieces.join
-     pieces = text.split(/&#(\d+);/)
+     pieces = pieces.join.split(/&#(\d+);/)
      1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].to_i].pack('U*')}
      text = pieces.join     
      #ensure the resulting string of bytes is valid utf-8
