@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../abstract_unit'
+require 'abstract_unit'
 
 class CookieTest < Test::Unit::TestCase
   class TestController < ActionController::Base
@@ -37,7 +37,7 @@ class CookieTest < Test::Unit::TestCase
     end
 
     def rescue_action(e) 
-      raise unless ActionController::MissingTemplate # No templates here, and we don't care about the output 
+      raise unless ActionView::MissingTemplate # No templates here, and we don't care about the output 
     end
   end
 
@@ -131,5 +131,10 @@ class CookieTest < Test::Unit::TestCase
       'expires' => Time.utc(2007, 10, 20))
     assert cookie_str !~ /secure/
     assert cookie_str !~ /HttpOnly/
+  end
+
+  def test_cookies_should_not_be_split_on_ampersand_values
+    cookies = CGI::Cookie.parse('return_to=http://rubyonrails.org/search?term=api&scope=all&global=true')
+    assert_equal({"return_to" => ["http://rubyonrails.org/search?term=api&scope=all&global=true"]}, cookies)
   end
 end

@@ -18,6 +18,12 @@ module ActiveSupport
         pair = assoc(key)
         pair ? pair.last : nil
       end
+      
+      def delete(key)
+        pair = assoc(key)
+        pair ? array_index = index(pair) : nil
+        array_index ? delete_at(array_index).last : nil
+      end
 
       def keys
         collect { |key, value| key }
@@ -25,6 +31,12 @@ module ActiveSupport
 
       def values
         collect { |key, value| value }
+      end
+
+      def to_hash
+        returning({}) do |hash|
+          each { |array| hash[array[0]] = array[1] }
+        end
       end
     end
   end

@@ -1,5 +1,3 @@
-require 'application'
-
 class AdminController < ApplicationController
 
   layout 'default'

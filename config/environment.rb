@@ -30,6 +30,9 @@ Rails::Initializer.run do |config|
   #####
    } 
 
+  # Don't do file system STAT calls to check to see if the templates have changed.
+  #config.action_view.cache_template_loading = true
+
   # Skip frameworks you're not going to use
   config.frameworks -= [ :action_web_service, :action_mailer ]
 
@@ -39,7 +42,7 @@ Rails::Initializer.run do |config|
 
   # Enable page/fragment caching by setting a file-based store
   # (remember to create the caching directory and make it readable to the application)
-  config.action_controller.fragment_cache_store = :file_store, "#{RAILS_ROOT}/cache"
+  config.action_controller.cache_store = :file_store, "#{RAILS_ROOT}/cache"
 
   # Activate observers that should always be running
   config.active_record.observers = :page_observer

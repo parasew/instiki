@@ -53,6 +53,21 @@ module ActionView
     #     <option value="2">Sam</option>
     #     <option value="3">Tobias</option>
     #   </select>
+    # 
+    # Like the other form helpers, +select+ can accept an <tt>:index</tt> option to manually set the ID used in the resulting output. Unlike other helpers, +select+ expects this 
+    # option to be in the +html_options+ parameter.
+    # 
+    # Example: 
+    # 
+    #   select("album[]", "genre", %w[rap rock country], {}, { :index => nil })
+    # 
+    # becomes:
+    # 
+    #   <select name="album[][genre]" id="album__genre">
+    #     <option value="rap">rap</option>
+    #     <option value="rock">rock</option>
+    #     <option value="country">country</option>
+    #   </select>
     module FormOptionsHelper
       include ERB::Util
 
@@ -78,8 +93,8 @@ module ActionView
       # This allows the user to submit a form page more than once with the expected results of creating multiple records.
       # In addition, this allows a single partial to be used to generate form inputs for both edit and create forms.
       #
-      # By default, post.person_id is the selected option.  Specify :selected => value to use a different selection
-      # or :selected => nil to leave all options unselected.
+      # By default, <tt>post.person_id</tt> is the selected option.  Specify <tt>:selected => value</tt> to use a different selection
+      # or <tt>:selected => nil</tt> to leave all options unselected.
       def select(object, method, choices, options = {}, html_options = {})
         InstanceTag.new(object, method, self, nil, options.delete(:object)).to_select_tag(choices, options, html_options)
       end
@@ -131,6 +146,17 @@ module ActionView
       # to TimeZone. This may be used by users to specify a different time
       # zone model object. (See #time_zone_options_for_select for more
       # information.)
+      # Finally, this method supports a <tt>:default</tt> option, which selects
+      # a default TimeZone if the object's time zone is nil.
+      #
+      # Examples:
+      #   time_zone_select( "user", "time_zone", nil, :include_blank => true)
+      #
+      #   time_zone_select( "user", "time_zone", nil, :default => "Pacific Time (US & Canada)" )
+      #
+      #   time_zone_select( "user", 'time_zone', TimeZone.us_zones, :default => "Pacific Time (US & Canada)")
+      #
+      #   time_zone_select( "user", "time_zone", TZInfo::Timezone.all.sort, :model => TZInfo::Timezone)
       def time_zone_select(object, method, priority_zones = nil, options = {}, html_options = {})
         InstanceTag.new(object, method, self, nil, options.delete(:object)).to_time_zone_select_tag(priority_zones, options, html_options)
       end
@@ -385,7 +411,7 @@ module ActionView
         value = value(object)
         content_tag("select",
           add_options(
-            time_zone_options_for_select(value, priority_zones, options[:model] || TimeZone),
+            time_zone_options_for_select(value || options[:default], priority_zones, options[:model] || TimeZone),
             options, value
           ), html_options
         )

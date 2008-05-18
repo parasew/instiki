@@ -143,11 +143,19 @@ module ActionController #:nodoc:
       # Declare a controller method as a helper. For example, the following
       # makes the +current_user+ controller method available to the view:
       #   class ApplicationController < ActionController::Base
-      #     helper_method :current_user
+      #     helper_method :current_user, :logged_in?
+      #
       #     def current_user
-      #       @current_user ||= User.find(session[:user])
+      #       @current_user ||= User.find_by_id(session[:user])
       #     end
+      #
+      #      def logged_in?
+      #        current_user != nil
+      #      end
       #   end
+      #
+      # In a view:
+      #  <% if logged_in? -%>Welcome, <%= current_user.name %><% end -%>
       def helper_method(*methods)
         methods.flatten.each do |method|
           master_helper_module.module_eval <<-end_eval
@@ -167,6 +175,15 @@ module ActionController #:nodoc:
         attrs.flatten.each { |attr| helper_method(attr, "#{attr}=") }
       end
 
+      # Provides a proxy to access helpers methods from outside the view.
+      def helpers
+        unless @helper_proxy
+          @helper_proxy = ActionView::Base.new
+          @helper_proxy.extend master_helper_module
+        else
+          @helper_proxy
+        end
+      end
 
       private
         def default_helper_module!

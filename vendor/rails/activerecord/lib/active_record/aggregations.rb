@@ -104,10 +104,19 @@ module ActiveRecord
     # changed through means other than the writer method.
     #
     # The immutable requirement is enforced by Active Record by freezing any object assigned as a value object. Attempting to 
-    # change it afterwards will result in a <tt>TypeError</tt>.
+    # change it afterwards will result in a <tt>ActiveSupport::FrozenObjectError</tt>.
     # 
     # Read more about value objects on http://c2.com/cgi/wiki?ValueObject and on the dangers of not keeping value objects
     # immutable on http://c2.com/cgi/wiki?ValueObjectsShouldBeImmutable
+    #
+    # == Finding records by a value object
+    #
+    # Once a +composed_of+ relationship is specified for a model, records can be loaded from the database by specifying an instance
+    # of the value object in the conditions hash. The following example finds all customers with +balance_amount+ equal to 20 and
+    # +balance_currency+ equal to "USD":
+    #
+    #   Customer.find(:all, :conditions => {:balance => Money.new(20, "USD")})
+    #
     module ClassMethods
       # Adds reader and writer methods for manipulating a value object:
       # <tt>composed_of :address</tt> adds <tt>address</tt> and <tt>address=(new_address)</tt> methods.
@@ -155,7 +164,7 @@ module ActiveRecord
               if (instance_variable_get("@#{name}").nil? || force_reload) && (!allow_nil || mapping.any? {|pair| !read_attribute(pair.first).nil? })
                 instance_variable_set("@#{name}", class_name.constantize.new(*mapping.collect {|pair| read_attribute(pair.first)}))
               end
-              return instance_variable_get("@#{name}")
+              instance_variable_get("@#{name}")
             end
           end
 
@@ -165,11 +174,11 @@ module ActiveRecord
           module_eval do
             define_method("#{name}=") do |part|
               if part.nil? && allow_nil
-                mapping.each { |pair| @attributes[pair.first] = nil }
+                mapping.each { |pair| self[pair.first] = nil }
                 instance_variable_set("@#{name}", nil)
               else
                 part = conversion.call(part) unless part.is_a?(class_name.constantize) || conversion.nil?
-                mapping.each { |pair| @attributes[pair.first] = part.send(pair.last) }
+                mapping.each { |pair| self[pair.first] = part.send(pair.last) }
                 instance_variable_set("@#{name}", part.freeze)
               end
             end

@@ -114,6 +114,24 @@ module ActionView
         tag :input, { "type" => "text", "name" => name, "id" => name, "value" => value }.update(options.stringify_keys)
       end
 
+      # Creates a label field
+      #
+      # ==== Options
+      # * Creates standard HTML attributes for the tag.
+      #
+      # ==== Examples
+      #   label_tag 'name'
+      #   # => <label for="name">Name</label>
+      #
+      #   label_tag 'name', 'Your name'
+      #   # => <label for="name">Your Name</label>
+      #
+      #   label_tag 'name', nil, :class => 'small_label'
+      #   # => <label for="name" class="small_label">Name</label>
+      def label_tag(name, text = nil, options = {})
+        content_tag :label, text || name.humanize, { "for" => name }.update(options.stringify_keys)
+      end
+
       # Creates a hidden form input field used to transmit data that would be lost due to HTTP's statelessness or
       # data that should be hidden from the user.
       #
@@ -298,9 +316,12 @@ module ActionView
       # Creates a submit button with the text <tt>value</tt> as the caption. 
       #
       # ==== Options
-      # * <tt>:disabled</tt> - If set to true, the user will not be able to use this input.
+      # * <tt>:confirm => 'question?'</tt> - This will add a JavaScript confirm
+      #   prompt with the question specified. If the user accepts, the form is
+      #   processed normally, otherwise no action is taken.
+      # * <tt>:disabled</tt> - If true, the user will not be able to use this input.
       # * <tt>:disable_with</tt> - Value of this parameter will be used as the value for a disabled version 
-      #                            of the submit button when the form is submitted.
+      #   of the submit button when the form is submitted.
       # * Any other key creates standard HTML options for the tag.
       #
       # ==== Examples
@@ -320,8 +341,9 @@ module ActionView
       #   submit_tag nil, :class => "form_submit"
       #   # => <input class="form_submit" name="commit" type="submit" />
       #
-      #   submit_tag "Edit", :disable_with => "Editing...", :class => 'edit-button'
-      #   # => <input class="edit-button" disable_with="Editing..." name="commit" type="submit" value="Edit" />
+      #   submit_tag "Edit", :disable_with => "Editing...", :class => "edit-button"
+      #   # => <input class="edit-button" onclick="this.disabled=true;this.value='Editing...';this.form.submit();"
+      #   #    name="commit" type="submit" value="Edit" />
       def submit_tag(value = "Save changes", options = {})
         options.stringify_keys!
         
@@ -333,10 +355,15 @@ module ActionView
             "#{options["onclick"]}",
             "result = (this.form.onsubmit ? (this.form.onsubmit() ? this.form.submit() : false) : this.form.submit())",
             "if (result == false) { this.value = this.getAttribute('originalValue'); this.disabled = false }",
-            "return result",
+            "return result;",
           ].join(";")
         end
-          
+        
+        if confirm = options.delete("confirm")
+          options["onclick"] ||= ''
+          options["onclick"] += "return #{confirm_javascript_function(confirm)};"
+        end
+        
         tag :input, { "type" => "submit", "name" => "commit", "value" => value }.update(options.stringify_keys)
       end
       
@@ -352,13 +379,13 @@ module ActionView
       #   image_submit_tag("login.png")
       #   # => <input src="/images/login.png" type="image" />
       #
-      #   image_submit_tag("purchase.png"), :disabled => true
+      #   image_submit_tag("purchase.png", :disabled => true)
       #   # => <input disabled="disabled" src="/images/purchase.png" type="image" />
       #
-      #   image_submit_tag("search.png"), :class => 'search-button'
+      #   image_submit_tag("search.png", :class => 'search-button')
       #   # => <input class="search-button" src="/images/search.png" type="image" />
       #
-      #   image_submit_tag("agree.png"), :disabled => true, :class => "agree-disagree-button"
+      #   image_submit_tag("agree.png", :disabled => true, :class => "agree-disagree-button")
       #   # => <input class="agree-disagree-button" disabled="disabled" src="/images/agree.png" type="image" />
       def image_submit_tag(source, options = {})
         tag :input, { "type" => "image", "src" => path_to_image(source) }.update(options.stringify_keys)

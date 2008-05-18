@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/abstract_unit'
+require 'abstract_unit'
 
 class Deprecatee
   def initialize
@@ -148,4 +148,14 @@ class DeprecationTest < Test::Unit::TestCase
     assert_not_deprecated { error.message }
     assert_nil @last_message
   end
+end
+
+class DeprecatedIvarTest < Test::Unit::TestCase
+
+  def test_deprecated_ivar
+    @action = ActiveSupport::Deprecation::DeprecatedInstanceVariable.new("fubar", :foobar)
+
+    assert_deprecated(/Instance variable @foobar is deprecated! Call instance method foobar instead/) { assert_equal "fubar", @action }
+  end
+
 end

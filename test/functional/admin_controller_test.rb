@@ -10,6 +10,7 @@ class AdminControllerTest < Test::Unit::TestCase
   fixtures :webs, :pages, :revisions, :system, :wiki_references
 
   def setup
+    require 'action_controller/test_process'
     @controller = AdminController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new

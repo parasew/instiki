@@ -16,18 +16,18 @@ module ActionView
       # instead of the fully qualified URL like http://example.com/controller/action.
       #
       # When called from a view, url_for returns an HTML escaped url. If you
-      # need an unescaped url, pass :escape => false in the +options+.
+      # need an unescaped url, pass <tt>:escape => false</tt> in the +options+.
       #
       # ==== Options
-      # * <tt>:anchor</tt> -- specifies the anchor name to be appended to the path.
-      # * <tt>:only_path</tt> --  if true, returns the relative URL (omitting the protocol, host name, and port) (<tt>true</tt> by default unless <tt>:host</tt> is specified)
-      # * <tt>:trailing_slash</tt> --  if true, adds a trailing slash, as in "/archive/2005/". Note that this
+      # * <tt>:anchor</tt> - Specifies the anchor name to be appended to the path.
+      # * <tt>:only_path</tt> - If true, returns the relative URL (omitting the protocol, host name, and port) (<tt>true</tt> by default unless <tt>:host</tt> is specified).
+      # * <tt>:trailing_slash</tt> - If true, adds a trailing slash, as in "/archive/2005/". Note that this
       #   is currently not recommended since it breaks caching.
-      # * <tt>:host</tt> -- overrides the default (current) host if provided
-      # * <tt>:protocol</tt> -- overrides the default (current) protocol if provided
-      # * <tt>:user</tt> -- Inline HTTP authentication (only plucked out if :password is also present)
-      # * <tt>:password</tt> -- Inline HTTP authentication (only plucked out if :user is also present)
-      # * <tt>:escape</tt> -- Determines whether the returned URL will be HTML escaped or not (<tt>true</tt> by default)
+      # * <tt>:host</tt> - Overrides the default (current) host if provided.
+      # * <tt>:protocol</tt> - Overrides the default (current) protocol if provided.
+      # * <tt>:user</tt> - Inline HTTP authentication (only plucked out if <tt>:password</tt> is also present).
+      # * <tt>:password</tt> - Inline HTTP authentication (only plucked out if <tt>:user</tt> is also present).
+      # * <tt>:escape</tt> - Determines whether the returned URL will be HTML escaped or not (<tt>true</tt> by default).
       #
       # ==== Relying on named routes
       #
@@ -86,37 +86,37 @@ module ActionView
       # of +options+. See the valid options in the documentation for
       # url_for. It's also possible to pass a string instead
       # of an options hash to get a link tag that uses the value of the string as the
-      # href for the link, or use +:back+ to link to the referrer - a JavaScript back
+      # href for the link, or use <tt>:back</tt> to link to the referrer - a JavaScript back
       # link will be used in place of a referrer if none exists. If nil is passed as
       # a name, the link itself will become the name.
       #
       # ==== Options
-      # * <tt>:confirm => 'question?'</tt> -- This will add a JavaScript confirm
+      # * <tt>:confirm => 'question?'</tt> - This will add a JavaScript confirm
       #   prompt with the question specified. If the user accepts, the link is
       #   processed normally, otherwise no action is taken.
-      # * <tt>:popup => true || array of window options</tt> -- This will force the
+      # * <tt>:popup => true || array of window options</tt> - This will force the
       #   link to open in a popup window. By passing true, a default browser window
       #   will be opened with the URL. You can also specify an array of options
       #   that are passed-thru to JavaScripts window.open method.
-      # * <tt>:method => symbol of HTTP verb</tt> -- This modifier will dynamically
+      # * <tt>:method => symbol of HTTP verb</tt> - This modifier will dynamically
       #   create an HTML form and immediately submit the form for processing using
       #   the HTTP verb specified. Useful for having links perform a POST operation
       #   in dangerous actions like deleting a record (which search bots can follow
-      #   while spidering your site). Supported verbs are :post, :delete and :put.
+      #   while spidering your site). Supported verbs are <tt>:post</tt>, <tt>:delete</tt> and <tt>:put</tt>.
       #   Note that if the user has JavaScript disabled, the request will fall back
       #   to using GET. If you are relying on the POST behavior, you should check
       #   for it in your controller's action by using the request object's methods
-      #   for post?, delete? or put?.
+      #   for <tt>post?</tt>, <tt>delete?</tt> or <tt>put?</tt>.
       # * The +html_options+ will accept a hash of html attributes for the link tag.
       #
       # Note that if the user has JavaScript disabled, the request will fall back
-      # to using GET. If :href=>'#' is used and the user has JavaScript disabled
+      # to using GET. If <tt>:href => '#'</tt> is used and the user has JavaScript disabled
       # clicking the link will have no effect. If you are relying on the POST 
       # behavior, your should check for it in your controller's action by using the 
-      # request object's methods for post?, delete? or put?. 
+      # request object's methods for <tt>post?</tt>, <tt>delete?</tt> or <tt>put?</tt>.
       #
       # You can mix and match the +html_options+ with the exception of
-      # :popup and :method which will raise an ActionView::ActionViewError
+      # <tt>:popup</tt> and <tt>:method</tt> which will raise an ActionView::ActionViewError
       # exception.
       #
       # ==== Examples
@@ -178,9 +178,9 @@ module ActionView
       # The +options+ hash accepts the same options at url_for.
       #
       # There are a few special +html_options+:
-      # * <tt>:method</tt> -- specifies the anchor name to be appended to the path.
-      # * <tt>:disabled</tt> -- specifies the anchor name to be appended to the path.
-      # * <tt>:confirm</tt> -- This will add a JavaScript confirm
+      # * <tt>:method</tt> - Specifies the anchor name to be appended to the path.
+      # * <tt>:disabled</tt> - Specifies the anchor name to be appended to the path.
+      # * <tt>:confirm</tt> - This will add a JavaScript confirm
       #   prompt with the question specified. If the user accepts, the link is
       #   processed normally, otherwise no action is taken.
       # 
@@ -251,10 +251,10 @@ module ActionView
       #     <li>About Us</li>
       #   </ul>
       #
-      # ...but if in the "home" action, it will render:
+      # ...but if in the "index" action, it will render:
       #
       #   <ul id="navbar">
-      #     <li><a href="/controller/index">Home</a></li>
+      #     <li>Home</li>
       #     <li><a href="/controller/about">About Us</a></li>
       #   </ul>
       #
@@ -389,9 +389,8 @@ module ActionView
         email_address_obfuscated.gsub!(/\./, html_options.delete("replace_dot")) if html_options.has_key?("replace_dot")
 
         if encode == "javascript"
-          tmp = "document.write('#{content_tag("a", name || email_address, html_options.merge({ "href" => "mailto:"+email_address+extras }))}');"
-          for i in 0...tmp.length
-            string << sprintf("%%%x",tmp[i])
+          "document.write('#{content_tag("a", name || email_address, html_options.merge({ "href" => "mailto:"+email_address+extras }))}');".each_byte do |c|
+            string << sprintf("%%%x", c)
           end
           "<script type=\"#{Mime::JS}\">eval(unescape('#{string}'))</script>"
         elsif encode == "hex"
@@ -403,12 +402,9 @@ module ActionView
           protocol = 'mailto:'
           protocol.each_byte { |c| string << sprintf("&#%d;", c) }
 
-          for i in 0...email_address.length
-            if email_address[i,1] =~ /\w/
-              string << sprintf("%%%x",email_address[i])
-            else
-              string << email_address[i,1]
-            end
+          email_address.each_byte do |c|
+            char = c.chr
+            string << (char =~ /\w/ ? sprintf("%%%x", c) : char)
           end
           content_tag "a", name || email_address_encoded, html_options.merge({ "href" => "#{string}#{extras}" })
         else

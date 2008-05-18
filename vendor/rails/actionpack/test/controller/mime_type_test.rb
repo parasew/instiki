@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../abstract_unit'
+require 'abstract_unit'
 
 class MimeTypeTest < Test::Unit::TestCase
   Mime::Type.register "image/png", :png
@@ -28,6 +28,13 @@ class MimeTypeTest < Test::Unit::TestCase
     expect = [Mime::HTML, Mime::XML, "image/*", Mime::TEXT, Mime::ALL]
     assert_equal expect, Mime::Type.parse(accept).collect { |c| c.to_s }
   end
+
+  # Accept header send with user HTTP_USER_AGENT: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; InfoPath.1)
+  def test_parse_crappy_broken_acceptlines2
+    accept = "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword,  , pronto/1.00.00, sslvpn/1.00.00.00, */*"
+    expect = ['image/gif', 'image/x-xbitmap', 'image/jpeg','image/pjpeg', 'application/x-shockwave-flash', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'pronto/1.00.00', 'sslvpn/1.00.00.00', Mime::ALL  ]
+    assert_equal expect, Mime::Type.parse(accept).collect { |c| c.to_s }
+  end
   
   def test_custom_type
     Mime::Type.register("image/gif", :gif)
@@ -39,6 +46,11 @@ class MimeTypeTest < Test::Unit::TestCase
     Mime.module_eval { remove_const :GIF if const_defined?(:GIF) }
   end
   
+  def test_type_should_be_equal_to_symbol
+    assert_equal Mime::HTML, 'application/xhtml+xml'
+    assert_equal Mime::HTML, :html
+  end
+
   def test_type_convenience_methods
     types = [:html, :xml, :png, :pdf, :yaml, :url_encoded_form]
     types.each do |type|
