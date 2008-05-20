@@ -5,6 +5,8 @@ require 'sanitize'
 
 class SanitizeTest < Test::Unit::TestCase
 
+  include Sanitize
+
   def setup
 
   end

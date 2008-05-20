@@ -2,7 +2,7 @@ require 'fileutils'
 require 'maruku'
 require 'parsedate'
 require 'zip/zip'
-require 'sanitize'
+require 'stringsupport'
 require 'resolv'
 
 class WikiController < ApplicationController

@@ -4,7 +4,7 @@ module MaRuKu; module Out; module HTML
 	def convert_to_mathml_itex2mml(kind, tex)
 		begin
 			if not $itex2mml_parser
-				require 'sanitize'
+				require 'stringsupport'
 				require 'itextomml'
 				$itex2mml_parser =  Itex2MML::Parser.new
 			end

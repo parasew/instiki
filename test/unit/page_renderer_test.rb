@@ -49,7 +49,7 @@ class PageRendererTest < Test::Unit::TestCase
         "<annotation-xml encoding='SVG1.1'><svg/></annotation-xml></semantics></math> in kinda " +
         "<a class='existingWikiWord' href='../show/ThatWay'>That Way</a> in " +
         "<span class='newWikiWord'>His Way<a href='../show/HisWay'>?</a></span> " +
-        %{though <a class='existingWikiWord' href='../show/MyWay'>My Way</a> OverThere \xE2\x80\x93 see } +
+        %{though <a class='existingWikiWord' href='../show/MyWay'>My Way</a> OverThere \342\200\223 see } +
         "<a class='existingWikiWord' href='../show/SmartEngine'>Smart Engine</a> in that " +
         "<span class='newWikiWord'>Smart Engine GUI" +
         "<a href='../show/SmartEngineGUI'>?</a></span></p>", 
@@ -86,7 +86,7 @@ class PageRendererTest < Test::Unit::TestCase
         %{(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics><annotation-xml encoding='SVG1.1'>} +
         %{<svg/></annotation-xml></semantics></math><div class='maruku-eq-tex'><code style='display: none;'>} +
         %{\\sin(x) \\begin{svg}<svg></svg>\\end{svg}</code></div></div>},
-        "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
+        "$$\\sin(x) \\begin{svg}<svg></svg>\\end{svg}$$")
   
     code_block = [ 
       'This is a code block:',
@@ -275,6 +275,13 @@ class PageRendererTest < Test::Unit::TestCase
       'or <nowiki>http://www.thislink.com</nowiki>.')
   end
   
+  def test_malformed_nowiki
+    assert_markup_parsed_as( 
+      '<p><i><b/></i></p>', 
+      '<nowiki><i><b></i></b></nowiki> ')
+  end
+
+  
   def test_multiline_nowiki_tag
     assert_markup_parsed_as( 
       "<p>Do not mark \n up [[this text]] \nand http://this.url.com  but markup " +
@@ -283,6 +290,13 @@ class PageRendererTest < Test::Unit::TestCase
       "and http://this.url.com </nowiki> but markup [[this]]")
   end
 
+  def test_markdown_nowiki_tag
+    assert_markup_parsed_as( 
+      '<p>Do not mark up *this text* or http://www.thislink.com.</p>', 
+      'Do not mark up <nowiki>*this text*</nowiki> ' +
+      'or <nowiki>http://www.thislink.com</nowiki>.')
+  end
+  
   def test_sanitize_nowiki_tag
     assert_markup_parsed_as(
       '<p>[[test]]&amp;<a href=\'a&amp;b\'>shebang</a> &lt;script&gt;alert("xss!");&lt;/script&gt; *foo*</p>',
@@ -311,7 +325,7 @@ class PageRendererTest < Test::Unit::TestCase
         "<annotation-xml encoding='SVG1.1'><svg/></annotation-xml></semantics></math> in kinda " +
         "<a class='existingWikiWord' href='ThatWay.html'>That Way</a> in " +
         "<span class='newWikiWord'>His Way</span> though " +
-        %{<a class='existingWikiWord' href='MyWay.html'>My Way</a> OverThere \xE2\x80\x93 see } +
+        %{<a class='existingWikiWord' href='MyWay.html'>My Way</a> OverThere \342\200\223 see } +
         "<a class='existingWikiWord' href='SmartEngine.html'>Smart Engine</a> in that " +
         "<span class='newWikiWord'>Smart Engine GUI</span></p>", 
         test_renderer(@revision).display_content_for_export

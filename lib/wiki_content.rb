@@ -7,8 +7,6 @@ require_dependency 'chunks/literal'
 require 'chunks/nowiki'
 require 'sanitize'
 
-include Sanitize
-
 # Wiki content is just a string that can process itself with a chain of
 # actions. The actions can modify wiki content so that certain parts of
 # it are protected from being rendered by later actions.
@@ -116,6 +114,7 @@ end
 class WikiContent < String
 
   include ChunkManager
+  include Sanitize
 
   DEFAULT_OPTS = {
     :active_chunks       => ACTIVE_CHUNKS,

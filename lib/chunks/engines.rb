@@ -1,7 +1,7 @@
 $: << File.dirname(__FILE__) + "../../lib"
 
 require_dependency 'chunks/chunk'
-require 'sanitize'
+require 'stringsupport'
 
 
 # The markup engines are Chunks that call the one of RedCloth
