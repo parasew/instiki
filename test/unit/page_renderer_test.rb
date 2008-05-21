@@ -101,6 +101,13 @@ class PageRendererTest < Test::Unit::TestCase
         %{<p>This is a code block:</p>\n\n<pre><code>def a_method(arg)\n} +
         %{return ThatWay</code></pre>\n\n<p>Nice!</p>}, 
         code_block)
+        
+        assert_markup_parsed_as(%{<p>You then needed to edit (or create) a user.js file in} +
+          %{ your Mozilla profile, which read either (<span class='newWikiWord'>Mac OSX<a h} +
+          %{ref='../show/MacOSX'>?</a></span>)</p>\n\n<pre><code>  user_pref(&quot;font.mat} +
+          %{hfont-family&quot;, &quot;Math1,Math2,Math4,Symbol&quot;);</code></pre>},
+        %{You then needed to edit (or create) a user.js file in your Mozilla profile, whic} +
+          %{h read either (MacOSX)\n\n      user_pref("font.mathfont-family", "Math1,Math2,Math4,Symbol");})
 
     assert_markup_parsed_as(
         %{<p><math class='maruku-mathml' } +
@@ -299,7 +306,7 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_sanitize_nowiki_tag
     assert_markup_parsed_as(
-      '<p>[[test]]&amp;<a href=\'a&amp;b\'>shebang</a> &lt;script&gt;alert("xss!");&lt;/script&gt; *foo*</p>',
+      '<p>[[test]]&amp;<a href=\'a&amp;b\'>shebang</a> &lt;script&gt;alert(&quot;xss!&quot;);&lt;/script&gt; *foo*</p>',
       '<nowiki>[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*</nowiki>')
   end
 
@@ -349,7 +356,7 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_difficult_wiki_words
     @revision.content = "[[It's just awesome GUI!]]"
-    assert_equal "<p><span class='newWikiWord'>It's just awesome GUI!" +
+    assert_equal "<p><span class='newWikiWord'>It&apos;s just awesome GUI!" +
         "<a href='../show/It%27s+just+awesome+GUI%21'>?</a></span></p>", 
         test_renderer(@revision).display_content
   end
@@ -366,7 +373,7 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_nowiki_sanitization
     assert_markup_parsed_as('<p>This sentence contains <span>a &amp; b</span> ' +
-     '&lt;script&gt;alert("XSS!");&lt;/script&gt;. Do not touch!</p>',
+     '&lt;script&gt;alert(&quot;XSS!&quot;);&lt;/script&gt;. Do not touch!</p>',
       'This sentence contains <nowiki><span>a & b</span> <script>alert("XSS!");' +
       '</script></nowiki>. Do not touch!')
   end

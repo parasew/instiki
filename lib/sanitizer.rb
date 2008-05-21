@@ -149,7 +149,7 @@ module Sanitizer
                     end
                     node.attributes.each do |attr,val|
                       if String === val
-                         node.attributes[attr] = CGI.escapeHTML(CGI.unescapeHTML(val))
+                         node.attributes[attr] = val.unescapeHTML.escapeHTML
                       else
                         node.attributes.delete attr
                       end

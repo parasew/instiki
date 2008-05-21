@@ -3,14 +3,14 @@
     "name": "IE_Comments",
     "input": "<!--[if gte IE 4]><script>alert('XSS');</script><![endif]-->",
     "output": "",
-    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert('XSS');&lt;/script&gt;&lt;![endif]--&gt;"
+    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert(&apos;XSS&apos;);&lt;/script&gt;&lt;![endif]--&gt;"
   },
 
   {
     "name": "IE_Comments_2",
     "input": "<![if !IE 5]><script>alert('XSS');</script><![endif]>",
     "output": "&lt;script&gt;alert('XSS');&lt;/script&gt;",
-    "xhtml": "&lt;![if !IE 5]&gt;&lt;script&gt;alert('XSS');&lt;/script&gt;&lt;![endif]&gt;",
+    "xhtml": "&lt;![if !IE 5]&gt;&lt;script&gt;alert(&apos;XSS&apos;);&lt;/script&gt;&lt;![endif]&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -359,7 +359,7 @@
     "name": "should_sanitize_script_tag_with_multiple_open_brackets",
     "input": "<<script>alert(\"XSS\");//<</script>",
     "output": "&lt;&lt;script&gt;alert(\"XSS\");//&lt;&lt;/script&gt;",
-    "xhtml": "&lt;&lt;script&gt;alert(\"XSS\");//&lt;&lt;/script&gt;",
+    "xhtml": "&lt;&lt;script&gt;alert(&quot;XSS&quot;);//&lt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -375,7 +375,7 @@
     "name": "should_sanitize_tag_broken_up_by_null",
     "input": "<scr\u0000ipt>alert(\"XSS\")</scr\u0000ipt>",
     "output": "&lt;scr\ufffdipt&gt;alert(\"XSS\")&lt;/scr\ufffdipt&gt;",
-    "xhtml": "&lt;scr&gt;alert(\"XSS\")&lt;/scr&gt;",
+    "xhtml": "&lt;scr&gt;alert(&quot;XSS&quot;)&lt;/scr&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 

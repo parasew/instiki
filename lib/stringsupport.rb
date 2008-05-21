@@ -2214,7 +2214,9 @@ class String
     def escapeHTML
             self.gsub( /&/, "&amp;" ).
              gsub( /</, "&lt;" ).
-             gsub( />/, "&gt;" )
+             gsub( />/, "&gt;" ).
+             gsub(/'/, "&apos;" ).
+             gsub(/"/, "&quot;" )
     end
     
     def unescapeHTML
@@ -2224,6 +2226,8 @@ class String
       when /\Aamp\z/ni           then '&'
       when /\Agt\z/ni            then '>'
       when /\Alt\z/ni            then '<'
+      when /\Aquot\z/ni            then '"'
+      when /\Aapos\z/ni            then "'"
       when /\A#0*(\d+)\z/n       then
         if Integer($1) < 256
           Integer($1).chr
