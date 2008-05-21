@@ -5,7 +5,6 @@ require_dependency 'chunks/include'
 require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
-require 'sanitize'
 
 # Wiki content is just a string that can process itself with a chain of
 # actions. The actions can modify wiki content so that certain parts of
@@ -113,8 +112,9 @@ end
 
 class WikiContent < String
 
+  require 'sanitizer'
   include ChunkManager
-  include Sanitize
+  include Sanitizer
 
   DEFAULT_OPTS = {
     :active_chunks       => ACTIVE_CHUNKS,
@@ -193,7 +193,7 @@ class WikiContent < String
         chunk.unmask_text
       end
     end
-    self.replace sanitize_xhtml(self)
+    self.replace xhtml_sanitize(self)
   end
 
   def page_name

@@ -14,7 +14,7 @@ class SanitizerTest < Test::Unit::TestCase
   end
 
   def do_sanitize_xhtml stream
-    sanitize_xhtml(stream.to_utf8)
+    xhtml_sanitize(stream)
   end
 
   def check_sanitization(input, htmloutput, xhtmloutput, rexmloutput)

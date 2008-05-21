@@ -85,8 +85,8 @@ class PageRendererTest < Test::Unit::TestCase
         %{xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi><mo stretchy='false'>} +
         %{(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics><annotation-xml encoding='SVG1.1'>} +
         %{<svg/></annotation-xml></semantics></math><div class='maruku-eq-tex'><code style='display: none;'>} +
-        %{\\sin(x) \\begin{svg}<svg></svg>\\end{svg}</code></div></div>},
-        "$$\\sin(x) \\begin{svg}<svg></svg>\\end{svg}$$")
+        %{\\sin(x) \\begin{svg}<svg/>\\end{svg}</code></div></div>},
+        "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
   
     code_block = [ 
       'This is a code block:',
@@ -264,7 +264,7 @@ class PageRendererTest < Test::Unit::TestCase
        
     # currently, upper case HTML elements are not allowed
     assert_markup_parsed_as( 
-      "<p>This &lt;IMG SRC=\"http://hobix.com/sample.jpg\" alt=\"\"/&gt; is an inline image link.</p>", 
+      "<p>This &lt;IMG SRC='http://hobix.com/sample.jpg' alt=''/&gt; is an inline image link.</p>", 
       'This <IMG SRC="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
   end
   

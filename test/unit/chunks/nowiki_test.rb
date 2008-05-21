@@ -18,9 +18,9 @@ class NoWikiTest < Test::Unit::TestCase
 	)
   end
 
-  def test_no_sanitize_nowiki
+  def test_sanitize_nowiki
 	match(NoWiki, 'This sentence contains <nowiki>[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*</nowiki>. Do not touch!',
-		:plain_text => '[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*'
+		:plain_text => "[[test]]&amp;<a href='a&amp;b'>shebang</a> &lt;script&gt;alert(\"xss!\");&lt;/script&gt; *foo*"
 	)
   end
 

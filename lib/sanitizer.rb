@@ -120,7 +120,7 @@ module Sanitizer
       #    => &lt;script> do_nasty_stuff() &lt;/script>
       #   sanitize_html('<a href="javascript: sucker();">Click here for $100</a>')
       #    => <a>Click here for $100</a>
-      def sanitize_xhtml(html)
+      def xhtml_sanitize(html)
         if html.index("<")
           tokenizer = HTML::Tokenizer.new(html.to_utf8)
           new_text = ""
@@ -149,7 +149,7 @@ module Sanitizer
                     end
                     node.attributes.each do |attr,val|
                       if String === val
-                         node.attributes[attr] = CGI.escapeHTML(val.unescapeHTML)
+                         node.attributes[attr] = CGI.escapeHTML(CGI.unescapeHTML(val))
                       else
                         node.attributes.delete attr
                       end
@@ -160,7 +160,7 @@ module Sanitizer
                   node.to_s.gsub(/</, "&lt;").gsub(/>/, "&gt;")
                 end
               else
-                CGI.escapeHTML(node.to_s.unescapeHTML)
+                node.to_s.unescapeHTML.escapeHTML
             end
           end
 

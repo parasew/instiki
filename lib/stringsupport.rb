@@ -2211,12 +2211,17 @@ class String
 
 #:stopdoc:
 
+    def escapeHTML
+            self.gsub( /&/, "&amp;" ).
+             gsub( /</, "&lt;" ).
+             gsub( />/, "&gt;" )
+    end
+    
     def unescapeHTML
     self.gsub(/&(.*?);/n) do
       match = $1.dup
       case match
       when /\Aamp\z/ni           then '&'
-      when /\Aquot\z/ni          then '"'
       when /\Agt\z/ni            then '>'
       when /\Alt\z/ni            then '<'
       when /\A#0*(\d+)\z/n       then

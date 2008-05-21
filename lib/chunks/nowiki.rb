@@ -16,6 +16,9 @@ require 'chunks/chunk'
 
 class NoWiki < Chunk::Abstract
 
+  require 'sanitize'
+  include Sanitize
+  
   NOWIKI_PATTERN = Regexp.new('<nowiki>(.*?)</nowiki>', Regexp::MULTILINE)
   def self.pattern() NOWIKI_PATTERN end
 
@@ -23,7 +26,7 @@ class NoWiki < Chunk::Abstract
 
   def initialize(match_data, content)
     super
-    @plain_text = @unmask_text = match_data[1]
+    @plain_text = @unmask_text = sanitize_xhtml(match_data[1])
   end
 
 end
