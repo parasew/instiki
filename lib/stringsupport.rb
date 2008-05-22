@@ -2215,7 +2215,7 @@ class String
             self.gsub( /&/, "&amp;" ).
              gsub( /</, "&lt;" ).
              gsub( />/, "&gt;" ).
-             gsub(/'/, "&apos;" ).
+             gsub(/'/, "&#39;" ).
              gsub(/"/, "&quot;" )
     end
     

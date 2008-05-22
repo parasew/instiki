@@ -18,7 +18,7 @@ class Category < Chunk::Abstract
 def initialize(match_data, content)
     super(match_data, content)
     @hidden = match_data[1]
-    @list = match_data[2].split(',').map { |c| c.to_s.is_utf8? ? html_escape(c.strip) : nil }
+    @list = match_data[2].split(',').map { |c| c.to_s.is_utf8? ? c.strip.escapeHTML : nil }
     @list.compact!
     @unmask_text = ''
     if @hidden

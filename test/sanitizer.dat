@@ -3,14 +3,14 @@
     "name": "IE_Comments",
     "input": "<!--[if gte IE 4]><script>alert('XSS');</script><![endif]-->",
     "output": "",
-    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert(&apos;XSS&apos;);&lt;/script&gt;&lt;![endif]--&gt;"
+    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]--&gt;"
   },
 
   {
     "name": "IE_Comments_2",
     "input": "<![if !IE 5]><script>alert('XSS');</script><![endif]>",
     "output": "&lt;script&gt;alert('XSS');&lt;/script&gt;",
-    "xhtml": "&lt;![if !IE 5]&gt;&lt;script&gt;alert(&apos;XSS&apos;);&lt;/script&gt;&lt;![endif]&gt;",
+    "xhtml": "&lt;![if !IE 5]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 

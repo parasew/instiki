@@ -24,7 +24,7 @@ module Literal
 
   # A literal chunk that protects HTML tags from wiki rendering.
   class Tags < AbstractLiteral
-    TAGS_PATTERN = Regexp.new('<[a-zA-Z]+[^>]*?>', Regexp::MULTILINE) 
+    TAGS_PATTERN = Regexp.new('<[-a-zA-Z]+[^>]*?>', Regexp::MULTILINE) 
     def self.pattern() TAGS_PATTERN  end
   end
 end

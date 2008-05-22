@@ -356,7 +356,7 @@ class PageRendererTest < Test::Unit::TestCase
   
   def test_difficult_wiki_words
     @revision.content = "[[It's just awesome GUI!]]"
-    assert_equal "<p><span class='newWikiWord'>It&apos;s just awesome GUI!" +
+    assert_equal "<p><span class='newWikiWord'>It&#39;s just awesome GUI!" +
         "<a href='../show/It%27s+just+awesome+GUI%21'>?</a></span></p>", 
         test_renderer(@revision).display_content
   end
