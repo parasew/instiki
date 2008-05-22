@@ -2,7 +2,10 @@ $: << File.dirname(__FILE__) + "../../lib"
 
 require_dependency 'chunks/chunk'
 require 'stringsupport'
-
+require 'maruku'
+require 'maruku/ext/math'
+require_dependency 'rdocsupport'
+require 'redcloth'
 
 # The markup engines are Chunks that call the one of RedCloth
 # or RDoc to convert text. This markup occurs when the chunk is required
@@ -27,7 +30,6 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
-      require 'redcloth'
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
@@ -37,9 +39,6 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask
-      require 'maruku'
-      require 'maruku/ext/math'
-
       # If the request is for S5, call Maruku accordingly (without math)
       if @content.options[:mode] == :s5
         my_content = Maruku.new(@content.delete("\r").to_utf8,
@@ -57,9 +56,6 @@ module Engines
 
   class MarkdownMML < AbstractEngine
     def mask
-      require 'maruku'
-      require 'maruku/ext/math'
-
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
         my_content = Maruku.new(@content.delete("\r").to_utf8,
@@ -81,7 +77,6 @@ module Engines
 
   class Mixed < AbstractEngine
     def mask
-      require 'redcloth'
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
@@ -91,11 +86,10 @@ module Engines
 
   class RDoc < AbstractEngine
     def mask
-      require_dependency 'rdocsupport'
       html = RDocSupport::RDocFormatter.new(@content).to_html
     end
   end
 
   MAP = { :textile => Textile, :markdown => Markdown, :markdownMML => MarkdownMML, :mixed => Mixed, :rdoc => RDoc }
-  MAP.default = Textile
+  MAP.default = MarkdownMML
 end

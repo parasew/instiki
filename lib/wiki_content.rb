@@ -5,6 +5,8 @@ require_dependency 'chunks/include'
 require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
+require 'sanitizer'
+
 
 # Wiki content is just a string that can process itself with a chain of
 # actions. The actions can modify wiki content so that certain parts of
@@ -112,7 +114,6 @@ end
 
 class WikiContent < String
 
-  require 'sanitizer'
   include ChunkManager
   include Sanitizer
 
