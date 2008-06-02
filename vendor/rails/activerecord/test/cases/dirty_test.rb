@@ -44,6 +44,16 @@ class DirtyTest < ActiveRecord::TestCase
     assert_nil pirate.catchphrase_change
   end
 
+  def test_nullable_integer_not_marked_as_changed_if_new_value_is_blank
+    pirate = Pirate.new
+
+    ["", nil].each do |value|
+      pirate.parrot_id = value
+      assert !pirate.parrot_id_changed?
+      assert_nil pirate.parrot_id_change
+    end
+  end
+
   def test_object_should_be_changed_if_any_attribute_is_changed
     pirate = Pirate.new
     assert !pirate.changed?
@@ -78,7 +88,7 @@ class DirtyTest < ActiveRecord::TestCase
   end
 
   def test_association_assignment_changes_foreign_key
-    pirate = Pirate.create!
+    pirate = Pirate.create!(:catchphrase => 'jarl')
     pirate.parrot = Parrot.create!
     assert pirate.changed?
     assert_equal %w(parrot_id), pirate.changed
@@ -115,6 +125,26 @@ class DirtyTest < ActiveRecord::TestCase
     end
   end
 
+  def test_changed_attributes_should_be_preserved_if_save_failure
+    pirate = Pirate.new
+    pirate.parrot_id = 1
+    assert !pirate.save
+    check_pirate_after_save_failure(pirate)
+
+    pirate = Pirate.new
+    pirate.parrot_id = 1
+    assert_raises(ActiveRecord::RecordInvalid) { pirate.save! }
+    check_pirate_after_save_failure(pirate)
+  end
+
+  def test_reload_should_clear_changed_attributes
+    pirate = Pirate.create!(:catchphrase => "shiver me timbers")
+    pirate.catchphrase = "*hic*"
+    assert pirate.changed?
+    pirate.reload
+    assert !pirate.changed?
+  end
+
   private
     def with_partial_updates(klass, on = true)
       old = klass.partial_updates?
@@ -122,5 +152,12 @@ class DirtyTest < ActiveRecord::TestCase
       yield
     ensure
       klass.partial_updates = old
+    end
+
+    def check_pirate_after_save_failure(pirate)
+      assert pirate.changed?
+      assert pirate.parrot_id_changed?
+      assert_equal %w(parrot_id), pirate.changed
+      assert_nil pirate.parrot_id_was
     end
 end

@@ -40,9 +40,10 @@ module ActiveRecord
       base.alias_method_chain :save,            :dirty
       base.alias_method_chain :save!,           :dirty
       base.alias_method_chain :update,          :dirty
+      base.alias_method_chain :reload,          :dirty
 
       base.superclass_delegating_accessor :partial_updates
-      base.partial_updates = false
+      base.partial_updates = true
     end
 
     # Do any attributes have unsaved changes?
@@ -69,19 +70,26 @@ module ActiveRecord
       changed.inject({}) { |h, attr| h[attr] = attribute_change(attr); h }
     end
 
-
-    # Clear changed attributes after they are saved.
+    # Attempts to +save+ the record and clears changed attributes if successful.
     def save_with_dirty(*args) #:nodoc:
-      save_without_dirty(*args)
-    ensure
-      changed_attributes.clear
+      if status = save_without_dirty(*args)
+        changed_attributes.clear
+      end
+      status
     end
 
-    # Clear changed attributes after they are saved.
+    # Attempts to <tt>save!</tt> the record and clears changed attributes if successful.
     def save_with_dirty!(*args) #:nodoc:
-      save_without_dirty!(*args)
-    ensure
+      status = save_without_dirty!(*args)
       changed_attributes.clear
+      status
+    end
+
+    # <tt>reload</tt> the record and clears changed attributes.
+    def reload_with_dirty(*args) #:nodoc:
+      record = reload_without_dirty(*args)
+      changed_attributes.clear
+      record
     end
 
     private
@@ -117,14 +125,7 @@ module ActiveRecord
         # The attribute already has an unsaved change.
         unless changed_attributes.include?(attr)
           old = clone_attribute_value(:read_attribute, attr)
-
-          # Remember the original value if it's different.
-          typecasted = if column = column_for_attribute(attr)
-                         column.type_cast(value)
-                       else
-                         value
-                       end
-          changed_attributes[attr] = old unless old == typecasted
+          changed_attributes[attr] = old if field_changed?(attr, old, value)
         end
 
         # Carry on.
@@ -138,5 +139,20 @@ module ActiveRecord
           update_without_dirty
         end
       end
+
+      def field_changed?(attr, old, value)
+        if column = column_for_attribute(attr)
+          if column.type == :integer && column.null && old.nil?
+            # For nullable integer columns, NULL gets stored in database for blank (i.e. '') values.
+            # Hence we don't record it as a change if the value changes from nil to ''.
+            value = nil if value.blank?
+          else
+            value = column.type_cast(value)
+          end
+        end
+
+        old != value
+      end
+
   end
 end

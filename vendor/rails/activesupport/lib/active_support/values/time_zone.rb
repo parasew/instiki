@@ -1,3 +1,24 @@
+# The TimeZone class serves as a wrapper around TZInfo::Timezone instances. It allows us to do the following:
+#
+# * Limit the set of zones provided by TZInfo to a meaningful subset of 142 zones.
+# * Retrieve and display zones with a friendlier name (e.g., "Eastern Time (US & Canada)" instead of "America/New_York").
+# * Lazily load TZInfo::Timezone instances only when they're needed.
+# * Create ActiveSupport::TimeWithZone instances via TimeZone's +local+, +parse+, +at+ and +now+ methods.
+# 
+# If you set <tt>config.time_zone</tt> in the Rails Initializer, you can access this TimeZone object via <tt>Time.zone</tt>:
+#
+#   # environment.rb:
+#   Rails::Initializer.run do |config|
+#     config.time_zone = "Eastern Time (US & Canada)"
+#   end
+#
+#   Time.zone       # => #<TimeZone:0x514834...>
+#   Time.zone.name  # => "Eastern Time (US & Canada)"
+#   Time.zone.now   # => Sun, 18 May 2008 14:30:44 EDT -04:00
+#
+# The version of TZInfo bundled with Active Support only includes the definitions necessary to support the zones 
+# defined by the TimeZone class. If you need to use zones that aren't defined by TimeZone, you'll need to install the TZInfo gem
+# (if a recent version of the gem is installed locally, this will be used instead of the bundled version.)
 class TimeZone
   unless const_defined?(:MAPPING)
     # Keys are Rails TimeZone names, values are TZInfo identifiers
@@ -181,7 +202,7 @@ class TimeZone
 
   # Returns a textual representation of this time zone.
   def to_s
-    "(UTC#{formatted_offset}) #{name}"
+    "(GMT#{formatted_offset}) #{name}"
   end
 
   # Method for creating new ActiveSupport::TimeWithZone instance in time zone of +self+ from given values. Example:
@@ -325,6 +346,9 @@ class TimeZone
     ZONES.sort!
     ZONES.freeze
     ZONES_MAP.freeze
+
+    US_ZONES = ZONES.find_all { |z| z.name =~ /US|Arizona|Indiana|Hawaii|Alaska/ }
+    US_ZONES.freeze
   end
 
   class << self
@@ -332,7 +356,7 @@ class TimeZone
 
     # Return a TimeZone instance with the given name, or +nil+ if no
     # such TimeZone instance exists. (This exists to support the use of
-    # this class with the #composed_of macro.)
+    # this class with the +composed_of+ macro.)
     def new(name)
       self[name]
     end
@@ -361,14 +385,10 @@ class TimeZone
       end
     end
 
-    # A regular expression that matches the names of all time zones in
-    # the USA.
-    US_ZONES = /US|Arizona|Indiana|Hawaii|Alaska/.freeze
-
     # A convenience method for returning a collection of TimeZone objects
     # for time zones in the USA.
     def us_zones
-      all.find_all { |z| z.name =~ US_ZONES }
+      US_ZONES
     end
   end
 end

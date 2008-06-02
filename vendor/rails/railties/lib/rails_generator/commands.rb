@@ -154,28 +154,35 @@ HELP
         # Ruby or Rails.  In the future, expand to check other namespaces
         # such as the rest of the user's app.
         def class_collisions(*class_names)
+
+          # Initialize some check varibles
+          last_class = Object
+          current_class = nil
+          name = nil
+
           class_names.flatten.each do |class_name|
             # Convert to string to allow symbol arguments.
             class_name = class_name.to_s
 
             # Skip empty strings.
-            next if class_name.strip.empty?
+            class_name.strip.empty? ? next : current_class = class_name
 
             # Split the class from its module nesting.
             nesting = class_name.split('::')
             name = nesting.pop
 
             # Extract the last Module in the nesting.
-            last = nesting.inject(Object) { |last, nest|
-              break unless last.const_defined?(nest)
-              last.const_get(nest)
+            last = nesting.inject(last_class) { |last, nest|
+              break unless last_class.const_defined?(nest)
+              last_class = last_class.const_get(nest)
             }
 
-            # If the last Module exists, check whether the given
-            # class exists and raise a collision if so.
-            if last and last.const_defined?(name.camelize)
-              raise_class_collision(class_name)
-            end
+          end
+          # If the last Module exists, check whether the given
+          # class exists and raise a collision if so.
+
+          if last_class and last_class.const_defined?(name.camelize)
+            raise_class_collision(current_class)
           end
         end
 
@@ -373,12 +380,14 @@ HELP
           # Thanks to Florian Gross (flgr).
           def raise_class_collision(class_name)
             message = <<end_message
-  The name '#{class_name}' is reserved by Ruby on Rails.
+  The name '#{class_name}' is either already used in your application or reserved by Ruby on Rails.
   Please choose an alternative and run this generator again.
 end_message
             if suggest = find_synonyms(class_name)
-              message << "\n  Suggestions:  \n\n"
-              message << suggest.join("\n")
+              if suggest.any?
+                message << "\n  Suggestions:  \n\n"
+                message << suggest.join("\n")
+              end
             end
             raise UsageError, message
           end

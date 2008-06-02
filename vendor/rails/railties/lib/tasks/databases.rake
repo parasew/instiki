@@ -45,7 +45,7 @@ namespace :db do
       when 'postgresql'
         @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
         begin
-          ActiveRecord::Base.establish_connection(config.merge('database' => 'template1'))
+          ActiveRecord::Base.establish_connection(config.merge('database' => 'postgres', 'schema_search_path' => 'public'))
           ActiveRecord::Base.connection.create_database(config['database'], config.merge('encoding' => @encoding))
           ActiveRecord::Base.establish_connection(config)
         rescue
@@ -173,7 +173,7 @@ namespace :db do
         pending_migrations.each do |pending_migration|
           puts '  %4d %s' % [pending_migration.version, pending_migration.name]
         end
-        abort "Run `rake db:migrate` to update your database then try again."
+        abort %{Run "rake db:migrate" to update your database then try again.}
       end
     end
   end
@@ -368,7 +368,7 @@ def drop_database(config)
   when /^sqlite/
     FileUtils.rm(File.join(RAILS_ROOT, config['database']))
   when 'postgresql'
-    ActiveRecord::Base.establish_connection(config.merge('database' => 'template1'))
+    ActiveRecord::Base.establish_connection(config.merge('database' => 'postgres', 'schema_search_path' => 'public'))
     ActiveRecord::Base.connection.drop_database config['database']
   end
 end

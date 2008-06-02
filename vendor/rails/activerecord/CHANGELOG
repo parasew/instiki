@@ -1,4 +1,12 @@
-*2.1.0 RC1 (May 11th, 2008)*
+*2.1.0 (May 31st, 2008)*
+
+* Add ActiveRecord::Base.sti_name that checks ActiveRecord::Base#store_full_sti_class? and returns either the full or demodulized name. [rick]
+
+* Add first/last methods to associations/named_scope. Resolved #226. [Ryan Bates]
+
+* Added SQL escaping for :limit and :offset #288 [Aaron Bedra, Steven Bristol, Jonathan Wiess] 
+
+* Added first/last methods to associations/named_scope. Resolved #226. [Ryan Bates]
 
 * Ensure hm:t preloading honours reflection options. Resolves #137. [Frederick Cheung]
 
@@ -12,7 +20,7 @@
 
     change_table :videos do |t|
       t.timestamps                          # adds created_at, updated_at
-      t.belongs_to :goat                    # add goat_id integer
+      t.belongs_to :goat                    # adds goat_id integer
       t.string :name, :email, :limit => 20  # adds name and email both with a 20 char limit
       t.remove :name, :email                # removes the name and email columns
     end
