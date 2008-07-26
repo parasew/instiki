@@ -3,6 +3,11 @@
 require 'maruku'
 require 'optparse'
 
+def cli_puts(s)
+	$stderr.puts(s) if MaRuKu::Globals[:verbose]	
+end
+
+
 export = :html
 break_on_error = false
 using_math = false
@@ -26,7 +31,7 @@ opt = OptionParser.new do |opts|
 		MaRuKu::Globals[:html_math_output_png] = true
 		MaRuKu::Globals[:html_math_output_mathml] = false
 		MaRuKu::Globals[:html_png_engine] = s
-		$stderr.puts "Using png engine #{s}."
+		cli_puts "Using png engine #{s}."
 	end
 
 	opts.on("-m", "--math-engine ENGINE", "Uses ENGINE to render MathML") do |s|
@@ -49,8 +54,7 @@ opt = OptionParser.new do |opts|
 	opts.on_tail("--inspect",  "Shows the parsing result" ) do export = :inspect  end
 
 	opts.on_tail("--version", "Show version") do
-		puts OptionParser::Version.join('.')
-		exit
+		puts "Maruku #{MaRuKu::Version}"; exit
 	end
 
 	opts.on_tail("-h", "--help", "Show this message") do
@@ -68,27 +72,29 @@ rescue OptionParser::InvalidOption=>e
 	exit
 end
 
+
 if using_math
-	$stderr.puts "Using Math extensions."
+	cli_puts "Using Math extensions."
 	require 'maruku/ext/math'
 end
 
 #p ARGV
 #p MaRuKu::Globals
 
+
 inputs =
 # If we are given filenames, convert each file 
 if not ARGV.empty?
 	ARGV.map do |f|
 		# read file content
-		$stderr.puts "Reading from #{f}."
+		cli_puts "Reading from file #{f.inspect}." 
 		[f, File.open(f,'r').read]
 	end
 else
 	export = :html_frag if export == :html
 	export = :tex_frag if export == :tex
 	
-	$stderr.puts "Reading from standard input."
+	cli_puts  "Reading from standard input."
 	[[nil, $stdin.read]]
 end
 
@@ -100,7 +106,8 @@ inputs.each do |f, input|
 
 		t = Time.now
 		doc = Maruku.new(input, params)
-		$stderr.puts "Parsing in %.2f seconds." % (Time.now-t)
+
+		cli_puts ("Parsing in %.2f seconds." % (Time.now-t))
 
 		out=""; suffix = "?"
 		t = Time.now
@@ -124,11 +131,12 @@ inputs.each do |f, input|
 			suffix='.pretty_md'
 			out = doc.to_markdown
 		when :s5
-			suffix='_s5slides.xhtml'
+			suffix='_s5slides.html'
 			out = doc.to_s5({:content_only => false})
 		end
-		$stderr.puts "Rendering in %.2f seconds." % (Time.now-t)
-			
+
+		cli_puts("Rendering in %.2f seconds." % (Time.now-t))
+	
 		# write to file or stdout
 		if f
 			
@@ -141,19 +149,19 @@ inputs.each do |f, input|
 			end
 			
 			if output_file == "-"
-				$stderr.puts "Writing to standard output"
+				cli_puts "Writing to standard output"
 				$stdout.puts out
 			else
 			
 				if not (export == :pdf)
-					$stderr.puts "Writing to #{output_file}"
+					cli_puts "Writing to #{output_file}"
 					File.open(output_file,'w') do |f| f.puts out end
 				else
-					$stderr.puts "Writing to #{job}.tex"
+					cli_puts "Writing to #{job}.tex"
 					File.open("#{job}.tex",'w') do |f| f.puts out end
 					cmd = "pdflatex '#{job}.tex' -interaction=nonstopmode "+
 					      "'-output-directory=#{dir}' "
-					$stderr.puts "maruku: executing $ #{cmd}"
+					cli_puts "maruku: executing $ #{cmd}"
 					# run twice for cross references
 					system cmd 
 					system cmd
@@ -161,7 +169,7 @@ inputs.each do |f, input|
 			
 			end
 		else # write to stdout
-			$stderr.puts "Writing to standard output"
+			cli_puts "Writing to standard output"
 			$stdout.puts out
 		end
 	end

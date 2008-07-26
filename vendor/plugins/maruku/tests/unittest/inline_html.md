@@ -238,9 +238,9 @@ Line:
 Position: 
 Last 80 unconsumed characters:
   <div markdown="1">     This is *true* markdown text (paragraph)      <p markdow>
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/baseparser.rb:320:in `pull'
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/treeparser.rb:21:in `parse'
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/document.rb:204:in `build'
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/baseparser.rb:330:in `pull'
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/parsers/treeparser.rb:22:in `parse'
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/document.rb:205:in `build'
 /System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/rexml/document.rb:42:in `initialize'
 bin/marutest:200:in `new'
 bin/marutest:200:in `run_test'

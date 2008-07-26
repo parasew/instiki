@@ -94,6 +94,7 @@ module MaRuKu; module Strings
 	#     *[HTML]: Hyper Text Markup Language
 	Abbreviation = %r{
 		^  # begin of line
+		[ ]{0,3} # up to 3 spaces
 		\* # one asterisk
 		\[ # opening bracket
 		([^\]]+) # any non-closing bracket:  id = $1
@@ -106,7 +107,9 @@ module MaRuKu; module Strings
 	}x
 
 	FootnoteText = %r{
-		^\s*\[(\^.+)\]: # id = $1 (including '^')
+		^  # begin of line
+		[ ]{0,3} # up to 3 spaces
+		\[(\^.+)\]: # id = $1 (including '^')
 		\s*(\S.*)?$    # text = $2 (not obb.)
 	}x
 
@@ -115,7 +118,7 @@ module MaRuKu; module Strings
 	LinkRegex = %r{
 		^[ ]{0,3}\[([^\[\]]+)\]:		# id = $1
 		  [ ]*
-		<?(\S+)>?				# url = $2
+		<?([^>\s]+)>?				# url = $2
 		  [ ]*
 		(?:# Titles are delimited by "quotes" or (parens).
 			["(']

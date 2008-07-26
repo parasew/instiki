@@ -75,6 +75,37 @@ module Engines
     end
   end
 
+  class MarkdownPNG < AbstractEngine
+    def mask
+      # If the request is for S5, call Maruku accordingly
+      if @content.options[:mode] == :s5
+        my_content = Maruku.new(@content.delete("\r").to_utf8,
+                           {:math_enabled => true,
+                            :math_numbered => ['\\[','\\begin{equation}'],
+                            :html_math_output_mathml => false,
+                            :html_math_output_png => true,
+                            :html_png_engine => 'blahtex',
+                            :html_png_dir => @content.web.files_path + '/pngs',
+                            :html_png_url => '../files/pngs/',
+                            :content_only => true,
+                            :author => @content.options[:engine_opts][:author],
+                            :title => @content.options[:engine_opts][:title]})
+        @content.options[:renderer].s5_theme = my_content.s5_theme
+        my_content.to_s5
+      else
+        html = Maruku.new(@content.delete("\r").to_utf8,
+             {:math_enabled => true,
+              :math_numbered => ['\\[','\\begin{equation}'],
+              :html_math_output_mathml => false,
+              :html_math_output_png => true,
+              :html_png_engine => 'blahtex',
+              :html_png_dir => @content.web.files_path + '/pngs',
+              :html_png_url => '../files/pngs/'}).to_html
+        html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
+      end
+    end
+  end
+
   class Mixed < AbstractEngine
     def mask
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
@@ -90,6 +121,6 @@ module Engines
     end
   end
 
-  MAP = { :textile => Textile, :markdown => Markdown, :markdownMML => MarkdownMML, :mixed => Mixed, :rdoc => RDoc }
+  MAP = { :textile => Textile, :markdown => Markdown, :markdownMML => MarkdownMML, :markdownPNG => MarkdownPNG, :mixed => Mixed, :rdoc => RDoc }
   MAP.default = MarkdownMML
 end

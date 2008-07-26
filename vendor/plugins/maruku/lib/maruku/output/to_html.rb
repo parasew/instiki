@@ -188,6 +188,7 @@ Example:
 
 =end
 
+	METAS = %w{description keywords author revised}
 
 	# Render to a complete HTML document (returns a REXML document tree)
 	def to_html_document_tree
@@ -209,7 +210,25 @@ Example:
 #			me.attributes['content'] = 'text/html;charset=utf-8'	
 			me.attributes['content'] = 'application/xhtml+xml;charset=utf-8'	
 		
+			METAS.each do |m|
+				if value = self.attributes[m.to_sym]
+					meta = Element.new 'meta', head
+					meta.attributes['name'] = m
+					meta.attributes['content'] = value.to_s
+				end
+			end
+			
+			
+			self.attributes.each do |k,v|
+				if k.to_s =~ /\Ameta-(.*)\Z/
+					meta = Element.new 'meta', head
+					meta.attributes['name'] = $1
+					meta.attributes['content'] = v.to_s
+				end
+			end
+			
 
+			
 			# Create title element
 			doc_title = self.attributes[:title] || self.attributes[:subject] || ""
 			title = Element.new 'title', head
@@ -312,7 +331,8 @@ Example:
 					li.insert_after(li.children.last, a)
 					ol << li
 				else
-					maruku_error"Could not find footnote '#{fid}'"
+					maruku_error "Could not find footnote id '#{fid}' among ["+
+					 self.footnotes.keys.map{|s|"'"+s+"'"}.join(', ')+"]."
 				end
 			end
 		div << ol
@@ -827,10 +847,21 @@ If true, raw HTML is discarded from the output.
 		# save the order of used footnotes
 		order = @doc.footnotes_order
 		
+		if order.include? id
+		  # footnote has already been used
+		  return []
+	  end
+	  
+	  if not @doc.footnotes[id]
+	    return []
+    end
+	  
 		# take next number
 		order << id
-		num = order.size; 
 		
+		#num = order.size; 
+		num = order.index(id) + 1
+		  
 		sup = Element.new 'sup'
 		sup.attributes['id'] = "#{get_setting(:doc_prefix)}fnref:#{num}"
 			a = Element.new 'a'

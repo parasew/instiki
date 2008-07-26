@@ -47,6 +47,7 @@ Globals = {
 	
 	:latex_use_listings => false,
 	:latex_cjk => false,
+        :latex_cache_file  => "blahtex_cache.pstore", # cache file for blahtex filter
 	
 	:debug_keep_ials => false,
 	:doc_prefix => ''

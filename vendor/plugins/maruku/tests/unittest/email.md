@@ -27,7 +27,7 @@ This is an email address:
 
 
 *** Output of Markdown.pl ***
-<p>This is an email address: <a href="&#x6D;&#97;i&#x6C;&#x74;o:&#x61;n&#100;r&#101;&#x61;&#64;&#x69;&#x6E;&#x76;&#97;&#108;&#105;&#100;&#46;&#105;&#x74;">&#x61;n&#100;r&#101;&#x61;&#64;&#x69;&#x6E;&#x76;&#97;&#108;&#105;&#100;&#46;&#105;&#x74;</a></p>
+<p>This is an email address: <a href="&#109;&#x61;&#x69;&#x6C;&#x74;&#x6F;:&#x61;&#110;&#100;&#114;&#101;&#x61;&#64;&#x69;&#110;&#118;&#97;&#x6C;&#105;&#x64;&#x2E;&#105;&#116;">&#x61;&#110;&#100;&#114;&#101;&#x61;&#64;&#x69;&#110;&#118;&#97;&#x6C;&#105;&#x64;&#x2E;&#105;&#116;</a></p>
 
 *** Output of Markdown.pl (parsed) ***
 Error: #<TypeError: no implicit conversion from nil to integer>

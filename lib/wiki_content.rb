@@ -89,11 +89,12 @@ end
 # WikiContent.new
 class WikiContentStub < String
 
-  attr_reader :options
+  attr_reader :web, :options
   include ChunkManager
 
-  def initialize(content, options)
+  def initialize(content, web, options)
     super(content)
+    @web = web
     @options = options
     init_chunk_manager
   end
@@ -164,7 +165,7 @@ class WikiContent < String
     # The copy is rendered and used to detect the chunks that are inside protecting context
     # These chunks are reverted on the original content string.
 
-    copy = WikiContentStub.new(self, @options)
+    copy = WikiContentStub.new(self, @web, @options)
     @options[:engine].apply_to(copy)
 
     copy.inside_chunks(HIDE_CHUNKS) do |id|

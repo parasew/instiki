@@ -174,7 +174,7 @@ module Sanitizer
       style = style.to_s.gsub(/url\s*\(\s*[^\s)]+?\s*\)\s*/, ' ')
 
       # gauntlet
-      return '' unless style =~ /^([:,;#%.\sa-zA-Z0-9!]|\w-\w|\'[\s\w]+\'|\"[\s\w]+\"|\([\d,\s]+\))*$/
+      return '' unless style =~ /^([-:,;#%.\sa-zA-Z0-9!]|\w-\w|\'[\s\w]+\'|\"[\s\w]+\"|\([\d,\s]+\))*$/
       return '' unless style =~ /^(\s*[-\w]+\s*:\s*[^:;]*(;|$))*$/
 
       clean = []

@@ -337,7 +337,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		
 #		puts "id =_#{id}_; text=_#{text}_ indent=#{indentation}"
 		
-		break_list = [:footnote_text]
+		break_list = [:footnote_text, :ref_definition, :definition, :abbreviation]
 		item_type = :footnote_text
 		lines, want_my_paragraph = 
 			read_indented_content(src,indentation, break_list, item_type)
@@ -471,9 +471,10 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 	def read_ref_definition(src, out)	
 		line = src.shift_line
 		
+		
 		# if link is incomplete, shift next line
-		if src.cur_line && (src.cur_line.md_type != :ref_definition) && 
-			([1,2,3].include? number_of_leading_spaces(src.cur_line) )
+		if src.cur_line && !([:footnote_text, :ref_definition, :definition, :abbreviation].include? src.cur_line.md_type) && 
+			([1,2,3].include? number_of_leading_spaces(src.cur_line) ) 
 			line += " "+ src.shift_line
 		end
 		
