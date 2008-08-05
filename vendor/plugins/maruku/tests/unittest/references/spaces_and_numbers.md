@@ -22,7 +22,6 @@ md_el(:document,[md_ref_def("6", "http://ettext.taint.org/doc/", {:title=>nil})]
 
 
 *** Output of Markdown.pl ***
-
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div/>
+(not used anymore)

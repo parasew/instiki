@@ -22,11 +22,6 @@ Search on Google imagesGoOgle search ]
 
 
 *** Output of Markdown.pl ***
-<p>Search on [Google images][  GoOgle search ]</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Search on [Google images][ GoOgle search ]
- </p>
-</div>
+(not used anymore)

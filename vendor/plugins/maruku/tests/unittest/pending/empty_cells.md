@@ -44,14 +44,6 @@ B&&X\\
 
 
 *** Output of Markdown.pl ***
-<p>|    | 1  | 2  |
-|----|----|----|
-|  A | X  |    |
-|  B |    | X  |</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  | | 1 | 2 | |----|----|----| | A | X | | | B | | X |
- </p>
-</div>
+(not used anymore)

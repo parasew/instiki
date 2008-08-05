@@ -25,16 +25,6 @@ Japanese: マルク
 
 
 *** Output of Markdown.pl ***
-<p>Italian: àèìòù.</p>
-
-<p>Japanese: マルク</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Italian: àèìòù.
- </p>
- <p>
-  Japanese: マルク
- </p>
-</div>
+(not used anymore)

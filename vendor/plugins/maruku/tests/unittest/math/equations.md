@@ -54,29 +54,6 @@ $$ x = y $$$$ x$$ x = y $$$$ x = y $$
 
 
 *** Output of Markdown.pl ***
-<p>$$ x = y $$</p>
-
-<p>$$ x 
-= y $$</p>
-
-<p>$$ 
-x = y $$</p>
-
-<p>$$ x = y 
-$$</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  $$ x = y $$
- </p>
- <p>
-  $$ x = y $$
- </p>
- <p>
-  $$ x = y $$
- </p>
- <p>
-  $$ x = y $$
- </p>
-</div>
+(not used anymore)

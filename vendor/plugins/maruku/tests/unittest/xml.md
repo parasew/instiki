@@ -35,41 +35,11 @@ md_el(:document,[
 
 
 
+	OK!
 
-Failed tests:   [:to_html] 
 
-*** Output of inspect ***
-md_el(:document,[
-	md_html("<svg:svg/>"),
-	md_html("<svg:svg \nwidth=\"600px\" height=\"400px\">\n  <svg:g id=\"group\">\n\t<svg:circle id=\"circ1\" r=\"1cm\" cx=\"3cm\" cy=\"3cm\" style=\"fill:red;\"></svg:circle>\n\t<svg:circle id=\"circ2\" r=\"1cm\" cx=\"7cm\" cy=\"3cm\" style=\"fill:red;\" />\n  </svg:g>\n</svg:svg>")
-],{},[])
-*** Output of to_html ***
------| WARNING | -----
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>HTML parse error: 
-&lt;svg:svg/&gt;</pre><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>HTML parse error: 
-&lt;svg:svg 
-width=&quot;600px&quot; height=&quot;400px&quot;&gt;
-  &lt;svg:g id=&quot;group&quot;&gt;
-	&lt;svg:circle id=&quot;circ1&quot; r=&quot;1cm&quot; cx=&quot;3cm&quot; cy=&quot;3cm&quot; style=&quot;fill:red;&quot;&gt;&lt;/svg:circle&gt;
-	&lt;svg:circle id=&quot;circ2&quot; r=&quot;1cm&quot; cx=&quot;7cm&quot; cy=&quot;3cm&quot; style=&quot;fill:red;&quot; /&gt;
-  &lt;/svg:g&gt;
-&lt;/svg:svg&gt;</pre>
-*** Output of to_latex ***
-
-*** Output of to_md ***
-
-*** Output of to_s ***
 
 *** Output of Markdown.pl ***
-<p><svg:svg/></p>
-
-<p><svg:svg 
-width="600px" height="400px">
-  <svg:g id="group">
-    <svg:circle id="circ1" r="1cm" cx="3cm" cy="3cm" style="fill:red;"></svg:circle>
-    <svg:circle id="circ2" r="1cm" cx="7cm" cy="3cm" style="fill:red;" />
-  </svg:g>
-</svg:svg></p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-Error: #<REXML::UndefinedNamespaceException: Undefined prefix svg found>
+(not used anymore)

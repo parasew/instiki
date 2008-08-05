@@ -27,41 +27,11 @@ md_el(:document,[
 
 
 
+	OK!
 
-Failed tests:   [:to_html] 
 
-*** Output of inspect ***
-md_el(:document,[
-	md_html("<table markdown='1'>\n\t$\\alpha$\n\t<thead>\n\t\t<td>$\\beta$</td>\n\t</thead>\n</table>")
-],{},[])
-*** Output of to_html ***
------| WARNING | -----
-<table><code class='maruku-mathml'>\alpha</code><thead>
-		<td><code class='maruku-mathml'>\beta</code></td>
-	</thead>
-</table>
-*** Output of to_latex ***
-
-*** Output of to_md ***
-
-*** Output of to_s ***
 
 *** Output of Markdown.pl ***
-<table markdown='1'>
-    $\alpha$
-    <thead>
-        <td>$\beta$</td>
-    </thead>
-</table>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <table markdown='1'>
-   $\alpha$ 
-  <thead>
-   <td>
-    $\beta$
-   </td>
-  </thead>
- </table>
-</div>
+(not used anymore)

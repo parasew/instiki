@@ -52,28 +52,6 @@ This is a list:onetwothree
 
 
 *** Output of Markdown.pl ***
-<p>This is a list:</p>
-
-<ol>
-<li>one</li>
-<li>two</li>
-<li>three</li>
-</ol>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  This is a list:
- </p>
- <ol>
-  <li>
-   one
-  </li>
-  <li>
-   two
-  </li>
-  <li>
-   three
-  </li>
- </ol>
-</div>
+(not used anymore)

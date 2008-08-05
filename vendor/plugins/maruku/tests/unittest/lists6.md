@@ -48,7 +48,6 @@ md_el(:document,[],{},[])
 
 
 *** Output of Markdown.pl ***
-
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div/>
+(not used anymore)

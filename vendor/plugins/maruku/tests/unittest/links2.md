@@ -2,27 +2,24 @@ Write a comment here
 *** Parameters: ***
 {} # params 
 *** Markdown input: ***
-1. abcd
-efgh
-ijkl
+See [foo' bar]
+
+[foo' bar]: http://agorf.gr/
+
 
 *** Output of inspect ***
 md_el(:document,[
-	md_el(:ol,[md_el(:li_span,["abcd efgh ijkl"],{:want_my_paragraph=>false},[])],{},[])
+	md_par(["See ", md_link(["foo", md_entity("rsquo"), " bar"],"foo_bar")]),
+	md_ref_def("foo_bar", "http://agorf.gr/", {:title=>nil})
 ],{},[])
 *** Output of to_html ***
-<ol>
-<li>abcd efgh ijkl</li>
-</ol>
+<p>See <a href='http://agorf.gr/'>foo&#8217; bar</a></p>
 *** Output of to_latex ***
-\begin{enumerate}%
-\item abcd efgh ijkl
-
-\end{enumerate}
+See \href{http://agorf.gr/}{foo'{} bar}
 *** Output of to_md ***
-1.  abcd efgh ijkl
+See foo bar
 *** Output of to_s ***
-abcd efgh ijkl
+See foo bar
 *** EOF ***
 
 

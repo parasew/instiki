@@ -48,23 +48,6 @@ this is the last warning!please, go away!or else terrible things will happen
 
 
 *** Output of Markdown.pl ***
-<p>+-----------------------------------{.warning}------
-| this is the last warning!
-|
-| please, go away!
-|
-| +------------------------------------- {.menace} --
-| | or else terrible things will happen
-| +--------------------------------------------------
-+---------------------------------------------------</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  +-----------------------------------{.warning}------ | this is the last
-  warning! | | please, go away! | | +-------------------------------------
-  {.menace} -- | | or else terrible things will happen |
-  +--------------------------------------------------
-  +---------------------------------------------------
- </p>
-</div>
+(not used anymore)

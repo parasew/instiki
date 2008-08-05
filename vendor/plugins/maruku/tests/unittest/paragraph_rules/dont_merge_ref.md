@@ -49,13 +49,6 @@ ParagraphParagraphParagraph
 
 
 *** Output of Markdown.pl ***
-<p>Paragraph
-Paragraph
-Paragraph</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph Paragraph Paragraph
- </p>
-</div>
+(not used anymore)

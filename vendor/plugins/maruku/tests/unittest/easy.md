@@ -22,18 +22,6 @@ Hello! how are you?
 
 
 *** Output of Markdown.pl ***
-<p><em>Hello!</em> how are <strong>you</strong>?</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  <em>
-   Hello!
-  </em>
-   how are 
-  <strong>
-   you
-  </strong>
-  ?
- </p>
-</div>
+(not used anymore)

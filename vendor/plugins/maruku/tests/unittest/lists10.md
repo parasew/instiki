@@ -2,27 +2,36 @@ Write a comment here
 *** Parameters: ***
 {} # params 
 *** Markdown input: ***
-1. abcd
-efgh
-ijkl
+List:
+
+- è`gcc`
 
 *** Output of inspect ***
 md_el(:document,[
-	md_el(:ol,[md_el(:li_span,["abcd efgh ijkl"],{:want_my_paragraph=>false},[])],{},[])
+	md_par(["List:"]),
+	md_el(:ul,[
+		md_el(:li_span,["\303\250", md_code("gcc")],{:want_my_paragraph=>false},[])
+	],{},[])
 ],{},[])
 *** Output of to_html ***
-<ol>
-<li>abcd efgh ijkl</li>
-</ol>
-*** Output of to_latex ***
-\begin{enumerate}%
-\item abcd efgh ijkl
+<p>List:</p>
 
-\end{enumerate}
+<ul>
+<li>è<code>gcc</code></li>
+</ul>
+*** Output of to_latex ***
+List:
+
+\begin{itemize}%
+\item è{\colorbox[rgb]{1.00,0.93,1.00}{\tt gcc}}
+
+\end{itemize}
 *** Output of to_md ***
-1.  abcd efgh ijkl
+List:
+
+-�
 *** Output of to_s ***
-abcd efgh ijkl
+List:è
 *** EOF ***
 
 

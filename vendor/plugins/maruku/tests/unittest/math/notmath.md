@@ -32,16 +32,6 @@ This is not $math$.[ \alpha ]
 
 
 *** Output of Markdown.pl ***
-<p>This is not $math$.</p>
-
-<p>[ \alpha ]</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  This is not $math$.
- </p>
- <p>
-  [ \alpha ]
- </p>
-</div>
+(not used anymore)

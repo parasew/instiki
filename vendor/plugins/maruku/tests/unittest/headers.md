@@ -44,30 +44,6 @@ A title with emphasisA title with emphasisA title with emphasis
 
 
 *** Output of Markdown.pl ***
-<h1>A title with <em>emphasis</em></h1>
-
-<h2>A title with <em>emphasis</em></h2>
-
-<h4>A title with <em>emphasis</em></h4>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <h1>
-  A title with 
-  <em>
-   emphasis
-  </em>
- </h1>
- <h2>
-  A title with 
-  <em>
-   emphasis
-  </em>
- </h2>
- <h4>
-  A title with 
-  <em>
-   emphasis
-  </em>
- </h4>
-</div>
+(not used anymore)

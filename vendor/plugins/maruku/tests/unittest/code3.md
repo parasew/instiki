@@ -78,58 +78,6 @@ This is code (4 spaces):This is not codeThis is code (1 tab):This is not code
 
 
 *** Output of Markdown.pl ***
-<p>This is code (4 spaces):</p>
-
-<pre><code>Code
-</code></pre>
-
-<p>This is not code</p>
-
-<pre><code>Code
-</code></pre>
-
-<p>This is code (1 tab):</p>
-
-<pre><code>Code
-</code></pre>
-
-<p>This is not code</p>
-
-<pre><code>Code
-</code></pre>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  This is code (4 spaces):
- </p>
- <pre>
-  <code>
-   Code 
-  </code>
- </pre>
- <p>
-  This is not code
- </p>
- <pre>
-  <code>
-   Code 
-  </code>
- </pre>
- <p>
-  This is code (1 tab):
- </p>
- <pre>
-  <code>
-   Code 
-  </code>
- </pre>
- <p>
-  This is not code
- </p>
- <pre>
-  <code>
-   Code 
-  </code>
- </pre>
-</div>
+(not used anymore)

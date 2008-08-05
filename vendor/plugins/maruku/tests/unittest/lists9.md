@@ -71,35 +71,6 @@ DuetretretreDue
 
 
 *** Output of Markdown.pl ***
-<ul>
-<li>Due
-<ol>
-<li>tre</li>
-<li>tre</li>
-<li>tre</li>
-</ol></li>
-<li>Due</li>
-</ul>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <ul>
-  <li>
-   Due 
-   <ol>
-    <li>
-     tre
-    </li>
-    <li>
-     tre
-    </li>
-    <li>
-     tre
-    </li>
-   </ol>
-  </li>
-  <li>
-   Due
-  </li>
- </ul>
-</div>
+(not used anymore)

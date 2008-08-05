@@ -38,18 +38,6 @@ This is an image.This is an image.
 
 
 *** Output of Markdown.pl ***
-<p>This is an <img src="image.jpg" alt="image" />.</p>
-
-<p>This is an ![image].</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  This is an 
-  <img src='image.jpg' alt='image'/>
-  .
- </p>
- <p>
-  This is an ![image].
- </p>
-</div>
+(not used anymore)

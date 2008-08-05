@@ -63,32 +63,6 @@ This is a list item with two paragraphs.This is the second paragraph in the list
 
 
 *** Output of Markdown.pl ***
-<ul>
-<li><p>This is a list item with two paragraphs.</p>
-
-<p>This is the second paragraph in the list item. You're
-only required to indent the first line. Lorem ipsum dolor
-sit amet, consectetuer adipiscing elit.</p></li>
-<li><p>other</p></li>
-</ul>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <ul>
-  <li>
-   <p>
-    This is a list item with two paragraphs.
-   </p>
-   <p>
-    This is the second paragraph in the list item. You're only required to
-    indent the first line. Lorem ipsum dolor sit amet, consectetuer adipiscing
-    elit.
-   </p>
-  </li>
-  <li>
-   <p>
-    other
-   </p>
-  </li>
- </ul>
-</div>
+(not used anymore)

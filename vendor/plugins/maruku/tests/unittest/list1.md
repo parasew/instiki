@@ -53,27 +53,6 @@ A list item with a blockquote:This is a blockquote inside a list item.
 
 
 *** Output of Markdown.pl ***
-<ul>
-<li><p>A list item with a blockquote:</p>
-
-<blockquote>
-  <p>This is a blockquote
-  inside a list item.</p>
-</blockquote></li>
-</ul>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <ul>
-  <li>
-   <p>
-    A list item with a blockquote:
-   </p>
-   <blockquote>
-    <p>
-     This is a blockquote inside a list item.
-    </p>
-   </blockquote>
-  </li>
- </ul>
-</div>
+(not used anymore)

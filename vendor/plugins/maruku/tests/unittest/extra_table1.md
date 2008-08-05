@@ -44,20 +44,6 @@ First HeaderSecond HeaderContent CellContent CellContent CellContent Cell
 
 
 *** Output of Markdown.pl ***
-<p>CSS: style.css</p>
-
-<p>First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  CSS: style.css
- </p>
- <p>
-  First Header | Second Header ------------- | ------------- Content Cell |
-  Content Cell Content Cell | Content Cell
- </p>
-</div>
+(not used anymore)

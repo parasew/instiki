@@ -74,58 +74,6 @@ Hello: ! ! ` { } [ ] ( ) # . ! * * *Ora, emphasis, bold, * <- due asterischi-> *
 
 
 *** Output of Markdown.pl ***
-<p>Hello: ! ! ` { } [ ] ( ) # . ! * * *</p>
-
-<p>Ora, <em>emphasis</em>, <strong>bold</strong>, * &lt;- due asterischi-> * , un underscore-> _ , <em>emphasis</em>,
- incre<em>dible</em>e!</p>
-
-<p>This is <code>Code with a special: -&gt; ` &lt;-</code>(after)</p>
-
-<p><code>Start</code> of paragraph</p>
-
-<p>End of <code>paragraph</code></p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Hello: ! ! ` { } [ ] ( ) # . ! * * *
- </p>
- <p>
-  Ora, 
-  <em>
-   emphasis
-  </em>
-  , 
-  <strong>
-   bold
-  </strong>
-  , * &lt;- due asterischi-> * , un underscore-> _ , 
-  <em>
-   emphasis
-  </em>
-  , incre
-  <em>
-   dible
-  </em>
-  e!
- </p>
- <p>
-  This is 
-  <code>
-   Code with a special: -&gt; ` &lt;-
-  </code>
-  (after)
- </p>
- <p>
-  <code>
-   Start
-  </code>
-   of paragraph
- </p>
- <p>
-  End of 
-  <code>
-   paragraph
-  </code>
- </p>
-</div>
+(not used anymore)

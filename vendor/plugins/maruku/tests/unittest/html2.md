@@ -29,20 +29,6 @@ One 123
 
 
 *** Output of Markdown.pl ***
-<p>One
-<div></div>123</p>
-
-<p><div></div>123</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  One 
-  <div/>
-  123
- </p>
- <p>
-  <div/>
-  123
- </p>
-</div>
+(not used anymore)

@@ -35,18 +35,6 @@ Paragraph1Paragraph2
 
 
 *** Output of Markdown.pl ***
-<p>Paragraph1
-{:#par1}</p>
-
-<p>{:#par2}
-Paragraph2</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph1 {:#par1}
- </p>
- <p>
-  {:#par2} Paragraph2
- </p>
-</div>
+(not used anymore)

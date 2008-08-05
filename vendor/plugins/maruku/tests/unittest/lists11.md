@@ -23,15 +23,6 @@ md_el(:document,[md_par(["- \316\255\316\275\316\261"])],{},[])
 
 
 *** Output of Markdown.pl ***
-<ul>
-<li>ένα</li>
-</ul>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <ul>
-  <li>
-   ένα
-  </li>
- </ul>
-</div>
+(not used anymore)

@@ -30,17 +30,6 @@ md_el(:document,[
 
 
 *** Output of Markdown.pl ***
-<p><div class="frame">
- <a class="photo" href="http://www.flickr.com/photos/censi/88561568/" ><img moz-do-not-send="true" src="http://static.flickr.com/28/88561568_ab84d28245_m.jpg" width="240" height="180" alt="Aperitif" /></a>
- </div></p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  <div class='frame'>
-   <a href='http://www.flickr.com/photos/censi/88561568/' class='photo'>
-    <img src='http://static.flickr.com/28/88561568_ab84d28245_m.jpg' height='180' moz-do-not-send='true' alt='Aperitif' width='240'/>
-   </a>
-  </div>
- </p>
-</div>
+(not used anymore)

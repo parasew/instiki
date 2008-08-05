@@ -104,49 +104,6 @@ Thats some text with a footnote  and another  and another .And thats the footnot
 
 
 *** Output of Markdown.pl ***
-<p>That's some text with a footnote [^b] and another [^c] and another [^a].</p>
-
-<p>[^a]: And that's the footnote.</p>
-
-<pre><code>That's the second paragraph of the footnote.
-</code></pre>
-
-<p>[^b]: And that's the footnote.
-This is second sentence (same paragraph).</p>
-
-<p>[^c]:
-    This is the very long one.</p>
-
-<pre><code>That's the second paragraph.
-</code></pre>
-
-<p>This is not a footnote.</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  That's some text with a footnote [^b] and another [^c] and another [^a].
- </p>
- <p>
-  [^a]: And that's the footnote.
- </p>
- <pre>
-  <code>
-   That's the second paragraph of the footnote. 
-  </code>
- </pre>
- <p>
-  [^b]: And that's the footnote. This is second sentence (same paragraph).
- </p>
- <p>
-  [^c]: This is the very long one.
- </p>
- <pre>
-  <code>
-   That's the second paragraph. 
-  </code>
- </pre>
- <p>
-  This is not a footnote.
- </p>
-</div>
+(not used anymore)

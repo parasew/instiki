@@ -33,21 +33,6 @@ md_el(:document,[
 
 
 *** Output of Markdown.pl ***
-<table markdown='1'>
-    Blah
-    <thead>
-        <td>*em*</td>
-    </thead>
-</table>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <table markdown='1'>
-   Blah 
-  <thead>
-   <td>
-    *em*
-   </td>
-  </thead>
- </table>
-</div>
+(not used anymore)

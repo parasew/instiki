@@ -93,31 +93,6 @@ md_el(:document,[
 *** Output of to_s ***
 
 *** Output of Markdown.pl ***
-<p>[
-    \alpha
-]</p>
-
-<p>\begin{equation}
-    \alpha
-\end{equation}</p>
-
-<p>\begin{equation} \beta
-\end{equation}</p>
-
-<p>\begin{equation} \gamma \end{equation}</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  [ \alpha ]
- </p>
- <p>
-  \begin{equation} \alpha \end{equation}
- </p>
- <p>
-  \begin{equation} \beta \end{equation}
- </p>
- <p>
-  \begin{equation} \gamma \end{equation}
- </p>
-</div>
+(not used anymore)

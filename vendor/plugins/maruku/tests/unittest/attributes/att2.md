@@ -27,12 +27,6 @@ md_el(:document,[
 
 
 *** Output of Markdown.pl ***
-<p>{a}: a
-{:b: a}</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  {a}: a {:b: a}
- </p>
-</div>
+(not used anymore)

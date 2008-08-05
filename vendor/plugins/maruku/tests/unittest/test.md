@@ -26,11 +26,6 @@ md_el(:document,[md_el(:code,[],{:raw_code=>"       $ python       "},[])],{},[]
 
 
 *** Output of Markdown.pl ***
-<p>$ python       </p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  $ python 
- </p>
-</div>
+(not used anymore)

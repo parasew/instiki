@@ -38,30 +38,6 @@ taking part in  which involve , , ,
 
 
 *** Output of Markdown.pl ***
-<p>taking part in <a href="http://sied.dis.uniroma1.it/">some arcane conspirations</a> which
-involve <b href="http://www.flickr.com/photos/censi/70893277/">coffee</b>, 
-<a href="http://flickr.com/photos/censi/42775664/in/set-936677/">robots</a>,
-<a href="http://www.flickr.com/photos/censi/42775888/in/set-936677/">sushi</a>,</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  taking part in 
-  <a href='http://sied.dis.uniroma1.it/'>
-   some arcane conspirations
-  </a>
-   which involve 
-  <b href='http://www.flickr.com/photos/censi/70893277/'>
-   coffee
-  </b>
-  , 
-  <a href='http://flickr.com/photos/censi/42775664/in/set-936677/'>
-   robots
-  </a>
-  , 
-  <a href='http://www.flickr.com/photos/censi/42775888/in/set-936677/'>
-   sushi
-  </a>
-  ,
- </p>
-</div>
+(not used anymore)

@@ -2,27 +2,23 @@ Write a comment here
 *** Parameters: ***
 {} # params 
 *** Markdown input: ***
-1. abcd
-efgh
-ijkl
+[a. b] is a link.
+
+[a. b]: http://site.com/
 
 *** Output of inspect ***
 md_el(:document,[
-	md_el(:ol,[md_el(:li_span,["abcd efgh ijkl"],{:want_my_paragraph=>false},[])],{},[])
+	md_par([md_link(["a. b"],"a_b"), " is a link."]),
+	md_ref_def("a_b", "http://site.com/", {:title=>nil})
 ],{},[])
 *** Output of to_html ***
-<ol>
-<li>abcd efgh ijkl</li>
-</ol>
+<p><a href='http://site.com/'>a. b</a> is a link.</p>
 *** Output of to_latex ***
-\begin{enumerate}%
-\item abcd efgh ijkl
-
-\end{enumerate}
+\href{http://site.com/}{a. b} is a link.
 *** Output of to_md ***
-1.  abcd efgh ijkl
+a. bis a link.
 *** Output of to_s ***
-abcd efgh ijkl
+a. b is a link.
 *** EOF ***
 
 

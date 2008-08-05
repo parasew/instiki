@@ -22,14 +22,6 @@ md_el(:document,[md_el(:code,[],{:raw_code=>"@articles.map(&:title)"},[])],{},[]
 
 
 *** Output of Markdown.pl ***
-<pre><code>@articles.map(&amp;:title)
-</code></pre>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <pre>
-  <code>
-   @articles.map(&amp;:title) 
-  </code>
- </pre>
-</div>
+(not used anymore)

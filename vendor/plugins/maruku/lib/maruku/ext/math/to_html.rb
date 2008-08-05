@@ -90,7 +90,7 @@ module MaRuKu; module Out; module HTML
 		img = Element.new 'img'
 		img.attributes['src'] = src
 		img.attributes['style'] = style
-		img.attributes['alt'] = "equation"
+		img.attributes['alt'] = "$#{self.math.strip}$"
 		img
 	end
 	
@@ -144,7 +144,7 @@ module MaRuKu; module Out; module HTML
 			
 			source_div = Element.new 'div'
 				add_class_to(source_div, 'maruku-eq-tex')
-				code = convert_to_mathml_none(:equation, self.math)	
+				code = convert_to_mathml_none(:equation, self.math.strip)	
 				code.attributes['style'] = 'display: none'
 			source_div << code
 			div << source_div

@@ -26,13 +26,6 @@ ciao
 
 
 *** Output of Markdown.pl ***
-<p>+--
-ciao
-=--</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  +-- ciao =--
- </p>
-</div>
+(not used anymore)

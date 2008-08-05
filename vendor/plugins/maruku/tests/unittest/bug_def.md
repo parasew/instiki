@@ -23,11 +23,6 @@ test:
 
 
 *** Output of Markdown.pl ***
-<p>[test][]:</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  [test][]:
- </p>
-</div>
+(not used anymore)

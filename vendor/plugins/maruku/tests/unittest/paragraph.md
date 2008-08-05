@@ -23,11 +23,6 @@ Paragraph
 
 
 *** Output of Markdown.pl ***
-<p>Paragraph</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph
- </p>
-</div>
+(not used anymore)

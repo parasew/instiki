@@ -96,34 +96,6 @@ This is a list:onetwoThis is not a list: * one ciaoThis is a list:onetwoThis is 
 
 
 *** Output of Markdown.pl ***
-<p>This is a list:
-* one
-* two</p>
-
-<p>This is not a list:
-* one
-ciao</p>
-
-<p>This is a list:
-1. one
-1. two</p>
-
-<p>This is not a list:
-1987. one
-ciao</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  This is a list: * one * two
- </p>
- <p>
-  This is not a list: * one ciao
- </p>
- <p>
-  This is a list: 1. one 1. two
- </p>
- <p>
-  This is not a list: 1987. one ciao
- </p>
-</div>
+(not used anymore)

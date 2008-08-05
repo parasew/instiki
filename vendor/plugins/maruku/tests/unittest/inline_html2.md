@@ -28,16 +28,6 @@ md_el(:document,[
 
 
 *** Output of Markdown.pl ***
-<div markdown="1">Test **bold**</div>
-
-<p markdown="1">Test **bold**</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <div markdown='1'>
-  Test **bold**
- </div>
- <p markdown='1'>
-  Test **bold**
- </p>
-</div>
+(not used anymore)

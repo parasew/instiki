@@ -24,11 +24,6 @@ bar
 
 
 *** Output of Markdown.pl ***
-<p><img src="/foo.jpg" alt="bar" title="" /></p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  <img title='' src='/foo.jpg' alt='bar'/>
- </p>
-</div>
+(not used anymore)

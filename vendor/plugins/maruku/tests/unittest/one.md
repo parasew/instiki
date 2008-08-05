@@ -22,11 +22,6 @@ One line
 
 
 *** Output of Markdown.pl ***
-<p>One line</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  One line
- </p>
-</div>
+(not used anymore)

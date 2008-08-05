@@ -23,12 +23,6 @@ md_el(:document,[md_html("<br />")],{},[])
 
 
 *** Output of Markdown.pl ***
-<p><br/>123</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  <br/>
-  123
- </p>
-</div>
+(not used anymore)

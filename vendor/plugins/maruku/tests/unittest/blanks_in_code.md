@@ -82,50 +82,6 @@ This block is composed of three lines:This block is composed of 5This block is c
 
 
 *** Output of Markdown.pl ***
-<p>This block is composed of three lines:</p>
-
-<pre><code>one
-
-three
-</code></pre>
-
-<p>This block is composed of 5</p>
-
-<pre><code>one
-
-
-four
-</code></pre>
-
-<p>This block is composed of 2</p>
-
-<pre><code>two
-</code></pre>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  This block is composed of three lines:
- </p>
- <pre>
-  <code>
-   one three 
-  </code>
- </pre>
- <p>
-  This block is composed of 5
- </p>
- <pre>
-  <code>
-   one four 
-  </code>
- </pre>
- <p>
-  This block is composed of 2
- </p>
- <pre>
-  <code>
-   two 
-  </code>
- </pre>
-</div>
+(not used anymore)

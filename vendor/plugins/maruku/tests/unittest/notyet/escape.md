@@ -28,20 +28,6 @@ md_el(:document,[md_par([md_code("\\\\")]), md_par([md_code("\\")])],{},[])
 
 
 *** Output of Markdown.pl ***
-<p><code>\\</code></p>
-
-<p><code>\</code></p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  <code>
-   \\
-  </code>
- </p>
- <p>
-  <code>
-   \
-  </code>
- </p>
-</div>
+(not used anymore)

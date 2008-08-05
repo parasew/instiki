@@ -70,43 +70,6 @@ Header 1Header 2Header 3Then you can create links to different parts of the same
 
 
 *** Output of Markdown.pl ***
-<h1>Header 1            {#header1}</h1>
-
-<h2>Header 2            {#header2}</h2>
-
-<h3>Header 3 ###      {#header3}</h3>
-
-<p>Then you can create links to different parts of the same document like this:</p>
-
-<p><a href="#header1">Link back to header 1</a>,
-<a href="#header2">Link back to header 2</a>,
-<a href="#header3">Link back to header 3</a></p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <h1>
-  Header 1 {#header1}
- </h1>
- <h2>
-  Header 2 {#header2}
- </h2>
- <h3>
-  Header 3 ### {#header3}
- </h3>
- <p>
-  Then you can create links to different parts of the same document like this:
- </p>
- <p>
-  <a href='#header1'>
-   Link back to header 1
-  </a>
-  , 
-  <a href='#header2'>
-   Link back to header 2
-  </a>
-  , 
-  <a href='#header3'>
-   Link back to header 3
-  </a>
- </p>
-</div>
+(not used anymore)

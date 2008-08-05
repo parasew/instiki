@@ -29,17 +29,6 @@ Paragraph2
 
 
 *** Output of Markdown.pl ***
-<p>Paragraph2 
-{#2}</p>
-
-<p>{paragraph}: .maruku-par</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Paragraph2 {#2}
- </p>
- <p>
-  {paragraph}: .maruku-par
- </p>
-</div>
+(not used anymore)

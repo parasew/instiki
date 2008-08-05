@@ -31,16 +31,6 @@ Linea 1Linea 2
 
 
 *** Output of Markdown.pl ***
-<p>Linea 1</p>
-
-<p>Linea 2</p>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <p>
-  Linea 1
- </p>
- <p>
-  Linea 2
- </p>
-</div>
+(not used anymore)

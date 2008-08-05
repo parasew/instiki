@@ -35,23 +35,6 @@ Code
 
 
 *** Output of Markdown.pl ***
-<blockquote>
-  <p>Code</p>
-
-<pre><code>Ciao
-</code></pre>
-</blockquote>
-
+(not used anymore)
 *** Output of Markdown.pl (parsed) ***
-<div>
- <blockquote>
-  <p>
-   Code
-  </p>
-  <pre>
-   <code>
-    Ciao 
-   </code>
-  </pre>
- </blockquote>
-</div>
+(not used anymore)
