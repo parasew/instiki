@@ -19,7 +19,24 @@ class ApplicationTest < Test::Unit::TestCase
   
   def test_utf8_header
     get :show, :web => 'wiki1', :id => 'HomePage'
-    assert_equal 'text/html; charset=UTF-8', @response.headers['type']
+    assert_equal 'text/html; charset=utf-8', @response.headers['type']
+  end
+  
+  def test_mathplayer_mime_type
+    @request.user_agent = 'MathPlayer'
+    get :show, :web => 'wiki1', :id => 'HomePage'
+    assert_equal 'application/xhtml+xml', @response.headers['type']
+  end
+  
+  def test_validator_mime_type
+    @request.user_agent = 'Validator'
+    get :show, :web => 'wiki1', :id => 'HomePage'
+    assert_equal 'application/xhtml+xml; charset=utf-8', @response.headers['type']
+  end
+  
+  def test_tex_mime_type
+    get :tex, :web => 'wiki1', :id => 'HomePage'
+    assert_equal 'text/plain; charset=utf-8', @response.headers['type']
   end
   
   def test_connect_to_model_unknown_wiki

@@ -151,17 +151,20 @@ class ApplicationController < ActionController::Base
   public
 
   def set_content_type_header
+    response.charset = 'utf-8'
     if %w(atom_with_content atom_with_headlines).include?(action_name)
-      response.headers['type'] = 'application/atom+xml; charset=UTF-8'
+      response.content_type = Mime::ATOM
     elsif %w(tex).include?(action_name)
-      response.headers['type'] = 'text/plain; charset=UTF-8'
-    elsif request.env['HTTP_USER_AGENT'] =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
+      response.content_type = Mime::TEXT
+    elsif request.user_agent =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
            Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)  
-      response.headers['type'] = 'application/xhtml+xml; charset=UTF-8'
-    elsif request.env['HTTP_USER_AGENT'] =~ /MathPlayer/ 
-      response.headers['type'] = 'application/xhtml+xml'
+      response.content_type = Mime::XHTML
+    elsif request.user_agent =~ /MathPlayer/ 
+      response.charset = nil
+      response.content_type = Mime::XHTML
+      response.extend(MathPlayerHack)
     else
-      response.headers['type'] = 'text/html; charset=UTF-8'
+      response.content_type = Mime::HTML
     end
   end
 
@@ -218,6 +221,12 @@ module Mime
   # Fix xhtml and html lookups
   LOOKUP["text/html"]             = HTML
   LOOKUP["application/xhtml+xml"] = XHTML
+end
+
+module MathPlayerHack
+    def charset=(encoding)
+      self.headers["Content-Type"] = "#{content_type || Mime::HTML}"
+    end
 end
 
 module Instiki
