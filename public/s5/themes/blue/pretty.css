@@ -91,6 +91,7 @@ ul.urls {list-style:none;display:inline;margin:0}
 .incremental, .incremental *, .incremental *:after, .incremental code
   {color:#000295;visibility:visible}
 img.incremental {visibility:hidden}
+.incremental *[stroke], .incremental *[fill], .incremental *[stroke] *, .incremental *[fill] * {visibility:hidden}
 .slide .current {color:#B02}
 .flushtop {margin-top:0px}
 .slide .plaintable td {border:1px solid #FFF!important}

@@ -90,6 +90,7 @@ html>body .external {border-bottom:none}
 .incremental, .incremental *, .incremental *:after, .incremental code
   {color:#DDE;visibility:visible}
 img.incremental {visibility:hidden}
+.incremental *[stroke], .incremental *[fill], .incremental *[stroke] *, .incremental *[fill] * {visibility:hidden}
 .slide .current {color:#B02}
 .flushtop {margin-top:0px}
 
