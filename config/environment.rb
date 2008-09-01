@@ -14,20 +14,20 @@ require 'rails_generator/secret_key_generator'
 Rails::Initializer.run do |config|
 
   # Secret session key
-  generator = Rails::SecretKeyGenerator.new("Instiki")
+  #   The secret session key is automatically generated, and stored
+  #   in a file, for reuse between server restarts. If you want to
+  #   change the key, just delete the file, and it will be regenerated
+  #   on the next restart. Doing so will invalitate all existing sessions.
+  secret_file = File.join(RAILS_ROOT, "secret")  
+  if File.exist?(secret_file)  
+    secret = File.read(secret_file)  
+  else  
+    secret = Rails::SecretKeyGenerator.new("Instiki").generate_secret  
+    File.open(secret_file, 'w', 0600) { |f| f.write(secret) }  
+  end  
   config.action_controller.session = { 
-     :session_key => "instiki_session",
-  #####
-  ### This one generates a secret key automatically at launch.
-  ###     advantage: secure, no configuration necessary
-  ###  disadvantage: restart the server, and all existing
-  ###                session keys become invalid.
-     :secret => generator.generate_secret
-  ###
-  ###  Alternatively, you can set your own unchanging secret key
-  ###  by editing and then uncommenting the following line, instead:
-  #  : secret => "a_very_long_string_of_random_letter_and_numbers"
-  #####
+    :session_key => "instiki_session",
+    :secret => secret
    } 
 
   # Don't do file system STAT calls to check to see if the templates have changed.

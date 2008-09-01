@@ -266,7 +266,6 @@ class WikiController < ApplicationController
     rescue => e
       flash[:error] = e
       logger.error e
-      flash[:content] = the_content
       if @page
         @page.unlock
         redirect_to :action => 'edit', :web => @web_name, :id => @page_name
@@ -286,7 +285,7 @@ class WikiController < ApplicationController
       # the application itself (for application errors, it's better not to rescue the error at all)
       rescue => e
         logger.error e
-        flash[:error] = e.message
+        flash[:error] = e
         if in_a_web?
           redirect_to :action => 'edit', :web => @web_name, :id => @page_name
         else
