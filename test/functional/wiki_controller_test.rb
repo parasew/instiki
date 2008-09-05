@@ -810,6 +810,10 @@ class WikiControllerTest < Test::Unit::TestCase
 \SetSymbolFont{symbolsC}{bold}{U}{txsyc}{bx}{n}
 \DeclareFontSubstitution{U}{txsyc}{m}{n}
 
+% Manually declare the stmaryrd font
+\DeclareSymbolFont{stmry}{U}{stmry}{m}{n}
+\SetSymbolFont{stmry}{bold}{U}{stmry}{b}{n}
+
 % Declare specific arrows from txfonts without loading the full package
 \makeatletter
 \def\re@DeclareMathSymbol#1#2#3#4{%
@@ -826,6 +830,7 @@ class WikiControllerTest < Test::Unit::TestCase
 \re@DeclareMathSymbol{\nequiv}{\mathrel}{symbolsC}{46}
 \re@DeclareMathSymbol{\Perp}{\mathrel}{symbolsC}{121}
 \re@DeclareMathSymbol{\Vbar}{\mathrel}{symbolsC}{121}
+\re@DeclareMathSymbol{\sslash}{\mathrel}{stmry}{12}
 \makeatother
 
 % Widecheck
