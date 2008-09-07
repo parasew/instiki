@@ -94,7 +94,7 @@ uses_mocha "Plugin Loader Tests" do
 
     def test_should_add_plugin_load_paths_to_global_LOAD_PATH_array
       only_load_the_following_plugins! [:stubby, :acts_as_chunky_bacon]
-      stubbed_application_lib_index_in_LOAD_PATHS = 5
+      stubbed_application_lib_index_in_LOAD_PATHS = 4
       @loader.stubs(:application_lib_index).returns(stubbed_application_lib_index_in_LOAD_PATHS)
 
       @loader.add_plugin_load_paths
@@ -108,8 +108,8 @@ uses_mocha "Plugin Loader Tests" do
 
       @loader.add_plugin_load_paths
 
-      assert Dependencies.load_paths.include?(File.join(plugin_fixture_path('default/stubby'), 'lib'))
-      assert Dependencies.load_paths.include?(File.join(plugin_fixture_path('default/acts/acts_as_chunky_bacon'), 'lib'))
+      assert ActiveSupport::Dependencies.load_paths.include?(File.join(plugin_fixture_path('default/stubby'), 'lib'))
+      assert ActiveSupport::Dependencies.load_paths.include?(File.join(plugin_fixture_path('default/acts/acts_as_chunky_bacon'), 'lib'))
     end
 
     def test_should_add_plugin_load_paths_to_Dependencies_load_once_paths
@@ -117,8 +117,8 @@ uses_mocha "Plugin Loader Tests" do
 
       @loader.add_plugin_load_paths
 
-      assert Dependencies.load_once_paths.include?(File.join(plugin_fixture_path('default/stubby'), 'lib'))
-      assert Dependencies.load_once_paths.include?(File.join(plugin_fixture_path('default/acts/acts_as_chunky_bacon'), 'lib'))
+      assert ActiveSupport::Dependencies.load_once_paths.include?(File.join(plugin_fixture_path('default/stubby'), 'lib'))
+      assert ActiveSupport::Dependencies.load_once_paths.include?(File.join(plugin_fixture_path('default/acts/acts_as_chunky_bacon'), 'lib'))
     end
 
     def test_should_add_all_load_paths_from_a_plugin_to_LOAD_PATH_array
