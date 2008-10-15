@@ -111,6 +111,9 @@ require 'maruku/errors_management'
 # Code for creating a table of contents
 require 'maruku/toc'
 
+# Support for div Markdown extension
+require 'maruku/ext/div'
+
 # Version and URL
 require 'maruku/version'
 
