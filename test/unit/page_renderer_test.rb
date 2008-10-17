@@ -65,15 +65,11 @@ class PageRendererTest < Test::Unit::TestCase
         %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
         "equation $\\sin(x)$")
   
-    assert_markup_parsed_as(
-        %{<h1 id='my_headline'>My Headline</h1>\n\n<p>that <span class='newWikiWord'>} +
-        %{Smart Engine GUI<a href='../show/SmartEngineGUI'>?</a></span></p>}, 
-        "My Headline\n===========\n\nthat SmartEngineGUI")
+    re = Regexp.new('<h1 id=\'my_headline_\\d{1,4}\'>My Headline</h1>\n\n<p>that <span class=\'newWikiWord\'>Smart Engine GUI<a href=\'../show/SmartEngineGUI\'>\?</a></span></p>')
+
+    assert_match_markup_parsed_as(re, "My Headline\n===========\n\nthat SmartEngineGUI")
   
-    assert_markup_parsed_as(
-        %{<h1 id='my_headline'>My Headline</h1>\n\n<p>that <span class='newWikiWord'>} +
-        %{Smart Engine GUI<a href='../show/SmartEngineGUI'>?</a></span></p>}, 
-        "#My Headline#\n\nthat SmartEngineGUI")
+    assert_match_markup_parsed_as(re, "#My Headline#\n\nthat SmartEngineGUI")
   
     assert_markup_parsed_as(
         %{<p>SVG <animateColor title='MathML'><span class='newWikiWord'>} +
@@ -159,13 +155,13 @@ class PageRendererTest < Test::Unit::TestCase
     ].join("\n")
     
     set_web_property :markup, :markdown
-    assert_markup_parsed_as(
-      "<h1 id='markdown_heading'>Markdown heading</h1>\n\n" +
+    re = Regexp.new(
+      '<h1 id=\'markdown_heading_\d{1,4}\'>Markdown heading</h1>\n\n' +
       "<p>h2. Textile heading</p>\n\n" +
       "<p><em>some</em> <strong>text</strong> <em>with</em> -styles-</p>\n\n" +
-      "<ul>\n<li>list 1</li>\n\n<li>list 2</li>\n</ul>",
-      textile_and_markdown)
+      "<ul>\n<li>list 1</li>\n\n<li>list 2</li>\n</ul>")
     
+    assert_match_markup_parsed_as(re, textile_and_markdown)
     set_web_property :markup, :textile
     assert_markup_parsed_as(
       "<p>Markdown heading<br/>================</p>\n\n\n\t<h2>Textile heading</h2>" +
@@ -524,6 +520,11 @@ class PageRendererTest < Test::Unit::TestCase
   def assert_markup_parsed_as(expected_output, input)
     revision = Revision.new(:page => @page, :content => input, :author => Author.new('AnAuthor'))
     assert_equal expected_output, test_renderer(revision).display_content, 'Rendering output not as expected'
+  end
+
+  def assert_match_markup_parsed_as(expected_output, input)
+    revision = Revision.new(:page => @page, :content => input, :author => Author.new('AnAuthor'))
+    assert_match expected_output, test_renderer(revision).display_content, 'Rendering output not as expected'
   end
 
   def rendered_content(page)

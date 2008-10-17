@@ -726,6 +726,7 @@ class WikiControllerTest < Test::Unit::TestCase
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{amsthm}
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{ucs}
@@ -922,6 +923,27 @@ class WikiControllerTest < Test::Unit::TestCase
 \newcommand{\mathfr}{\mathfrak}
 \newcommand{\statusline}[2]{#2}
 \newcommand{\toggle}[2]{#1}
+
+% Theorem Environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{cor}{Corollary}
+\newtheorem*{utheorem}{Theorem}
+\newtheorem*{ulemma}{Lemma}
+\newtheorem*{uprop}{Proposition}
+\newtheorem*{ucor}{Corollary}
+\theoremstyle{definition}
+\newtheorem{def}{Definition}
+\newtheorem{example}{Example}
+\newtheorem*{udef}{Definition}
+\newtheorem*{uexample}{Example}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{note}{Note}
+\newtheorem*{uremark}{Remark}
+\newtheorem*{unote}{Note}
 
 %-------------------------------------------------------------------
 

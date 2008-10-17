@@ -809,6 +809,29 @@ function windowChange() {
 	fontScale();
 }
 
+function fixRunIn() {
+// work around lack of gecko support for display:run-in
+  var re = /^num_|\s+num_|^un_|\s+un_|proof/;
+  $$('div > h6').each(function(element) {
+     if(re.test($(element.parentNode).className)) {
+      var new_span = new Element('span').update(element.textContent);
+      new_span.addClassName('theorem_label');
+      var next_el = element.next().firstChild;
+      next_el.parentNode.insertBefore(new_span, next_el);
+      var period = new Element('span').update('. ');
+      next_el.parentNode.insertBefore(period, next_el);
+      element.remove();
+     }
+  });
+// add tombstone to proof, since gecko doesn't support :last-child properly
+
+ $$('div.proof').each(function(element) {
+     var l = element.childElements().length -1;
+     var span = new Element('span').update('\u00a0\u00a0\u25ae');
+     element.childElements()[l].insert(span);
+    })
+}
+
 function startup() {
 	defaultCheck();
 	createControls();  // hallvord
@@ -819,6 +842,7 @@ function startup() {
 	fixLinks();
 	externalLinks();
 	fontScale();
+	fixRunIn();
 	if (!isOp) notOperaFix();
 	slideJump();
 	if (defaultView == 'outline') {

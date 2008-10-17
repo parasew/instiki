@@ -46,7 +46,7 @@ class MDElement
 			title = "id#{$uid}"
 		end
 		
-		title
+		title << "_" + rand(10000).to_s
 	end
 end
 

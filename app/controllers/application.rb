@@ -232,7 +232,7 @@ end
 module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
-    MINOR = 14
+    MINOR = 15
     TINY  = 0
     SUFFIX = '(MML+)'
     PRERELEASE = 'pre' # false

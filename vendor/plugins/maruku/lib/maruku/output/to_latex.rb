@@ -518,6 +518,33 @@ Otherwise, a standard `verbatim` environment is used.
 
 	end
 
+	def to_latex_div
+		type = self.attributes[:class]
+		id = self.attributes[:id]
+		case type
+		  when /^un_(\w*)/
+                	s = "\\begin{u#{$1}}"
+#			s += "[#{@children[0].send('children_to_latex')}]"
+			@children.delete_at(0)
+                	s += "\n" + children_to_latex
+                	s += "\\end{u#{$1}}\n"
+		  when /^num_(\w*)/
+                        s = "\\begin{#{$1}}"
+#			s += "[#{@children[0].send('children_to_latex')}]"
+			@children.delete_at(0)
+			s += "\n\\label{#{id}}\\hypertarget{#{id}}{}\n"
+                        s += children_to_latex
+                        s += "\\end{#{$1}}\n"
+                  when /^proof/
+                        s = "\\begin{proof}"
+                        @children.delete_at(0)
+                        s += "\n" + children_to_latex
+                        s += "\\end{proof}\n"
+		  else
+			s = children_to_latex
+		end
+                s
+	end
 
 	# Convert each child to html
 	def children_to_latex
