@@ -1,7 +1,7 @@
 
 
-OpenDiv = /^[ ]{0,3}\+\-\-+\s*([^\s-]*)\s*\-*\s*$/
-CloseDiv = /^[ ]{0,3}\=\-\-+\s*([^\s-]*)\s*\-*\s*$/
+OpenDiv = /^[ ]{0,3}\+\-\-+\s*(.*)$/
+CloseDiv = /^[ ]{0,3}\=\-\-+\s*(.*)$/
 StartPipe = /^[ ]{0,3}\|(.*)$/ # $1 is rest of line
 DecorativeClosing = OpenDiv
 
@@ -67,11 +67,12 @@ MaRuKu::In::Markdown::register_block_extension(
 		al_string = ial_at_beginning || ial_at_end
 		al = nil
 		
-		if al_string =~ /^\{(.*)\}$/
+		if al_string =~ /^\{(.*)\}\s*$/
 			inside = $1
 		cs = MaRuKu::In::Markdown::SpanLevelParser::CharSource
-		al = al_string &&
-			doc.read_attribute_list(cs.new(inside), its_context=nil, break_on=[nil])
+#		al = al_string &&
+#			doc.read_attribute_list(cs.new(inside), its_context=nil, break_on=[nil])
+			al = doc.read_attribute_list(cs.new(inside), its_context=nil, break_on=[nil])
 		end
 		
 		src = MaRuKu::In::Markdown::BlockLevelParser::LineSource.new(lines)
