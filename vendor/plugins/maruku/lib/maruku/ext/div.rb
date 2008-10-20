@@ -70,9 +70,8 @@ MaRuKu::In::Markdown::register_block_extension(
 		if al_string =~ /^\{(.*)\}\s*$/
 			inside = $1
 		cs = MaRuKu::In::Markdown::SpanLevelParser::CharSource
-#		al = al_string &&
-#			doc.read_attribute_list(cs.new(inside), its_context=nil, break_on=[nil])
-			al = doc.read_attribute_list(cs.new(inside), its_context=nil, break_on=[nil])
+		al = al_string &&
+			doc.read_attribute_list(cs.new(inside), its_context=nil, break_on=[nil])
 		end
 		
 		src = MaRuKu::In::Markdown::BlockLevelParser::LineSource.new(lines)
@@ -85,8 +84,28 @@ MaRuKu::In::Markdown::register_block_extension(
 
 module MaRuKu; class MDElement
 
-	def md_div(children, a=nil)
-		self.md_el(:div, children, meta={}, a)
+	def md_div(children, al=nil)
+		type = label = num = nil
+		doc.refid2ref ||= {}
+		if al
+			al.each do |k, v|
+				case k
+				when :class
+					type = $1 if v =~ /^num_(\w*)/
+        	                when :id
+					label = v
+				end
+			end
+		end
+		if type
+			doc.refid2ref[type] ||= {}
+			num = doc.refid2ref[type].length + 1 || 1
+		end
+		e = self.md_el(:div, children, meta={:label => label, :type => type, :num => num}, al)
+		if type && label
+			doc.refid2ref[type].update({label => e})
+		end
+		e
 	end
 	
 end end

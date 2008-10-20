@@ -904,7 +904,6 @@ class WikiControllerTest < Test::Unit::TestCase
 \newcommand{\quadrupleintegral}{\iiiint}
 \newcommand{\conint}{\oint}
 \newcommand{\contourintegral}{\oint}
-\newcommand{\qed}{\blacksquare}
 \newcommand{\infinity}{\infty}
 \renewcommand{\empty}{\emptyset}
 \newcommand{\bottom}{\bot}
@@ -935,9 +934,9 @@ class WikiControllerTest < Test::Unit::TestCase
 \newtheorem*{uprop}{Proposition}
 \newtheorem*{ucor}{Corollary}
 \theoremstyle{definition}
-\newtheorem{def}{Definition}
+\newtheorem{defn}{Definition}
 \newtheorem{example}{Example}
-\newtheorem*{udef}{Definition}
+\newtheorem*{udefn}{Definition}
 \newtheorem*{uexample}{Example}
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}

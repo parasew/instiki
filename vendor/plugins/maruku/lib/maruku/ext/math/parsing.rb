@@ -2,7 +2,7 @@ module MaRuKu
 	
 	class MDDocument
 		# Hash equation id (String) to equation element (MDElement)
-		attr_accessor :eqid2eq
+		attr_accessor :eqid2eq, :refid2ref
 		
 		def is_math_enabled? 
 			get_setting :math_enabled
@@ -103,3 +103,17 @@ end
 	 		true 
 		}
 	)
+
+	# This adds support for \ref
+	RegRef = /\\ref\{(\w*)\}/
+        MaRuKu::In::Markdown::register_span_extension(
+                :chars => [?\\, ?(], 
+                :regexp => RegRef,
+                :handler => lambda { |doc, src, con|
+                        return false if not doc.is_math_enabled?
+                        refid = src.read_regexp(RegRef).captures.compact.first
+                        r = doc.md_el(:divref, [], meta={:refid=>refid})
+                        con.push r
+                        true 
+                }
+        )
