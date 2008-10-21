@@ -19,4 +19,8 @@ module MaRuKu; module Out; module Latex
 		"\\eqref{#{self.eqid}}"
 	end
 
+	def to_latex_divref
+		"\\ref{#{self.refid}}"
+	end
+
 end end end
