@@ -104,7 +104,6 @@ module MaRuKu; module Out; module HTML
 			if mathml
 				add_class_to(mathml, 'maruku-mathml')
 				return mathml
-#				span << mathml 
 			end
 	
 			if png
@@ -122,15 +121,6 @@ module MaRuKu; module Out; module HTML
 		
 		div = create_html_element 'div'
 		add_class_to(div, 'maruku-equation')
-			if self.label  # then numerate
-				span = Element.new 'span'
-				span.attributes['class'] = 'maruku-eq-number'
-				num = self.num
-				span << Text.new("(#{num})")
-				div << span
-				div.attributes['id'] = "eq:#{self.label}"
-			end
-			
 			if mathml
 				add_class_to(mathml, 'maruku-mathml')
 				div << mathml 
@@ -142,12 +132,21 @@ module MaRuKu; module Out; module HTML
 				div << img
 			end
 			
-			source_div = Element.new 'div'
-				add_class_to(source_div, 'maruku-eq-tex')
-				code = convert_to_mathml_none(:equation, self.math.strip)	
-				code.attributes['style'] = 'display: none'
-			source_div << code
-			div << source_div
+			source_span = Element.new 'span'
+            add_class_to(source_span, 'maruku-eq-tex')
+			code = convert_to_mathml_none(:equation, self.math.strip)	
+			code.attributes['style'] = 'display: none'
+			source_span << code
+			div << source_span
+			
+			if self.label  # then numerate
+				span = Element.new 'span'
+				span.attributes['class'] = 'maruku-eq-number'
+				num = self.num
+				span << Text.new("(#{num})")
+				div << span
+				div.attributes['id'] = "eq:#{self.label}"
+			end	
 		div
 	end
 	

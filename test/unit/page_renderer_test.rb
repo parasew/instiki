@@ -80,8 +80,8 @@ class PageRendererTest < Test::Unit::TestCase
         %{<div class='maruku-equation'><math class='maruku-mathml' display='block' } +
         %{xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi><mo stretchy='false'>} +
         %{(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics><annotation-xml encoding='SVG1.1'>} +
-        %{<svg/></annotation-xml></semantics></math><div class='maruku-eq-tex'><code style='display: none;'>} +
-        %{\\sin(x) \\begin{svg}<svg/>\\end{svg}</code></div></div>},
+        %{<svg/></annotation-xml></semantics></math><span class='maruku-eq-tex'><code style='display: none;'>} +
+        %{\\sin(x) \\begin{svg}<svg/>\\end{svg}</code></span></div>},
         "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
   
     code_block = [ 
@@ -115,7 +115,7 @@ class PageRendererTest < Test::Unit::TestCase
         %{<p>ecuasi\303\263n</p>\n<div class='maruku-equation'><math class='maruku-mathml' } +
         %{display='block' xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi>} +
         %{<mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math>} +
-        %{<div class='maruku-eq-tex'><code style='display: none;'>\\sin(x)</code></div></div>}, 
+        %{<span class='maruku-eq-tex'><code style='display: none;'>\\sin(x)</code></span></div>}, 
         "ecuasi\303\263n\n$$\\sin(x)$$")
   
     assert_markup_parsed_as(
