@@ -2,7 +2,7 @@ module MaRuKu
 	
 	class MDDocument
 		# Hash equation id (String) to equation element (MDElement)
-		attr_accessor :eqid2eq, :refid2ref
+		attr_accessor :eqid2eq
 		
 		def is_math_enabled? 
 			get_setting :math_enabled

@@ -144,6 +144,10 @@ class MDDocument
 	safe_attr_accessor :footnotes_order, Array
 	
 	safe_attr_accessor :latex_required_packages, Array
+
+	safe_attr_accessor :refid2ref, Hash
+	# A counter for generating unique IDs
+	safe_attr_accessor :id_counter, Integer
 	
 	def initialize(s=nil)
 		super(:document)
@@ -155,6 +159,7 @@ class MDDocument
 		self.abbreviations = {}
 		self.ald = {}
 		self.latex_required_packages = []
+		self.id_counter = 0
 		
 		parse_doc(s) if s 
 	end

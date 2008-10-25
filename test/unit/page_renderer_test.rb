@@ -65,11 +65,86 @@ class PageRendererTest < Test::Unit::TestCase
         %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
         "equation $\\sin(x)$")
   
-    re = Regexp.new('<h1 id=\'my_headline_\\d{1,4}\'>My Headline</h1>\n\n<p>that <span class=\'newWikiWord\'>Smart Engine GUI<a href=\'../show/SmartEngineGUI\'>\?</a></span></p>')
+    re = Regexp.new('\\A<h1 id=\'my_headline_\\d{1,4}\'>My Headline</h1>\n\n<p>that <span class=\'newWikiWord\'>Smart Engine GUI<a href=\'../show/SmartEngineGUI\'>\?</a></span></p>\\Z')
 
     assert_match_markup_parsed_as(re, "My Headline\n===========\n\nthat SmartEngineGUI")
   
     assert_match_markup_parsed_as(re, "#My Headline#\n\nthat SmartEngineGUI")
+
+    str1 = %{<div class='un_defn'>\n<h6 id='definition_\\d\{1,4\}'>Definition</h6>\n\n<p>Let <math} +
+    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi>} +
+    %{</math> be a subgroup of a group <math class='maruku-mathml' display='inline' xmlns='http://w} +
+    %{ww.w3.org/1998/Math/MathML'><mi>G</mi></math>. A <em>left coset</em> of <math class='maruku-m} +
+    %{athml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi></math> in <math} +
+    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi>} +
+    %{</math> is a subset of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/} +
+    %{1998/Math/MathML'><mi>G</mi></math> that is of the form <math class='maruku-mathml' display='} +
+    %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi></math>, where <math} +
+    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>x</mi>} +
+    %{<mo>\342\210\210</mo><mi>G</mi></math> and <math class='maruku-mathml' display='inline' xmlns} +
+    %{='http://www.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>=</mo><mo stretchy='false'>\\\{<} +
+    %{/mo><mi>x</mi><mi>h</mi><mo>:</mo><mi>h</mi><mo>\342\210\210</mo><mi>H</mi><mo stretchy='fals} +
+    %{e'>\\\}</mo></math>.</p>\n\n<p>Similarly a <em>right coset</em> of <math class='maruku-mathml'} +
+    %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi></math> in <math class} +
+    %{='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math} +
+    %{> is a subset of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/M} +
+    %{ath/MathML'><mi>G</mi></math> that is of the form <math class='maruku-mathml' display='inline} +
+    %{' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi><mi>x</mi></math>, where <math class='} +
+    %{maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi><mi>x</m} +
+    %{i><mo>=</mo><mo stretchy='false'>\\\{</mo><mi>h</mi><mi>x</mi><mo>:</mo><mi>h</mi><mo>\342\210\210} +
+    %{</mo><mi>H</mi><mo stretchy='false'>\\\}</mo></math>.</p>\n</div>\n\n} +
+    %{<div class='num_lemma' id='LeftCosetsDisjoint'>\n<h6 id='lemma_\\d\{1,4\}'>Lemma</h6>\n\n<p>} +
+    %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+    %{<mi>H</mi></math> be a subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
+    %{='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>, and let <math class='maruku-mathml'} +
+    %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>x</mi></math> and <math cla} +
+    %{ss='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>y</mi></ma} +
+    %{th> be elements of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/} +
+    %{Math/MathML'><mi>G</mi></math>. Suppose that <math class='maruku-mathml' display='inline' xmln} +
+    %{s='http://www.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>} +
+    %{H</mi></math> is non-empty. Then <math class='maruku-mathml' display='inline' xmlns='http://ww} +
+    %{w.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>=</mo><mi>y</mi><mi>H</mi></math>.</p>\n</d} +
+    %{iv>\n\n<div class='proof'>\n<h6 id='proof_\\d\{1,4\}'>Proof</h6>\n\n<p>Let <math class='maruku-m} +
+    %{athml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>z</mi></math> be some e} +
+    %{lement of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/Math} +
+    %{ML'><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>H</mi></math>.</p>\n</div>\n\n} +
+    %{<div class='num_lemma' id='SizeOfLeftCoset'>\n<h6 id='lemma_\\d\{1,4\}'>Lemma</h6>\n\n<p>} +
+    %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+    %{<mi>H</mi></math> be a finite subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
+    %{='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>.</p>\n</div>\n\n} +
+    %{<div class='num_theorem' id='Lagrange'>\n<h6 id='theorem_\\d\{1,4\}'>Theorem</h6>\n\n<p><strong>\\(Lagrange\342\200\231s Theorem\\).</strong> Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math> be a finite group, and let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi></math> be a subgroup of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>.</p>\n</div>}
+
+    str2 = <<END_THM
++-- {: .un_defn}
+###### Definition
+Let $H$ be a subgroup of a group $G$.  A *left coset* of $H$ in $G$ is a subset of $G$ that is of the form $x H$, where $x \\in G$ and $x H = \\{ x h : h \\in H \\}$.
+
+Similarly a *right coset* of $H$ in $G$ is a subset of $G$ that is of the form $H x$, where $H x = \\{ h x : h \\in H \\}$.
+=--
+
++-- {: .num_lemma #LeftCosetsDisjoint}
+###### Lemma
+Let $H$ be a subgroup of a group $G$, and let $x$ and $y$ be
+elements of $G$. Suppose that $x H \\cap y H$ is non-empty. Then $x H = y H$.
+=--
+
++-- {: .proof}
+###### Proof
+Let $z$ be some element of $x H \\cap y H$.
+=--
+
++-- {: .num_lemma #SizeOfLeftCoset}
+###### Lemma
+Let $H$ be a finite subgroup of a group $G$.
+=--
+
++-- {: .num_theorem #Lagrange}
+###### Theorem
+**(Lagrange's Theorem).** Let $G$ be a finite group, and let $H$ be a subgroup of $G$.
+=--
+END_THM
+
+    assert_match_markup_parsed_as(Regexp.new(str1), str2)
   
     assert_markup_parsed_as(
         %{<p>SVG <animateColor title='MathML'><span class='newWikiWord'>} +

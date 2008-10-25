@@ -45,8 +45,9 @@ class MDElement
 			$uid += 1
 			title = "id#{$uid}"
 		end
-		
-		title << "_" + rand(10000).to_s
+
+		@doc.id_counter += 1
+		title << "_" + @doc.id_counter.to_s
 	end
 end
 
