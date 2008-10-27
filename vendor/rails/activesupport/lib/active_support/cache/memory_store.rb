@@ -12,7 +12,7 @@ module ActiveSupport
 
       def write(name, value, options = nil)
         super
-        @data[name] = value
+        @data[name] = value.freeze
       end
 
       def delete(name, options = nil)

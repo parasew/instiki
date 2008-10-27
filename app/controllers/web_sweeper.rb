@@ -11,4 +11,8 @@ class WebSweeper < ActionController::Caching::Sweeper
     web.pages.each { |page| expire_cached_page(web, page.name) }
     expire_cached_summary_pages(web)
   end
+
+  def after_remove_orphaned_pages(web)
+    expire_cached_summary_pages(web)
+  end
 end

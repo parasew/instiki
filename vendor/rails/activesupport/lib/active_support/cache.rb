@@ -21,33 +21,26 @@ module ActiveSupport
       expanded_cache_key = namespace ? "#{namespace}/" : ""
 
       if ENV["RAILS_CACHE_ID"] || ENV["RAILS_APP_VERSION"]
-        expanded_cache_key << "#{ENV["RAILS_CACHE_ID"] || ENV["RAILS_APP_VERSION"]}/" 
+        expanded_cache_key << "#{ENV["RAILS_CACHE_ID"] || ENV["RAILS_APP_VERSION"]}/"
       end
 
       expanded_cache_key << case
-      when key.respond_to?(:cache_key)
-        key.cache_key
-      when key.is_a?(Array)
-        key.collect { |element| expand_cache_key(element) }.to_param
-      when key.respond_to?(:to_param)
-        key.to_param
-      else
-        key.to_s
-      end
+        when key.respond_to?(:cache_key)
+          key.cache_key
+        when key.is_a?(Array)
+          key.collect { |element| expand_cache_key(element) }.to_param
+        when key
+          key.to_param
+        end.to_s
 
       expanded_cache_key
     end
 
-
     class Store
       cattr_accessor :logger
 
-      def initialize
-      end
-
-      def threadsafe!
-        @mutex = Mutex.new
-        self.class.send :include, ThreadSafety
+      def silence!
+        @silence = true
         self
       end
 
@@ -69,7 +62,7 @@ module ActiveSupport
           write(key, value, options)
           @logger_off = false
 
-          log("write (will save #{'%.5f' % seconds})", key, nil)
+          log("write (will save #{'%.2f' % (seconds * 1000)}ms)", key, nil)
 
           value
         end
@@ -112,30 +105,11 @@ module ActiveSupport
           nil
         end
       end
-      
+
       private
         def log(operation, key, options)
-          logger.debug("Cache #{operation}: #{key}#{options ? " (#{options.inspect})" : ""}") if logger && !@logger_off
+          logger.debug("Cache #{operation}: #{key}#{options ? " (#{options.inspect})" : ""}") if logger && !@silence && !@logger_off
         end
-    end
-
-
-    module ThreadSafety #:nodoc:
-      def read(key, options = nil) #:nodoc:
-        @mutex.synchronize { super }
-      end
-
-      def write(key, value, options = nil) #:nodoc:
-        @mutex.synchronize { super }
-      end
-
-      def delete(key, options = nil) #:nodoc:
-        @mutex.synchronize { super }
-      end
-
-      def delete_matched(matcher, options = nil) #:nodoc:
-        @mutex.synchronize { super }
-      end
     end
   end
 end

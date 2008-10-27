@@ -51,7 +51,7 @@ module ActiveSupport
         "La Paz"                       => "America/La_Paz",
         "Santiago"                     => "America/Santiago",
         "Newfoundland"                 => "America/St_Johns",
-        "Brasilia"                     => "America/Argentina/Buenos_Aires",
+        "Brasilia"                     => "America/Sao_Paulo",
         "Buenos Aires"                 => "America/Argentina/Buenos_Aires",
         "Georgetown"                   => "America/Argentina/San_Juan",
         "Greenland"                    => "America/Godthab",
@@ -124,7 +124,7 @@ module ActiveSupport
         "Kathmandu"                    => "Asia/Katmandu",
         "Astana"                       => "Asia/Dhaka",
         "Dhaka"                        => "Asia/Dhaka",
-        "Sri Jayawardenepura"          => "Asia/Dhaka",
+        "Sri Jayawardenepura"          => "Asia/Colombo",
         "Almaty"                       => "Asia/Almaty",
         "Novosibirsk"                  => "Asia/Novosibirsk",
         "Rangoon"                      => "Asia/Rangoon",
@@ -199,6 +199,12 @@ module ActiveSupport
       result = (utc_offset <=> zone.utc_offset)
       result = (name <=> zone.name) if result == 0
       result
+    end
+
+    # Compare #name and TZInfo identifier to a supplied regexp, returning true
+    # if a match is found.
+    def =~(re)
+      return true if name =~ re || MAPPING[name] =~ re
     end
 
     # Returns a textual representation of this time zone.

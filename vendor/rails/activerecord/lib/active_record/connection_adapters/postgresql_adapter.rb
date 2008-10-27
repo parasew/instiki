@@ -246,9 +246,26 @@ module ActiveRecord
     # * <tt>:min_messages</tt> - An optional client min messages that is used in a <tt>SET client_min_messages TO <min_messages></tt> call on the connection.
     # * <tt>:allow_concurrency</tt> - If true, use async query methods so Ruby threads don't deadlock; otherwise, use blocking query methods.
     class PostgreSQLAdapter < AbstractAdapter
+      ADAPTER_NAME = 'PostgreSQL'.freeze
+
+      NATIVE_DATABASE_TYPES = {
+        :primary_key => "serial primary key".freeze,
+        :string      => { :name => "character varying", :limit => 255 },
+        :text        => { :name => "text" },
+        :integer     => { :name => "integer" },
+        :float       => { :name => "float" },
+        :decimal     => { :name => "decimal" },
+        :datetime    => { :name => "timestamp" },
+        :timestamp   => { :name => "timestamp" },
+        :time        => { :name => "time" },
+        :date        => { :name => "date" },
+        :binary      => { :name => "bytea" },
+        :boolean     => { :name => "boolean" }
+      }
+
       # Returns 'PostgreSQL' as adapter name for identification purposes.
       def adapter_name
-        'PostgreSQL'
+        ADAPTER_NAME
       end
 
       # Initializes and connects a PostgreSQL adapter.
@@ -290,20 +307,7 @@ module ActiveRecord
       end
 
       def native_database_types #:nodoc:
-        {
-          :primary_key => "serial primary key",
-          :string      => { :name => "character varying", :limit => 255 },
-          :text        => { :name => "text" },
-          :integer     => { :name => "integer" },
-          :float       => { :name => "float" },
-          :decimal     => { :name => "decimal" },
-          :datetime    => { :name => "timestamp" },
-          :timestamp   => { :name => "timestamp" },
-          :time        => { :name => "time" },
-          :date        => { :name => "date" },
-          :binary      => { :name => "bytea" },
-          :boolean     => { :name => "boolean" }
-        }
+        NATIVE_DATABASE_TYPES
       end
 
       # Does PostgreSQL support migrations?
@@ -329,6 +333,10 @@ module ActiveRecord
 
       def supports_insert_with_returning?
         postgresql_version >= 80200
+      end
+
+      def supports_ddl_transactions?
+        true
       end
 
       # Returns the configured supported identifier length supported by PostgreSQL,
@@ -510,6 +518,45 @@ module ActiveRecord
         execute "ROLLBACK"
       end
 
+      # ruby-pg defines Ruby constants for transaction status,
+      # ruby-postgres does not.
+      PQTRANS_IDLE = defined?(PGconn::PQTRANS_IDLE) ? PGconn::PQTRANS_IDLE : 0
+
+      # Check whether a transaction is active.
+      def transaction_active?
+        @connection.transaction_status != PQTRANS_IDLE
+      end
+
+      # Wrap a block in a transaction.  Returns result of block.
+      def transaction(start_db_transaction = true)
+        transaction_open = false
+        begin
+          if block_given?
+            if start_db_transaction
+              begin_db_transaction
+              transaction_open = true
+            end
+            yield
+          end
+        rescue Exception => database_transaction_rollback
+          if transaction_open && transaction_active?
+            transaction_open = false
+            rollback_db_transaction
+          end
+          raise unless database_transaction_rollback.is_a? ActiveRecord::Rollback
+        end
+      ensure
+        if transaction_open && transaction_active?
+          begin
+            commit_db_transaction
+          rescue Exception => database_transaction_rollback
+            rollback_db_transaction
+            raise
+          end
+        end
+      end
+
+
       # SCHEMA STATEMENTS ========================================
 
       def recreate_database(name) #:nodoc:
@@ -616,6 +663,19 @@ module ActiveRecord
         column_definitions(table_name).collect do |name, type, default, notnull|
           PostgreSQLColumn.new(name, default, type, notnull == 'f')
         end
+      end
+
+      # Returns the current database name.
+      def current_database
+        query('select current_database()')[0][0]
+      end
+
+      # Returns the current database encoding format.
+      def encoding
+        query(<<-end_sql)[0][0]
+          SELECT pg_encoding_to_char(pg_database.encoding) FROM pg_database
+          WHERE pg_database.datname LIKE '#{current_database}'
+        end_sql
       end
 
       # Sets the schema search path to a string of comma-separated schema names.
@@ -851,7 +911,7 @@ module ActiveRecord
         end
 
       private
-        # The internal PostgreSQL identifer of the money data type.
+        # The internal PostgreSQL identifier of the money data type.
         MONEY_COLUMN_TYPE_OID = 790 #:nodoc:
 
         # Connects to a PostgreSQL server and sets up the adapter depending on the

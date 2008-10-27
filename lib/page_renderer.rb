@@ -71,8 +71,8 @@ class PageRenderer
   # Renders an S5 slideshow
   def display_s5
     @display_s5 ||= render(:mode => :s5,
-                           :engine_opts => { :author => @revision.page.author,
-                             :title => @revision.page.plain_name}, :renderer => self)
+                           :engine_opts => {:author => @author, :title => @plain_name},
+                           :renderer => self)
   end
 
   # Returns an array of all the WikiIncludes present in the content of this revision.

@@ -13,7 +13,7 @@
 <ul>
   <% @pages_in_category.each do |page| %>
     <li>
-      <%= link_to_existing_page page, truncate(page.plain_name, 35) %>
+      <%= link_to_existing_page page, truncate(page.plain_name, :length => 35) %>
     </li>
 <% end %></ul>
 
@@ -36,7 +36,7 @@
   <ul style="margin-bottom: 10px">
   <% @page_names_that_are_wanted.each do |wanted_page_name| %>
     <li>
-      <%= link_to_page(wanted_page_name, @web, truncate(WikiWords.separate(wanted_page_name), 35)) %>
+      <%= link_to_page(wanted_page_name, @web, truncate(WikiWords.separate(wanted_page_name), :length => 35)) %>
       wanted by
       <%= @web.select.pages_that_reference(wanted_page_name).collect { |referring_page|            
             link_to_existing_page referring_page
@@ -56,7 +56,7 @@
   <ul style="margin-bottom: 35px">
     <% @pages_that_are_orphaned.each do |orphan_page| %>
       <li>
-        <%= link_to_existing_page orphan_page, truncate(orphan_page.plain_name, 35) %>
+        <%= link_to_existing_page orphan_page, truncate(orphan_page.plain_name, :length => 35) %>
       </li>
     <% end %>
   </ul>

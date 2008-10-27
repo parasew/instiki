@@ -410,7 +410,7 @@ class WikiController < ApplicationController
   def remote_ip
     ip = request.remote_ip
     logger.info(ip)
-    ip.gsub!(Regexp.union(Resolv::IPv4::Regex, Resolv::IPv6::Regex), '\0') || 'bogus address'
+    ip.dup.gsub!(Regexp.union(Resolv::IPv4::Regex, Resolv::IPv6::Regex), '\0') || 'bogus address'
   end
 
   def render_atom(hide_description = false, limit = 15)

@@ -29,11 +29,14 @@ module ActiveSupport
         nil
       end
 
-      # Set key = value. Pass :unless_exist => true if you don't 
-      # want to update the cache if the key is already set. 
+      # Set key = value. Pass :unless_exist => true if you don't
+      # want to update the cache if the key is already set.
       def write(key, value, options = nil)
         super
         method = options && options[:unless_exist] ? :add : :set
+        # memcache-client will break the connection if you send it an integer
+        # in raw mode, so we convert it to a string to be sure it continues working.
+        value = value.to_s if raw?(options)
         response = @data.send(method, key, value, expires_in(options), raw?(options))
         response == Response::STORED
       rescue MemCache::MemCacheError => e
@@ -56,33 +59,33 @@ module ActiveSupport
         !read(key, options).nil?
       end
 
-      def increment(key, amount = 1)       
+      def increment(key, amount = 1)
         log("incrementing", key, amount)
-        
-        response = @data.incr(key, amount)  
+
+        response = @data.incr(key, amount)
         response == Response::NOT_FOUND ? nil : response
-      rescue MemCache::MemCacheError 
+      rescue MemCache::MemCacheError
         nil
       end
 
       def decrement(key, amount = 1)
         log("decrement", key, amount)
-        
-        response = data.decr(key, amount) 
+
+        response = @data.decr(key, amount)
         response == Response::NOT_FOUND ? nil : response
-      rescue MemCache::MemCacheError 
+      rescue MemCache::MemCacheError
         nil
-      end        
-      
+      end
+
       def delete_matched(matcher, options = nil)
         super
         raise "Not supported by Memcache"
-      end        
-      
+      end
+
       def clear
         @data.flush_all
-      end        
-      
+      end
+
       def stats
         @data.stats
       end

@@ -37,11 +37,26 @@ module ActiveRecord
       $queries_executed = []
       yield
     ensure
-      assert_equal num, $queries_executed.size, "#{$queries_executed.size} instead of #{num} queries were executed."
+      assert_equal num, $queries_executed.size, "#{$queries_executed.size} instead of #{num} queries were executed.#{$queries_executed.size == 0 ? '' : "\nQueries:\n#{$queries_executed.join("\n")}"}"
     end
 
     def assert_no_queries(&block)
       assert_queries(0, &block)
+    end
+
+    def self.use_concurrent_connections
+      setup :connection_allow_concurrency_setup
+      teardown :connection_allow_concurrency_teardown
+    end
+
+    def connection_allow_concurrency_setup
+      @connection = ActiveRecord::Base.remove_connection
+      ActiveRecord::Base.establish_connection(@connection.merge({:allow_concurrency => true}))
+    end
+
+    def connection_allow_concurrency_teardown
+      ActiveRecord::Base.clear_all_connections!
+      ActiveRecord::Base.establish_connection(@connection)
     end
   end
 end

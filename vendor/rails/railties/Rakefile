@@ -2,7 +2,6 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
 require 'rake/gempackagetask'
-require 'rake/contrib/sshpublisher'
 require 'rake/contrib/rubyforgepublisher'
 
 require 'date'
@@ -273,6 +272,50 @@ Rake::RDocTask.new { |rdoc|
   rdoc.rdoc_files.include('lib/commands/**/*.rb')
 }
 
+desc "Generate guides for the framework"
+task :guides do
+  require 'mizuho/generator'
+
+  source = "doc/guides/source/"
+  html   = "doc/guides/html/"
+  FileUtils.rm_r(html) if File.directory?(html)
+  FileUtils.mkdir(html)
+
+  template = File.expand_path("doc/guides/source/templates/guides.html.erb")
+
+  ignore = ['icons', 'images', 'templates', 'stylesheets']
+  ignore << 'active_record_basics.txt'
+
+  indexless = ['index.txt', 'authors.txt']
+
+  Dir.entries(source)[2..-1].each do |entry|
+    next if ignore.include?(entry)
+
+    if File.directory?(File.join(source, entry))
+      input  = File.join(source, entry, 'index.txt')
+      output = File.join(html, entry)
+    else
+      input  = File.join(source, entry)
+      output = File.join(html, entry).sub(/\.txt$/, '')
+    end
+
+    begin
+      puts "GENERATING => #{output}"
+      ENV['MANUALSONRAILS_TOC'] = 'no' if indexless.include?(entry)
+      Mizuho::Generator.new(input, output, template).start
+    rescue Mizuho::GenerationError
+      STDERR.puts "*** ERROR"
+      exit 2
+    ensure
+      ENV.delete('MANUALSONRAILS_TOC')
+    end
+  end
+
+  # Copy images and css files to html directory. These dirs are in .gitigore and shouldn't be source controlled.
+  FileUtils.cp_r File.join(source, 'images'), File.join(html, 'images')
+  FileUtils.cp_r File.join(source, 'stylesheets'), File.join(html, 'stylesheets')
+end
+
 # Generate GEM ----------------------------------------------------------------------------
 
 task :copy_gem_environment do
@@ -305,12 +348,12 @@ spec = Gem::Specification.new do |s|
     on top of either MySQL, PostgreSQL, SQLite, DB2, SQL Server, or Oracle with eRuby- or Builder-based templates.
   EOF
 
-  s.add_dependency('rake', '>= 0.8.1')
-  s.add_dependency('activesupport',    '= 2.1.1' + PKG_BUILD)
-  s.add_dependency('activerecord',     '= 2.1.1' + PKG_BUILD)
-  s.add_dependency('actionpack',       '= 2.1.1' + PKG_BUILD)
-  s.add_dependency('actionmailer',     '= 2.1.1' + PKG_BUILD)
-  s.add_dependency('activeresource',   '= 2.1.1' + PKG_BUILD)
+  s.add_dependency('rake', '>= 0.8.3')
+  s.add_dependency('activesupport',    '= 2.2.0' + PKG_BUILD)
+  s.add_dependency('activerecord',     '= 2.2.0' + PKG_BUILD)
+  s.add_dependency('actionpack',       '= 2.2.0' + PKG_BUILD)
+  s.add_dependency('actionmailer',     '= 2.2.0' + PKG_BUILD)
+  s.add_dependency('activeresource',   '= 2.2.0' + PKG_BUILD)
 
   s.rdoc_options << '--exclude' << '.'
   s.has_rdoc = false
@@ -335,8 +378,13 @@ end
 # Publishing -------------------------------------------------------
 desc "Publish the rails gem"
 task :pgem => [:gem] do 
-  Rake::SshFilePublisher.new("david@greed.loudthinking.com", "/u/sites/gems/gems", "pkg", "#{PKG_FILE_NAME}.gem").upload
-  `ssh david@greed.loudthinking.com '/u/sites/gems/gemupdate.sh'`
+  Rake::SshFilePublisher.new("gems.rubyonrails.org", "/u/sites/gems/gems", "pkg", "#{PKG_FILE_NAME}.gem").upload
+  `ssh gems.rubyonrails.org '/u/sites/gems/gemupdate.sh'`
+end
+
+desc "Publish the API documentation"
+task :pdoc => :rdoc do
+  # railties API isn't separately published
 end
 
 desc "Publish the release files to RubyForge."
