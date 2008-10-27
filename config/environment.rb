@@ -9,7 +9,7 @@ $:.unshift('vendor/plugins/rexml/lib') if (rexml_versions[0] <=> rexml_versions[
 
 require File.join(File.dirname(__FILE__), 'boot')
 
-require 'rails_generator/secret_key_generator'
+require 'active_support/secure_random'
 
 Rails::Initializer.run do |config|
 
@@ -22,7 +22,7 @@ Rails::Initializer.run do |config|
   if File.exist?(secret_file)  
     secret = File.read(secret_file)  
   else  
-    secret = Rails::SecretKeyGenerator.new("Instiki").generate_secret  
+    secret =  ActiveSupport::SecureRandom.hex(64)
     File.open(secret_file, 'w', 0600) { |f| f.write(secret) }  
   end  
   config.action_controller.session = { 
