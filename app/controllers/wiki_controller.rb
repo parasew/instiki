@@ -429,7 +429,7 @@ class WikiController < ApplicationController
   def filter_spam(content)
     @@spam_patterns ||= load_spam_patterns
     @@spam_patterns.each do |pattern| 
-      raise "Your edit was blocked by spam filtering" if content =~ pattern
+      raise Instiki::ValidationError.new("Your edit was blocked by spam filtering") if content =~ pattern
     end
   end
 

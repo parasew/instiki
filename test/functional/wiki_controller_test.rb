@@ -602,6 +602,16 @@ class WikiControllerTest < Test::Unit::TestCase
     assert !home_page.locked?(Time.now)
   end
 
+  def test_spam_filters
+    revisions_before = @home.revisions.size
+    @home.lock(Time.now, 'AnAuthor')
+    r = process 'save', {'web' => 'wiki1', 'id' => 'HomePage',
+        'content' => @home.revisions.last.content.dup + "\n Try viagra.\n",
+        'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/HomePage'}
+    assert_redirected_to :action => 'edit', :web => 'wiki1', :id => 'HomePage'
+    assert r.flash[:error].to_s == "Your edit was blocked by spam filtering"
+  end
+
   def test_save_new_revision_identical_to_last
     revisions_before = @home.revisions.size
     @home.lock(Time.now, 'AnAuthor')
@@ -611,8 +621,7 @@ class WikiControllerTest < Test::Unit::TestCase
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/HomePage'}
 
     assert_redirected_to :action => 'edit', :web => 'wiki1', :id => 'HomePage'
-#    assert(@response.has_key(:error))
-#    assert r.flash[:error].kind_of?(Instiki::ValidationError)
+    assert r.flash[:error].to_s == "You have tried to save page 'HomePage' without changing its content"
 
     revisions_after = @home.revisions.size
     assert_equal revisions_before, revisions_after
