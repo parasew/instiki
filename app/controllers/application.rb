@@ -107,7 +107,7 @@ class ApplicationController < ActionController::Base
 
   def remember_location
     if request.method == :get and 
-        response.headers['Status'] == '200 OK' and not
+        response.headers['Status'] == '200 OK' and not \
         %w(locked save back file pic import).include?(action_name)
       session[:return_to] = request.request_uri
       logger.debug "Session ##{session.object_id}: remembered URL '#{session[:return_to]}'"

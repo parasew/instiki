@@ -1,6 +1,5 @@
 require 'fileutils'
 require 'maruku'
-require 'parsedate'
 require 'zip/zip'
 require 'stringsupport'
 require 'resolv'
@@ -241,30 +240,18 @@ class WikiController < ApplicationController
     begin
       the_content = params['content']
       filter_spam(the_content)
+      raise Instiki::ValidationError.new('Your content was not valid utf-8.') unless the_content.is_utf8?
       if @page
-        if the_content.is_utf8?
-          wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
-              Author.new(author_name, remote_ip), PageRenderer.new)
-          @page.unlock
-        else
-          flash[:error] = 'Your content was not valid utf-8.'
-          @page.unlock
-          redirect_to :back
-          return
-        end
+        wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
+            Author.new(author_name, remote_ip), PageRenderer.new)
+        @page.unlock
       else
-        if the_content.is_utf8?
-          wiki.write_page(@web_name, @page_name, the_content, Time.now, 
-              Author.new(author_name, remote_ip), PageRenderer.new)
-        else
-          flash[:error] = 'Your content was not valid utf-8.'
-          redirect_to :back
-          return
-        end
+        wiki.write_page(@web_name, @page_name, the_content, Time.now, 
+            Author.new(author_name, remote_ip), PageRenderer.new)
       end
       redirect_to_page @page_name
-    rescue => e
-      flash[:error] = e
+    rescue Instiki::ValidationError => e
+      flash[:error] = e.to_s
       logger.error e
       if @page
         @page.unlock
@@ -285,7 +272,7 @@ class WikiController < ApplicationController
       # the application itself (for application errors, it's better not to rescue the error at all)
       rescue => e
         logger.error e
-        flash[:error] = e
+        flash[:error] = e.to_s
         if in_a_web?
           redirect_to :action => 'edit', :web => @web_name, :id => @page_name
         else
