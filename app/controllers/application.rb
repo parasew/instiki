@@ -96,7 +96,7 @@ class ApplicationController < ActionController::Base
     if web
       redirect_to_page('HomePage', web)
     else
-      redirect_to_url '/'
+      redirect_to '/'
     end
   end
 
@@ -144,7 +144,7 @@ class ApplicationController < ActionController::Base
     else
       logger.debug("Session ##{session.object_id}: " +
           "redirect to the last remembered URL #{redirect_target}")
-      redirect_to_url(redirect_target)
+      redirect_to(redirect_target)
     end
   end
 
