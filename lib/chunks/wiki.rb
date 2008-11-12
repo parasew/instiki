@@ -70,7 +70,7 @@ module WikiChunk
     attr_reader :escaped_text
 
     unless defined? WIKI_WORD
-      WIKI_WORD = Regexp.new('(":)?(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, "utf-8")
+      WIKI_WORD = Regexp.new('(":)?(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0)
     end
 
     def self.pattern
@@ -105,9 +105,9 @@ module WikiChunk
 
     unless defined? WIKI_LINK
       WIKI_LINK = /(":)?\[\[\s*([^\]\s][^\]]+?)\s*\]\]/
-      LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic))$', 0, 'utf-8')
-      ALIAS_SEPARATION = Regexp.new('^(.+)\|(.+)$', 0, 'utf-8')
-      WEB_SEPARATION = Regexp.new('^(.+):(.+)$', 0, 'utf-8')
+      LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic))$', 0)
+      ALIAS_SEPARATION = Regexp.new('^(.+)\|(.+)$', 0)
+      WEB_SEPARATION = Regexp.new('^(.+):(.+)$', 0)
     end
 
     def self.pattern() WIKI_LINK end

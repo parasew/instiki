@@ -2,9 +2,15 @@ begin
   require "rdoc/markup/simple_markup"
   require 'rdoc/markup/simple_markup/to_html'
 rescue LoadError
-  # use old version if available
-  require 'markup/simple_markup'
-  require 'markup/simple_markup/to_html'
+  # Ruby 1.9
+  require "rdoc/markup"
+  require 'rdoc/markup/to_html'
+  module SM
+    class SimpleMarkup < RDoc::Markup
+    end
+    class ToHtml <RDoc::Markup::ToHtml
+    end
+  end
 end
 
 module RDocSupport

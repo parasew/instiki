@@ -58,4 +58,4 @@ end
 # Instiki-specific configuration below
 require_dependency 'instiki_errors'
 
-require 'jcode'
+#require 'jcode'

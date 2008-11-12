@@ -90,7 +90,11 @@ class FileControllerTest < Test::Unit::TestCase
     assert_template 'file/file'
 
     # User uploads the picture
-    picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
+    begin # Ruby 1.9
+      picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif", :encoding => 'ascii-8bit')
+    rescue #Ruby 1.8
+      picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
+    end
     # updated from post to get - post fails the spam protection (no javascript)
     #   Moron! If substituting GET for POST actually works, you
     #   have much, much bigger problems.
