@@ -1,4 +1,14 @@
-*2.2.0 [RC1] (October 24th, 2008)*
+*2.2 (November 21st, 2008)*
+
+* TimeZone offset tests: use current_period, to ensure TimeZone#utc_offset is up-to-date [Geoff Buesing]
+
+* Update bundled TZInfo to 0.3.12 [Geoff Buesing]
+
+* Increment the version of our altered memcache-client to prevent confusion caused when the 1.5.0 gem is installed.
+
+* Fixed the option merging in Array#to_xml #1126 [Rudolf Gavlas]
+
+* Make I18n::Backend::Simple reload its translations in development mode [DHH/Sven Fuchs]
 
 * TimeWithZone#freeze: preload instance variables so that we can actually freeze [Geoff Buesing]
 
@@ -48,7 +58,7 @@
 
 * Added TimeZone #=~, to support matching zones by regex in time_zone_select. #195 [Ernie Miller]
 
-* Added Array#second through Array#tenth as aliases for Array#[1] through Array#[9] [DHH]
+* Added Array#second through Array#fifth as aliases for Array#[1] through Array#[4] + Array#forty_two as alias for Array[41] [DHH]
 
 * Added test/do declaration style testing to ActiveSupport::TestCase [DHH via Jay Fields]
 

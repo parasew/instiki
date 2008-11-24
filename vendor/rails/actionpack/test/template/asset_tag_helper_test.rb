@@ -239,7 +239,11 @@ class AssetTagHelperTest < ActionView::TestCase
       File.stubs(:exist?).with('template/../fixtures/public/images/rails.png.').returns(true)
       assert_equal '<img alt="Rails" src="/images/rails.png?1" />', image_tag('rails.png')
     ensure
-      ENV["RAILS_ASSET_ID"] = old_asset_id
+      if old_asset_id
+        ENV["RAILS_ASSET_ID"] = old_asset_id
+      else
+        ENV.delete("RAILS_ASSET_ID")
+      end
     end
   end
 
@@ -248,6 +252,14 @@ class AssetTagHelperTest < ActionView::TestCase
     assert_equal %(<img alt="Rails" src="/images/rails.png?#{expected_time}" />), image_tag("rails.png")
   end
 
+  def test_timebased_asset_id_with_relative_url_root
+      ActionController::Base.relative_url_root = "/collaboration/hieraki"
+      expected_time = File.stat(File.expand_path(File.dirname(__FILE__) + "/../fixtures/public/images/rails.png")).mtime.to_i.to_s
+      assert_equal %(<img alt="Rails" src="#{ActionController::Base.relative_url_root}/images/rails.png?#{expected_time}" />), image_tag("rails.png")
+    ensure
+      ActionController::Base.relative_url_root = ""
+  end
+    
   def test_should_skip_asset_id_on_complete_url
     assert_equal %(<img alt="Rails" src="http://www.example.com/rails.png" />), image_tag("http://www.example.com/rails.png")
   end
@@ -635,5 +647,11 @@ class AssetTagHelperNonVhostTest < ActionView::TestCase
     assert_equal 'gopher://a.example.com/files/go/here/collaboration/hieraki/images/xml.png', image_path('xml.png')
   ensure
     ActionController::Base.asset_host = nil
+  end
+
+  def test_assert_css_and_js_of_the_same_name_return_correct_extension
+    assert_dom_equal(%(/collaboration/hieraki/javascripts/foo.js), javascript_path("foo"))
+    assert_dom_equal(%(/collaboration/hieraki/stylesheets/foo.css), stylesheet_path("foo"))
+
   end
 end

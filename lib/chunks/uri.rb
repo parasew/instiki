@@ -74,7 +74,8 @@ class URIChunk < Chunk::Abstract
     SUSPICIOUS_PRECEDING_CHARACTER = '(!|\"\:|\"|\\\'|\]\()?'  # any of !, ":, ", ', ](
   
     INTERNET_URI_REGEXP = 
-        Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + INTERNET_URI, Regexp::EXTENDED, 'N')
+#        Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + INTERNET_URI, Regexp::EXTENDED, 'N')
+        Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + INTERNET_URI, Regexp::EXTENDED)
 
   end
 
@@ -172,7 +173,8 @@ class LocalURIChunk < URIChunk
         '(?=\.?(?:\s|\)|\z))'         # ends only with optional dot + space or ")" 
                                       # or end of the string
   
-    LOCAL_URI_REGEXP = Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + LOCAL_URI, Regexp::EXTENDED, 'N')
+#    LOCAL_URI_REGEXP = Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + LOCAL_URI, Regexp::EXTENDED, 'N')
+    LOCAL_URI_REGEXP = Regexp.new(SUSPICIOUS_PRECEDING_CHARACTER + LOCAL_URI, Regexp::EXTENDED)
   end
 
   def LocalURIChunk.pattern

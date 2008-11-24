@@ -33,7 +33,7 @@ class String
        |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
        | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
        |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-     )*\Z/x;
+     )*\Z/nx;
    end
 #++
 
@@ -2220,7 +2220,7 @@ class String
     end
     
     def unescapeHTML
-    self.gsub(/&(.*?);/n) do
+    self.gsub(/&(.*?);/) do
       match = $1.dup
       case match
       when /\Aamp\z/ni           then '&'

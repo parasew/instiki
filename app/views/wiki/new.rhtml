@@ -5,8 +5,8 @@
 %>
 
 <div id="MarkupHelp">
-  <%= render("#{@web.markup}_help") %>
-  <%= render 'wiki_words_help' %>
+  <%= render(:file => "#{@web.markup}_help") %>
+  <%= render(:file => 'wiki_words_help') %>
 </div>
 
 <div id="editForm">

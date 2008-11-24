@@ -52,7 +52,7 @@
     <% end %>
   </h1>
 
-<%= render 'navigation' unless @web.nil? || @hide_navigation %>
+<%= render(:file => 'navigation') unless @web.nil? || @hide_navigation %>
 
 <% if flash[:info] %>
   <div class="info"><%= escape_preserving_linefeeds flash[:info] %></div>

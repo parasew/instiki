@@ -1,7 +1,7 @@
 #coding: utf-8
 # Contains all the methods for finding and replacing wiki words
 module WikiWords
-  # In order of appearance: Latin, greek, cyrillian, armenian
+  # In order of appearance: Latin, greek, cyrillic, armenian
   I18N_HIGHER_CASE_LETTERS =
     "ÀÁÂÃÄÅĀĄĂÆÇĆČĈĊĎĐÈÉÊËĒĘĚĔĖĜĞĠĢĤĦÌÍÎÏĪĨĬĮİĲĴĶŁĽĹĻĿÑŃŇŅŊÒÓÔÕÖØŌŐŎŒŔŘŖŚŠŞŜȘŤŢŦȚÙÚÛÜŪŮŰŬŨŲŴŶŸȲÝŹŽŻ" + 
     "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ" + 

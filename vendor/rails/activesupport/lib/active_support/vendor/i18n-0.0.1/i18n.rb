@@ -11,7 +11,7 @@ require 'i18n/exceptions'
 module I18n  
   @@backend = nil
   @@load_path = nil
-  @@default_locale = :'en-US'
+  @@default_locale = :'en'
   @@exception_handler = :default_exception_handler
     
   class << self
@@ -25,7 +25,7 @@ module I18n
       @@backend = backend
     end
   
-    # Returns the current default locale. Defaults to 'en-US'
+    # Returns the current default locale. Defaults to 'en'
     def default_locale
       @@default_locale 
     end
@@ -57,7 +57,7 @@ module I18n
     # files which are either named *.rb and contain plain Ruby Hashes or are
     # named *.yml and contain YAML data. So for the SimpleBackend clients may
     # register translation files like this:
-    #   I18n.load_path << 'path/to/locale/en-US.yml'
+    #   I18n.load_path << 'path/to/locale/en.yml'
     def load_path
       @@load_path ||= []
     end
@@ -66,6 +66,13 @@ module I18n
     # behave like a Ruby Array.
     def load_path=(load_path)
       @@load_path = load_path
+    end
+
+    # Tells the backend to reload translations. Used in situations like the
+    # Rails development environment. Backends can implement whatever strategy
+    # is useful.
+    def reload!
+      backend.reload!
     end
     
     # Translates, pluralizes and interpolates a given key using a given locale, 
@@ -150,10 +157,10 @@ module I18n
     #   I18n.t [:foo, :bar], :scope => :baz
     def translate(key, options = {})
       locale = options.delete(:locale) || I18n.locale
-      backend.translate locale, key, options
+      backend.translate(locale, key, options)
     rescue I18n::ArgumentError => e
       raise e if options[:raise]
-      send @@exception_handler, e, locale, key, options
+      send(@@exception_handler, e, locale, key, options)
     end        
     alias :t :translate
     
@@ -180,8 +187,8 @@ module I18n
     # keys are Symbols.
     def normalize_translation_keys(locale, key, scope)
       keys = [locale] + Array(scope) + [key]
-      keys = keys.map{|k| k.to_s.split(/\./) }
-      keys.flatten.map{|k| k.to_sym}
+      keys = keys.map { |k| k.to_s.split(/\./) }
+      keys.flatten.map { |k| k.to_sym }
     end
   end
 end

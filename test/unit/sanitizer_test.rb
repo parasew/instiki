@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+#coding: ascii-8bit
 
 require File.expand_path(File.join(File.dirname(__FILE__), '/../test_helper'))
 require 'sanitizer'

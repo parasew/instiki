@@ -386,12 +386,15 @@ module ActionMailer #:nodoc:
       end
 
       def method_missing(method_symbol, *parameters) #:nodoc:
-        match = matches_dynamic_method?(method_symbol)
-        case match[1]
-          when 'create'  then new(match[2], *parameters).mail
-          when 'deliver' then new(match[2], *parameters).deliver!
-          when 'new'     then nil
-          else super
+        if match = matches_dynamic_method?(method_symbol)
+          case match[1]
+            when 'create'  then new(match[2], *parameters).mail
+            when 'deliver' then new(match[2], *parameters).deliver!
+            when 'new'     then nil
+            else super
+          end
+        else
+          super
         end
       end
 
@@ -440,7 +443,7 @@ module ActionMailer #:nodoc:
       private
         def matches_dynamic_method?(method_name) #:nodoc:
           method_name = method_name.to_s
-          /(create|deliver)_([_a-z]\w*)/.match(method_name) || /^(new)$/.match(method_name)
+          /^(create|deliver)_([_a-z]\w*)/.match(method_name) || /^(new)$/.match(method_name)
         end
     end
 
@@ -546,7 +549,12 @@ module ActionMailer #:nodoc:
       end
 
       def render_message(method_name, body)
+        if method_name.respond_to?(:content_type)
+          @current_template_content_type = method_name.content_type
+        end
         render :file => method_name, :body => body
+      ensure
+        @current_template_content_type = nil
       end
 
       def render(opts)
@@ -565,7 +573,11 @@ module ActionMailer #:nodoc:
       end
 
       def default_template_format
-        :html
+        if @current_template_content_type
+          Mime::Type.lookup(@current_template_content_type).to_sym
+        else
+          :html
+        end
       end
 
       def candidate_for_layout?(options)
@@ -585,7 +597,9 @@ module ActionMailer #:nodoc:
       end
 
       def initialize_template_class(assigns)
-        ActionView::Base.new(view_paths, assigns, self)
+        template = ActionView::Base.new(view_paths, assigns, self)
+        template.template_format = default_template_format
+        template
       end
 
       def sort_parts(parts, order = [])
@@ -663,8 +677,10 @@ module ActionMailer #:nodoc:
         mail.ready_to_send
         sender = mail['return-path'] || mail.from
 
-        Net::SMTP.start(smtp_settings[:address], smtp_settings[:port], smtp_settings[:domain],
-            smtp_settings[:user_name], smtp_settings[:password], smtp_settings[:authentication]) do |smtp|
+        smtp = Net::SMTP.new(smtp_settings[:address], smtp_settings[:port])
+        smtp.enable_starttls_auto if smtp.respond_to?(:enable_starttls_auto)
+        smtp.start(smtp_settings[:domain], smtp_settings[:user_name], smtp_settings[:password],
+                   smtp_settings[:authentication]) do |smtp|
           smtp.sendmail(mail.encoded, sender, destinations)
         end
       end

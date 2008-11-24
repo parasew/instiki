@@ -27,24 +27,24 @@ Along with thread safety, a lot of work has been done to make Rails work well wi
 
 The internal documentation of Rails, in the form of code comments, has been improved in numerous places. In addition, the link:http://guides.rubyonrails.org/[Ruby on Rails Guides] project is the definitive source for information on major Rails components. In its first official release, the Guides page includes:
 
-* Getting Started with Rails
-* Rails Database Migrations
-* Active Record Associations
-* Active Record Finders
-* Layouts and Rendering in Rails
-* Action View Form Helpers
-* Rails Routing from the Outside In
-* Basics of Action Controller
-* Rails Caching
-* Testing Rails Applications
-* Securing Rails Applications
-* Debugging Rails Applications
-* Benchmarking and Profiling Rails Applications
-* The Basics of Creating Rails Plugins
+* link:http://guides.rubyonrails.org/getting_started_with_rails.html[Getting Started with Rails]
+* link:http://guides.rubyonrails.org/migrations.html[Rails Database Migrations]
+* link:http://guides.rubyonrails.org/association_basics.html[Active Record Associations]
+* link:http://guides.rubyonrails.org/finders.html[Active Record Finders]
+* link:http://guides.rubyonrails.org/layouts_and_rendering.html[Layouts and Rendering in Rails]
+* link:http://guides.rubyonrails.org/form_helpers.html[Action View Form Helpers]
+* link:http://guides.rubyonrails.org/routing_outside_in.html[Rails Routing from the Outside In]
+* link:http://guides.rubyonrails.org/actioncontroller_basics.html[Basics of Action Controller]
+* link:http://guides.rubyonrails.org/caching_with_rails.html[Rails Caching]
+* link:http://guides.rubyonrails.org/testing_rails_applications.html[Testing Rails Applications]
+* link:http://guides.rubyonrails.org/security.html[Securing Rails Applications]
+* link:http://guides.rubyonrails.org/debugging_rails_applications.html[Debugging Rails Applications]
+* link:http://guides.rubyonrails.org/benchmarking_and_profiling.html[Benchmarking and Profiling Rails Applications]
+* link:http://guides.rubyonrails.org/creating_plugins.html[The Basics of Creating Rails Plugins]
 
 All told, the Guides provide tens of thousands of words of guidance for beginning and intermediate Rails developers.
 
-If you want to these generate guides locally, inside your application:
+If you want to generate these guides locally, inside your application:
 
 [source, ruby]
 -------------------------------------------------------
@@ -118,11 +118,12 @@ There are two big additions to talk about here: transactional migrations and poo
 
 === Transactional Migrations
 
-Historically, multiple-step Rails migrations have been a source of trouble. If something went wrong during a migration, everything before the error changed the database and everything after the error wasn't applied. Also, the migration version was stored as having been executed, which means that it couldn't be simply rerun by +rake db:migrate:redo+ after you fix the problem. Transactional migrations change this by wrapping migration steps in a DDL transaction, so that if any of them fail, the entire migration is undone. In Rails 2.2, transactional migrations are supported *on PostgreSQL only*. The code is extensible to other database types in the future.
+Historically, multiple-step Rails migrations have been a source of trouble. If something went wrong during a migration, everything before the error changed the database and everything after the error wasn't applied. Also, the migration version was stored as having been executed, which means that it couldn't be simply rerun by +rake db:migrate:redo+ after you fix the problem. Transactional migrations change this by wrapping migration steps in a DDL transaction, so that if any of them fail, the entire migration is undone. In Rails 2.2, transactional migrations are supported on PostgreSQL out of the box. The code is extensible to other database types in the future - and IBM has already extended it to support the DB2 adapter.
 
 * Lead Contributor: link:http://adam.blog.heroku.com/[Adam Wiggins]
 * More information:
  - link:http://adam.blog.heroku.com/past/2008/9/3/ddl_transactions/[DDL Transactions]
+ - link:http://db2onrails.com/2008/11/08/a-major-milestone-for-db2-on-rails/[A major milestone for DB2 on Rails]
 
 === Connection Pooling
 
@@ -149,16 +150,15 @@ You can now specify conditions on join tables using a hash. This is a big help i
 [source, ruby]
 -------------------------------------------------------
 class Photo < ActiveRecord::Base
-  belongs_to :Product
+  belongs_to :product
 end
 
 class Product < ActiveRecord::Base
-  has_many :products
+  has_many :photos
 end
 
 # Get all products with copyright-free photos:
-Product.find(:all, :joins => :photo,
-  :conditions => { :photos => { :copyright => false }})
+Product.all(:joins => :photos, :conditions => { :photos => { :copyright => false }})
 -------------------------------------------------------
 
 * More information:
@@ -168,7 +168,7 @@ Product.find(:all, :joins => :photo,
 
 Two new sets of methods have been added to Active Record's dynamic finders family.
 
-==== find_last_by_<attributes>
+==== +find_last_by_<attribute>+
 
 The +find_last_by_<attribute>+ method is equivalent to +Model.last(:conditions => {:attribute => value})+
 	
@@ -180,9 +180,9 @@ User.find_last_by_city('London')
 
 * Lead Contributor: link:http://www.workingwithrails.com/person/9147-emilio-tagua[Emilio Tagua]
 
-==== find_by_<attributes>! 
+==== +find_by_<attribute>!+ 
 	
-The new bang! version of +find_by_<attribute>! is equivalent to  +Model.first(:conditions => {:attribute => value}) || raise ActiveRecord::RecordNotFound+ Instead of returning +nil+ if it can't find a matching record, this method will raise an exception if it cannot find a match.
+The new bang! version of +find_by_<attribute>!+ is equivalent to +Model.first(:conditions => {:attribute => value}) || raise ActiveRecord::RecordNotFound+ Instead of returning +nil+ if it can't find a matching record, this method will raise an exception if it cannot find a match.
 	
 [source, ruby]
 -------------------------------------------------------
@@ -197,6 +197,8 @@ User.find_by_name!('Moby')
 Active Record association proxies now respect the scope of methods on the proxied object. Previously (given User has_one :account) +@user.account.private_method+ would call the private method on the associated Account object. That fails in Rails 2.2; if you need this functionality, you should use +@user.account.send(:private_method)+ (or make the method public instead of private or protected). Please note that if you're overriding +method_missing+, you should also override +respond_to+ to match the behavior in order for associations to function normally.
 
 * Lead Contributor: Adam Milligan
+* More information:
+ - link:http://afreshcup.com/2008/10/24/rails-22-change-private-methods-on-association-proxies-are-private/[Rails 2.2 Change: Private Methods on Association Proxies are Private]
 
 === Other ActiveRecord Changes
 
@@ -207,11 +209,11 @@ Active Record association proxies now respect the scope of methods on the proxie
 
 == Action Controller
 
-On the controller side, there are a couple of changes that will help tidy up your routes. 
+On the controller side, there are several changes that will help tidy up your routes. There are also some internal changes in the routing engine to lower memory usage on complex applications.
 
 === Shallow Route Nesting
 
-Shallow route nesting provides a solution to the well-known difficulty of using deeply-nested resources. With shallow nesting, you need only supply enough information to uniquely identify the resource that you want to work with - but you _can_ supply more information. 
+Shallow route nesting provides a solution to the well-known difficulty of using deeply-nested resources. With shallow nesting, you need only supply enough information to uniquely identify the resource that you want to work with. 
 
 [source, ruby]
 -------------------------------------------------------
@@ -248,7 +250,17 @@ map.resources :photos, :collection => { :search => [:get, :post] }
 
 * Lead Contributor: link:http://brennandunn.com/[Brennan Dunn]
 
-Action Controller now offers good support for HTTP conditional GET requests, as well as some other additions.
+=== Resources With Specific Actions
+
+By default, when you use +map.resources+ to create a route, Rails generates routes for seven default actions (index, show, create, new, edit, update, and destroy). But each of these routes takes up memory in your application, and causes Rails to generate additional routing logic. Now you can use the +:only+ and +:except+ options to fine-tune the routes that Rails will generate for resources. You can supply a single action, an array of actions, or the special +:all+ or +:none+ options. These options are inherited by nested resources.
+
+[source, ruby]
+-------------------------------------------------------
+map.resources :photos, :only => [:index, :show]
+map.resources :products, :except => :destroy
+-------------------------------------------------------
+
+* Lead Contributor: link:http://experthuman.com/[Tom Stuart]
 
 === Other Action Controller Changes
 
@@ -256,11 +268,15 @@ Action Controller now offers good support for HTTP conditional GET requests, as 
 * The HTTP Accept header is disabled by default now. You should prefer the use of formatted URLs (such as +/customers/1.xml+) to indicate the format that you want. If you need the Accept headers, you can turn them back on with +config.action_controller.user_accept_header = true+.
 * Benchmarking numbers are now reported in milliseconds rather than tiny fractions of seconds
 * Rails now supports HTTP-only cookies (and uses them for sessions), which help mitigate some cross-site scripting risks in newer browsers.
+* +redirect_to+ now fully supports URI schemes (so, for example, you can redirect to a svn+ssh: URI).
+* +render+ now supports a +:js+ option to render plain vanilla javascript with the right mime type.
+* Request forgery protection has been tightened up to apply to HTML-formatted content requests only.
+* Polymorphic URLs behave more sensibly if a passed parameter is nil. For example, calling +polymorphic_path([@project, @date, @area])+ with a nil date will give you +project_area_path+.
 
 == Action View
 
 * +javascript_include_tag+ and +stylesheet_link_tag+ support a new +:recursive+ option to be used along with +:all+, so that you can load an entire tree of files with a single line of code.
-* The included Prototype javascript library has been upgraded to version 1.6.0.2.
+* The included Prototype javascript library has been upgraded to version 1.6.0.3.
 * +RJS#page.reload+ to reload the browser's current location via javascript
 * The +atom_feed+ helper now takes an +:instruct+ option to let you insert XML processing instructions.
 
@@ -270,6 +286,8 @@ Action Mailer now supports mailer layouts. You can make your HTML emails as pret
 
 * More information:
  - link:http://ryandaigle.com/articles/2008/9/7/what-s-new-in-edge-rails-mailer-layouts[What's New in Edge Rails: Mailer Layouts]
+
+Action Mailer now offers built-in support for GMail's SMTP servers, by turning on STARTTLS automatically. This requires Ruby 1.8.7 to be installed.
 
 == Active Support
 
@@ -322,23 +340,23 @@ If you delegate behavior from one class to another, you can now specify a prefix
 
 [source, ruby]
 -------------------------------------------------------
-class Vendor << ActiveRecord::Base
+class Vendor < ActiveRecord::Base
   has_one :account
   delegate :email, :password, :to => :account, :prefix => true
 end
 -------------------------------------------------------
 
-This will produce delegated methods +vendor.account_email+ and +vendor.account_password+. You can also specify a custom prefix:
+This will produce delegated methods +vendor#account_email+ and +vendor#account_password+. You can also specify a custom prefix:
 
 [source, ruby]
 -------------------------------------------------------
-class Vendor << ActiveRecord::Base
+class Vendor < ActiveRecord::Base
   has_one :account
   delegate :email, :password, :to => :account, :prefix => :owner
 end
 -------------------------------------------------------
 
-This will produce delegated methods +vendor.owner_email+ and +vendor.owner_password+.
+This will produce delegated methods +vendor#owner_email+ and +vendor#owner_password+.
 
 Lead Contributor: link:http://workingwithrails.com/person/5830-daniel-schierbeck[Daniel Schierbeck]
 
@@ -347,11 +365,12 @@ Lead Contributor: link:http://workingwithrails.com/person/5830-daniel-schierbeck
 * Extensive updates to +ActiveSupport::Multibyte+, including Ruby 1.9 compatibility fixes.
 * The addition of +ActiveSupport::Rescuable+ allows any class to mix in the +rescue_from+ syntax.
 * +past?+, +today?+ and +future?+ for +Date+ and +Time+ classes to facilitate date/time comparisons.
-* +Array#second+ through +Array#tenth+ as aliases for +Array#[1]+ through +Array#[9]+
-* +Enumerable#several?+ to encapsulate +collection.size > 1+
+* +Array#second+ through +Array#fifth+ as aliases for +Array#[1]+ through +Array#[4]+
+* +Enumerable#many?+ to encapsulate +collection.size > 1+
 * +Inflector#parameterize+ produces a URL-ready version of its input, for use in +to_param+.
 * +Time#advance+ recognizes fractional days and weeks, so you can do +1.7.weeks.ago+, +1.5.hours.since+, and so on.
-* The included TzInfo library has been upgraded to version 0.3.11.
+* The included TzInfo library has been upgraded to version 0.3.12.
+* +ActiveSuport::StringInquirer+ gives you a pretty way to test for equality in strings: +ActiveSupport::StringInquirer.new("abc").abc? => true+
 
 == Railties
 
@@ -369,11 +388,12 @@ To avoid deployment issues and make Rails applications more self-contained, it's
 * +rake gems:build+ to build any missing native extensions
 * +rake gems:refresh_specs+ to bring vendored gems created with Rails 2.1 into alignment with the Rails 2.2 way of storing them
 
-You can unpack or install a single gem by specifying +GEM=_gem_name+ on the command line.
+You can unpack or install a single gem by specifying +GEM=_gem_name_+ on the command line.
 
 * Lead Contributor: link:http://github.com/al2o3cr[Matt Jones]
 * More information:
  - link:http://ryandaigle.com/articles/2008/4/1/what-s-new-in-edge-rails-gem-dependencies[What's New in Edge Rails: Gem Dependencies]
+ - link:http://afreshcup.com/2008/10/25/rails-212-and-22rc1-update-your-rubygems/[Rails 2.1.2 and 2.2RC1: Update Your RubyGems]
 
 === Other Railties Changes
 
@@ -382,8 +402,8 @@ You can unpack or install a single gem by specifying +GEM=_gem_name+ on the comm
 * +script/console+ now supports a +--debugger+ option
 * Instructions for setting up a continuous integration server to build Rails itself are included in the Rails source
 * +rake notes:custom ANNOTATION=MYFLAG+ lets you list out custom annotations.
-* Wrapped +Rails.env+ in +StringQuestioneer+ so you can do +Rails.env.development?+
-* +script/generate+ works without deprecation warnings when RubyGems 1.3.0 is present
+* Wrapped +Rails.env+ in +StringInquirer+ so you can do +Rails.env.development?+
+* To eliminate deprecation warnings and properly handle gem dependencies, Rails now requires rubygems 1.3.1 or higher.
 
 == Deprecated
 
