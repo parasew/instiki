@@ -236,6 +236,9 @@ text-align:right;
 color:#777;
 font-style:italic;
 }
+#footer a:hover {
+color:#FFF;
+}
 
 div.web_normal {
 	padding:4px;
