@@ -42,7 +42,7 @@ Rails::Initializer.run do |config|
 
   # Enable page/fragment caching by setting a file-based store
   # (remember to create the caching directory and make it readable to the application)
-  config.action_controller.cache_store = :file_store, "#{RAILS_ROOT}/cache"
+  config.cache_store = :file_store, "#{RAILS_ROOT}/cache"
 
   # Activate observers that should always be running
   config.active_record.observers = :page_observer
