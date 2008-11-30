@@ -23,7 +23,7 @@ module FormSpamProtection
           end
         end
       else
-        render :text => "You must have Javascript on to submit this form.", :layout => 'error', :status => 403
+        render :text => "You must have Javascript on, and cookies enabled, to submit this form.", :layout => 'error', :status => 403
         return false
       end
     end

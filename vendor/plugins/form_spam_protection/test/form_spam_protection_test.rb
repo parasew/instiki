@@ -16,7 +16,7 @@ class FormSpamProtectionTest < Test::Unit::TestCase
   def test_index_form_handler_is_protected
     post :index
     assert_response 403
-    assert_equal "You must have Javascript on to submit this form.", @response.body
+    assert_equal "You must have Javascript on, and cookies enabled, to submit this form.", @response.body
 
     get :index
     form_key_tag = assert_select('code input[type="hidden"]').first
