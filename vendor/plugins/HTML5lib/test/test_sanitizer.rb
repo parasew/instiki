@@ -82,7 +82,8 @@ class SanitizeTest < Test::Unit::TestCase
       input = "<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>"
       output = "<p #{attribute_name}='foo'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
       htmloutput = "<p #{attribute_name.downcase}='foo'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
-      check_sanitization(input, htmloutput, output, output)
+      rexmloutput = attribute_name.include?(':') && !(attribute_name =~ /^xml(ns)?:/) ? "Ill-formed XHTML!" : output
+      check_sanitization(input, htmloutput, output, rexmloutput)
     end
   end
 
@@ -90,7 +91,8 @@ class SanitizeTest < Test::Unit::TestCase
     define_method "test_should_forbid_#{attribute_name.upcase}_attribute" do
       input = "<p #{attribute_name.upcase}='display: none;'>foo <bad>bar</bad> baz</p>"
       output =  "<p>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
-      check_sanitization(input, output, output, output)
+      rexmloutput = attribute_name.include?(':') ? "Ill-formed XHTML!" : output
+      check_sanitization(input, output, output, rexmloutput)
     end
   end
 
@@ -116,28 +118,32 @@ class SanitizeTest < Test::Unit::TestCase
       input = %(<#{tag_name} xlink:href="#foo"/>)
       output = "<#{tag_name.downcase} xlink:href='#foo'/>"
       xhtmloutput = "<#{tag_name} xlink:href='#foo'></#{tag_name}>"
-      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+      rexmloutput = "Ill-formed XHTML!"
+      check_sanitization(input, output, xhtmloutput, rexmloutput)
     end
 
     define_method "test_#{tag_name}_should_allow_local_href_with_newline" do
       input = %(<#{tag_name} xlink:href="\n#foo"/>)
       output = "<#{tag_name.downcase} xlink:href='\n#foo'/>"
       xhtmloutput = "<#{tag_name} xlink:href='\n#foo'></#{tag_name}>"
-      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+      rexmloutput = "Ill-formed XHTML!"
+      check_sanitization(input, output, xhtmloutput, rexmloutput)
     end
 
     define_method "test_#{tag_name}_should_forbid_nonlocal_href" do
       input = %(<#{tag_name} xlink:href="http://bad.com/foo"/>)
       output = "<#{tag_name.downcase}/>"
       xhtmloutput = "<#{tag_name}></#{tag_name}>"
-      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+      rexmloutput = "Ill-formed XHTML!"
+      check_sanitization(input, output, xhtmloutput, rexmloutput)
     end
 
     define_method "test_#{tag_name}_should_forbid_nonlocal_href_with_newline" do
       input = %(<#{tag_name} xlink:href="\nhttp://bad.com/foo"/>)
       output = "<#{tag_name.downcase}/>"
       xhtmloutput = "<#{tag_name}></#{tag_name}>"
-      check_sanitization(input, output, xhtmloutput, xhtmloutput)
+      rexmloutput = "Ill-formed XHTML!"
+      check_sanitization(input, output, xhtmloutput, rexmloutput)
     end
   end
 
