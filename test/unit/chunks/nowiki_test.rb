@@ -24,4 +24,10 @@ class NoWikiTest < Test::Unit::TestCase
 	)
   end
 
+  def test_sanitize_nowiki_ill_formed
+    match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/></nowiki>",
+                :plain_text => "<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink;'>HTML parse error:\n&lt;animateColor xlink:href=&#39;#foo&#39;&gt;&lt;/animateColor&gt;</pre>"
+    )
+  end
+
 end

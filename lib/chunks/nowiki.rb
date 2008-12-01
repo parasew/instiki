@@ -1,5 +1,6 @@
 require 'chunks/chunk'
 require 'sanitize'
+require 'rexml/document'
 
 # This chunks allows certain parts of a wiki page to be hidden from the
 # rest of the rendering pipeline. It should be run at the beginning
@@ -26,7 +27,15 @@ class NoWiki < Chunk::Abstract
 
   def initialize(match_data, content)
     super
-    @plain_text = @unmask_text = sanitize_xhtml(match_data[1])
+    begin
+      sanitized = sanitize_xhtml(match_data[1])
+      doc = REXML::Document.new("<div xmlns='http://www.w3.org/1999/xhtml'>#{sanitized}</div>")
+      sanitized = doc.to_s.gsub(/\A<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>\Z/m, '\1')
+    rescue REXML::ParseException
+      sanitized = %{<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink;'>HTML parse error:
+#{sanitized.escapeHTML}</pre>}
+    end
+    @plain_text = @unmask_text = sanitized
   end
 
 end
