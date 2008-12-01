@@ -9,6 +9,8 @@
 #  sanitize_xhtml() is a case-sensitive sanitizer, suitable for XHTML
 #  sanitize_html() is a case-insensitive sanitizer suitable for HTML
 #  sanitize_rexml() sanitizes a REXML tree, returning a string
+#  safe_sanitize_xhtml() makes extra-sure that the result is well-formed XHTML
+#                        by running the output of sanitize_xhtml() through REXML
 #
 # == Files
 #
@@ -69,6 +71,25 @@ module Sanitize
     return parsed if @to_tree
     return parsed.to_s
   end
+  
+# Sanitize a string, parsed using XHTML parsing rules. Reparse the result to
+#    ensure well-formedness. 
+#
+# :call-seq:
+#    safe_sanitize_xhtml(string)                    -> string
+#
+# Unless otherwise specified, the string is assumed to be utf-8 encoded.
+#
+# The string returned is utf-8 encoded. If you want, you can use iconv to convert it to some other encoding.
+# (REXML trees are always utf-8 encoded.)
+  def safe_sanitize_xhtml(html, options = {})
+    options[:to_tree] = false
+    sanitized = sanitize_xhtml(html, options)
+    doc = REXML::Document.new("<div xmlns='http://www.w3.org/1999/xhtml'>#{sanitized}</div>")
+    sanitized = doc.to_s.gsub(/\A<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>\Z/m, '\1')
+    rescue REXML::ParseException
+      sanitized = sanitized.escapeHTML
+  end 
 
 # Sanitize a string, parsed using HTML parsing rules.
 #
