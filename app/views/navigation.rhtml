@@ -9,7 +9,7 @@ end
 %>
 
 <div class="navigation">
-  <% if @action_name != 'published' then %>
+  <% if params['action'] != 'published' then %>
     <%= list_item 'Home Page', {:action => 'show', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
     <%= list_item 'All Pages', {:action => 'list'}, 'Alphabetically sorted list of pages', 'A' %> | 
     <%= list_item 'Recently Revised', {:action =>'recently_revised'}, 'Pages sorted by when they were last changed', 'U' %> |

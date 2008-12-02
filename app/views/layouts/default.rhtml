@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>
-    <% if @page and (@page.name == 'HomePage') and (%w( show published print ).include?(@action_name)) %>
+    <% if @page and (@page.name == 'HomePage') and (%w( show published print ).include?(params['action'])) %>
       <%= h @web.name %>
     <% elsif @web %>
       <%= @title %> in <%= h @web.name %>

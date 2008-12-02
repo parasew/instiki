@@ -81,7 +81,9 @@ class UrlGenerator < AbstractUrlGenerator
       end
     when :publish
       if known_page
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'published', 
+        web = Web.find_by_address(web_address)
+        action = web.published? ? 'published' : 'show'
+        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
             :id => name
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
@@ -89,7 +91,9 @@ class UrlGenerator < AbstractUrlGenerator
       end
     else 
       if known_page
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'show', 
+        web = Web.find_by_address(web_address)
+        action = web.published? ? 'published' : 'show'
+        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
             :id => name
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
