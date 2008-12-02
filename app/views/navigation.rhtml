@@ -14,7 +14,7 @@ end
     <%= list_item 'All Pages', {:action => 'list'}, 'Alphabetically sorted list of pages', 'A' %> | 
     <%= list_item 'Recently Revised', {:action =>'recently_revised'}, 'Pages sorted by when they were last changed', 'U' %> |
     <%= list_item 'Authors', {:action => 'authors'}, 'Who wrote what' %> | 
-    <%= list_item 'Feeds', {:action => 'feeds'}, 'Subscribe to changes by RSS' %> | 
+    <%= list_item 'Feeds', {:action => 'feeds'}, 'Subscribe to changes by Atom' %> | 
     <%= list_item 'Export', {:action => 'export'}, 'Download a zip with all the pages in this wiki', 'X' %> |
     <% form_tag({ :controller => 'wiki', :action => 'search', :web => @web.address},
                  {'id' => 'navigationSearchForm', 'method' => 'get', 'accept-charset' => 'utf-8' }) do %>
@@ -23,6 +23,7 @@ end
              onblur="this.value == '' ? this.value = 'Search' : true" /></fieldset>
     <% end %>
   <% else %>
-  	<%= list_item 'Home Page', {:action => 'published', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %>
+  	<%= list_item 'Home Page', {:action => 'published', :id => 'HomePage'}, 'Home, Sweet Home', 'H' %> | 
+    <%= list_item 'Feeds', {:action => 'feeds'}, 'Subscribe to changes by Atom' %>
   <% end%>
 </div>
