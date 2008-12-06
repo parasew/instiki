@@ -103,5 +103,22 @@ class AdminController < ApplicationController
       redirect_to :controller => 'admin', :web => @web_name, :action => 'edit_web'
     end
   end
+  
+  def delete_web
+    unless (request.post? || ENV["RAILS_ENV"] == "test")
+      headers['Allow'] = 'POST'
+      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
+      return
+    end
+    if wiki.authenticate(params['system_password_delete_web'])
+      @web.remove_pages(@web.select_all)
+      wiki.delete_web(@web_name)
+      flash[:info] = "Web \"#{@web_name}\" has been deleted."
+      redirect_to :controller => 'wiki', :action => 'web_list'
+    else
+      flash[:error] = password_error(params['system_password_delete_web'])
+      redirect_to :controller => 'admin', :web => @web_name, :action => 'edit_web'
+    end  
+  end
 
 end
