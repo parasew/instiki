@@ -118,24 +118,46 @@
           'accept-charset' => 'utf-8' }) do
 %>
   <p  style="text-align:right;font-size:.85em;">
-      Clean up by entering system password
+      Clean up this Web by entering the system password
       <input type="password" id="system_password_orphaned" class="disableAutoComplete" name="system_password_orphaned" />
       and
       <input type="submit" value="Delete Orphan Pages" />
   </p>
 <% end %>
 
+<% categories = WikiReference.list_categories(@web).sort
+  if categories.length > 0 %>
+<% form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages_in_category'},
+        { :id => 'remove_orphaned_pages_in_category', 
+          :onsubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned_in_category').value)",
+          'accept-charset' => 'utf-8' }) do
+%>
+  <p  style="text-align:right;font-size:.85em;">
+      Clean up selected category:
+      <select id="category" name="category">
+        <%= html_options(categories) %>
+      </select>
+      Enter system password 
+      <input type="password" id="system_password_orphaned_in_category" class="disableAutoComplete" name="system_password_orphaned_in_category" />
+      and
+      <input type="submit" value="Delete Orphan Pages in Category" />
+  </p>
+<% end %>
+<% end %>
+
+<div class="inputBox">
 <% form_tag({:controller => 'admin', :web => @web.address, :action => 'delete_web'},
         { :id => 'delete_web', 
           :onsubmit => "return checkSystemPassword(document.getElementById('system_password_delete_web').value)",
           'accept-charset' => 'utf-8' }) do
 %>
-  <p  style="text-align:right;font-size:.85em;">
-      Delete this Web, and all its pages.
+  <p  style="text-align:right;">
+      Delete this Web, and all its pages. Enter system password 
       <input type="password" id="system_password_delete_web" class="disableAutoComplete" name="system_password_delete_web" />
       and
       <input type="submit" value="Delete Web" />
   </p>
 <% end %>
+</div>
 
 <%= javascript_include_tag 'edit_web' %>

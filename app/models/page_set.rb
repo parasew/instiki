@@ -73,6 +73,12 @@ class PageSet < Array
     }
   end
 
+  def pages_in_category(category)
+    self.select { |page|
+      WikiReference.pages_in_category(web, category).map.include?(page.name)
+    }
+  end
+
   # Returns all the wiki words in this page set for which
   # there are no pages in this page set's web
   def wanted_pages

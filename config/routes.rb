@@ -16,6 +16,7 @@ ActionController::Routing::Routes.draw do |map|
 
   connect_to_web map, ':web/edit_web', :controller => 'admin', :action => 'edit_web'
   connect_to_web map, ':web/remove_orphaned_pages', :controller => 'admin', :action => 'remove_orphaned_pages'
+  connect_to_web map, ':web/remove_orphaned_pages_in_category', :controller => 'admin', :action => 'remove_orphaned_pages_in_category'
   connect_to_web map, ':web/files/:id', :controller => 'file', :action => 'file', :requirements => {:id => /[-._\w]+/}, :id => nil
   connect_to_web map, ':web/import/:id', :controller => 'file', :action => 'import'
   connect_to_web map, ':web/login', :controller => 'wiki', :action => 'login'

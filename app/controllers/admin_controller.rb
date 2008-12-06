@@ -104,6 +104,23 @@ class AdminController < ApplicationController
     end
   end
   
+  def remove_orphaned_pages_in_category
+    unless (request.post? || ENV["RAILS_ENV"] == "test")
+      headers['Allow'] = 'POST'
+      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
+      return
+    end
+    if wiki.authenticate(params['system_password_orphaned_in_category'])
+      category = params['category']
+      wiki.remove_orphaned_pages_in_category(@web_name, category)
+      flash[:info] = "Orphaned pages in category \"#{category}\" removed"
+      redirect_to :controller => 'wiki', :web => @web_name, :action => 'list'
+    else
+      flash[:error] = password_error(params['system_password_orphaned_in_category'])
+      redirect_to :controller => 'admin', :web => @web_name, :action => 'edit_web'
+    end
+  end
+
   def delete_web
     unless (request.post? || ENV["RAILS_ENV"] == "test")
       headers['Allow'] = 'POST'

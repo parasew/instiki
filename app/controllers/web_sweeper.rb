@@ -15,4 +15,9 @@ class WebSweeper < ActionController::Caching::Sweeper
   def after_remove_orphaned_pages(web)
     expire_cached_summary_pages(web)
   end
+
+  def after_remove_orphaned_pages_in_category(web)
+    expire_cached_summary_pages(web)
+  end
+
 end

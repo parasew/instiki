@@ -54,6 +54,12 @@ class Wiki
     web.remove_pages(web.select.orphaned_pages)
   end
   
+  def remove_orphaned_pages_in_category(web_address,category)
+    web = Web.find_by_address(web_address)
+    pages_in_category = PageSet.new(web, web.select.pages_in_category(category))
+    web.remove_pages(pages_in_category.orphaned_pages)
+  end
+
   def revise_page(web_address, page_name, content, revised_at, author, renderer)
     page = read_page(web_address, page_name)
     page.revise(content, revised_at, author, renderer)
