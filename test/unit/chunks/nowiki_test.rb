@@ -30,4 +30,10 @@ class NoWikiTest < Test::Unit::TestCase
     )
   end
 
+  def test_sanitize_nowiki_ill_formed_II
+    match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/>\000</nowiki>",
+                :plain_text => %(&lt;animateColor xlink:href=&#39;#foo&#39;&gt;&lt;/animateColor&gt;\xEF\xBF\xBD)
+    )
+  end
+
 end

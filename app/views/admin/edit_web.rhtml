@@ -118,7 +118,7 @@
           'accept-charset' => 'utf-8' }) do
 %>
   <p  style="text-align:right;font-size:.85em;">
-      Clean up this Web by entering the system password
+      Clean up this web (<%= @web.name %>) by entering the system password
       <input type="password" id="system_password_orphaned" class="disableAutoComplete" name="system_password_orphaned" />
       and
       <input type="submit" value="Delete Orphan Pages" />
@@ -152,7 +152,7 @@
           'accept-charset' => 'utf-8' }) do
 %>
   <p  style="text-align:right;">
-      Delete this Web, and all its pages. Enter system password 
+      Delete this web (<%= @web.name %>), and all its pages. Enter system password 
       <input type="password" id="system_password_delete_web" class="disableAutoComplete" name="system_password_delete_web" />
       and
       <input type="submit" value="Delete Web" />

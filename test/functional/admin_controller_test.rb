@@ -226,6 +226,47 @@ class AdminControllerTest < Test::Unit::TestCase
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
   end
 
+  def test_remove_orphaned_pages_in_category
+    @wiki.system.update_attribute(:password, 'pswd')
+    page_order = [pages(:elephant), pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way)]
+    orphan_page_linking_to_oak = @wiki.write_page('wiki1', 'Pine',
+        "Refers to [[Oak]].\n" +
+        "category: trees", 
+        Time.now, Author.new('TreeHugger', '127.0.0.2'), test_renderer)
+
+    r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees','system_password_orphaned_in_category' => 'pswd')
+
+    assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
+    @web.pages(true)
+    assert_equal page_order, @web.select.sort,
+        "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
+
+    # Oak is now orphan, but it's not in the 'animals' category,
+    # so the second pass should not remove it
+    r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'animals', 'system_password_orphaned_in_category' => 'pswd')
+    assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
+    @web.pages(true)
+    page_order.delete(pages(:elephant))
+    assert_equal page_order, @web.select.sort,
+        "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
+
+    # third pass does does nothing, since there are no pages in the
+    # 'leaves' category.
+    r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'leaves', 'system_password_orphaned_in_category' => 'pswd')
+    assert_redirected_to :action => 'list'
+    @web.pages(true)
+    assert_equal page_order, @web.select.sort,
+        "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
+
+    # fourth pass destroys Oak
+    r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees', 'system_password_orphaned_in_category' => 'pswd')
+    assert_redirected_to :action => 'list'
+    @web.pages(true)
+    page_order.delete(@oak)
+    assert_equal page_order, @web.select.sort,
+        "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
+  end
+  
   def test_remove_orphaned_pages_empty_or_wrong_password
     @wiki.system[:password] = 'pswd'
     
