@@ -175,7 +175,7 @@ module Sanitizer
 
       # gauntlet
       return '' unless style =~ /^([-:,;#%.\sa-zA-Z0-9!]|\w-\w|\'[\s\w]+\'|\"[\s\w]+\"|\([\d,\s]+\))*$/
-      return '' unless style =~ /^(\s*[-\w]+\s*:\s*[^:;]*(;|$))*$/
+      return '' unless style =~ /^\s*([-\w]+\s*:[^:;]*(;\s*|$))*$/
 
       clean = []
       style.scan(/([-\w]+)\s*:\s*([^:;]*)/) do |prop, val|
