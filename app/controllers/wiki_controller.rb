@@ -7,7 +7,8 @@ require 'resolv'
 class WikiController < ApplicationController
 
   before_filter :load_page
-  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, :atom_with_content, :atom_with_headlines
+  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, 
+        :atom_with_content, :atom_with_headlines, :if => Proc.new { |c| c.send(:do_caching?) }
   cache_sweeper :revision_sweeper
 
   layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :tex, :s5, :export_html]
@@ -308,6 +309,10 @@ class WikiController < ApplicationController
   end
 
   protected
+
+  def do_caching?
+    flash.empty?
+  end
   
   def load_page
     @page_name = params['id']
