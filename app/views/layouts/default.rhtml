@@ -3,13 +3,12 @@
 <head>
   <title>
     <%- if @page and (@page.name == 'HomePage') and (%w( show published print ).include?(params['action'])) -%>
-      <%= h @web.name -%>
+      <%= h(@web.name) + (@show_diff ? ' (changes)' : '') %>
     <%- elsif @web -%>
       <%= @title %> in <%= h @web.name -%>
     <%- else -%>
       <%= @title %>
     <%- end -%>
-    <%= @show_diff ? ' (changes)' : '' %>
   </title>
 
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
