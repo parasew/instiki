@@ -51,7 +51,6 @@ Rails::Initializer.run do |config|
   # (enables use of different database adapters for development and test environments)
   config.active_record.schema_format = :sql
 
-  config.load_paths << "#{RAILS_ROOT}/vendor/plugins/sqlite3-ruby"
   File.umask(0026)
 end
 

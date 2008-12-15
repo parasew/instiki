@@ -1,0 +1,71 @@
+have_library: checking for fdatasync() in -lrt... -------------------- no
+
+"gcc -o conftest -I. -I/opt/local/lib/ruby/1.8/i686-darwin9.2.2 -I. -I/usr/local/include -I/opt/local/include -O2  -fno-common -pipe -fno-common conftest.c  -L"." -L"/opt/local/lib" -L"/usr/local/lib" -L. -L/opt/local/lib     -lruby-static -lrt  -lpthread -ldl -lobjc  "
+conftest.c: In function ‘t’:
+conftest.c:3: error: ‘fdatasync’ undeclared (first use in this function)
+conftest.c:3: error: (Each undeclared identifier is reported only once
+conftest.c:3: error: for each function it appears in.)
+checked program was:
+/* begin */
+1: /*top*/
+2: int main() { return 0; }
+3: int t() { void ((*volatile p)()); p = (void ((*)()))fdatasync; return 0; }
+/* end */
+
+"gcc -o conftest -I. -I/opt/local/lib/ruby/1.8/i686-darwin9.2.2 -I. -I/usr/local/include -I/opt/local/include -O2  -fno-common -pipe -fno-common conftest.c  -L"." -L"/opt/local/lib" -L"/usr/local/lib" -L. -L/opt/local/lib     -lruby-static -lrt  -lpthread -ldl -lobjc  "
+ld: library not found for -lrt
+collect2: ld returned 1 exit status
+checked program was:
+/* begin */
+1: /*top*/
+2: int main() { return 0; }
+3: int t() { fdatasync(); return 0; }
+/* end */
+
+"gcc -o conftest -I. -I/opt/local/lib/ruby/1.8/i686-darwin9.2.2 -I. -I/usr/local/include -I/opt/local/include -O2  -fno-common -pipe -fno-common conftest.c  -L"." -L"/opt/local/lib" -L"/usr/local/lib" -L. -L/opt/local/lib     -lruby-static -lrt  -lpthread -ldl -lobjc  "
+ld: library not found for -lrt
+collect2: ld returned 1 exit status
+checked program was:
+/* begin */
+1: int fdatasync();
+2: /*top*/
+3: int main() { return 0; }
+4: int t() { fdatasync(); return 0; }
+/* end */
+
+--------------------
+
+have_header: checking for sqlite3.h... -------------------- yes
+
+"gcc -E -I. -I/opt/local/lib/ruby/1.8/i686-darwin9.2.2 -I. -I/usr/local/include -I/opt/local/include -O2  -fno-common -pipe -fno-common  conftest.c -o conftest.i"
+checked program was:
+/* begin */
+1: #include <sqlite3.h>
+/* end */
+
+--------------------
+
+have_library: checking for sqlite3_open() in -lsqlite3... -------------------- yes
+
+"gcc -o conftest -I. -I/opt/local/lib/ruby/1.8/i686-darwin9.2.2 -I. -I/usr/local/include -I/opt/local/include -O2  -fno-common -pipe -fno-common conftest.c  -L"." -L"/opt/local/lib" -L"/usr/local/lib" -L. -L/opt/local/lib     -lruby-static -lsqlite3  -lpthread -ldl -lobjc  "
+conftest.c: In function ‘t’:
+conftest.c:3: error: ‘sqlite3_open’ undeclared (first use in this function)
+conftest.c:3: error: (Each undeclared identifier is reported only once
+conftest.c:3: error: for each function it appears in.)
+checked program was:
+/* begin */
+1: /*top*/
+2: int main() { return 0; }
+3: int t() { void ((*volatile p)()); p = (void ((*)()))sqlite3_open; return 0; }
+/* end */
+
+"gcc -o conftest -I. -I/opt/local/lib/ruby/1.8/i686-darwin9.2.2 -I. -I/usr/local/include -I/opt/local/include -O2  -fno-common -pipe -fno-common conftest.c  -L"." -L"/opt/local/lib" -L"/usr/local/lib" -L. -L/opt/local/lib     -lruby-static -lsqlite3  -lpthread -ldl -lobjc  "
+checked program was:
+/* begin */
+1: /*top*/
+2: int main() { return 0; }
+3: int t() { sqlite3_open(); return 0; }
+/* end */
+
+--------------------
+
