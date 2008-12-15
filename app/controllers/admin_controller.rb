@@ -25,11 +25,7 @@ class AdminController < ApplicationController
 
   def create_web
     if params['address']
-      unless (request.post? || ENV["RAILS_ENV"] == "test")
-        headers['Allow'] = 'POST'
-        render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-        return
-      end
+      return unless is_post
       # form submitted
       if @wiki.authenticate(params['system_password'])
         begin
@@ -52,11 +48,7 @@ class AdminController < ApplicationController
   def edit_web
     system_password = params['system_password']
     if system_password
-      unless (request.post? || ENV["RAILS_ENV"] == "test")
-        headers['Allow'] = 'POST'
-        render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-        return
-      end
+      return unless is_post
       # form submitted
       if wiki.authenticate(system_password)
         begin
@@ -89,11 +81,7 @@ class AdminController < ApplicationController
   end
 
   def remove_orphaned_pages
-    unless (request.post? || ENV["RAILS_ENV"] == "test")
-      headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-      return
-    end
+    return unless is_post
     if wiki.authenticate(params['system_password_orphaned'])
       wiki.remove_orphaned_pages(@web_name)
       flash[:info] = 'Orphaned pages removed'
@@ -105,11 +93,7 @@ class AdminController < ApplicationController
   end
   
   def remove_orphaned_pages_in_category
-    unless (request.post? || ENV["RAILS_ENV"] == "test")
-      headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-      return
-    end
+    return unless is_post
     if wiki.authenticate(params['system_password_orphaned_in_category'])
       category = params['category']
       wiki.remove_orphaned_pages_in_category(@web_name, category)
@@ -122,11 +106,7 @@ class AdminController < ApplicationController
   end
 
   def delete_web
-    unless (request.post? || ENV["RAILS_ENV"] == "test")
-      headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-      return
-    end
+    return unless is_post
     if wiki.authenticate(params['system_password_delete_web'])
       @web.remove_pages(@web.select_all)
       wiki.delete_web(@web_name)
@@ -136,6 +116,17 @@ class AdminController < ApplicationController
       flash[:error] = password_error(params['system_password_delete_web'])
       redirect_to :controller => 'admin', :web => @web_name, :action => 'edit_web'
     end  
+  end
+
+private
+
+  def is_post
+    unless (request.post? || ENV["RAILS_ENV"] == "test")
+      headers['Allow'] = 'POST'
+      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
+      return false
+    end
+    return true
   end
 
 end
