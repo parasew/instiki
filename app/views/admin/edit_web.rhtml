@@ -1,4 +1,4 @@
-<% @title = "Edit Web" %>
+<%- @title = "Edit Web" -%>
 
 <% form_tag({ :controller => 'admin', :action => 'edit_web', :web => @web.address },
              { 'id' => 'setup', 'method' => 'post', 
@@ -36,7 +36,6 @@
       <%= html_options({ 'Green' => '008B26', 'Purple' => '504685', 'Red' => 'DA0006', 
                          'Orange' => 'C50', 'Grey' => '8BA2B0' }, @web.color) %>
     </select>
-    <br/>
     <p>
       <input type="checkbox" class="disableAutoComplete" id="safe_mode" name="safe_mode" <%= 'checked="checked"' if @web.safe_mode? %> /> 
       <label for="safe_mode">Safe mode
@@ -49,7 +48,6 @@
       <input type="checkbox" class="disableAutoComplete" id="count_pages" name="count_pages" <%= 'checked="checked"' if @web.count_pages? %> /> 
       <label for="count_pages">Count pages</label>
       <br/>
-
       <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= 'checked="checked"' if @web.allow_uploads? %> /> 
       Allow uploads of no more than 
       <input type="text" class="disableAutoComplete" name="max_upload_size" value="<%= @web.max_upload_size %>" 
@@ -58,7 +56,6 @@
       <em>- 
         allow users to upload pictures and other files and include them on wiki pages
       </em>
-      <br/>
     </p>
 
     <a href="#" onclick="toggleView('additionalStyle');return false;">
@@ -106,10 +103,8 @@
     <br/><br/>
     ...or forget changes and <%= link_to 'create a new web', :action => 'create_web' %>
 </p>
+<%- end %>
 
-<% end %>
-
-<br/>
 <h1>Other administrative tasks</h1>
 
 <% form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages'},
@@ -123,10 +118,10 @@
       and
       <input type="submit" value="Delete Orphan Pages" />
   </p>
-<% end %>
+<%- end -%>
 
-<% categories = WikiReference.list_categories(@web).sort
-  if categories.length > 0 %>
+<%- categories = WikiReference.list_categories(@web).sort
+  if categories.length > 0 -%>
 <% form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages_in_category'},
         { :id => 'remove_orphaned_pages_in_category', 
           :onsubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned_in_category').value)",
@@ -142,8 +137,8 @@
       and
       <input type="submit" value="Delete Orphan Pages in Category" />
   </p>
-<% end %>
-<% end %>
+<%- end -%>
+<%- end -%>
 
 <div class="inputBox">
 <% form_tag({:controller => 'admin', :web => @web.address, :action => 'delete_web'},
@@ -157,7 +152,7 @@
       and
       <input type="submit" value="Delete Web" />
   </p>
-<% end %>
+<%- end %>
 </div>
 
 <%= javascript_include_tag 'edit_web' %>

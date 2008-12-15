@@ -1,8 +1,8 @@
-<% 
+<%- 
   @title = "Editing #{CGI.escapeHTML(@page.name)}"
   @content_width = 720
   @hide_navigation = true
-%>
+-%>
 
 <div id="MarkupHelp">
   <%= render(:file => "#{@web.markup}_help") %>
@@ -27,7 +27,7 @@
 			</span>
 		</div>
 	   </div>
-	<% end %>
+	<%- end -%>
 
 <script type="text/javascript">
 function cleanAuthorName() {

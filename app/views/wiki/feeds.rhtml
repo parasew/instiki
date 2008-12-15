@@ -1,13 +1,13 @@
-<% @title = "Feeds" %>
+<%- @title = "Feeds" -%>
 
 <p>You can subscribe to this wiki's Atom feed and get either just the headlines of the pages that change or the entire page.</p> 
 
 <ul id="feedsList">
+ <%- if @rss_with_content_allowed -%>
   <li>
-    <% if @rss_with_content_allowed %>
       <%= link_to 'Full content (Atom 1.0)', :web => @web.address, :action => :atom_with_content %>
-    <% end %>
   </li>
+ <%- end -%>
   <li>
     <%= link_to 'Headlines (Atom 1.0)', :web => @web.address, :action => :atom_with_headlines %>
   </li>

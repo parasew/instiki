@@ -1,18 +1,18 @@
-<% 
+<%- 
   @title = "#{@page.plain_name} (Rev ##{@revision_number}#{@show_diff ? ', changes' : ''})"
-%>
+-%>
 
 
 <div id="revision">
-  <% if @show_diff %>
+  <%- if @show_diff -%>
     <p class="show_diff">  
         Showing changes from revision #<%= @revision_number - 1 %> to #<%= @revision_number %>:  
         <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del> | <del class="diffmod">Chan</del><ins class="diffmod">ged</ins> 
     </p>
     <%= @renderer.display_diff %>
-  <% else %>
+  <%- else -%>
     <%= @renderer.display_content %>
-  <% end %>
+  <%- end -%>
 </div> <!-- Revision -->
 
 <div class="byline">

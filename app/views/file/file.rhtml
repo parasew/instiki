@@ -1,7 +1,7 @@
-<%
+<%-
   @title = "Upload #{h @file_name}"
   @hide_navigation = false
-%>
+-%>
 
 <%= error_messages_for 'file' %>
 
@@ -28,4 +28,4 @@
             :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
             :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
   </div>
-<% end %>
+<%- end -%>

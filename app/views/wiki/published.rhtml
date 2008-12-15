@@ -1,10 +1,10 @@
-<%
+<%-
   @title = @page.plain_name
   @hide_navigation = false
   @style_additions = ".newWikiWord { background-color: white; font-style: italic; }"
   @inline_style = true
   @show_footer = true
-%>
+-%>
 
 <%= @renderer.display_published %>
 
@@ -16,10 +16,10 @@
 
 <div class="navigation navfoot">
 <span class="views">
-<% if WikiReference.pages_in_category(@web, 'S5-slideshow').map.include?(@page.name) %>
+<%- if WikiReference.pages_in_category(@web, 'S5-slideshow').map.include?(@page.name) -%>
 Views:
     <%= link_to 'S5', {:web => @web.address, :action => 's5',
 	:id => @page.name}, {:id => 'view_S5'} %>
-<% end %>
+<%- end -%>
 </span>
 </div>

@@ -1,29 +1,29 @@
-<% @title = "Search results for \"#{h params["query"]}\"" %>
+<%- @title = "Search results for \"#{h params["query"]}\"" -%>
 
-<% unless @title_results.empty? %>
+<%- unless @title_results.empty? -%>
 <h2><%= @title_results.length %> page(s) containing search string in the page name:</h2>
   <ul>
-    <% for page in @title_results %>
+    <%- for page in @title_results -%>
       <li>
         <%= link_to page.plain_name, :web => @web.address, :action => 'show', :id => page.name %>
       </li>
-    <% end %>
+    <%- end -%>
   </ul>
-<% end %>
+<%- end -%>
 
 
-<% unless @results.empty? %>
+<%- unless @results.empty? -%>
   <h2> <%= @results.length %> page(s) containing search string in the page text:</h2>
   <ul>
-    <% for page in @results %>
+    <%- for page in @results -%>
       <li>
         <%= link_to page.plain_name, :web => @web.address, :action => 'show', :id => page.name %>
       </li>
-    <% end %>
+    <%- end -%>
   </ul>
-<% end %>
+<%- end -%>
 
-<% if (@results + @title_results).empty? %>
+<%- if (@results + @title_results).empty? -%>
   <h2>No pages contain "<%= h params["query"] %>" </h2>
   <p>
     Perhaps you should try expanding your query. Remember that Instiki searches for entire 
@@ -35,4 +35,4 @@
     expression. That's actually what Instiki uses, so go right ahead and flex your 
     "[a-z]*Leet?RegExpSkill(s|z)"
   </p>
-<% end %>
+<%- end -%>

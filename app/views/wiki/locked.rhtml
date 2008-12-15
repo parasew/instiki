@@ -1,12 +1,12 @@
-<% @title = "#{@page.plain_name} is locked" %>
+<%- @title = "#{@page.plain_name} is locked" -%>
 
 <p>
   <%= link_to_page(h(@page.locked_by.delete("\x01-\x08\x0B\x0C\x0E-\x1F"))) %>
-  <% if @page.lock_duration(Time.now) == 0 %>
+  <%- if @page.lock_duration(Time.now) == 0 -%>
     just started editing this page.
-  <% else %>
+  <%- else -%>
     has been editing this page for <%= @page.lock_duration(Time.now) %> minutes.
-  <% end %>
+  <%- end -%>
 </p>
 
 <p>

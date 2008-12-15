@@ -1,19 +1,19 @@
-<% 
+<%- 
   @title = @page.plain_name
   @title += ' (changes)' if @show_diff 
   @show_footer = true
-%>
+-%>
 
 <div id="revision">
-  <% if @show_diff %>
+  <%- if @show_diff -%>
     <p class="show_diff">  
         Showing changes from revision #<%= @page.revisions.size - 1 %> to #<%= @page.revisions.size %>:  
         <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del> | <del class="diffmod">Chan</del><ins class="diffmod">ged</ins>  
     </p>
     <%= @renderer.display_diff %>
-  <% else %>
+  <%- else -%>
     <%= @renderer.display_content %>
-  <% end %>
+  <%- end -%>
 </div>
 
 <div class="byline">
@@ -35,7 +35,7 @@
     <%= link_to('Print',
             { :web => @web.address, :action => 'print', :id => @page.name },
             { :accesskey => 'p', :id => 'view_print', :rel => 'nofollow' }) %>
-  <% if @web.markup == :markdownMML or @web.markup == :markdown or @web.markup == :markdownPNG %>
+  <%- if @web.markup == :markdownMML or @web.markup == :markdown or @web.markup == :markdownPNG -%>
     | 
     <%= link_to 'TeX', {:web => @web.address, :action => 'tex', :id => @page.name}, 
             {:id => 'view_tex', :rel => 'nofollow' } %>
@@ -43,8 +43,8 @@
     |
     <%= link_to 'S5', {:web => @web.address, :action => 's5', :id => @page.name},
             {:id => 'view_S5'} %>
-   <% end %>
-  <% end %>
+   <%- end -%>
+  <%- end -%>
   </span>
 
   <%= render :partial => 'inbound_links' %>

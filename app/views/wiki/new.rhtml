@@ -1,8 +1,8 @@
-<% 
+<%- 
   @title = "Creating #{CGI.escapeHTML(WikiWords.separate(@page_name))}"
   @content_width = 720
   @hide_navigation = true
-%>
+-%>
 
 <div id="MarkupHelp">
   <%= render(:file => "#{@web.markup}_help") %>
@@ -20,7 +20,7 @@
 		        :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
 		        :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %> 
         </div>
-	<% end %>
+	<%- end -%>
 </div>
 
 <script type="text/javascript">
