@@ -442,7 +442,8 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	SPACE = ?\ # = 32
 	
 #	R_REF_ID = Regexp.compile(/([^\]\s]*)(\s*\])/)
-	R_REF_ID = Regexp.compile(/([^\]\s]*)(\s*\])/)
+#	R_REF_ID = Regexp.compile(/([^\]\s]*)(\s*\])/)
+	R_REF_ID = Regexp.compile(/([^\]]*)\]/)
 	
 	# Reads a bracketed id "[refid]". Consumes also both brackets.
 	def read_ref_id(src, con)

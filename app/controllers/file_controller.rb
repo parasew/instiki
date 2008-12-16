@@ -7,7 +7,7 @@ class FileController < ApplicationController
 
   layout 'default'
   
-  before_filter :check_allow_uploads
+  before_filter :dnsbl_check, :check_allow_uploads
 
   def file
     @file_name = params['id']

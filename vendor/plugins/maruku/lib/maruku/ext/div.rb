@@ -1,7 +1,20 @@
 
 
-OpenDiv = /^[ ]{0,3}\+\-\-+\s*(.*)$/
-CloseDiv = /^[ ]{0,3}\=\-\-+\s*(.*)$/
+#+-----------------------------------{.warning}------
+#| this is the last warning!
+#|
+#| please, go away!
+#|
+#| +------------------------------------- {.menace} --
+#| | or else terrible things will happen
+#| +--------------------------------------------------
+#+---------------------------------------------------
+
+OpenDiv = /^[ ]{0,3}\+\-\-+\s*(\{([^{}]*|".*"|'.*')*\})?\s*\-*\s*$/
+CloseDiv = /^[ ]{0,3}\=\-\-+\s*(\{([^{}]*|".*"|'.*')*\})?\s*\-*\s*$/
+# note these are not enough for parsing the above example:
+#OpenDiv = /^[ ]{0,3}\+\-\-+\s*(.*)$/
+#CloseDiv = /^[ ]{0,3}\=\-\-+\s*(.*)$/
 StartPipe = /^[ ]{0,3}\|(.*)$/ # $1 is rest of line
 DecorativeClosing = OpenDiv
 

@@ -16,7 +16,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# Version 1.2
+# Version 1.3
 # http://www.spacebabies.nl/dnsbl_check
 require 'resolv'
 
@@ -27,6 +27,7 @@ module DNSBL_Check
   private
   # Filter to check if the client is listed. This will be run before all requests.
   def dnsbl_check
+    return true if respond_to?(:logged_in?) && logged_in?
     return true if $dnsbl_passed.include? request.remote_addr
 
     passed = true
@@ -48,7 +49,8 @@ module DNSBL_Check
 
     # Add client ip to global passed cache if no dnsbls objected. else deny service.
     if passed
-      $dnsbl_passed = $dnsbl_passed[0,49].unshift request.remote_addr
+#      $dnsbl_passed = $dnsbl_passed[0,99].unshift request.remote_addr
+      $dnsbl_passed.push request.remote_addr
       logger.warn("#{request.remote_addr} added to DNSBL passed cache")
     else
       render :text => 'Access denied', :status => 403

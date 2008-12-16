@@ -602,6 +602,21 @@ class WikiControllerTest < Test::Unit::TestCase
     assert !home_page.locked?(Time.now)
   end
 
+  def test_dnsbl_filter_deny_action
+    @request.remote_addr = "127.0.0.2"
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n",
+      'author' => 'AuthorOfNewPage'
+
+    assert_equal 403, r.response_code
+  end
+
+  def test_dnsbl_filter_allow_action
+    @request.remote_addr = "127.0.0.2"
+    r = process 'show', 'id' => 'Oak', 'web' => 'wiki1'
+    assert_response :success
+    assert_tag :content => /All about oak/
+  end
+
   def test_spam_filters
     revisions_before = @home.revisions.size
     @home.lock(Time.now, 'AnAuthor')
