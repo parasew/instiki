@@ -242,7 +242,14 @@ class WikiController < ApplicationController
     begin
       the_content = params['content']
       filter_spam(the_content)
-      raise Instiki::ValidationError.new('Your content was not valid utf-8.') unless the_content.is_utf8?
+      unless the_content.is_utf8?
+        if @page
+          the_content = @page.content
+        else
+          the_content = ''
+        end 
+        raise Instiki::ValidationError.new('Your content was not valid utf-8.')
+      end
       if @page
         wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
@@ -257,9 +264,9 @@ class WikiController < ApplicationController
       logger.error e
       if @page
         @page.unlock
-        redirect_to :action => 'edit', :web => @web_name, :id => @page_name
+        redirect_to :action => 'edit', :web => @web_name, :id => @page_name, :content => the_content
       else
-        redirect_to :action => 'new', :web => @web_name, :id => @page_name
+        redirect_to :action => 'new', :web => @web_name, :id => @page_name, :content => the_content
       end
     end
   end

@@ -37,6 +37,9 @@ class String
    end
 #++
 
+  def purify
+    delete("\x01-\x08\x0B\x0C\x0E-\x1F", "\ufffe\uffff") 
+  end
 #:stopdoc: 
   MATHML_ENTITIES = {
 	'Alpha' => '&#x0391;',

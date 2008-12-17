@@ -15,10 +15,10 @@
 	      { :id => 'editForm', :method => 'post', :onsubmit => 'cleanAuthorName();', 
 	        'accept-charset' => 'utf-8' }) do %>
 	<div>
-        <textarea name="content" id="content" rows="24" cols="60"><%= h(@revision.content.delete("\x01-\x08\x0B\x0C\x0E-\x1F")) %></textarea>
+        <textarea name="content" id="content" rows="24" cols="60"><%= h(@revision.content.purify) %></textarea>
 		<div id="editFormButtons">
 	        <input type="submit" value="Update" accesskey="u" /> as 
-		    <input type="text" name="author" id="authorName" value="<%= h(@author.delete("\x01-\x08\x0B\x0C\x0E-\x1F")) %>" 
+		    <input type="text" name="author" id="authorName" value="<%= h(@author.purify) %>" 
 		        onclick="this.value == 'AnonymousCoward' ? this.value = '' : true" />
 		    | 
 			<span>
