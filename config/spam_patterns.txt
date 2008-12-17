@@ -18,7 +18,7 @@ buy-online
 calling-phone-cards
 casino
 celexa
-cialis
+cialis\W
 computer-exchange\.com
 Cool website!
 debt\s*consolidation
@@ -50,7 +50,7 @@ mijneigenweblog
 Mortage
 myspace
 netfirms\.com
-nice site
+nice\s+site
 overflow:\s*auto
 paxil
 pbwiki\.com
@@ -69,9 +69,8 @@ serotonin
 singtaotor
 slot\s*machin
 soma
-super site
+super\s+site
 thepussies
-tits
 Tramadol
 versace
 viagra
