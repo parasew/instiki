@@ -544,7 +544,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'atom_with_headlines', 'web' => 'wiki1'
     assert_tag :tag =>'published',
                :parent => {:tag => 'entry'},
-               :content => '2004-04-04T21:50:00Z'
+               :content => Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%SZ")
   end
   
   def test_save
