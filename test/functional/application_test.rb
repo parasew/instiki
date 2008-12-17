@@ -1,8 +1,7 @@
 # Unit tests for ApplicationController (the abstract controller class)
 
-#require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../test_helper'
 require 'wiki_controller'
-#require 'rexml/document'
 
 # Need some concrete class to test the abstract class features
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
