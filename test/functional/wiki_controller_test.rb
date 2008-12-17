@@ -563,7 +563,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n\000", 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
+    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage', :content => ''
     assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
     assert_equal Time.utc(2030), r.cookies['author'].expires
   end
@@ -599,6 +599,24 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal current_revisions+1, home_page.revisions.size
     assert_equal 'Revised HomePage', home_page.content
     assert_equal 'Batman', home_page.author
+    assert !home_page.locked?(Time.now)
+  end
+
+  def test_save_new_revision_of_existing_page_invalid_utf8
+    @home.lock(Time.now, 'Batman')
+    current_revisions = @home.revisions.size
+
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => "Revised HomePage\000", 
+      'author' => 'Batman'
+
+    assert_redirected_to :web => 'wiki1', :action => 'edit', :id => 'HomePage',
+       :content => 'HisWay would be MyWay $\sin(x)\begin{svg}<svg/>\end{svg}\includegraphics[width' +
+                   '=3em]{foo}$ in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEng' +
+                   'ine in that SmartEngineGUI'
+    assert_equal ['Batman'], r.cookies['author'].value
+    home_page = @wiki.read_page('wiki1', 'HomePage')
+    assert_equal current_revisions, home_page.revisions.size
+    assert_equal 'DavidHeinemeierHansson', home_page.author
     assert !home_page.locked?(Time.now)
   end
 
