@@ -58,3 +58,4 @@ end
 require_dependency 'instiki_errors'
 
 #require 'jcode'
+require 'caching_stuff'
