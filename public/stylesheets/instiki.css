@@ -379,6 +379,7 @@ merror {display:inline;font-size:1em;}
 math[display=block] {overflow:auto;}
 math { white-space: nowrap }
 .maruku-eq-number {float:right}
+.maruku-equation {text-align:center}
 .blockquotesource {margin-left:1em;}
 fieldset.search {display:inline; border:none;padding:0;margin:0;top:5px;position:relative;}
 span.keyboard {
