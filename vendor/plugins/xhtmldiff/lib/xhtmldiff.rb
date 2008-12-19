@@ -7,6 +7,7 @@
 # Tweaks by Jacques Distler <distler@golem.ph.utexas.edu>
 #  -- add classnames to <del> and <ins> elements added by XHTMLDiff,
 #     for better CSS styling
+#  -- detect change in element name, without change in content
 
 require 'diff/lcs'
 require 'rexml/document'
@@ -64,7 +65,7 @@ class XHTMLDiff
 			if a == b
 				return a.deep_clone
 			end
-			if REXML::HashableElementDelegator === a and REXML::HashableElementDelegator === b
+			if REXML::HashableElementDelegator === a and REXML::HashableElementDelegator === b and a.name == b.name
 				o = REXML::Element.new(a.name)
 				o.add_attributes  a.attributes
 				hd = self.new(o)

@@ -86,6 +86,19 @@ class DiffTest < Test::Unit::TestCase
     assert_equal "<ins class='diffins'><div>foo</div></ins>", diff(a, b)
   end
   
+  def test_diff_for_tag_change
+    a = "<a>x</a>"
+    b = "<b>x</b>"
+    assert_equal "<del class='diffmod'><a>x</a></del><ins class='diffmod'><b>x</b></ins>", diff(a, b)
+  end
+
+  def test_diff_for_tag_change_II
+    a = "<ul>\n<li>x</li>\n<li>y</li>\n</ul>"
+    b = "<ol>\n<li>x</li>\n<li>y</li>\n</ol>"
+    assert_equal "<del class='diffmod'><ul>\n<li>x</li>\n<li>y</li>\n</ul>" +
+          "</del><ins class='diffmod'><ol>\n<li>x</li>\n<li>y</li>\n</ol></ins>", diff(a, b)
+  end
+
   # FIXME this test fails (ticket #67, http://dev.instiki.org/ticket/67)
   def test_html_diff_preserves_endlines_in_pre
     a = "<pre>a\nb\nc\n</pre>"
@@ -93,13 +106,6 @@ class DiffTest < Test::Unit::TestCase
     assert_equal(
         "<pre><span> a\n<del class='diffdel'>b\nc\n</del></span></pre>",
         diff(a, b))
-  end
-  
-  # FIXME. xhtmldiff fails to detect any change here
-  def test_diff_for_tag_change
-    a = "<a>x</a>"
-    b = "<b>x</b>"
-    assert_equal "<del class='diffdel'><a>x</a></del><ins class='diffins'><b>x</b></ins>", diff(a, b)
   end
 
 end
