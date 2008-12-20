@@ -154,7 +154,7 @@ class StubUrlGenerator < AbstractUrlGenerator
       if known_pic then %{<img alt="#{text}" src="#{link}" />}
       else %{<img alt="#{text}" src="no image" />} end
     when :publish
-      if known_pic then %{<img alt="#{text}" src="#{link}" />}
+      if known_pic then %{<img alt="#{text}" src="../file/#{link}" />}
       else %{<span class="newWikiWord">#{text}</span>} end
     else 
       if known_pic then %{<img alt="#{text}" src="../file/#{link}" />}

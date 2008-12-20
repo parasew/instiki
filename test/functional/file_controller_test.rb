@@ -104,6 +104,13 @@ class FileControllerTest < Test::Unit::TestCase
                       :description => 'Rails, end-to-end'}
     assert @web.has_file?('rails-e2e.gif')
     assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)
+    PageRenderer.setup_url_generator(StubUrlGenerator.new)
+    @wiki.revise_page('wiki1', 'HomePage', 'Try [[rails-e2e.gif:pic]] again.',
+        Time.now, 'AnonymousBrave', renderer)
+    assert_equal "<p>Try <img alt='Rails, end-to-end' src='../file/rails-e2e.gif'/> again.</p>",
+        renderer.display_content
+    assert_equal "<p>Try <img alt='Rails, end-to-end' src='../file/rails-e2e.gif'/> again.</p>",
+        renderer.display_published
   end
 
   def test_import
