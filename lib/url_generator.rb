@@ -94,6 +94,8 @@ class UrlGenerator < AbstractUrlGenerator
   end
 
   def pic_link(mode, name, text, web_address, known_pic)
+    href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
+      :id => name
     case mode
     when :export
       if known_pic 
@@ -103,13 +105,11 @@ class UrlGenerator < AbstractUrlGenerator
       end
     when :publish
       if known_pic 
-        %{<img alt="#{text}" src="#{CGI.escape(name)}" />}
+        %{<img alt="#{text}" src="#{href}" />}
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
     else 
-      href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
-          :id => name
       if known_pic 
         %{<img alt="#{text}" src="#{href}" />}
       else 
