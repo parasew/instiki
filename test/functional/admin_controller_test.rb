@@ -120,7 +120,7 @@ class AdminControllerTest < Test::Unit::TestCase
     process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
-        'safe_mode' => 'on', 'password' => 'new_password', 'published' => 'on', 
+        'safe_mode' => 'on', 'password' => 'new_password', 'password_check' => 'new_password', 'published' => 'on', 
         'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on',
         'max_upload_size' => '300')
 
@@ -139,13 +139,27 @@ class AdminControllerTest < Test::Unit::TestCase
     assert_equal 300, @web.max_upload_size
   end
 
+  def test_edit_web_web_password_mismatch
+    @wiki.system.update_attribute(:password, 'pswd')
+  
+    process('edit_web', 'system_password' => 'pswd',
+        'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
+        'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+        'safe_mode' => 'on', 'password' => 'new_password', 'password_check' => 'old_password', 'published' => 'on', 
+        'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on',
+        'max_upload_size' => '300')
+
+    assert_response :success
+    assert @response.has_template_object?('error')
+  end
+
   def test_edit_web_opposite_values
     @wiki.system.update_attribute(:password, 'pswd')
   
     process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
-        'password' => 'new_password')
+        'password' => 'new_password', 'password_check' => 'new_password')
     # safe_mode, published, brackets_only, count_pages, allow_uploads not set 
     # and should become false
 
@@ -176,7 +190,7 @@ class AdminControllerTest < Test::Unit::TestCase
     process('edit_web', 'system_password' => 'pswd',
       'web' => 'wiki1', 'address' => 'another', 'name' => 'Renamed Wiki1',
       'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
-      'password' => 'new_password')
+      'password' => 'new_password', 'password_check' => 'new_password')
       
     #returns to the same form
     assert_response :success

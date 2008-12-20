@@ -53,6 +53,8 @@ class AdminController < ApplicationController
       # form submitted
       if wiki.authenticate(system_password)
         begin
+          raise Instiki::ValidationError.new("Password for this Web didn't match") unless
+            (params['password'].empty? or params['password'] == params['password_check'])
           wiki.edit_web(
             @web.address, params['address'], params['name'], 
             params['markup'].intern, 
