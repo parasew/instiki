@@ -12,6 +12,12 @@ class NoWikiTest < Test::Unit::TestCase
 	)
   end
 
+  def test_include_nowiki
+	match(NoWiki, 'This sentence contains <nowiki>[[!include foo]]</nowiki>. Do not touch!',
+		:plain_text => '[[!include foo]]'
+	)
+  end
+
   def test_markdown_nowiki
 	match(NoWiki, 'This sentence contains <nowiki>*raw text*</nowiki>. Do not touch!',
 		:plain_text => '*raw text*'
