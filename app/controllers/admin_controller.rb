@@ -38,8 +38,9 @@ class AdminController < ApplicationController
           @error = e.message
           # and re-render the form again
         end
-      else 
-        redirect_to :controller => 'wiki', :action => 'index'
+      else
+        flash[:error] = "System Password incorrect. Try again." 
+        redirect_to :controller => 'admin', :action => 'create_web'
       end
     else
       # no form submitted -> render template
