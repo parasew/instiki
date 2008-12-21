@@ -746,6 +746,43 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_match /Second revision of the <a.*HomePage.*<\/a> end/, r.body
   end
 
+  def test_recursive_include
+    @wiki.write_page('wiki1', 'HomePage', 'Self-include: [[!include HomePage]]', Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+
+    r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
+
+    assert_response :success
+    assert_match /Self-include: <em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
+  end
+
+  def test_recursive_include_II
+    @wiki.write_page('wiki1', 'Foo', 'extra fun [[!include HomePage]]', Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+    @wiki.write_page('wiki1', 'HomePage', 'Recursive-include: [[!include Foo]]', Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+
+    r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
+
+    assert_response :success
+    assert_match /Recursive-include: extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em>/, r.body
+  end
+  
+  def test_recursive_include_III
+    @wiki.write_page('wiki1', 'Bar', 'extra fun [[!include HomePage]]', Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+    @wiki.write_page('wiki1', 'Foo', '[[!include Bar]] [[!include Bar]]', Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+    @wiki.write_page('wiki1', 'HomePage', 'Recursive-include: [[!include Foo]]', Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+
+    r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
+
+    assert_response :success
+    assert_match /Recursive-include: extra fun <em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body
+    assert_match /extra fun Recursive-include: <em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
+  end
+  
   def test_show_page_nonexistant_page
     process('show', 'id' => 'UnknownPage', 'web' => 'wiki1')
     assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'UnknownPage'
