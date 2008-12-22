@@ -97,7 +97,7 @@ class AdminControllerTest < Test::Unit::TestCase
   
     process 'create_web', 'system_password' => 'wrong', 'name' => 'Wiki Two', 'address' => 'wiki2'
     
-    assert_redirected_to :web => nil, :action => 'index'
+    assert_redirected_to :web => nil, :action => 'create_web'
     assert_nil @wiki.webs['wiki2']
   end
 
