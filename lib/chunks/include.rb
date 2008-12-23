@@ -10,14 +10,14 @@ require 'chunks/wiki'
 class Include < WikiChunk::WikiReference
 
   INCLUDE_PATTERN = /\[\[!include\s+([^\]\s][^\]]+?)\s*\]\]/i
-  @@included_by = []
+  Thread.current[:included_by] = []
   def self.pattern() INCLUDE_PATTERN end
 
   def initialize(match_data, content)
     super
     @page_name = match_data[1].strip
     rendering_mode = content.options[:mode] || :show
-    @@included_by.push(@content.page_name)
+    Thread.current[:included_by].push(@content.page_name)
     @unmask_text = get_unmask_text_avoiding_recursion_loops(rendering_mode)
   end
 
@@ -25,9 +25,9 @@ class Include < WikiChunk::WikiReference
   
   def get_unmask_text_avoiding_recursion_loops(rendering_mode)
     if refpage      
-      if @@included_by.include?(refpage.page.name)
+      if Thread.current[:included_by].include?(refpage.page.name)
         @content.delete_chunk(self)
-        @@included_by = []
+        Thread.current[:included_by] = []
         return "<em>Recursive include detected: #{@content.page_name} &#x2192; #{@content.page_name}</em>\n"
       end
       # TODO This way of instantiating a renderer is ugly.
@@ -41,10 +41,10 @@ class Include < WikiChunk::WikiReference
           raise "Unsupported rendering mode #{@mode.inspect}"
         end
       @content.merge_chunks(included_content)
-      @@included_by = []
+      Thread.current[:included_by] = []
       return included_content.pre_rendered
     else
-      @@included_by = []
+      Thread.current[:included_by] = []
       return "<em>Could not include #{@page_name}</em>\n"
     end
   end
