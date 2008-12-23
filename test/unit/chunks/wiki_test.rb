@@ -22,6 +22,10 @@ class WikiTest < Test::Unit::TestCase
     match(WikiChunk::Link, 'This is a [[bracketted link]]', :page_name => 'bracketted link')
   end
 
+  def test_single_letter_brackets
+    match(WikiChunk::Link, 'This is a [[x]]', :page_name => 'x')
+  end
+
   def test_void_brackets
     # double brackets woith only spaces inside are not a WikiLink
     no_match(WikiChunk::Link, "This [[ ]] are [[]] no [[ \t ]] links")

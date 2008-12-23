@@ -104,7 +104,7 @@ module WikiChunk
   class Link < WikiLink
 
     unless defined? WIKI_LINK
-      WIKI_LINK = /(":)?\[\[\s*([^\]\s][^\]]+?)\s*\]\]/
+      WIKI_LINK = /(":)?\[\[\s*([^\]\s][^\]]*?)\s*\]\]/
       LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic))$', 0)
       ALIAS_SEPARATION = Regexp.new('^(.+)\|(.+)$', 0)
       WEB_SEPARATION = Regexp.new('^(.+):(.+)$', 0)
