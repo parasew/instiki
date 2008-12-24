@@ -10,27 +10,22 @@ require 'chunks/wiki'
 class Include < WikiChunk::WikiReference
 
   INCLUDE_PATTERN = /\[\[!include\s+([^\]\s][^\]]+?)\s*\]\]/i
-  Thread.current[:included_by] = []
   def self.pattern() INCLUDE_PATTERN end
 
   def initialize(match_data, content)
     super
     @page_name = match_data[1].strip
     rendering_mode = content.options[:mode] || :show
-    Thread.current[:included_by].push(@content.page_name)
+    add_to_include_list
     @unmask_text = get_unmask_text_avoiding_recursion_loops(rendering_mode)
   end
 
   private
   
   def get_unmask_text_avoiding_recursion_loops(rendering_mode)
-    if refpage      
-      if Thread.current[:included_by].include?(refpage.page.name)
-        @content.delete_chunk(self)
-        Thread.current[:included_by] = []
-        return "<em>Recursive include detected: #{@content.page_name} &#x2192; #{@content.page_name}</em>\n"
-      end
-      # TODO This way of instantiating a renderer is ugly.
+    if refpage
+      return "<em>Recursive include detected: #{@content.page_name} " +
+          "&#x2192; #{@content.page_name}</em>\n" if self_inclusion(refpage)
       renderer = PageRenderer.new(refpage.current_revision)
       included_content =
         case rendering_mode
@@ -41,11 +36,36 @@ class Include < WikiChunk::WikiReference
           raise "Unsupported rendering mode #{@mode.inspect}"
         end
       @content.merge_chunks(included_content)
-      Thread.current[:included_by] = []
+      clear_include_list
       return included_content.pre_rendered
     else
-      Thread.current[:included_by] = []
+      clear_include_list
       return "<em>Could not include #{@page_name}</em>\n"
+    end
+  end
+  
+  # We track included pages in a thread-local variable.
+  # This allows a multi-threaded Rails to handle one request/thread,
+  #   without getting confused.
+  
+  def clear_include_list
+    Thread.current[:included_by] = []  
+  end
+  
+  def add_to_include_list
+    if Thread.current[:included_by]
+      Thread.current[:included_by].push(@content.page_name)
+    else
+      Thread.current[:included_by] = [@content.page_name]
+    end
+  end
+  
+  def self_inclusion(refpage)
+    if Thread.current[:included_by].include?(refpage.page.name)
+      @content.delete_chunk(self)
+      clear_include_list
+    else
+      return false
     end
   end
 
