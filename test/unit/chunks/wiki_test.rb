@@ -70,9 +70,9 @@ class WikiTest < Test::Unit::TestCase
   end
 
   def test_include_chunk_pattern
-    content = 'This is a [[!include pagename]] and [[!include WikiWord]] but [[blah]]'
+    content = 'This is a [[!include pagename]] and [[!include WikiWord]] and [[!include x]]but [[blah]]'
     recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
-    assert_equal %w(pagename WikiWord), recognized_includes
+    assert_equal %w(pagename WikiWord x), recognized_includes
   end
 
   def test_textile_link

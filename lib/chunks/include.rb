@@ -9,7 +9,7 @@ require 'chunks/wiki'
 
 class Include < WikiChunk::WikiReference
 
-  INCLUDE_PATTERN = /\[\[!include\s+([^\]\s][^\]]+?)\s*\]\]/i
+  INCLUDE_PATTERN = /\[\[!include\s+([^\]\s][^\]]*?)\s*\]\]/i
   def self.pattern() INCLUDE_PATTERN end
 
   def initialize(match_data, content)
@@ -53,11 +53,9 @@ class Include < WikiChunk::WikiReference
   end
   
   def add_to_include_list
-    if Thread.current[:included_by]
-      Thread.current[:included_by].push(@content.page_name)
-    else
+    Thread.current[:included_by] ?
+      Thread.current[:included_by].push(@content.page_name) :
       Thread.current[:included_by] = [@content.page_name]
-    end
   end
   
   def self_inclusion(refpage)
