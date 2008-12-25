@@ -11,4 +11,8 @@ class WikiWordsTest < Test::Unit::TestCase
     assert_equal "Æe ÅØle Øen", WikiWords.separate("ÆeÅØleØen")
     assert_equal "Legetøj", WikiWords.separate("Legetøj")
   end
+  
+  def test_multiple_leading_capital_letters
+    assert_equal "CMy App", WikiWords.separate("CMyApp")
+  end
 end

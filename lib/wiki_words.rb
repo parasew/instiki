@@ -14,7 +14,7 @@ module WikiWords
     "абвгдежзийклмнопрстуфхцчшщъыьэюяѐёђѓєѕіїјљћќѝўџѡѣѥѧѩѫѭѯѱѳѵѷѹѻѽѿҁҋҌҍҏґғҕҗҙқҝҟҡңҥҧҩҫҭүұҳҵҷҹһҽҿӀӂӄӆӈӊӌӎӑӓӕӗәӛӝӟӡӣӥӧөӫӭӯӱӳӵӹ" +
     "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆև"
 
-  WIKI_WORD_PATTERN = '[A-Z' + I18N_HIGHER_CASE_LETTERS + '][a-z' + I18N_LOWER_CASE_LETTERS + ']+[A-Z' + I18N_HIGHER_CASE_LETTERS + ']\w+'
+  WIKI_WORD_PATTERN = '[A-Z' + I18N_HIGHER_CASE_LETTERS + ']+[a-z' + I18N_LOWER_CASE_LETTERS + ']+[A-Z' + I18N_HIGHER_CASE_LETTERS + ']\w+'
   CAMEL_CASED_WORD_BORDER = /([a-z#{I18N_LOWER_CASE_LETTERS}])([A-Z#{I18N_HIGHER_CASE_LETTERS}])/u
 
   def self.separate(wiki_word)

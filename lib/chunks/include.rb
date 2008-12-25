@@ -45,21 +45,22 @@ class Include < WikiChunk::WikiReference
   end
   
   # We track included pages in a thread-local variable.
-  # This allows a multi-threaded Rails to handle one request/thread,
-  #   without getting confused.
-  
-  def clear_include_list
-    Thread.current[:included_by] = []  
-  end
+  # This allows a multi-threaded Rails to handle multiple
+  #   simultaneous requests (one request/thread), without
+  #   getting confused.
   
   def add_to_include_list
-    Thread.current[:included_by] ?
-      Thread.current[:included_by].push(@content.page_name) :
-      Thread.current[:included_by] = [@content.page_name]
+    Thread.current[:chunk_included_by] ?
+      Thread.current[:chunk_included_by].push(@content.page_name) :
+      Thread.current[:chunk_included_by] = [@content.page_name]
   end
-  
+
+  def clear_include_list
+    Thread.current[:chunk_included_by] = []  
+  end
+    
   def self_inclusion(refpage)
-    if Thread.current[:included_by].include?(refpage.page.name)
+    if Thread.current[:chunk_included_by].include?(refpage.page.name)
       @content.delete_chunk(self)
       clear_include_list
     else
