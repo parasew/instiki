@@ -1,6 +1,6 @@
 class Page < ActiveRecord::Base
   belongs_to :web
-  has_many :revisions, :order => 'id'
+  has_many :revisions, :order => 'id', :dependent => :destroy
   has_many :wiki_references, :order => 'referenced_name'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
 

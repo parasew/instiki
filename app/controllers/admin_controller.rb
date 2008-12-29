@@ -112,7 +112,6 @@ class AdminController < ApplicationController
   def delete_web
     return unless is_post
     if wiki.authenticate(params['system_password_delete_web'])
-      @web.remove_pages(@web.select_all)
       wiki.delete_web(@web_name)
       flash[:info] = "Web \"#{@web_name}\" has been deleted."
       redirect_to :controller => 'wiki', :action => 'web_list'
