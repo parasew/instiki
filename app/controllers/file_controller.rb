@@ -12,11 +12,7 @@ class FileController < ApplicationController
   def file
     @file_name = params['id']
     if params['file']
-      unless (request.post? || ENV["RAILS_ENV"] == "test")
-        headers['Allow'] = 'POST'
-        render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-        return
-      end
+      return unless is_post
       # form supplied
       new_file = @web.wiki_files.create(params['file'])
       if new_file.valid?
@@ -36,6 +32,29 @@ class FileController < ApplicationController
         @file = WikiFile.new(:file_name => @file_name)
         render
       end
+    end
+  end
+  
+  def delete
+    @file_name = params['id']
+    file = WikiFile.find_by_file_name(@file_name)
+    unless file
+      flash[:error] = "File '#{@file_name}' not found."
+      redirect_to_page(@page_name)
+    end
+    system_password = params['system_password']
+    if system_password
+      return unless is_post
+      # form supplied
+      if wiki.authenticate(system_password)
+         file.destroy
+         flash[:info] = "File '#{@file_name}' deleted."
+       else
+        flash[:error] = "System Password incorrect."        
+      end
+      redirect_to_page(@page_name)
+    else
+    # no system password supplied, display the form
     end
   end
 
@@ -75,6 +94,15 @@ class FileController < ApplicationController
   
   private 
   
+  def is_post
+    unless (request.post? || ENV["RAILS_ENV"] == "test")
+      headers['Allow'] = 'POST'
+      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
+      return false
+    end
+    return true
+  end
+
   def import_from_archive(archive)
     logger.info "Importing pages from #{archive}"
     zip = Zip::ZipInputStream.open(archive)

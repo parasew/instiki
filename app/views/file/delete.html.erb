@@ -1,0 +1,18 @@
+<%-
+  @title = "Delete #{@file_name}"
+  @hide_navigation = true
+-%>
+
+<%= error_messages_for 'delete' %>
+
+<% form_tag({ :controller => 'file', :web => @web_name, :action => 'delete' }, 
+        {'accept-charset' => 'utf-8' }) do %>
+  <div class="inputFieldWithPrompt">
+    <%= hidden_field 'file', 'file_name' %>
+    <label for="system_password">Enter system password</label>
+    <input type="password" class="disableAutoComplete" id="system_password" 
+           name="system_password" />
+    <input type="submit" value="Delete" /><br/>
+    or go <%= link_to "back", :back %> to the page you came from.
+  </div>
+<%- end -%>

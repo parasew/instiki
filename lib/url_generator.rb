@@ -33,6 +33,8 @@ class AbstractUrlGenerator
       file_link(mode, name, text, web.address, known_page, description)
     when :pic
       pic_link(mode, name, text, web.address, known_page)
+    when :delete
+      delete_link(mode, name, web.address, known_page)
     else
       raise "Unknown link type: #{link_type}"
     end
@@ -126,6 +128,16 @@ class UrlGenerator < AbstractUrlGenerator
       else 
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
       end
+    end
+  end
+
+  def delete_link(mode, name, web_address, known_file)
+    href = @controller.url_for :controller => 'file', :web => web_address,
+        :action => 'delete', :id => name
+    if mode == :show and known_file
+      %{<span class="deleteWikiWord"><a href="#{href}">Delete #{name}</a></span>}
+    else 
+      %{<span class="deleteWikiWord">[[#{name}:delete]]</span>}
     end
   end
 

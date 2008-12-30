@@ -88,6 +88,17 @@ background-color:#DDD;
 background-color:#FFF;
 }
 
+.deleteWikiWord {
+background-color:#FDD;
+border: 2px solid red;
+padding: 2px;
+}
+
+.deleteWikiWord:hover, .deleteWikiWord a:hover {
+background-color:#FAA;
+}
+
+
 form#navigationSearchForm {
 display:inline;
 }
