@@ -52,7 +52,6 @@ Mortage
 myspace
 netfirms\.com
 nice\s+site
-overflow:\s*auto
 paxil
 pbwiki\.com
 penis
