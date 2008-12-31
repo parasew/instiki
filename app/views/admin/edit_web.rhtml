@@ -112,6 +112,11 @@
           :onsubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned').value)",
           'accept-charset' => 'utf-8' }) do
 %>
+  <div class="inputBox">
+   <%= link_to ' Manage uploaded files',
+    {:controller => 'wiki', :web => @web.address, :action => 'file_list'}, :style => 'font-weight:bold'  %>
+   for this web (<%= @web.name %>)
+  </div>
   <p  style="text-align:right;font-size:.85em;">
       Clean up this web (<%= @web.name %>) by entering the system password
       <input type="password" id="system_password_orphaned" class="disableAutoComplete" name="system_password_orphaned" />

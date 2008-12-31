@@ -46,6 +46,10 @@ class Web < ActiveRecord::Base
   def has_file?(file_name)
     WikiFile.find_by_file_name(file_name) != nil
   end
+  
+  def file_list
+    WikiFile.find(:all, :order => 'file_name')
+  end
 
   def description(file_name)
     file = WikiFile.find_by_file_name(file_name)

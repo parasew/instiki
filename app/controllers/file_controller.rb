@@ -17,7 +17,7 @@ class FileController < ApplicationController
       new_file = @web.wiki_files.create(params['file'])
       if new_file.valid?
         flash[:info] = "File '#{@file_name}' successfully uploaded"
-        return_to_last_remembered
+        redirect_to_page(@page_name)
       else
         # pass the file with errors back into the form
         @file = new_file
@@ -34,7 +34,7 @@ class FileController < ApplicationController
       end
     end
   end
-  
+    
   def delete
     @file_name = params['id']
     file = WikiFile.find_by_file_name(@file_name)

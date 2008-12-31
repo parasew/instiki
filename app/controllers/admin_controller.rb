@@ -120,6 +120,23 @@ class AdminController < ApplicationController
       redirect_to :controller => 'admin', :web => @web_name, :action => 'edit_web'
     end  
   end
+  
+  def delete_files
+    return unless is_post
+    some_deleted = false
+    if wiki.authenticate(params['system_password'])
+      params.each do |file, p|
+        if p == 'delete'
+          WikiFile.find_by_file_name(file).destroy
+          some_deleted = true
+        end
+      end
+      flash[:info] = "File(s) successfully deleted." if some_deleted
+    else
+      flash[:error] = password_error(params['system_password'])
+    end  
+    redirect_to :controller => 'wiki', :web => @web_name, :action => 'file_list'
+  end
 
 private
 

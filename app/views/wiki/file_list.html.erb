@@ -1,0 +1,25 @@
+<%- @title = "Uploaded Files" -%>
+
+<% form_tag({ :controller => 'admin', :action => 'delete_files', :web => @web.address },
+             {'method' => 'post', 'accept-charset' => 'utf-8' }) do
+%>
+<div id="allFiles">
+  <h2>
+    Uploaded Files in <%= @web.name %>
+  </h2>
+
+<p>Check the files you wish to delete.</p>
+<ul style="list-style-type:none">
+  <%- for @file in @web.file_list -%>
+    <li>
+      <input type="checkbox" name="<%= @file.file_name %>" value="delete"/>
+      <a href="<%= url_for :web => @web.address, :action => 'file', 
+            :id => @file.file_name %>"><%= @file.file_name%></a>
+    </li>
+  <%- end -%>
+</ul>
+    <label for="system_password">Enter system password</label>
+    <%= password_field_tag "system_password", '', :class => "disableAutoComplete" %>
+    and <%= submit_tag("Delete Files") %>
+</div>
+<%- end %>
