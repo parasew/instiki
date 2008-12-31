@@ -8,18 +8,23 @@
     Uploaded Files in <%= @web.name %>
   </h2>
 
-<p>Check the files you wish to delete.</p>
-<ul style="list-style-type:none">
-  <%- for @file in @web.file_list -%>
+<%- if @file_list.empty? -%>
+  <p>No uploaded files in this Web</p>
+<%- else -%>
+  <p>Check the files you wish to delete (<%= link_to "sort by #{@alt_sort_name}", :controller => 'wiki',
+      :web => @web.address, :action => 'file_list', :sort_order => @alt_sort_order %>).</p>
+  <ul style="list-style-type:none">
+  <%- for file in @file_list -%>
     <li>
-      <input type="checkbox" name="<%= @file.file_name %>" value="delete"/>
+      <input type="checkbox" name="<%= file.file_name %>" value="delete"/>
       <a href="<%= url_for :web => @web.address, :action => 'file', 
-            :id => @file.file_name %>"><%= @file.file_name%></a>
+            :id => file.file_name %>"><%= file.file_name%></a> (<%= file.created_at.asctime %>)
     </li>
   <%- end -%>
-</ul>
-    <label for="system_password">Enter system password</label>
-    <%= password_field_tag "system_password", '', :class => "disableAutoComplete" %>
+  </ul>
+  <label for="system_password">Enter system password</label>
+  <%= password_field_tag "system_password", '', :class => "disableAutoComplete" %>
     and <%= submit_tag("Delete Files") %>
+<%- end -%>
 </div>
-<%- end %>
+<%- end -%>

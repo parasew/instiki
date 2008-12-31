@@ -47,8 +47,8 @@ class Web < ActiveRecord::Base
     WikiFile.find_by_file_name(file_name) != nil
   end
   
-  def file_list
-    WikiFile.find(:all, :order => 'file_name')
+  def file_list(sort_order = 'file_name')
+    WikiFile.all(:order => sort_order, :conditions => ['web_id = ?', id])
   end
 
   def description(file_name)

@@ -54,7 +54,16 @@ class WikiController < ApplicationController
   end
   
   def file_list
-    @web.file_list
+    sort_order = params['sort_order'] || 'file_name'
+    case sort_order
+      when 'file_name'
+        @alt_sort_order = 'created_at'
+        @alt_sort_name = 'date'
+      else
+        @alt_sort_order = 'file_name'
+        @alt_sort_name = 'filename'
+    end
+    @file_list = @web.file_list(sort_order)
   end
   
   def export_html

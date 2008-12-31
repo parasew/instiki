@@ -134,8 +134,8 @@ class AdminController < ApplicationController
       flash[:info] = "File(s) successfully deleted." if some_deleted
     else
       flash[:error] = password_error(params['system_password'])
-    end  
-    redirect_to :controller => 'wiki', :web => @web_name, :action => 'file_list'
+    end
+    redirect_to :back
   end
 
 private
