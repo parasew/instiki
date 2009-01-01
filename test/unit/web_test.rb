@@ -79,12 +79,16 @@ class WebTest < Test::Unit::TestCase
         'This is an author page, it should not be an orphan',
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
     self_linked = @web.add_page('SelfLinked', 
-        'I am SelfLinked and link to EverBeenInLove',
+        "I am SelfLinked and link to EverBeenInLove\ncategory: fubar",
         Time.local(2004, 4, 4, 16, 50), 'AnonymousCoward', test_renderer)
         
     # page that links to itself, and nobody else links to it must be an orphan
     assert_equal ['EverBeenHated', 'SelfLinked'], 
        @web.select.orphaned_pages.collect{ |page| page.name }.sort
+    pages_in_category = @web.select.pages_in_category('fubar')
+    orphaned_pages = @web.select.orphaned_pages
+    assert_equal ['SelfLinked'], 
+       (pages_in_category & orphaned_pages).collect{ |page| page.name }.sort
   end  
 
   def test_page_names_by_author
@@ -98,7 +102,7 @@ class WebTest < Test::Unit::TestCase
   private
   
   def add_sample_pages
-    @in_love = @web.add_page('EverBeenInLove', 'Who am I me', 
+    @in_love = @web.add_page('EverBeenInLove', "Who am I me\ncategory: fubar", 
         Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson', test_renderer)
     @hated = @web.add_page('EverBeenHated', 'I am me EverBeenHated', 
         Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson', test_renderer)

@@ -27,6 +27,7 @@ class WebSweeper < ActionController::Caching::Sweeper
       expire_cached_summary_pages(record)
     else
       expire_cached_page(record.web, record.name)
+      expire_cached_summary_pages(record.web)
     end
   end
 

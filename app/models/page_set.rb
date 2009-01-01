@@ -67,8 +67,9 @@ class PageSet < Array
       if never_orphans.include? page.name
         false
       else
-        references = pages_that_reference(page.name)
-        references.empty? or references == [page]
+#        references = pages_that_reference(page.name)
+        references = WikiReference.pages_that_reference(@web, page.name)
+        references.empty? or references == [page.name]
       end
     }
   end
