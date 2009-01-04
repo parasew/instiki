@@ -156,13 +156,17 @@ class ApplicationController < ActionController::Base
       response.content_type = Mime::ATOM
     elsif %w(tex).include?(action_name)
       response.content_type = Mime::TEXT
-    elsif request.user_agent =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
+    elsif xhtml_enabled?
+      if request.user_agent =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
            Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)  
-      response.content_type = Mime::XHTML
-    elsif request.user_agent =~ /MathPlayer/ 
-      response.charset = nil
-      response.content_type = Mime::XHTML
-      response.extend(MathPlayerHack)
+        response.content_type = Mime::XHTML
+      elsif request.user_agent =~ /MathPlayer/ 
+        response.charset = nil
+        response.content_type = Mime::XHTML
+        response.extend(MathPlayerHack)
+      else
+        response.content_type = Mime::HTML
+      end
     else
       response.content_type = Mime::HTML
     end
@@ -194,6 +198,10 @@ class ApplicationController < ActionController::Base
 
   def in_a_web?
     not @web_name.nil?
+  end
+  
+  def xhtml_enabled?
+    in_a_web? and (@web.markup == :markdownMML or @web.markup == :markdownPNG or @web.markup == :markdown)
   end
 
   def authorization_needed?
@@ -233,7 +241,7 @@ module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
     MINOR = 16
-    TINY  = 0
+    TINY  = 1
     SUFFIX = '(MML+)'
     PRERELEASE = 'pre' # false
     if PRERELEASE
