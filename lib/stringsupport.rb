@@ -2243,7 +2243,7 @@ class String
         end
       when /\A#x([0-9a-f]+)\z/ni then
         if $1.hex < 256
-          $1.hex.chr
+          [$1.hex].pack("U")
         else
           if $1.hex < 1114111
             [$1.hex].pack("U")
