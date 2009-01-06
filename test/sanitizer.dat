@@ -1,9 +1,9 @@
 [
   {
     "name": "IE_Comments",
-    "input": "<!--[if gte IE 4]><script>alert('XSS');</script><![endif]-->",
-    "output": "",
-    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]--&gt;"
+    "input": "<!--[if gte IE 4]><script>alert('XSS');</script><![endif]-->a",
+    "output": "a",
+    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]--&gt;a"
   },
 
   {
@@ -211,7 +211,8 @@
   {
     "name": "should_handle_blank_text",
     "input": "",
-    "output": ""
+    "output": "<div xmlns='http://www.w3.org/1999/xhtml'/>",
+    "xhtml": ""
   },
 
   {
@@ -503,7 +504,8 @@
   {
    "name": "attributes_with_embedded_quotes",
    "input": "<img src=doesntexist.jpg\"'onerror=\"alert(1) />",
-   "output": "<img src='doesntexist.jpg&quot;&#39;onerror=&quot;alert(1)'/>",
+   "output": "<img src='doesntexist.jpg&quot;&apos;onerror=&quot;alert(1)'/>",
+   "xhtml": "<img src='doesntexist.jpg&quot;&#39;onerror=&quot;alert(1)'/>",
    "rexml": "Ill-formed XHTML!"
   },
   
