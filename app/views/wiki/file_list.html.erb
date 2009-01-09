@@ -17,7 +17,7 @@
   <%- for file in @file_list -%>
     <li>
       <input type="checkbox" name="<%= file.file_name %>" value="delete"/>
-      <a href="<%= url_for :web => @web.address, :action => 'file', 
+      <a href="<%= url_for :web => @web.address, :action => 'files', 
             :id => file.file_name %>"><%= file.file_name%></a> (<%= file.created_at.asctime %>)
     </li>
   <%- end -%>
