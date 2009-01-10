@@ -51,6 +51,10 @@ class Web < ActiveRecord::Base
     WikiFile.all(:order => sort_order, :conditions => ['web_id = ?', id])
   end
 
+  def pages_that_link_to(file_name)
+    WikiReference.pages_that_link_to_file(self, file_name)
+  end
+  
   def description(file_name)
     file = WikiFile.find_by_file_name(file_name)
     file.description if file

@@ -97,14 +97,29 @@ class PageRenderer
   def wiki_words
     @wiki_words_cache ||= find_wiki_words(display_content) 
   end
-
+  
   def find_wiki_words(rendering_result)
-    wiki_links = rendering_result.find_chunks(WikiChunk::WikiLink)
+    the_wiki_words = wiki_links(rendering_result)
     # Exclude backslash-escaped wiki words, such as \WikiWord, as well as links to files 
     # and pictures, such as [[foo.txt:file]] or [[foo.jpg:pic]]
-    wiki_links.delete_if { |link| link.escaped? or [:pic, :file].include?(link.link_type) }
+    the_wiki_words.delete_if { |link| link.escaped? or [:pic, :file, :delete].include?(link.link_type) }
     # convert to the list of unique page names
-    wiki_links.map { |link| ( link.page_name ) }.uniq
+    the_wiki_words.map { |link| ( link.page_name ) }.uniq
+  end
+
+  # Returns an array of all the WikiWords present in the content of this revision.
+  def wiki_files
+    @wiki_files_cache ||= find_wiki_files(display_content) 
+  end
+    
+  def find_wiki_files(rendering_result)
+     the_wiki_files = wiki_links(rendering_result)
+     the_wiki_files.delete_if { |link| ![:pic, :file].include?(link.link_type) }
+     the_wiki_files.map { |link| ( link.page_name ) }.uniq
+  end
+  
+  def wiki_links(rendering_result)
+     rendering_result.find_chunks(WikiChunk::WikiLink)
   end
 
   # Returns an array of all the WikiWords present in the content of this revision.
@@ -144,6 +159,11 @@ class PageRenderer
         link_type = WikiReference.link_type(@revision.page.web, referenced_name)
       end
       references.build :referenced_name => referenced_name, :link_type => link_type
+    end
+    
+    wiki_files = find_wiki_files(rendering_result)
+    wiki_files.each do |referenced_name|
+      references.build :referenced_name => referenced_name, :link_type => WikiReference::FILE
     end
     
     include_chunks = rendering_result.find_chunks(Include)
