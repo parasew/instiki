@@ -1,3 +1,5 @@
+require 'stringsupport'
+
 class AbstractUrlGenerator
 
   def initialize(controller)
@@ -17,14 +19,14 @@ class AbstractUrlGenerator
     else
       known_page = web.has_file?(name)
       description = web.description(name)
-      description = CGI.escapeHTML(CGI.unescapeHTML(description)) if description
+      description = description.unescapeHTML.escapeHTML if description
     end
     if (text == name)
       text = description || text
     else
       text = text || description
     end
-    text = CGI.escapeHTML(CGI.unescapeHTML(text || WikiWords.separate(name)))
+    text = (text || WikiWords.separate(name)).unescapeHTML.escapeHTML
     
     case link_type
     when :show
