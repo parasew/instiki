@@ -17,7 +17,7 @@ module Literal
 
   # A literal chunk that protects 'code' and 'pre' tags from wiki rendering.
   class Pre < AbstractLiteral
-    PRE_BLOCKS = "a|pre|code"
+    PRE_BLOCKS = "a|pre|code|math"
     PRE_PATTERN = Regexp.new('<('+PRE_BLOCKS+')\b[^>]*?>.*?</\1>', Regexp::MULTILINE)
     def self.pattern() PRE_PATTERN end
   end 
@@ -27,4 +27,13 @@ module Literal
     TAGS_PATTERN = Regexp.new('<[-a-zA-Z]+[^>]*?>', Regexp::MULTILINE) 
     def self.pattern() TAGS_PATTERN  end
   end
+
+  # A literal chunk that protects equations from wiki rendering.
+  class Math < AbstractLiteral
+    MATH_START = '(\${1,2}|' + Regexp.escape('\[') + '|\\begin\{equation\})'
+    MATH_END =   '(\${1,2}|' + Regexp.escape('\]') + '|\\end\{equation\})'
+    MATH_PATTERN = Regexp.new(MATH_START + '([^$]|\\\$)+?' + MATH_END, Regexp::MULTILINE)
+    def self.pattern() MATH_PATTERN  end
+  end
+
 end

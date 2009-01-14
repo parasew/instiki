@@ -41,7 +41,7 @@ module ChunkManager
   ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link,
                     WikiChunk::Word ]
 
-  HIDE_CHUNKS = [ Literal::Pre, Literal::Tags ]
+  HIDE_CHUNKS = [ Literal::Pre, Literal::Tags, Literal::Math ]
 
   MASK_RE = {
     ACTIVE_CHUNKS => Chunk::Abstract.mask_re(ACTIVE_CHUNKS),

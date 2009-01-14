@@ -229,7 +229,7 @@ END_THM
       '* list 2'
     ].join("\n")
     
-    set_web_property :markup, :markdown
+    set_web_property :markup, :markdownMML
     re = Regexp.new(
       '<h1 id=\'markdown_heading_\d{1,4}\'>Markdown heading</h1>\n\n' +
       "<p>h2. Textile heading</p>\n\n" +
@@ -285,6 +285,49 @@ END_THM
 	    "That Way</a> or <span class='newWikiWord'>This Way<a href='../show/ThisWay'>?</a>" +
 	    '</span></em></p>', 
         '_should we go ThatWay or ThisWay _')
+  end
+  
+  def test_content_with_wikiword_in_equations
+    assert_markup_parsed_as(
+        "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
+	    "That Way</a> or</p>\n<div class='maruku-equation' id='eq:eq1'>" +
+	    "<math class='maruku-mathml' display='block' " +
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math>" +
+	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay</code>" +
+	    "</span><span class='maruku-eq-number'>(1)</span></div>", 
+        "should we go ThatWay or \n\\[ThisWay\\]\n")
+
+    assert_markup_parsed_as(
+        "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
+	    "That Way</a> or</p>\n<div class='maruku-equation'>" +
+	    "<math class='maruku-mathml' display='block' " +
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math>" +
+	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay</code>" +
+	    "</span></div>", 
+        "should we go ThatWay or \n$$ThisWay$$\n")
+        
+    assert_markup_parsed_as(
+        "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
+	    "That Way</a> or</p>\n<div class='maruku-equation'>" +
+	    "<math class='maruku-mathml' display='block' " +
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi><mi>$</mi>" +
+	    "<mn>100 </mn><mi>ThatWay</mi></math>" +
+	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay \\$100 " +
+	    "ThatWay</code></span></div>", 
+        "should we go ThatWay or \n$$ThisWay \\$100 ThatWay $$\n")
+
+    assert_markup_parsed_as(
+        "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
+	    "That Way</a> or <math class='maruku-mathml' display='inline' " +
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math> today.</p>", 
+        "should we go ThatWay or <math class='maruku-mathml' display='inline' " +
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math> today.")
+
+    assert_markup_parsed_as(
+        "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
+	    "That Way</a> or <math class='maruku-mathml' display='inline' " +
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math>.</p>", 
+        "should we go ThatWay or $ThisWay$.")
   end
   
   # wikiwords are invalid as styles, must be in "name: value" form
