@@ -626,6 +626,17 @@ END_THM
                  test_renderer(main).display_content_for_export
   end
 
+  def test_rendering_included_page_backslashes_in_equations
+    included = @web.add_page('Included', '\\\\ $\begin{matrix} a \\\\ b\end{matrix}$', Time.now, 'AnAuthor', test_renderer)
+    main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', test_renderer)
+    
+    assert_equal "<p>\\ <math class='maruku-mathml' display='inline' " +
+                 "xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mtable rowspacing='0.5ex'>" +
+                 "<mtr><mtd><mi>a</mi></mtd></mtr> <mtr><mtd><mi>b</mi></mtd></mtr></mtable>" +
+                 "</mrow></math></p>", 
+                 test_renderer(main).display_content
+  end
+
   private
 
   def add_sample_pages
