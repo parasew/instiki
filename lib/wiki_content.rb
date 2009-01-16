@@ -177,8 +177,7 @@ class WikiContent < String
   def pre_render!
     unless @pre_rendered
       @chunks_by_type[Include].each{|chunk| chunk.unmask }
-      @pre_rendered = String.new
-      @pre_rendered = self
+      @pre_rendered = String.new(self)
     end
     @pre_rendered
   end

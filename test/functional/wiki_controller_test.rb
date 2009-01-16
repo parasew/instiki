@@ -753,34 +753,47 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /Self-include: <em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
+    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
   end
 
   def test_recursive_include_II
-    @wiki.write_page('wiki1', 'Foo', 'extra fun [[!include HomePage]]', Time.now, 
+    @wiki.write_page('wiki1', 'Foo', "extra fun [[!include HomePage]]", Time.now, 
         Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
-    @wiki.write_page('wiki1', 'HomePage', 'Recursive-include: [[!include Foo]]', Time.now, 
+    @wiki.write_page('wiki1', 'HomePage', "Recursive-include:\n\n[[!include Foo]]", Time.now, 
         Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /Recursive-include: extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em>/, r.body
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body
   end
   
   def test_recursive_include_III
-    @wiki.write_page('wiki1', 'Bar', 'extra fun [[!include HomePage]]', Time.now, 
+    @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[!include HomePage]]", Time.now, 
         Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
-    @wiki.write_page('wiki1', 'Foo', '[[!include Bar]] [[!include Bar]]', Time.now, 
+    @wiki.write_page('wiki1', 'Foo', "[[!include Bar]]\n\n[[!include Bar]]", Time.now, 
         Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
-    @wiki.write_page('wiki1', 'HomePage', 'Recursive-include: [[!include Foo]]', Time.now, 
+    @wiki.write_page('wiki1', 'HomePage', "Recursive-include:\n\n[[!include Foo]]", Time.now, 
         Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /Recursive-include: extra fun <em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body
-    assert_match /extra fun Recursive-include: <em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body
+  end
+
+  def test_nonrecursive_include
+    @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[HomePage]]", Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+    @wiki.write_page('wiki1', 'Foo', "[[!include Bar]]\n\n[[!include Bar]]", Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+    @wiki.write_page('wiki1', 'HomePage', "Nonrecursive-include:\n\n[[!include Foo]]", Time.now, 
+        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+
+    r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
+
+    assert_response :success
+    assert_match /<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='http:\/\/test.host\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body
   end
   
   def test_show_page_nonexistant_page

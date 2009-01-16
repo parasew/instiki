@@ -32,6 +32,7 @@ class Include < WikiChunk::WikiReference
           when :show then renderer.display_content
           when :publish then renderer.display_published
           when :export then renderer.display_content_for_export
+          when :s5 then renderer.display_s5
         else
           raise "Unsupported rendering mode #{@mode.inspect}"
         end
