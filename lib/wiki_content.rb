@@ -120,6 +120,7 @@ class WikiContent < String
 
   DEFAULT_OPTS = {
     :active_chunks       => ACTIVE_CHUNKS,
+    :hide_chunks         => HIDE_CHUNKS,
     :engine              => Engines::MarkdownMML,
     :engine_opts         => [],
     :mode                => :show
@@ -138,6 +139,8 @@ class WikiContent < String
     @options[:engine] = Engines::MAP[@web.markup]
     @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode?
     @options[:active_chunks] = (ACTIVE_CHUNKS - [WikiChunk::Word] ) if @web.brackets_only?
+    @options[:hide_chunks] = (HIDE_CHUNKS - [Literal::Math] ) unless
+                  [Engines::MarkdownMML, Engines::MarkdownPNG].include?(@options[:engine])
 
     @not_rendered = @pre_rendered = nil
 
@@ -169,7 +172,7 @@ class WikiContent < String
     copy = WikiContentStub.new(self, @web, @options)
     @options[:engine].apply_to(copy)
 
-    copy.inside_chunks(HIDE_CHUNKS) do |id|
+    copy.inside_chunks(@options[:hide_chunks]) do |id|
       @chunks_by_id[id.to_i].revert
     end
   end

@@ -330,6 +330,15 @@ END_THM
         "should we go ThatWay or $ThisWay$.")
   end
   
+  def test_content_with_wikiword_in_equations_textile
+    set_web_property :markup, :textile
+    assert_markup_parsed_as(
+      "<p>$$<span class='newWikiWord'>foo<a href='../show/foo'>?" +
+      "</a></span>$$<br/>$<span class='newWikiWord'>foo<a " +
+      "href='../show/foo'>?</a></span>$</p>",
+      "$$[[foo]]$$\n$[[foo]]$")
+  end
+  
   # wikiwords are invalid as styles, must be in "name: value" form
   def test_content_with_wikiword_in_style_tag
     assert_markup_parsed_as(
