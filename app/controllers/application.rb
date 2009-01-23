@@ -172,6 +172,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def xhtml_enabled?
+    in_a_web? and (@web.markup == :markdownMML or @web.markup == :markdownPNG or @web.markup == :markdown)
+  end
+
   protected
 
   def set_robots_metatag
@@ -200,10 +204,6 @@ class ApplicationController < ActionController::Base
     not @web_name.nil?
   end
   
-  def xhtml_enabled?
-    in_a_web? and (@web.markup == :markdownMML or @web.markup == :markdownPNG or @web.markup == :markdown)
-  end
-
   def authorization_needed?
     not %w( login authenticate feeds published atom_with_headlines atom_with_content).include?(action_name)
   end

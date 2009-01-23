@@ -52,7 +52,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_file
-        %{<a class="existingWikiWord" title="#{description}" href="#{CGI.escape(name)}.html">#{text}</a>}
+        %{<a class="existingWikiWord" title="#{description}" href="#{CGI.escape(name)}.#{@controller.html_ext}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
@@ -79,7 +79,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_page 
-        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.html">#{text}</a>}
+        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.#{@controller.html_ext}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
@@ -142,5 +142,5 @@ class UrlGenerator < AbstractUrlGenerator
       %{<span class="deleteWikiWord">[[#{name}:delete]]</span>}
     end
   end
-
+  
 end

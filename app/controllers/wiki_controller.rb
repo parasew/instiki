@@ -68,7 +68,7 @@ class WikiController < ApplicationController
   
   def export_html
     stylesheet = File.read(File.join(RAILS_ROOT, 'public', 'stylesheets', 'instiki.css'))
-    export_pages_as_zip('html') do |page| 
+    export_pages_as_zip(html_ext) do |page| 
 
       renderer = PageRenderer.new(page.revisions.last)
       rendered_page = <<-EOL
@@ -90,6 +90,10 @@ class WikiController < ApplicationController
           </style>
         </head>
         <body>
+          <h1 id="pageName">
+            <span class="webName">#{@web.name}</span><br />
+            #{page.plain_name}    
+          </h1>
           #{renderer.display_content_for_export}
           <div class="byline">
             #{page.revisions? ? "Revised" : "Created" } on #{ page.revised_at.strftime('%B %d, %Y %H:%M:%S') }
@@ -329,6 +333,15 @@ class WikiController < ApplicationController
     end
   end
 
+  def html_ext
+    if xhtml_enabled? && request.env.include?('HTTP_ACCEPT') &&
+           Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)
+       'xhtml'
+    else
+      'html'
+    end       
+  end
+
   protected
 
   def do_caching?
@@ -364,7 +377,7 @@ class WikiController < ApplicationController
   end
 
   def export_pages_as_zip(file_type, &block)
-
+    
     file_prefix = "#{@web.address}-#{file_type}-"
     timestamp = @web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')
     file_path = File.join(@wiki.storage_path, file_prefix + timestamp + '.zip')
@@ -376,9 +389,9 @@ class WikiController < ApplicationController
         zip_out.puts(block.call(page))
       end
       # add an index file, if exporting to HTML
-      if file_type.to_s.downcase == 'html'
-        zip_out.put_next_entry 'index.html'
-        zip_out.puts "<html><head>" +
+      if file_type.to_s.downcase == html_ext
+        zip_out.put_next_entry "index.#{html_ext}"
+        zip_out.puts "<html xmlns='http://www.w3.org/1999/xhtml'><head>" +
             "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL=HomePage.#{file_type}\"></head></html>"
       end
     end
@@ -468,5 +481,4 @@ class WikiController < ApplicationController
     end
   end
 
-  
 end

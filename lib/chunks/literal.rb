@@ -24,7 +24,7 @@ module Literal
 
   # A literal chunk that protects HTML tags from wiki rendering.
   class Tags < AbstractLiteral
-    TAGS_PATTERN = Regexp.new('<[-a-zA-Z]+[^>]*?>', Regexp::MULTILINE) 
+    TAGS_PATTERN = Regexp.new('</?[-a-zA-Z:]+\b[^>]*?>', Regexp::MULTILINE) 
     def self.pattern() TAGS_PATTERN  end
   end
 
@@ -32,7 +32,7 @@ module Literal
   class Math < AbstractLiteral
     MATH_START = '(\${1,2}|' + Regexp.escape('\[') + '|\\begin\{equation\})'
     MATH_END =   '(\${1,2}|' + Regexp.escape('\]') + '|\\end\{equation\})'
-    MATH_PATTERN = Regexp.new(MATH_START + '([^$]|\\\$)+?' + MATH_END, Regexp::MULTILINE)
+    MATH_PATTERN = Regexp.new(MATH_START + '([^$]|\\\$)+' + MATH_END, Regexp::MULTILINE)
     def self.pattern() MATH_PATTERN  end
   end
 

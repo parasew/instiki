@@ -111,7 +111,39 @@ class WikiControllerTest < Test::Unit::TestCase
     assert_equal '/wiki1/save/With+%3A+Special+%2F%3E+symbols', form.attributes['action']
   end
 
+  def test_export_xhtml
+    @request.accept = 'application/xhtml+xml'
+    # rollback homepage to a version that is easier to match
+    @home.rollback(0, Time.now, 'Rick', test_renderer)
+    r = process 'export_html', 'web' => 'wiki1'
+    
+    assert_response(:success, bypass_body_parsing = true)
+    assert_equal 'application/zip', r.headers['type']
+    assert_match /attachment; filename="wiki1-xhtml-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
+        r.headers['Content-Disposition']
+    assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
+    
+    # Tempfile doesn't know how to open files with binary flag, hence the two-step process
+    Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
+    begin 
+      File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
+      Zip::ZipFile.open(@exported_file) do |zip| 
+        assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml index.xhtml), zip.dir.entries('.').sort
+        assert_match /.*<html .*All about elephants.*<\/html>/, 
+            zip.file.read('Elephant.xhtml').gsub(/\s+/, ' ')
+        assert_match /.*<html .*All about oak.*<\/html>/, 
+            zip.file.read('Oak.xhtml').gsub(/\s+/, ' ')
+        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
+            zip.file.read('HomePage.xhtml').gsub(/\s+/, ' ')
+        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.xhtml"></head></html> ', zip.file.read('index.xhtml').gsub(/\s+/, ' ')
+      end
+    ensure
+      File.delete(@tempfile_path) if File.exist?(@tempfile_path)
+    end
+  end
+
   def test_export_html
+    @request.accept = 'tex/html'
     # rollback homepage to a version that is easier to match
     @home.rollback(0, Time.now, 'Rick', test_renderer)
     r = process 'export_html', 'web' => 'wiki1'
@@ -134,19 +166,19 @@ class WikiControllerTest < Test::Unit::TestCase
             zip.file.read('Oak.html').gsub(/\s+/, ' ')
         assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
             zip.file.read('HomePage.html').gsub(/\s+/, ' ')
-        assert_equal '<html><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.html"></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
+        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.html"></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
       end
     ensure
       File.delete(@tempfile_path) if File.exist?(@tempfile_path)
     end
   end
-
+  
   def test_export_html_no_layout    
     r = process 'export_html', 'web' => 'wiki1', 'layout' => 'no'
     
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['type']
-    assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
+    assert_match /attachment; filename="wiki1-x?html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end

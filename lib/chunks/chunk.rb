@@ -61,7 +61,7 @@ module Chunk
     end
 
     def unmask
-      @content.sub!(/#{mask}/){|s| s.replace @unmask_text}
+      @content.sub!(mask){|s| s.replace @unmask_text}
     end
 
     def rendered?
@@ -73,7 +73,7 @@ module Chunk
     end
 
     def revert
-      @content.sub!(/#{mask}/){|s| s.replace @text}
+      @content.sub!(mask){|s| s.replace @text}
       # unregister
       @content.delete_chunk(self)
     end
