@@ -7,12 +7,13 @@ class FileController < ApplicationController
 
   layout 'default'
   
-  before_filter :dnsbl_check, :check_allow_uploads
+  before_filter :dnsbl_check
+  before_filter :check_allow_uploads, :except => :file
 
   def file
     @file_name = params['id']
     if params['file']
-      return unless is_post
+      return unless is_post and check_allow_uploads
       # form supplied
       new_file = @web.wiki_files.create(params['file'])
       if new_file.valid?
@@ -25,10 +26,11 @@ class FileController < ApplicationController
       end
     else
       # no form supplied, this is a request to download the file
-      file = WikiFile.find_by_file_name(@file_name)
-      if file 
-        send_data(file.content, determine_file_options_for(@file_name, :filename => @file_name))
+      file = @web.files_path + '/' + @file_name
+      if File.exists?(file)
+        send_file(file)
       else
+        return unless check_allow_uploads
         @file = WikiFile.new(:file_name => @file_name)
         render
       end

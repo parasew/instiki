@@ -117,6 +117,14 @@ class Web < ActiveRecord::Base
     end
   end
   
+  def files_path
+    if default_web?
+      "#{RAILS_ROOT}/webs/files"
+    else
+      "#{RAILS_ROOT}/webs/#{self.address}/files"
+    end
+  end
+
   private
 
     # Returns an array of all the wiki words in any current revision
@@ -149,13 +157,5 @@ class Web < ActiveRecord::Base
     
     def default_web?
       defined? DEFAULT_WEB and self.address == DEFAULT_WEB
-    end
-    
-    def files_path
-      if default_web?
-        "#{RAILS_ROOT}/webs/files"
-      else
-        "#{RAILS_ROOT}/webs/#{self.address}/files"
-      end
     end
 end
