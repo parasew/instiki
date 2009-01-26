@@ -24,7 +24,7 @@ class FileControllerTest < Test::Unit::TestCase
     @wiki = Wiki.new
     WikiFile.delete_all
     require 'fileutils'
-    FileUtils.rm_rf("#{RAILS_ROOT}/webs/wiki1/files/*")
+    FileUtils.rm_rf("#{RAILS_ROOT}/webs/wiki1/files")
   end
 
   def test_file_upload_form
@@ -42,6 +42,19 @@ class FileControllerTest < Test::Unit::TestCase
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
     assert_equal 'text/plain', r.headers['type']
+    assert_equal 'inline; filename="foo.txt"', r.headers['Content-Disposition']
+  end
+
+  def test_file_download_html_file
+    @web.wiki_files.create(:file_name => 'foo.html', :description => 'Text file', 
+        :content => "Contents of the file")
+
+    r = get :file, :web => 'wiki1', :id => 'foo.html'
+    
+    assert_response(:success, bypass_body_parsing = true)
+    assert_equal "Contents of the file", r.body
+    assert_equal 'application/octet-stream', r.headers['type']
+    assert_equal 'attachment; filename="foo.html"', r.headers['Content-Disposition']
   end
 
   def test_file_download_pdf_file
@@ -65,6 +78,7 @@ class FileControllerTest < Test::Unit::TestCase
     assert_equal 'image/gif', r.headers['type']
     assert_equal pic.size, r.body.size
     assert_equal pic, r.body
+    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end
   
   def test_pic_unknown_pic
