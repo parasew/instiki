@@ -7,8 +7,8 @@ class WikiFileTest < Test::Unit::TestCase
 
   def setup
     @web = webs(:test_wiki)
-    mkdir_p("#{RAILS_ROOT}/public/wiki1/files/")
-    rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
+    mkdir_p("#{RAILS_ROOT}/webs/wiki1/files/")
+    rm_rf("#{RAILS_ROOT}/webs/wiki1/files/*")
     WikiFile.delete_all
   end
 

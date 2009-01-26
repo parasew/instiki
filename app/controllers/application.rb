@@ -241,9 +241,9 @@ module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
     MINOR = 16
-    TINY  = 1
+    TINY  = 2
     SUFFIX = '(MML+)'
-    PRERELEASE = 'pre' # false
+    PRERELEASE =  false
     if PRERELEASE
        STRING = [MAJOR, MINOR].join('.') + PRERELEASE + SUFFIX
     else

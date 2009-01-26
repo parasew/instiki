@@ -24,7 +24,7 @@ class FileControllerTest < Test::Unit::TestCase
     @wiki = Wiki.new
     WikiFile.delete_all
     require 'fileutils'
-    FileUtils.rm_rf("#{RAILS_ROOT}/public/wiki1/files/*")
+    FileUtils.rm_rf("#{RAILS_ROOT}/webs/wiki1/files/*")
   end
 
   def test_file_upload_form

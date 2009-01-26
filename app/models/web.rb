@@ -153,9 +153,9 @@ class Web < ActiveRecord::Base
     
     def files_path
       if default_web?
-        "#{RAILS_ROOT}/public/files"
+        "#{RAILS_ROOT}/webs/files"
       else
-        "#{RAILS_ROOT}/public/#{self.address}/files"
+        "#{RAILS_ROOT}/webs/#{self.address}/files"
       end
     end
 end
