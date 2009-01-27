@@ -19,6 +19,7 @@ ActionController::Routing::Routes.draw do |map|
   connect_to_web map, ':web/remove_orphaned_pages', :controller => 'admin', :action => 'remove_orphaned_pages'
   connect_to_web map, ':web/remove_orphaned_pages_in_category', :controller => 'admin', :action => 'remove_orphaned_pages_in_category'
   connect_to_web map, ':web/file/delete/:id', :controller => 'file', :action => 'delete', :requirements => {:id => /[-._\w]+/}, :id => nil
+  connect_to_web map, ':web/files/pngs/:id', :controller => 'file', :action => 'blahtex_png', :requirements => {:id => /[-._\w]+/}, :id => nil
   connect_to_web map, ':web/files/:id', :controller => 'file', :action => 'file', :requirements => {:id => /[-._\w]+/}, :id => nil
   connect_to_web map, ':web/file_list/:sort_order', :controller => 'wiki', :action => 'file_list', :sort_order => nil
   connect_to_web map, ':web/import/:id', :controller => 'file', :action => 'import'

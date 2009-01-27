@@ -36,6 +36,10 @@ class FileController < ApplicationController
       end
     end
   end
+  
+  def blahtex_png
+    send_file(@web.blahtex_pngs_path + '/' + params['id'])
+  end
     
   def delete
     @file_name = params['id']

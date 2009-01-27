@@ -125,6 +125,14 @@ class Web < ActiveRecord::Base
     end
   end
 
+  def blahtex_pngs_path
+    if default_web?
+      "#{RAILS_ROOT}/webs/files/pngs"
+    else
+      "#{RAILS_ROOT}/webs/#{self.address}/files/pngs"
+    end
+  end
+
   private
 
     # Returns an array of all the wiki words in any current revision
