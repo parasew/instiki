@@ -319,6 +319,13 @@ class WikiControllerTest < Test::Unit::TestCase
     
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='http:\/\/test.host\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body
+
+    r = process('show', 'web' => 'wiki1', 'id' => 'HomePage')
+    
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='http:\/\/test.host\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body
   end
 
 
