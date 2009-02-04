@@ -8,7 +8,7 @@ require 'stringio'
 # Raise errors beyond the default web-based presentation
 class FileController; def rescue_action(e) logger.error(e); raise e end; end
 
-class FileControllerTest < Test::Unit::TestCase
+class FileControllerTest < ActionController::TestCase
   fixtures :webs, :pages, :revisions, :system
 
   def setup
@@ -41,7 +41,7 @@ class FileControllerTest < Test::Unit::TestCase
     
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
-    assert_equal 'text/plain', r.headers['type']
+    assert_equal 'text/plain', r.headers['Content-Type']
     assert_equal 'inline; filename="foo.txt"', r.headers['Content-Disposition']
   end
 
@@ -53,7 +53,7 @@ class FileControllerTest < Test::Unit::TestCase
     
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
-    assert_equal 'application/octet-stream', r.headers['type']
+    assert_equal 'application/octet-stream', r.headers['Content-Type']
     assert_equal 'attachment; filename="foo.html"', r.headers['Content-Disposition']
   end
 
@@ -65,7 +65,7 @@ class FileControllerTest < Test::Unit::TestCase
     
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "aaa\nbbb\n", r.body
-    assert_equal 'application/pdf', r.headers['type']
+    assert_equal 'application/pdf', r.headers['Content-Type']
   end
 
   def test_pic_download_gif
@@ -75,7 +75,7 @@ class FileControllerTest < Test::Unit::TestCase
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'image/gif', r.headers['type']
+    assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal pic.size, r.body.size
     assert_equal pic, r.body
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']

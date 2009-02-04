@@ -201,13 +201,21 @@ module ActionView
 
       # Returns a string of option tags that have been compiled by iterating over the +collection+ and assigning the
       # the result of a call to the +value_method+ as the option value and the +text_method+ as the option text.
+      # Example:
+      #   options_from_collection_for_select(@people, 'id', 'name')
+      # This will output the same HTML as if you did this:
+      #   <option value="#{person.id}">#{person.name}</option>
+      #
+      # This is more often than not used inside a #select_tag like this example:
+      #   select_tag 'person', options_from_collection_for_select(@people, 'id', 'name')
+      #
       # If +selected+ is specified, the element returning a match on +value_method+ will get the selected option tag.
-      #
-      # Example (call, result). Imagine a loop iterating over each +person+ in <tt>@project.people</tt> to generate an input tag:
-      #   options_from_collection_for_select(@project.people, "id", "name")
-      #     <option value="#{person.id}">#{person.name}</option>
-      #
-      # NOTE: Only the option tags are returned, you have to wrap this call in a regular HTML select tag.
+      # Be sure to specify the same class as the +value_method+ when specifying a selected option.
+      # Failure to do this will produce undesired results. Example:
+      #   options_from_collection_for_select(@people, 'id', 'name', '1')
+      # Will not select a person with the id of 1 because 1 (an Integer) is not the same as '1' (a string)
+      #   options_from_collection_for_select(@people, 'id', 'name', 1)
+      # should produce the desired results.
       def options_from_collection_for_select(collection, value_method, text_method, selected = nil)
         options = collection.map do |element|
           [element.send(text_method), element.send(value_method)]
@@ -267,6 +275,62 @@ module ActionView
           options_for_select += options_from_collection_for_select(eval("group.#{group_method}"), option_key_method, option_value_method, selected_key)
           options_for_select += '</optgroup>'
         end
+      end
+
+      # Returns a string of <tt><option></tt> tags, like <tt>options_for_select</tt>, but
+      # wraps them with <tt><optgroup></tt> tags.
+      #
+      # Parameters:
+      # * +grouped_options+ - Accepts a nested array or hash of strings.  The first value serves as the
+      #   <tt><optgroup></tt> label while the second value must be an array of options. The second value can be a
+      #   nested array of text-value pairs. See <tt>options_for_select</tt> for more info.
+      #    Ex. ["North America",[["United States","US"],["Canada","CA"]]]
+      # * +selected_key+ - A value equal to the +value+ attribute for one of the <tt><option></tt> tags,
+      #   which will have the +selected+ attribute set. Note: It is possible for this value to match multiple options
+      #   as you might have the same option in multiple groups.  Each will then get <tt>selected="selected"</tt>.
+      # * +prompt+ - set to true or a prompt string. When the select element doesn’t have a value yet, this
+      #   prepends an option with a generic prompt — "Please select" — or the given prompt string.
+      #
+      # Sample usage (Array):
+      #   grouped_options = [
+      #    ['North America',
+      #      [['United States','US'],'Canada']],
+      #    ['Europe',
+      #      ['Denmark','Germany','France']]
+      #   ]
+      #   grouped_options_for_select(grouped_options)
+      #
+      # Sample usage (Hash):
+      #   grouped_options = {
+      #    'North America' => [['United States','US], 'Canada'],
+      #    'Europe' => ['Denmark','Germany','France']
+      #   }
+      #   grouped_options_for_select(grouped_options)
+      #
+      # Possible output:
+      #   <optgroup label="Europe">
+      #     <option value="Denmark">Denmark</option>
+      #     <option value="Germany">Germany</option>
+      #     <option value="France">France</option>
+      #   </optgroup>
+      #   <optgroup label="North America">
+      #     <option value="US">United States</option>
+      #     <option value="Canada">Canada</option>
+      #   </optgroup>
+      #
+      # <b>Note:</b> Only the <tt><optgroup></tt> and <tt><option></tt> tags are returned, so you still have to
+      # wrap the output in an appropriate <tt><select></tt> tag.
+      def grouped_options_for_select(grouped_options, selected_key = nil, prompt = nil)
+        body = ''
+        body << content_tag(:option, prompt, :value => "") if prompt
+
+        grouped_options = grouped_options.sort if grouped_options.is_a?(Hash)
+
+        grouped_options.each do |group|
+          body << content_tag(:optgroup, options_for_select(group[1], selected_key), :label => group[0])
+        end
+
+        body
       end
 
       # Returns a string of option tags for pretty much any time zone in the
@@ -341,8 +405,9 @@ module ActionView
         html_options = html_options.stringify_keys
         add_default_name_and_id(html_options)
         value = value(object)
+        selected_value = options.has_key?(:selected) ? options[:selected] : value
         content_tag(
-          "select", add_options(options_from_collection_for_select(collection, value_method, text_method, value), options, value), html_options
+          "select", add_options(options_from_collection_for_select(collection, value_method, text_method, selected_value), options, value), html_options
         )
       end
 

@@ -3,10 +3,11 @@
 ####
 
 # Make sure we are using the latest rexml
-rexml_versions = ['', 'vendor/plugins/rexml/lib/'].collect { |v| 
+rexml_versions = ['', File.dirname(__FILE__) + '/../vendor/plugins/rexml/lib/'].collect { |v| 
   `ruby -r #{v + 'rexml/rexml'} -e 'p REXML::VERSION'`.split('.').collect {|n| n.to_i} }
-$:.unshift('vendor/plugins/rexml/lib') if (rexml_versions[0] <=> rexml_versions[1]) == -1
+$:.unshift(File.dirname(__FILE__) + '/../vendor/plugins/rexml/lib') if (rexml_versions[0] <=> rexml_versions[1]) == -1
 
+$: << File.dirname(__FILE__) + '/../vendor/plugins/rack/lib'
 require File.join(File.dirname(__FILE__), 'boot')
 
 require 'active_support/secure_random'

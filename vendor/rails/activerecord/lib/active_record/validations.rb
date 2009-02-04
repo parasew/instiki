@@ -203,9 +203,8 @@ module ActiveRecord
           if attr == "base"
             full_messages << message
           else
-            #key = :"activerecord.att.#{@base.class.name.underscore.to_sym}.#{attr}" 
             attr_name = @base.class.human_attribute_name(attr)
-            full_messages << attr_name + ' ' + message
+            full_messages << attr_name + I18n.t('activerecord.errors.format.separator', :default => ' ') + message
           end
         end
       end
@@ -494,18 +493,20 @@ module ActiveRecord
       # The first_name attribute must be in the object and it cannot be blank.
       #
       # If you want to validate the presence of a boolean field (where the real values are true and false),
-      # you will want to use validates_inclusion_of :field_name, :in => [true, false]
-      # This is due to the way Object#blank? handles boolean values. false.blank? # => true
+      # you will want to use <tt>validates_inclusion_of :field_name, :in => [true, false]</tt>.
+      #
+      # This is due to the way Object#blank? handles boolean values: <tt>false.blank? # => true</tt>.
       #
       # Configuration options:
       # * <tt>message</tt> - A custom error message (default is: "can't be blank").
-      # * <tt>on</tt> - Specifies when this validation is active (default is <tt>:save</tt>, other options <tt>:create</tt>, <tt>:update</tt>).
+      # * <tt>on</tt> - Specifies when this validation is active (default is <tt>:save</tt>, other options <tt>:create</tt>, 
+      #   <tt>:update</tt>).
       # * <tt>if</tt> - Specifies a method, proc or string to call to determine if the validation should
-      #   occur (e.g. :if => :allow_validation, or :if => Proc.new { |user| user.signup_step > 2 }).  The
-      #   method, proc or string should return or evaluate to a true or false value.
+      #   occur (e.g. <tt>:if => :allow_validation</tt>, or <tt>:if => Proc.new { |user| user.signup_step > 2 }</tt>).
+      #   The method, proc or string should return or evaluate to a true or false value.
       # * <tt>unless</tt> - Specifies a method, proc or string to call to determine if the validation should
-      #   not occur (e.g. :unless => :skip_validation, or :unless => Proc.new { |user| user.signup_step <= 2 }).  The
-      #   method, proc or string should return or evaluate to a true or false value.
+      #   not occur (e.g. <tt>:unless => :skip_validation</tt>, or <tt>:unless => Proc.new { |user| user.signup_step <= 2 }</tt>).
+      #   The method, proc or string should return or evaluate to a true or false value.
       #
       def validates_presence_of(*attr_names)
         configuration = { :on => :save }
@@ -574,6 +575,8 @@ module ActiveRecord
         # Get range option and value.
         option = range_options.first
         option_value = options[range_options.first]
+        key = {:is => :wrong_length, :minimum => :too_short, :maximum => :too_long}[option]
+        custom_message = options[:message] || options[key]
 
         case option
           when :within, :in
@@ -582,9 +585,9 @@ module ActiveRecord
             validates_each(attrs, options) do |record, attr, value|
               value = options[:tokenizer].call(value) if value.kind_of?(String)
               if value.nil? or value.size < option_value.begin
-                record.errors.add(attr, :too_short, :default => options[:too_short], :count => option_value.begin)
+                record.errors.add(attr, :too_short, :default => custom_message || options[:too_short], :count => option_value.begin)
               elsif value.size > option_value.end
-                record.errors.add(attr, :too_long, :default => options[:too_long], :count => option_value.end)
+                record.errors.add(attr, :too_long, :default => custom_message || options[:too_long], :count => option_value.end)
               end
             end
           when :is, :minimum, :maximum
@@ -592,13 +595,10 @@ module ActiveRecord
 
             # Declare different validations per option.
             validity_checks = { :is => "==", :minimum => ">=", :maximum => "<=" }
-            message_options = { :is => :wrong_length, :minimum => :too_short, :maximum => :too_long }
 
             validates_each(attrs, options) do |record, attr, value|
               value = options[:tokenizer].call(value) if value.kind_of?(String)
               unless !value.nil? and value.size.method(validity_checks[option])[option_value]
-                key = message_options[option]
-                custom_message = options[:message] || options[key]
                 record.errors.add(attr, key, :default => custom_message, :count => option_value) 
               end
             end
@@ -903,7 +903,7 @@ module ActiveRecord
         configuration.update(attr_names.extract_options!)
 
         validates_each(attr_names, configuration) do |record, attr_name, value|
-          unless (value.is_a?(Array) ? value : [value]).inject(true) { |v, r| (r.nil? || r.valid?) && v }
+          unless (value.is_a?(Array) ? value : [value]).collect { |r| r.nil? || r.valid? }.all?
             record.errors.add(attr_name, :invalid, :default => configuration[:message], :value => value)
           end
         end
@@ -1047,15 +1047,15 @@ module ActiveRecord
 
     protected
       # Overwrite this method for validation checks on all saves and use <tt>Errors.add(field, msg)</tt> for invalid attributes.
-      def validate #:doc:
+      def validate
       end
 
       # Overwrite this method for validation checks used only on creation.
-      def validate_on_create #:doc:
+      def validate_on_create
       end
 
       # Overwrite this method for validation checks used only on updates.
-      def validate_on_update # :doc:
+      def validate_on_update
       end
   end
 end

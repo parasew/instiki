@@ -38,8 +38,6 @@ class AssetTagHelperTest < ActionView::TestCase
     @controller.request = @request
 
     ActionView::Helpers::AssetTagHelper::reset_javascript_include_default
-    AssetTag::Cache.clear
-    AssetCollection::Cache.clear
   end
 
   def teardown
@@ -281,6 +279,26 @@ class AssetTagHelperTest < ActionView::TestCase
     assert_equal copy, source
   end
 
+  def test_caching_image_path_with_caching_and_proc_asset_host_using_request
+    ENV['RAILS_ASSET_ID'] = ''
+    ActionController::Base.asset_host = Proc.new do |source, request|
+      if request.ssl?
+        "#{request.protocol}#{request.host_with_port}"
+      else
+        "#{request.protocol}assets#{source.length}.example.com"
+      end
+    end
+    
+    ActionController::Base.perform_caching = true
+
+
+    @controller.request.stubs(:ssl?).returns(false)
+    assert_equal "http://assets15.example.com/images/xml.png", image_path("xml.png")
+
+    @controller.request.stubs(:ssl?).returns(true)
+    assert_equal "http://localhost/images/xml.png", image_path("xml.png")
+  end
+
   def test_caching_javascript_include_tag_when_caching_on
     ENV["RAILS_ASSET_ID"] = ""
     ActionController::Base.asset_host = 'http://a0.example.com'
@@ -331,6 +349,46 @@ class AssetTagHelperTest < ActionView::TestCase
         "#{request.protocol}assets#{source.length}.example.com"
       end
     }
+    ActionController::Base.perform_caching = true
+
+    assert_equal '/javascripts/vanilla.js'.length, 23
+    assert_dom_equal(
+      %(<script src="http://assets23.example.com/javascripts/vanilla.js" type="text/javascript"></script>),
+      javascript_include_tag(:all, :cache => 'vanilla')
+    )
+
+    assert File.exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, 'vanilla.js'))
+
+    class << @controller.request
+      def protocol() 'https://' end
+      def ssl?() true end
+    end
+
+    assert_equal '/javascripts/secure.js'.length, 22
+    assert_dom_equal(
+      %(<script src="https://localhost/javascripts/secure.js" type="text/javascript"></script>),
+      javascript_include_tag(:all, :cache => 'secure')
+    )
+
+    assert File.exist?(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, 'secure.js'))
+
+  ensure
+    FileUtils.rm_f(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, 'vanilla.js'))
+    FileUtils.rm_f(File.join(ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR, 'secure.js'))
+  end
+
+  def test_caching_javascript_include_tag_when_caching_on_with_2_argument_object_asset_host
+    ENV['RAILS_ASSET_ID'] = ''
+    ActionController::Base.asset_host = Class.new do
+      def call(source, request)
+        if request.ssl?
+          "#{request.protocol}#{request.host_with_port}"
+        else
+          "#{request.protocol}assets#{source.length}.example.com"
+        end
+      end
+    end.new
+
     ActionController::Base.perform_caching = true
 
     assert_equal '/javascripts/vanilla.js'.length, 23

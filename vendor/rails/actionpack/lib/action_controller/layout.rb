@@ -175,13 +175,18 @@ module ActionController #:nodoc:
       def default_layout(format) #:nodoc:
         layout = read_inheritable_attribute(:layout)
         return layout unless read_inheritable_attribute(:auto_layout)
-        @default_layout ||= {}
-        @default_layout[format] ||= default_layout_with_format(format, layout)
-        @default_layout[format]
+        find_layout(layout, format)
       end
 
       def layout_list #:nodoc:
-        Array(view_paths).sum([]) { |path| Dir["#{path}/layouts/**/*"] }
+        Array(view_paths).sum([]) { |path| Dir["#{path.to_str}/layouts/**/*"] }
+      end
+
+      def find_layout(layout, *formats) #:nodoc:
+        return layout if layout.respond_to?(:render)
+        view_paths.find_template(layout.to_s =~ /layouts\// ? layout : "layouts/#{layout}", *formats)
+      rescue ActionView::MissingTemplate
+        nil
       end
 
       private
@@ -200,15 +205,6 @@ module ActionController #:nodoc:
         def normalize_conditions(conditions)
           conditions.inject({}) {|hash, (key, value)| hash.merge(key => [value].flatten.map {|action| action.to_s})}
         end
-
-        def default_layout_with_format(format, layout)
-          list = layout_list
-          if list.grep(%r{layouts/#{layout}\.#{format}(\.[a-z][0-9a-z]*)+$}).empty?
-            (!list.grep(%r{layouts/#{layout}\.([a-z][0-9a-z]*)+$}).empty? && format == :html) ? layout : nil
-          else
-            layout
-          end
-        end
     end
 
     # Returns the name of the active layout. If the layout was specified as a method reference (through a symbol), this method
@@ -217,28 +213,34 @@ module ActionController #:nodoc:
     # weblog/standard, but <tt>layout "standard"</tt> will return layouts/standard.
     def active_layout(passed_layout = nil)
       layout = passed_layout || self.class.default_layout(default_template_format)
+
       active_layout = case layout
-        when String then layout
         when Symbol then __send__(layout)
         when Proc   then layout.call(self)
+        else layout
       end
 
-      # Explicitly passed layout names with slashes are looked up relative to the template root,
-      # but auto-discovered layouts derived from a nested controller will contain a slash, though be relative
-      # to the 'layouts' directory so we have to check the file system to infer which case the layout name came from.
       if active_layout
-        if active_layout.include?('/') && ! layout_directory?(active_layout)
-          active_layout
+        if layout = self.class.find_layout(active_layout, @template.template_format)
+          layout
         else
-          "layouts/#{active_layout}"
+          raise ActionView::MissingTemplate.new(self.class.view_paths, active_layout)
         end
       end
     end
 
     private
       def candidate_for_layout?(options)
-        options.values_at(:text, :xml, :json, :file, :inline, :partial, :nothing, :update).compact.empty? &&
-          !@template.__send__(:_exempt_from_layout?, options[:template] || default_template_name(options[:action]))
+        template = options[:template] || default_template(options[:action])
+        if options.values_at(:text, :xml, :json, :file, :inline, :partial, :nothing, :update).compact.empty?
+          begin
+            !self.view_paths.find_template(template, default_template_format).exempt_from_layout?
+          rescue ActionView::MissingTemplate
+            true
+          end
+        end
+      rescue ActionView::MissingTemplate
+        false
       end
 
       def pick_layout(options)
@@ -247,7 +249,7 @@ module ActionController #:nodoc:
           when FalseClass
             nil
           when NilClass, TrueClass
-            active_layout if action_has_layout? && !@template.__send__(:_exempt_from_layout?, default_template_name)
+            active_layout if action_has_layout? && candidate_for_layout?(:template => default_template_name)
           else
             active_layout(layout)
           end
@@ -269,12 +271,6 @@ module ActionController #:nodoc:
         else
           true
         end
-      end
-
-      def layout_directory?(layout_name)
-        @template.__send__(:_pick_template, "#{File.join('layouts', layout_name)}.#{@template.template_format}") ? true : false
-      rescue ActionView::MissingTemplate
-        false
       end
 
       def default_template_format

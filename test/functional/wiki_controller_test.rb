@@ -13,7 +13,7 @@ require 'zip/zipfilesystem'
 # Raise errors beyond the default web-based presentation
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
 
-class WikiControllerTest < Test::Unit::TestCase
+class WikiControllerTest < ActionController::TestCase
   fixtures :webs, :pages, :revisions, :system, :wiki_references
   
   def setup
@@ -30,6 +30,7 @@ class WikiControllerTest < Test::Unit::TestCase
     @home = @page = pages(:home_page)
     @oak = pages(:oak)
     @elephant = pages(:elephant)
+    @eternity = Regexp.new('author=.*; path=/; expires=' + Time.utc(2030).strftime("%a, %d-%b-%Y %H:%M:%S GMT"))
   end
 
   def test_authenticate
@@ -37,7 +38,7 @@ class WikiControllerTest < Test::Unit::TestCase
   
     get :authenticate, :web => 'wiki1', :password => 'pswd'
     assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
-    assert_equal ['pswd'], @response.cookies['wiki1']
+    assert_equal 'pswd', @response.cookies['wiki1']
   end
 
   def test_authenticate_wrong_password
@@ -118,7 +119,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_html', 'web' => 'wiki1'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'application/zip', r.headers['type']
+    assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-xhtml-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
@@ -149,7 +150,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_html', 'web' => 'wiki1'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'application/zip', r.headers['type']
+    assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
@@ -177,7 +178,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_html', 'web' => 'wiki1', 'layout' => 'no'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'application/zip', r.headers['type']
+    assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-x?html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
@@ -187,7 +188,7 @@ class WikiControllerTest < Test::Unit::TestCase
     r = process 'export_markup', 'web' => 'wiki1'
 
     assert_response(:success, bypass_body_parsing = true)
-    assert_equal 'application/zip', r.headers['type']
+    assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-markdownMML-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
@@ -199,7 +200,7 @@ class WikiControllerTest < Test::Unit::TestCase
 #    def test_export_pdf
 #      r = process 'export_pdf', 'web' => 'wiki1'
 #      assert_response(:success, bypass_body_parsing = true)
-#      assert_equal 'application/pdf', r.headers['type']
+#      assert_equal 'application/pdf', r.headers['Content-Type']
 #      assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
 #          r.headers['Content-Disposition']
 #      assert_equal '%PDF', r.body[0..3]
@@ -216,7 +217,7 @@ class WikiControllerTest < Test::Unit::TestCase
 #    r = process 'export_tex', 'web' => 'wiki1'
 #
 #    assert_response(:success, bypass_body_parsing = true)
-#    assert_equal 'application/octet-stream', r.headers['type']
+#    assert_equal 'application/octet-stream', r.headers['Content-Type']
 #    assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
 #        r.headers['Content-Disposition']
 #    assert_equal '\documentclass', r.body[0..13], 'Content is not a TeX file'
@@ -296,7 +297,7 @@ class WikiControllerTest < Test::Unit::TestCase
 #      assert_equal '%PDF', r.body[0..3]
 #      assert_equal "EOF\n", r.body[-4..-1]
 #
-#      assert_equal 'application/pdf', r.headers['type']
+#      assert_equal 'application/pdf', r.headers['Content-Type']
 #      assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
 #          r.headers['Content-Disposition']
 #    end
@@ -591,8 +592,8 @@ class WikiControllerTest < Test::Unit::TestCase
       'author' => 'AuthorOfNewPage'
     
     assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'NewPage'
-    assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
-    assert_equal Time.utc(2030), r.cookies['author'].expires
+    assert_equal 'AuthorOfNewPage', r.cookies['author']
+    assert_match @eternity, r.headers["Set-Cookie"][0]
     new_page = @wiki.read_page('wiki1', 'NewPage')
     assert_equal 'Contents of a new page', new_page.content
     assert_equal 'AuthorOfNewPage', new_page.author
@@ -603,8 +604,8 @@ class WikiControllerTest < Test::Unit::TestCase
       'author' => 'AuthorOfNewPage'
     
     assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage', :content => ''
-    assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
-    assert_equal Time.utc(2030), r.cookies['author'].expires
+    assert_equal 'AuthorOfNewPage', r.cookies['author']
+    assert_match @eternity, r.headers["Set-Cookie"][0]
   end
 
   def test_save_not_utf8_ncr
@@ -612,8 +613,8 @@ class WikiControllerTest < Test::Unit::TestCase
       'author' => 'AuthorOfNewPage'
     
     assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
-    assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
-    assert_equal Time.utc(2030), r.cookies['author'].expires
+    assert_equal 'AuthorOfNewPage', r.cookies['author']
+    assert_match @eternity, r.headers["Set-Cookie"][0]
   end
 
   def test_save_not_utf8_dec_ncr
@@ -621,8 +622,8 @@ class WikiControllerTest < Test::Unit::TestCase
       'author' => 'AuthorOfNewPage'
     
     assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
-    assert_equal ['AuthorOfNewPage'], r.cookies['author'].value
-    assert_equal Time.utc(2030), r.cookies['author'].expires
+    assert_equal 'AuthorOfNewPage', r.cookies['author']
+    assert_match @eternity, r.headers["Set-Cookie"][0]
   end
 
   def test_save_new_revision_of_existing_page
@@ -633,7 +634,7 @@ class WikiControllerTest < Test::Unit::TestCase
       'author' => 'Batman'
 
     assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
-    assert_equal ['Batman'], r.cookies['author'].value
+    assert_equal 'Batman', r.cookies['author']
     home_page = @wiki.read_page('wiki1', 'HomePage')
     assert_equal current_revisions+1, home_page.revisions.size
     assert_equal 'Revised HomePage', home_page.content
@@ -652,7 +653,7 @@ class WikiControllerTest < Test::Unit::TestCase
        :content => 'HisWay would be MyWay $\sin(x)\begin{svg}<svg/>\end{svg}\includegraphics[width' +
                    '=3em]{foo}$ in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEng' +
                    'ine in that SmartEngineGUI'
-    assert_equal ['Batman'], r.cookies['author'].value
+    assert_equal 'Batman', r.cookies['author']
     home_page = @wiki.read_page('wiki1', 'HomePage')
     assert_equal current_revisions, home_page.revisions.size
     assert_equal 'DavidHeinemeierHansson', home_page.author

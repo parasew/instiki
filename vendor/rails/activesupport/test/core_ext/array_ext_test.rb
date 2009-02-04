@@ -21,7 +21,7 @@ class ArrayExtAccessTests < Test::Unit::TestCase
     assert_equal array[2], array.third
     assert_equal array[3], array.fourth
     assert_equal array[4], array.fifth
-    assert_equal array[41], array.fourty_two
+    assert_equal array[41], array.forty_two
   end
 end
 
@@ -55,21 +55,22 @@ class ArrayExtToSentenceTests < Test::Unit::TestCase
     assert_equal "one, two, and three", ['one', 'two', 'three'].to_sentence
   end
 
-  def test_to_sentence_with_connector
-    assert_equal "one, two, and also three", ['one', 'two', 'three'].to_sentence(:connector => 'and also')
-    assert_equal "one, two, three", ['one', 'two', 'three'].to_sentence(:connector => '')
-    assert_equal "one, two, three", ['one', 'two', 'three'].to_sentence(:connector => nil)
-    assert_equal "one, two,  three", ['one', 'two', 'three'].to_sentence(:connector => ' ')
-    assert_equal "one, two, and  three", ['one', 'two', 'three'].to_sentence(:connector => 'and ')
+  def test_to_sentence_with_words_connector
+    assert_equal "one two, and three", ['one', 'two', 'three'].to_sentence(:words_connector => ' ')
+    assert_equal "one & two, and three", ['one', 'two', 'three'].to_sentence(:words_connector => ' & ')
+    assert_equal "onetwo, and three", ['one', 'two', 'three'].to_sentence(:words_connector => nil)
   end
 
-  def test_to_sentence_with_skip_last_comma
-    assert_equal "one, two, and three", ['one', 'two', 'three'].to_sentence(:skip_last_comma => false)
+  def test_to_sentence_with_last_word_connector
+    assert_equal "one, two, and also three", ['one', 'two', 'three'].to_sentence(:last_word_connector => ', and also ')
+    assert_equal "one, twothree", ['one', 'two', 'three'].to_sentence(:last_word_connector => nil)
+    assert_equal "one, two three", ['one', 'two', 'three'].to_sentence(:last_word_connector => ' ')
+    assert_equal "one, two and three", ['one', 'two', 'three'].to_sentence(:last_word_connector => ' and ')
   end
 
   def test_two_elements
     assert_equal "one and two", ['one', 'two'].to_sentence
-    assert_equal "one two", ['one', 'two'].to_sentence(:connector => '')
+    assert_equal "one two", ['one', 'two'].to_sentence(:two_words_connector => ' ')
   end
 
   def test_one_element
@@ -290,16 +291,14 @@ class ArrayExtractOptionsTests < Test::Unit::TestCase
   end
 end
 
-uses_mocha "ArrayExtRandomTests" do
-  class ArrayExtRandomTests < Test::Unit::TestCase
-    def test_random_element_from_array
-      assert_nil [].rand
+class ArrayExtRandomTests < Test::Unit::TestCase
+  def test_random_element_from_array
+    assert_nil [].rand
 
-      Kernel.expects(:rand).with(1).returns(0)
-      assert_equal 'x', ['x'].rand
+    Kernel.expects(:rand).with(1).returns(0)
+    assert_equal 'x', ['x'].rand
 
-      Kernel.expects(:rand).with(3).returns(1)
-      assert_equal 2, [1, 2, 3].rand
-    end
+    Kernel.expects(:rand).with(3).returns(1)
+    assert_equal 2, [1, 2, 3].rand
   end
 end
