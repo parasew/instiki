@@ -5,7 +5,7 @@ module Sanitizer
 #
 # Based heavily on Sam Ruby's code in the Universal FeedParser.
 
-  require 'html/tokenizer'
+  require 'action_controller/vendor/html-scanner/html/tokenizer'
   require 'node'
   require 'stringsupport'
 

@@ -306,7 +306,7 @@ module ActiveRecord
         end
 
         def copy_table(from, to, options = {}) #:nodoc:
-          options = options.merge(:id => !columns(from).detect{|c| c.name == 'id'}.nil?)
+          options = options.merge(:id => (!columns(from).detect{|c| c.name == 'id'}.nil? && 'id' == primary_key(from).to_s))
           create_table(to, options) do |definition|
             @definition = definition
             columns(from).each do |column|
@@ -402,6 +402,10 @@ module ActiveRecord
       end
 
       def add_column(table_name, column_name, type, options = {}) #:nodoc:
+        if @connection.respond_to?(:transaction_active?) && @connection.transaction_active?
+          raise StatementInvalid, 'Cannot add columns to a SQLite database while inside a transaction'
+        end
+
         alter_table(table_name) do |definition|
           definition.column(column_name, type, options)
         end

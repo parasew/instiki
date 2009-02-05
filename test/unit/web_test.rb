@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 #require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
-class WebTest < Test::Unit::TestCase
+class WebTest < ActiveSupport::TestCase
   fixtures :system, :webs, :pages, :revisions, :wiki_references
   
   def setup

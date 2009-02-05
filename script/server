@@ -1,65 +1,108 @@
 #!/usr/bin/env ruby
+require File.dirname(__FILE__) + '/../config/boot'
+# Don't do this. Instead, put it here, where we can customize it.
+#require 'commands/server'
 
-require 'webrick'
+require 'active_support'
+require 'action_controller'
+
+require 'fileutils'
 require 'optparse'
 
-OPTIONS = {
-  :port        => 2500,
-  :ip          => "0.0.0.0",
-  :environment => "production",
-  :server_root => File.expand_path(File.dirname(__FILE__) + "/../public/"),
-  :server_type => WEBrick::SimpleServer,
-  :mime_types  => WEBrick::HTTPUtils::DefaultMimeTypes.merge({
-       'avi'  => 'video/x-msvideo',
-       'gz'   => 'application/x-gzip',
-       'js'   => 'application/x-javascript',
-       'nb'   => 'application/mathematica',
-       'pdf'  => 'application/pdf',
-       'svg'  => 'application/svg+xml',
-       'tar'  => 'application/x-tar',
-       'tex'  => 'application/x-tex',
-       'xhtml'  => 'application/xhtml+xml',
-       'xml'  => 'application/xml',
-       'xslt' => 'application/xslt+xml'
-        })
+# TODO: Push Thin adapter upstream so we don't need worry about requiring it
+begin
+  require_library_or_gem 'thin'
+rescue Exception
+  # Thin not available
+end
+
+options = {
+  :Port        => 2500,
+  :Host        => "0.0.0.0",
+  :environment => (ENV['RAILS_ENV'] || "production").dup,
+  :config      => RAILS_ROOT + "/config.ru",
+  :detach      => false,
+  :debugger    => false
 }
 
-ARGV.options do |opts|
-  script_name = File.basename($0)
-  opts.banner = "Usage: ruby #{script_name} [options]"
-
-  opts.separator ""
-
+ARGV.clone.options do |opts|
   opts.on("-p", "--port=port", Integer,
-          "Runs Instiki on the specified port.",
-          "Default: 2500") { }
-#          "Default: 2500") { |OPTIONS[:port]| }
+          "Runs Instiki on the specified port.", "Default: 2500") { |v| options[:Port] = v }
   opts.on("-b", "--binding=ip", String,
-          "Binds Instiki to the specified ip.",
-          "Default: 0.0.0.0") { }
-#          "Default: 0.0.0.0") { |OPTIONS[:ip]| }
+          "Binds Instiki to the specified ip.", "Default: 0.0.0.0") { |v| options[:Host] = v }
+  opts.on("-c", "--config=file", String,
+          "Use custom rackup configuration file") { |v| options[:config] = v }
+  opts.on("-d", "--daemon", "Make server run as a Daemon.") { options[:detach] = true }
+  opts.on("-u", "--debugger", "Enable ruby-debugging for the server.") { options[:debugger] = true }
   opts.on("-e", "--environment=name", String,
           "Specifies the environment to run this server under (test/development/production).",
-          "Default: development") { }
-#          "Default: development") { |OPTIONS[:environment]| }
-  opts.on("-d", "--daemon",
-          "Make Instiki run as a Daemon (only works if fork is available -- meaning on *nix)."
-          ) { OPTIONS[:server_type] = WEBrick::Daemon }
+          "Default: production") { |v| options[:environment] = v }
 
   opts.separator ""
 
-  opts.on("-h", "--help",
-          "Show this help message.") { puts opts; exit }
+  opts.on("-h", "--help", "Show this help message.") { puts opts; exit }
 
   opts.parse!
 end
 
-ENV["RAILS_ENV"] = OPTIONS[:environment]
-require File.dirname(__FILE__) + "/../config/environment"
-require 'webrick_server'
+server = Rack::Handler.get(ARGV.first) rescue nil
+unless server
+  begin
+    server = Rack::Handler::Mongrel
+  rescue LoadError => e
+    server = Rack::Handler::WEBrick
+  end
+end
 
-OPTIONS['working_directory'] = File.expand_path(RAILS_ROOT)
+puts "=> Booting #{ActiveSupport::Inflector.demodulize(server)}"
+puts "=> Rails #{Rails.version} application starting on http://#{options[:Host]}:#{options[:Port]}"
 
-puts "=> Instiki started on http://#{OPTIONS[:ip]}:#{OPTIONS[:port]}"
-puts "=> Ctrl-C to shutdown; call with --help for options" if OPTIONS[:server_type] == WEBrick::SimpleServer
-DispatchServlet.dispatch(OPTIONS)
+%w(cache pids sessions sockets).each do |dir_to_make|
+  FileUtils.mkdir_p(File.join(RAILS_ROOT, 'tmp', dir_to_make))
+end
+
+if options[:detach]
+  Process.daemon
+  pid = "#{RAILS_ROOT}/tmp/pids/server.pid"
+  File.open(pid, 'w'){ |f| f.write(Process.pid) }
+  at_exit { File.delete(pid) if File.exist?(pid) }
+end
+
+ENV["RAILS_ENV"] = options[:environment]
+RAILS_ENV.replace(options[:environment]) if defined?(RAILS_ENV)
+
+if File.exist?(options[:config])
+  config = options[:config]
+  if config =~ /\.ru$/
+    cfgfile = File.read(config)
+    if cfgfile[/^#\\(.*)/]
+      opts.parse!($1.split(/\s+/))
+    end
+    inner_app = eval("Rack::Builder.new {( " + cfgfile + "\n )}.to_app", nil, config)
+  else
+    require config
+    inner_app = Object.const_get(File.basename(config, '.rb').capitalize)
+  end
+else
+  require RAILS_ROOT + "/config/environment"
+  inner_app = ActionController::Dispatcher.new
+end
+
+app = Rack::Builder.new {
+  use Rails::Rack::LogTailer unless options[:detach]
+  use Rails::Rack::Static
+  use Rails::Rack::Debugger if options[:debugger]
+  run inner_app
+}.to_app
+
+puts "=> Call with -d to detach"
+
+trap(:INT) { exit }
+
+puts "=> Ctrl-C to shutdown server"
+
+begin
+  server.run(app, options.merge(:AccessLog => []))
+ensure
+  puts 'Exiting'
+end

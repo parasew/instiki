@@ -57,7 +57,6 @@ class DispatchServlet < WEBrick::HTTPServlet::AbstractServlet
     server.mount('/', DispatchServlet, options)
 
     trap("INT") { server.shutdown }
-    trap("TERM") { server.shutdown }
     server.start
   end
 

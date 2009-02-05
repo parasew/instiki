@@ -40,6 +40,7 @@ module Rails
         # Replay action manifest.  RewindBase subclass rewinds manifest.
         def invoke!
           manifest.replay(self)
+          after_generate
         end
 
         def dependency(generator_name, args, runtime_options = {})
@@ -293,7 +294,7 @@ HELP
           file(relative_source, relative_destination, template_options) do |file|
             # Evaluate any assignments in a temporary, throwaway binding.
             vars = template_options[:assigns] || {}
-            b = binding
+            b = template_options[:binding] || binding
             vars.each { |k,v| eval "#{k} = vars[:#{k}] || vars['#{k}']", b }
 
             # Render the source file with the temporary binding.

@@ -1,13 +1,3 @@
-require 'active_record/associations/association_proxy'
-require 'active_record/associations/association_collection'
-require 'active_record/associations/belongs_to_association'
-require 'active_record/associations/belongs_to_polymorphic_association'
-require 'active_record/associations/has_one_association'
-require 'active_record/associations/has_many_association'
-require 'active_record/associations/has_many_through_association'
-require 'active_record/associations/has_and_belongs_to_many_association'
-require 'active_record/associations/has_one_through_association'
-
 module ActiveRecord
   class HasManyThroughAssociationNotFoundError < ActiveRecordError #:nodoc:
     def initialize(owner_class_name, reflection)
@@ -32,7 +22,7 @@ module ActiveRecord
       through_reflection      = reflection.through_reflection
       source_reflection_names = reflection.source_reflection_names
       source_associations     = reflection.through_reflection.klass.reflect_on_all_associations.collect { |a| a.name.inspect }
-      super("Could not find the source association(s) #{source_reflection_names.collect(&:inspect).to_sentence :connector => 'or'} in model #{through_reflection.klass}.  Try 'has_many #{reflection.name.inspect}, :through => #{through_reflection.name.inspect}, :source => <name>'.  Is it one of #{source_associations.to_sentence :connector => 'or'}?")
+      super("Could not find the source association(s) #{source_reflection_names.collect(&:inspect).to_sentence :two_words_connector => ' or ', :last_word_connector => ', or '} in model #{through_reflection.klass}.  Try 'has_many #{reflection.name.inspect}, :through => #{through_reflection.name.inspect}, :source => <name>'.  Is it one of #{source_associations.to_sentence :two_words_connector => ' or ', :last_word_connector => ', or '}?")
     end
   end
 
@@ -75,6 +65,18 @@ module ActiveRecord
 
   # See ActiveRecord::Associations::ClassMethods for documentation.
   module Associations # :nodoc:
+    # These classes will be loaded when associatoins are created.
+    # So there is no need to eager load them.
+    autoload :AssociationCollection, 'active_record/associations/association_collection'
+    autoload :AssociationProxy, 'active_record/associations/association_proxy'
+    autoload :BelongsToAssociation, 'active_record/associations/belongs_to_association'
+    autoload :BelongsToPolymorphicAssociation, 'active_record/associations/belongs_to_polymorphic_association'
+    autoload :HasAndBelongsToManyAssociation, 'active_record/associations/has_and_belongs_to_many_association'
+    autoload :HasManyAssociation, 'active_record/associations/has_many_association'
+    autoload :HasManyThroughAssociation, 'active_record/associations/has_many_through_association'
+    autoload :HasOneAssociation, 'active_record/associations/has_one_association'
+    autoload :HasOneThroughAssociation, 'active_record/associations/has_one_through_association'
+
     def self.included(base)
       base.extend(ClassMethods)
     end
@@ -85,6 +87,18 @@ module ActiveRecord
         instance_variable_set "@#{assoc.name}", nil
       end unless self.new_record?
     end
+
+    private
+      # Gets the specified association instance if it responds to :loaded?, nil otherwise.
+      def association_instance_get(name)
+        association = instance_variable_get("@#{name}")
+        association if association.respond_to?(:loaded?)
+      end
+
+      # Set the specified association instance.
+      def association_instance_set(name, association)
+        instance_variable_set("@#{name}", association)
+      end
 
     # Associations are a set of macro-like class methods for tying objects together through foreign keys. They express relationships like
     # "Project has one Project Manager" or "Project belongs to a Portfolio". Each macro adds a number of methods to the class which are
@@ -151,7 +165,7 @@ module ActiveRecord
     #   #others.destroy_all               |   X   |    X     |    X
     #   #others.find(*args)               |   X   |    X     |    X
     #   #others.find_first                |   X   |          |
-    #   #others.exist?                    |   X   |    X     |    X
+    #   #others.exists?                   |   X   |    X     |    X
     #   #others.uniq                      |   X   |    X     |    X
     #   #others.reset                     |   X   |    X     |    X
     #
@@ -253,6 +267,10 @@ module ActiveRecord
     #
     # You can manipulate objects and associations before they are saved to the database, but there is some special behavior you should be
     # aware of, mostly involving the saving of associated objects.
+    #
+    # Unless you enable the :autosave option on a <tt>has_one</tt>, <tt>belongs_to</tt>,
+    # <tt>has_many</tt>, or <tt>has_and_belongs_to_many</tt> association,
+    # in which case the members are always saved.
     #
     # === One-to-one associations
     #
@@ -650,7 +668,7 @@ module ActiveRecord
       #   Returns the number of associated objects.
       # [collection.find(...)]
       #   Finds an associated object according to the same rules as ActiveRecord::Base.find.
-      # [collection.exist?(...)]
+      # [collection.exists?(...)]
       #   Checks whether an associated object with the given conditions exists.
       #   Uses the same rules as ActiveRecord::Base.exists?.
       # [collection.build(attributes = {}, ...)]
@@ -680,7 +698,7 @@ module ActiveRecord
       # * <tt>Firm#clients.empty?</tt> (similar to <tt>firm.clients.size == 0</tt>)
       # * <tt>Firm#clients.size</tt> (similar to <tt>Client.count "firm_id = #{id}"</tt>)
       # * <tt>Firm#clients.find</tt> (similar to <tt>Client.find(id, :conditions => "firm_id = #{id}")</tt>)
-      # * <tt>Firm#clients.exist?(:name => 'ACME')</tt> (similar to <tt>Client.exist?(:name => 'ACME', :firm_id => firm.id)</tt>)
+      # * <tt>Firm#clients.exists?(:name => 'ACME')</tt> (similar to <tt>Client.exists?(:name => 'ACME', :firm_id => firm.id)</tt>)
       # * <tt>Firm#clients.build</tt> (similar to <tt>Client.new("firm_id" => id)</tt>)
       # * <tt>Firm#clients.create</tt> (similar to <tt>c = Client.new("firm_id" => id); c.save; c</tt>)
       # The declaration can also include an options hash to specialize the behavior of the association.
@@ -722,6 +740,8 @@ module ActiveRecord
       #   Specify second-order associations that should be eager loaded when the collection is loaded.
       # [:group]
       #   An attribute name by which the result should be grouped. Uses the <tt>GROUP BY</tt> SQL-clause.
+      # [:having]
+      #   Combined with +:group+ this can be used to filter the records that a <tt>GROUP BY</tt> returns. Uses the <tt>HAVING</tt> SQL-clause.
       # [:limit]
       #   An integer determining the limit on the number of rows that should be returned.
       # [:offset]
@@ -748,6 +768,9 @@ module ActiveRecord
       #   If true, all the associated objects are readonly through the association.
       # [:validate]
       #   If false, don't validate the associated objects when saving the parent object. true by default.
+      # [:autosave]
+      #   If true, always save any loaded members and destroy members marked for destruction, when saving the parent object. Off by default.
+      #
       # Option examples:
       #   has_many :comments, :order => "posted_on"
       #   has_many :comments, :include => :author
@@ -861,6 +884,8 @@ module ActiveRecord
       #   If true, the associated object is readonly through the association.
       # [:validate]
       #   If false, don't validate the associated object when saving the parent object. +false+ by default.
+      # [:autosave]
+      #   If true, always save the associated object or destroy it if marked for destruction, when saving the parent object. Off by default.
       #
       # Option examples:
       #   has_one :credit_card, :dependent => :destroy  # destroys the associated credit card
@@ -878,13 +903,10 @@ module ActiveRecord
         else
           reflection = create_has_one_reflection(association_id, options)
 
-          ivar = "@#{reflection.name}"
-
           method_name = "has_one_after_save_for_#{reflection.name}".to_sym
           define_method(method_name) do
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
-
-            if !association.nil? && (new_record? || association.new_record? || association[reflection.primary_key_name] != id)
+            association = association_instance_get(reflection.name)
+            if association && (new_record? || association.new_record? || association[reflection.primary_key_name] != id)
               association[reflection.primary_key_name] = id
               association.save(true)
             end
@@ -975,6 +997,8 @@ module ActiveRecord
       #   If true, the associated object is readonly through the association.
       # [:validate]
       #   If false, don't validate the associated objects when saving the parent object. +false+ by default.
+      # [:autosave]
+      #   If true, always save the associated object or destroy it if marked for destruction, when saving the parent object. Off by default.
       #
       # Option examples:
       #   belongs_to :firm, :foreign_key => "client_of"
@@ -987,15 +1011,12 @@ module ActiveRecord
       def belongs_to(association_id, options = {})
         reflection = create_belongs_to_reflection(association_id, options)
 
-        ivar = "@#{reflection.name}"
-
         if reflection.options[:polymorphic]
           association_accessor_methods(reflection, BelongsToPolymorphicAssociation)
 
           method_name = "polymorphic_belongs_to_before_save_for_#{reflection.name}".to_sym
           define_method(method_name) do
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
-
+            association = association_instance_get(reflection.name)
             if association && association.target
               if association.new_record?
                 association.save(true)
@@ -1015,9 +1036,7 @@ module ActiveRecord
 
           method_name = "belongs_to_before_save_for_#{reflection.name}".to_sym
           define_method(method_name) do
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
-
-            if !association.nil?
+            if association = association_instance_get(reflection.name)
               if association.new_record?
                 association.save(true)
               end
@@ -1103,7 +1122,7 @@ module ActiveRecord
       #   Finds an associated object responding to the +id+ and that
       #   meets the condition that it has to be associated with this object.
       #   Uses the same rules as ActiveRecord::Base.find.
-      # [collection.exist?(...)]
+      # [collection.exists?(...)]
       #   Checks whether an associated object with the given conditions exists.
       #   Uses the same rules as ActiveRecord::Base.exists?.
       # [collection.build(attributes = {})]
@@ -1129,7 +1148,7 @@ module ActiveRecord
       # * <tt>Developer#projects.empty?</tt>
       # * <tt>Developer#projects.size</tt>
       # * <tt>Developer#projects.find(id)</tt>
-      # * <tt>Developer#clients.exist?(...)</tt>
+      # * <tt>Developer#clients.exists?(...)</tt>
       # * <tt>Developer#projects.build</tt> (similar to <tt>Project.new("project_id" => id)</tt>)
       # * <tt>Developer#projects.create</tt> (similar to <tt>c = Project.new("project_id" => id); c.save; c</tt>)
       # The declaration may include an options hash to specialize the behavior of the association.
@@ -1147,11 +1166,12 @@ module ActiveRecord
       # [:foreign_key]
       #   Specify the foreign key used for the association. By default this is guessed to be the name
       #   of this class in lower-case and "_id" suffixed. So a Person class that makes a +has_and_belongs_to_many+ association
-      #   will use "person_id" as the default <tt>:foreign_key</tt>.
+      #   to Project will use "person_id" as the default <tt>:foreign_key</tt>.
       # [:association_foreign_key]
-      #   Specify the association foreign key used for the association. By default this is
-      #   guessed to be the name of the associated class in lower-case and "_id" suffixed. So if the associated class is Project,
-      #   the +has_and_belongs_to_many+ association will use "project_id" as the default <tt>:association_foreign_key</tt>.
+      #   Specify the foreign key used for the association on the receiving side of the association.
+      #   By default this is guessed to be the name of the associated class in lower-case and "_id" suffixed.
+      #   So if a Person class makes a +has_and_belongs_to_many+ association to Project,
+      #   the association will use "project_id" as the default <tt>:association_foreign_key</tt>.
       # [:conditions]
       #   Specify the conditions that the associated object must meet in order to be included as a +WHERE+
       #   SQL fragment, such as <tt>authorized = 1</tt>.  Record creations from the association are scoped if a hash is used.  
@@ -1179,6 +1199,8 @@ module ActiveRecord
       #   Specify second-order associations that should be eager loaded when the collection is loaded.
       # [:group]
       #   An attribute name by which the result should be grouped. Uses the <tt>GROUP BY</tt> SQL-clause.
+      # [:having]
+      #   Combined with +:group+ this can be used to filter the records that a <tt>GROUP BY</tt> returns. Uses the <tt>HAVING</tt> SQL-clause.
       # [:limit]
       #   An integer determining the limit on the number of rows that should be returned.
       # [:offset]
@@ -1190,6 +1212,8 @@ module ActiveRecord
       #   If true, all the associated objects are readonly through the association.
       # [:validate]
       #   If false, don't validate the associated objects when saving the parent object. +true+ by default.
+      # [:autosave]
+      #   If true, always save any loaded members and destroy members marked for destruction, when saving the parent object. Off by default.
       #
       # Option examples:
       #   has_and_belongs_to_many :projects
@@ -1210,11 +1234,11 @@ module ActiveRecord
         # callbacks will be executed after the association is wiped out.
         old_method = "destroy_without_habtm_shim_for_#{reflection.name}"
         class_eval <<-end_eval unless method_defined?(old_method)
-          alias_method :#{old_method}, :destroy_without_callbacks
-          def destroy_without_callbacks
-            #{reflection.name}.clear
-            #{old_method}
-          end
+          alias_method :#{old_method}, :destroy_without_callbacks  # alias_method :destroy_without_habtm_shim_for_posts, :destroy_without_callbacks
+          def destroy_without_callbacks                            # def destroy_without_callbacks
+            #{reflection.name}.clear                               #   posts.clear
+            #{old_method}                                          #   destroy_without_habtm_shim_for_posts
+          end                                                      # end
         end_eval
 
         add_association_callbacks(reflection.name, options)
@@ -1237,33 +1261,30 @@ module ActiveRecord
         end
 
         def association_accessor_methods(reflection, association_proxy_class)
-          ivar = "@#{reflection.name}"
-
           define_method(reflection.name) do |*params|
             force_reload = params.first unless params.empty?
-
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
+            association = association_instance_get(reflection.name)
 
             if association.nil? || force_reload
               association = association_proxy_class.new(self, reflection)
               retval = association.reload
               if retval.nil? and association_proxy_class == BelongsToAssociation
-                instance_variable_set(ivar, nil)
+                association_instance_set(reflection.name, nil)
                 return nil
               end
-              instance_variable_set(ivar, association)
+              association_instance_set(reflection.name, association)
             end
 
             association.target.nil? ? nil : association
           end
 
           define_method("loaded_#{reflection.name}?") do
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
+            association = association_instance_get(reflection.name)
             association && association.loaded?
           end
 
           define_method("#{reflection.name}=") do |new_value|
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
+            association = association_instance_get(reflection.name)
 
             if association.nil? || association.target != new_value
               association = association_proxy_class.new(self, reflection)
@@ -1274,7 +1295,7 @@ module ActiveRecord
               self.send(reflection.name, new_value)
             else
               association.replace(new_value)
-              instance_variable_set(ivar, new_value.nil? ? nil : association)
+              association_instance_set(reflection.name, new_value.nil? ? nil : association)
             end
           end
 
@@ -1282,20 +1303,18 @@ module ActiveRecord
             return if target.nil? and association_proxy_class == BelongsToAssociation
             association = association_proxy_class.new(self, reflection)
             association.target = target
-            instance_variable_set(ivar, association)
+            association_instance_set(reflection.name, association)
           end
         end
 
         def collection_reader_method(reflection, association_proxy_class)
           define_method(reflection.name) do |*params|
-            ivar = "@#{reflection.name}"
-
             force_reload = params.first unless params.empty?
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
+            association = association_instance_get(reflection.name)
 
-            unless association.respond_to?(:loaded?)
+            unless association
               association = association_proxy_class.new(self, reflection)
-              instance_variable_set(ivar, association)
+              association_instance_set(reflection.name, association)
             end
 
             association.reload if force_reload
@@ -1333,8 +1352,7 @@ module ActiveRecord
         def add_single_associated_validation_callbacks(association_name)
           method_name = "validate_associated_records_for_#{association_name}".to_sym
           define_method(method_name) do
-            association = instance_variable_get("@#{association_name}")
-            if !association.nil?
+            if association = association_instance_get(association_name)
               errors.add association_name unless association.target.nil? || association.valid?
             end
           end
@@ -1344,12 +1362,10 @@ module ActiveRecord
 
         def add_multiple_associated_validation_callbacks(association_name)
           method_name = "validate_associated_records_for_#{association_name}".to_sym
-          ivar = "@#{association_name}"
-
           define_method(method_name) do
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
+            association = association_instance_get(association_name)
 
-            if association.respond_to?(:loaded?)
+            if association
               if new_record?
                 association
               elsif association.loaded?
@@ -1366,8 +1382,6 @@ module ActiveRecord
         end
 
         def add_multiple_associated_save_callbacks(association_name)
-          ivar = "@#{association_name}"
-
           method_name = "before_save_associated_records_for_#{association_name}".to_sym
           define_method(method_name) do
             @new_record_before_save = new_record?
@@ -1377,13 +1391,13 @@ module ActiveRecord
 
           method_name = "after_create_or_update_associated_records_for_#{association_name}".to_sym
           define_method(method_name) do
-            association = instance_variable_get(ivar) if instance_variable_defined?(ivar)
+            association = association_instance_get(association_name)
 
             records_to_save = if @new_record_before_save
               association
-            elsif association.respond_to?(:loaded?) && association.loaded?
+            elsif association && association.loaded?
               association.select { |record| record.new_record? }
-            elsif association.respond_to?(:loaded?) && !association.loaded?
+            elsif association && !association.loaded?
               association.target.select { |record| record.new_record? }
             else
               []
@@ -1401,15 +1415,13 @@ module ActiveRecord
 
         def association_constructor_method(constructor, reflection, association_proxy_class)
           define_method("#{constructor}_#{reflection.name}") do |*params|
-            ivar = "@#{reflection.name}"
-
             attributees      = params.first unless params.empty?
             replace_existing = params[1].nil? ? true : params[1]
-            association      = instance_variable_get(ivar) if instance_variable_defined?(ivar)
+            association      = association_instance_get(reflection.name)
 
-            if association.nil?
+            unless association
               association = association_proxy_class.new(self, reflection)
-              instance_variable_set(ivar, association)
+              association_instance_set(reflection.name, association)
             end
 
             if association_proxy_class == HasOneAssociation
@@ -1447,7 +1459,7 @@ module ActiveRecord
             dependent_conditions << sanitize_sql(reflection.options[:conditions]) if reflection.options[:conditions]
             dependent_conditions << extra_conditions if extra_conditions
             dependent_conditions = dependent_conditions.collect {|where| "(#{where})" }.join(" AND ")
-
+            dependent_conditions = dependent_conditions.gsub('@', '\@')
             case reflection.options[:dependent]
               when :destroy
                 method_name = "has_many_dependent_destroy_for_#{reflection.name}".to_sym
@@ -1457,22 +1469,22 @@ module ActiveRecord
                 before_destroy method_name
               when :delete_all
                 module_eval %Q{
-                  before_destroy do |record|
-                    delete_all_has_many_dependencies(record,
-                      "#{reflection.name}",
-                      #{reflection.class_name},
-                      "#{dependent_conditions}")
-                  end
+                  before_destroy do |record|                  # before_destroy do |record|
+                    delete_all_has_many_dependencies(record,  #   delete_all_has_many_dependencies(record,
+                      "#{reflection.name}",                   #     "posts",
+                      #{reflection.class_name},               #     Post,
+                      %@#{dependent_conditions}@)             #     %@...@) # this is a string literal like %(...)
+                  end                                         # end
                 }
               when :nullify
                 module_eval %Q{
-                  before_destroy do |record|
-                    nullify_has_many_dependencies(record,
-                      "#{reflection.name}",
-                      #{reflection.class_name},
-                      "#{reflection.primary_key_name}",
-                      "#{dependent_conditions}")
-                  end
+                  before_destroy do |record|                  # before_destroy do |record|
+                    nullify_has_many_dependencies(record,     #   nullify_has_many_dependencies(record,
+                      "#{reflection.name}",                   #     "posts",
+                      #{reflection.class_name},               #     Post,
+                      "#{reflection.primary_key_name}",       #     "user_id",
+                      %@#{dependent_conditions}@)             #     %@...@) # this is a string literal like %(...)
+                  end                                         # end
                 }
               else
                 raise ArgumentError, "The :dependent option expects either :destroy, :delete_all, or :nullify (#{reflection.options[:dependent].inspect})"
@@ -1525,14 +1537,14 @@ module ActiveRecord
                   association = send(reflection.name)
                   association.destroy unless association.nil?
                 end
-                before_destroy method_name
+                after_destroy method_name
               when :delete
                 method_name = "belongs_to_dependent_delete_for_#{reflection.name}".to_sym
                 define_method(method_name) do
                   association = send(reflection.name)
                   association.delete unless association.nil?
                 end
-                before_destroy method_name
+                after_destroy method_name
               else
                 raise ArgumentError, "The :dependent option expects either :destroy or :delete (#{reflection.options[:dependent].inspect})"
             end
@@ -1551,7 +1563,7 @@ module ActiveRecord
         @@valid_keys_for_has_many_association = [
           :class_name, :table_name, :foreign_key, :primary_key,
           :dependent,
-          :select, :conditions, :include, :order, :group, :limit, :offset,
+          :select, :conditions, :include, :order, :group, :having, :limit, :offset,
           :as, :through, :source, :source_type,
           :uniq,
           :finder_sql, :counter_sql,
@@ -1607,7 +1619,7 @@ module ActiveRecord
         mattr_accessor :valid_keys_for_has_and_belongs_to_many_association
         @@valid_keys_for_has_and_belongs_to_many_association = [
           :class_name, :table_name, :join_table, :foreign_key, :association_foreign_key,
-          :select, :conditions, :include, :order, :group, :limit, :offset,
+          :select, :conditions, :include, :order, :group, :having, :limit, :offset,
           :uniq,
           :finder_sql, :counter_sql, :delete_sql, :insert_sql,
           :before_add, :after_add, :before_remove, :after_remove,
@@ -1656,7 +1668,7 @@ module ActiveRecord
           add_conditions!(sql, options[:conditions], scope)
           add_limited_ids_condition!(sql, options, join_dependency) if !using_limitable_reflections?(join_dependency.reflections) && ((scope && scope[:limit]) || options[:limit])
 
-          add_group!(sql, options[:group], scope)
+          add_group!(sql, options[:group], options[:having], scope)
           add_order!(sql, options[:order], scope)
           add_limit!(sql, options, scope) if using_limitable_reflections?(join_dependency.reflections)
           add_lock!(sql, options, scope)
@@ -1712,7 +1724,7 @@ module ActiveRecord
           end
 
           add_conditions!(sql, options[:conditions], scope)
-          add_group!(sql, options[:group], scope)
+          add_group!(sql, options[:group], options[:having], scope)
 
           if order && is_distinct
             connection.add_order_by_for_association_limiting!(sql, :order => order)
@@ -1725,46 +1737,70 @@ module ActiveRecord
           return sanitize_sql(sql)
         end
 
+        def tables_in_string(string)
+          return [] if string.blank?
+          string.scan(/([\.a-zA-Z_]+).?\./).flatten
+        end
+
         def conditions_tables(options)
           # look in both sets of conditions
           conditions = [scope(:find, :conditions), options[:conditions]].inject([]) do |all, cond|
             case cond
               when nil   then all
               when Array then all << cond.first
+              when Hash  then all << cond.keys
               else            all << cond
             end
           end
-          conditions.join(' ').scan(/([\.a-zA-Z_]+).?\./).flatten
+          tables_in_string(conditions.join(' '))
         end
 
         def order_tables(options)
           order = [options[:order], scope(:find, :order) ].join(", ")
           return [] unless order && order.is_a?(String)
-          order.scan(/([\.a-zA-Z_]+).?\./).flatten
+          tables_in_string(order)
         end
 
         def selects_tables(options)
           select = options[:select]
           return [] unless select && select.is_a?(String)
-          select.scan(/"?([\.a-zA-Z_]+)"?.?\./).flatten
+          tables_in_string(select)
+        end
+
+        def joined_tables(options)
+          scope = scope(:find)
+          joins = options[:joins]
+          merged_joins = scope && scope[:joins] && joins ? merge_joins(scope[:joins], joins) : (joins || scope && scope[:joins])
+          [table_name] + case merged_joins
+          when Symbol, Hash, Array
+            if array_of_strings?(merged_joins)
+              tables_in_string(merged_joins.join(' '))
+            else
+              join_dependency = ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, merged_joins, nil)
+              join_dependency.join_associations.collect {|join_association| [join_association.aliased_join_table_name, join_association.aliased_table_name]}.flatten.compact
+            end
+          else
+            tables_in_string(merged_joins)
+          end
         end
 
         # Checks if the conditions reference a table other than the current model table
-        def include_eager_conditions?(options, tables = nil)
-          ((tables || conditions_tables(options)) - [table_name]).any?
+        def include_eager_conditions?(options, tables = nil, joined_tables = nil)
+          ((tables || conditions_tables(options)) - (joined_tables || joined_tables(options))).any?
         end
 
         # Checks if the query order references a table other than the current model's table.
-        def include_eager_order?(options, tables = nil)
-          ((tables || order_tables(options)) - [table_name]).any?
+        def include_eager_order?(options, tables = nil, joined_tables = nil)
+          ((tables || order_tables(options)) - (joined_tables || joined_tables(options))).any?
         end
 
-        def include_eager_select?(options)
-          (selects_tables(options) - [table_name]).any?
+        def include_eager_select?(options, joined_tables = nil)
+          (selects_tables(options) - (joined_tables || joined_tables(options))).any?
         end
 
         def references_eager_loaded_tables?(options)
-          include_eager_order?(options) || include_eager_conditions?(options) || include_eager_select?(options)
+          joined_tables = joined_tables(options)
+          include_eager_order?(options, nil, joined_tables) || include_eager_conditions?(options, nil, joined_tables) || include_eager_select?(options, joined_tables)
         end
 
         def using_limitable_reflections?(reflections)
@@ -2141,7 +2177,7 @@ module ActiveRecord
                         aliased_table_name,
                         foreign_key,
                         parent.aliased_table_name,
-                        parent.primary_key
+                        reflection.options[:primary_key] || parent.primary_key
                       ]
                   end
                 when :belongs_to
@@ -2168,7 +2204,7 @@ module ActiveRecord
             protected
 
               def aliased_table_name_for(name, suffix = nil)
-                if !parent.table_joins.blank? && parent.table_joins.to_s.downcase =~ %r{join(\s+\w+)?\s+#{name.downcase}\son}
+                if !parent.table_joins.blank? && parent.table_joins.to_s.downcase =~ %r{join(\s+\w+)?\s+#{active_record.connection.quote_table_name name.downcase}\son}
                   @join_dependency.table_aliases[name] += 1
                 end
 

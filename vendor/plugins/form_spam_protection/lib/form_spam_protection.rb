@@ -14,7 +14,7 @@ module FormSpamProtection
   def protect_form_handler_from_spam
     unless request.get? || request.xml_http_request?
       if params[:_form_key] && session[:form_keys] 
-        key = session.dbman.generate_digest(params[:_form_key])
+        key = Digest::SHA1.hexdigest(params[:_form_key])
         if session[:form_keys].keys.include?(key)
           session[:form_keys][key][1] += 1
           if session[:form_keys][key][1] >= 4

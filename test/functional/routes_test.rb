@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 require 'action_controller/routing'
 
-class RoutesTest < Test::Unit::TestCase
+class RoutesTest < ActionController::TestCase
 
   def test_parse_uri
     assert_routing('', :controller => 'wiki', :action => 'index')
