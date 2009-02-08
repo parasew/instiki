@@ -65,6 +65,8 @@ padding:0;
 #svg_logo {
 float:left;
 margin:.5em .25em 0 -.625em;
+width:1.5em;
+height:1.625em;
 }
 
 a.nav,a.nav:link,a.nav:visited {
