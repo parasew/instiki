@@ -89,10 +89,10 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_upload_end_to_end
-    # edit and re-render home page so that it has an "unknown file" link to 'rails-e2e.gif'
+    # edit and re-render a page so that it has an "unknown file" link to 'rails-e2e.gif'
     PageRenderer.setup_url_generator(StubUrlGenerator.new)
     renderer = PageRenderer.new
-    @wiki.revise_page('wiki1', 'HomePage', '[[rails-e2e.gif:pic]]', 
+    @wiki.revise_page('wiki1', 'Oak', '[[rails-e2e.gif:pic]]', 
         Time.now, 'AnonymousBrave', renderer)
     assert_equal "<p><span class='newWikiWord'>rails-e2e.gif<a href='../file/rails-e2e.gif'>" +
         "?</a></span></p>",
@@ -112,14 +112,15 @@ class FileControllerTest < ActionController::TestCase
     # updated from post to get - post fails the spam protection (no javascript)
     #   Moron! If substituting GET for POST actually works, you
     #   have much, much bigger problems.
-    r = get :file, :web => 'wiki1',
+    r = get :file, :web => 'wiki1', :referring_page => '/wiki1/show/Oak',
             :file => {:file_name => 'rails-e2e.gif',
                       :content => StringIO.new(picture),
                       :description => 'Rails, end-to-end'}
+    assert_redirected_to  '/wiki1/show/Oak'
     assert @web.has_file?('rails-e2e.gif')
     assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)
     PageRenderer.setup_url_generator(StubUrlGenerator.new)
-    @wiki.revise_page('wiki1', 'HomePage', 'Try [[rails-e2e.gif:pic]] again.',
+    @wiki.revise_page('wiki1', 'Oak', 'Try [[rails-e2e.gif:pic]] again.',
         Time.now, 'AnonymousBrave', renderer)
     assert_equal "<p>Try <img alt='Rails, end-to-end' src='../file/rails-e2e.gif'/> again.</p>",
         renderer.display_content
