@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>
-      <%= h headers['Status'] %>
+      <%= h("#{@status} #{@status_message}") %>
   </title>
 
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -27,7 +27,7 @@
 
 <div id="Error-Container">
   <h1>
-    <%= h headers['Status']  %>
+    <%= h("#{@status} #{@status_message}")  %>
   </h1>
 
 <div id="Error-Content">

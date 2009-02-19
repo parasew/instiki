@@ -202,6 +202,8 @@ module ActiveResource
   # sets the <tt>read_timeout</tt> of the internal Net::HTTP instance to the same value. The default
   # <tt>read_timeout</tt> is 60 seconds on most Ruby implementations.
   class Base
+    ##
+    # :singleton-method:
     # The logger for diagnosing and tracing Active Resource calls.
     cattr_accessor :logger
 
@@ -704,6 +706,7 @@ module ActiveResource
     def new?
       id.nil?
     end
+    alias :new_record? :new?
 
     # Gets the <tt>\id</tt> attribute of the resource.
     def id
@@ -743,8 +746,8 @@ module ActiveResource
     #   # => true
     #
     def ==(other)
-      other.equal?(self) || (other.instance_of?(self.class) && !other.new? && other.id == id)
-    end
+      other.equal?(self) || (other.instance_of?(self.class) && other.id == id && other.prefix_options == prefix_options)
+		end
 
     # Tests for equality (delegates to ==).
     def eql?(other)
@@ -1003,7 +1006,7 @@ module ActiveResource
 
       # Takes a response from a typical create post and pulls the ID out
       def id_from_response(response)
-        response['Location'][/\/([^\/]*?)(\.\w+)?$/, 1]
+        response['Location'][/\/([^\/]*?)(\.\w+)?$/, 1] if response['Location']
       end
 
       def element_path(options = nil)

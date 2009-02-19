@@ -85,13 +85,21 @@ class UrlGenerator < AbstractUrlGenerator
       end
     when :publish
       if known_page
-        web = Web.find_by_address(web_address)
-        action = web.published? ? 'published' : 'show'
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
+        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'published', 
             :id => name
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>} 
+      end
+    when :show
+      if known_page
+        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'show', 
+            :id => name
+        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+      else 
+        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'new', 
+            :id => name
+        %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>}
       end
     else 
       if known_page

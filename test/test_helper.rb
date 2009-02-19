@@ -4,8 +4,7 @@ ENV['RAILS_ENV'] = 'test'
 # File.expand_path can be removed if Ruby 1.9 is in use.
 require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
 
-require 'test/unit'
-require 'active_record/fixtures'
+require 'test_help'
 require 'wiki_content'
 require 'url_generator'
 require 'digest/sha1'
@@ -17,10 +16,12 @@ class FakeSessionDbMan
   end
 end
 
-Test::Unit::TestCase.pre_loaded_fixtures = false
-Test::Unit::TestCase.use_transactional_fixtures = true
-Test::Unit::TestCase.use_instantiated_fixtures = false
-Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + "/fixtures/"
+class  ActiveSupport::TestCase
+  self.pre_loaded_fixtures = false
+  self.use_transactional_fixtures = true
+  self.use_instantiated_fixtures = false
+  self.fixture_path = File.dirname(__FILE__) + "/fixtures/"
+end
 
 # activate PageObserver
 PageObserver.instance

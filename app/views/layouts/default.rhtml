@@ -39,14 +39,15 @@
 <div id="Container">
 <div id="Content">
   <h1 id="pageName">
-    <% if @page and (@page.name == 'HomePage') and %w( show published print ).include?(@action_name) %>
+    <%= render(:file => 'svg_logo') if @controller.xhtml_enabled? %>
+    <%- if @page and (@page.name == 'HomePage') and %w( show published print ).include?(@action_name) -%>
       <%= h(@web.name) + (@show_diff ? ' (changes)' : '') %>
-    <% elsif @web %>
+    <%- elsif @web -%>
       <span class="webName"><%= @web.name %></span><br />
       <%= @title %>
-    <% else %>
+    <%- else -%>
       <%= @title %>
-    <% end %>
+    <%- end %>
   </h1>
 
 <%= render(:file => 'navigation') unless @web.nil? || @hide_navigation %>

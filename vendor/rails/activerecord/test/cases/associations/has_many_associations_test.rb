@@ -255,6 +255,11 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
     assert_equal 2, companies(:first_firm).clients_grouped_by_name.length
   end
 
+  def test_find_scoped_grouped_having
+    assert_equal 1, authors(:david).popular_grouped_posts.length
+    assert_equal 0, authors(:mary).popular_grouped_posts.length
+  end
+
   def test_adding
     force_signal37_to_load_all_clients_of_firm
     natural = Client.new("name" => "Natural Company")
@@ -660,6 +665,19 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
     assert_equal 1, Client.find_all_by_client_of(firm.id).size
   end
 
+  def test_dependent_association_respects_optional_hash_conditions_on_delete
+    firm = companies(:odegy)
+    Client.create(:client_of => firm.id, :name => "BigShot Inc.")
+    Client.create(:client_of => firm.id, :name => "SmallTime Inc.")
+    # only one of two clients is included in the association due to the :conditions key
+    assert_equal 2, Client.find_all_by_client_of(firm.id).size
+    assert_equal 1, firm.dependent_sanitized_conditional_clients_of_firm.size
+    firm.destroy
+    # only the correctly associated client should have been deleted
+    assert_equal 1, Client.find_all_by_client_of(firm.id).size
+  end
+
+
   def test_creation_respects_hash_condition
     ms_client = companies(:first_firm).clients_like_ms_with_hash_conditions.build
 
@@ -680,7 +698,8 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
       authors(:david).destroy
     end
 
-    assert_equal [author_address.id], AuthorAddress.destroyed_author_address_ids[authors(:david).id]
+    assert_equal nil, AuthorAddress.find_by_id(authors(:david).author_address_id)
+    assert_equal nil, AuthorAddress.find_by_id(authors(:david).author_address_extra_id)
   end
 
   def test_invalid_belongs_to_dependent_option_raises_exception
@@ -1096,6 +1115,12 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
     client_association = companies(:first_firm).clients
     assert !client_association.respond_to?(:private_method)
     assert client_association.respond_to?(:private_method, true)
+  end
+
+  def test_creating_using_primary_key
+    firm = Firm.find(:first)
+    client = firm.clients_using_primary_key.create!(:name => 'test')
+    assert_equal firm.name, client.firm_name
   end
 end
 

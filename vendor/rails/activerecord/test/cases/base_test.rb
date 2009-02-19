@@ -16,6 +16,7 @@ require 'models/post'
 require 'models/comment'
 require 'models/minimalistic'
 require 'models/warehouse_thing'
+require 'models/parrot'
 require 'rexml/document'
 
 class Category < ActiveRecord::Base; end
@@ -638,6 +639,13 @@ class BasicsTest < ActiveRecord::TestCase
     category.reload
     assert_not_nil category.categorizations_count
     assert_equal 4, category.categorizations_count
+
+    category_2 = categories(:technology)
+    count_1, count_2 = (category.categorizations_count || 0), (category_2.categorizations_count || 0)
+    Category.update_counters([category.id, category_2.id], "categorizations_count" => 2)
+    category.reload; category_2.reload
+    assert_equal count_1 + 2, category.categorizations_count
+    assert_equal count_2 + 2, category_2.categorizations_count
   end
 
   def test_update_all
@@ -1195,6 +1203,11 @@ class BasicsTest < ActiveRecord::TestCase
     assert !b_false.value?
     b_true = Booleantest.find(true_id)
     assert b_true.value?
+  end
+
+  def test_new_record_returns_boolean
+    assert_equal Topic.new.new_record?, true
+    assert_equal Topic.find(1).new_record?, false
   end
 
   def test_clone
@@ -2069,6 +2082,15 @@ class BasicsTest < ActiveRecord::TestCase
     assert_match /Quiet/, log.string
   ensure
     ActiveRecord::Base.logger = original_logger
+  end
+
+  def test_create_with_custom_timestamps
+    custom_datetime = 1.hour.ago.beginning_of_day
+
+    %w(created_at created_on updated_at updated_on).each do |attribute|
+      parrot = LiveParrot.create(:name => "colombian", attribute => custom_datetime)
+      assert_equal custom_datetime, parrot[attribute]
+    end
   end
 
   private

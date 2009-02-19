@@ -220,7 +220,7 @@ module ActionView
         end
       end
 
-      STORAGE_UNITS = %w( Bytes KB MB GB TB ).freeze
+      STORAGE_UNITS = [:byte, :kb, :mb, :gb, :tb].freeze
 
       # Formats the bytes in +size+ into a more understandable representation
       # (e.g., giving it 1500 yields 1.5 KB). This method is useful for
@@ -249,7 +249,7 @@ module ActionView
       #  number_to_human_size(1234567, 2)    # => 1.18 MB
       #  number_to_human_size(483989, 0)     # => 473 KB
       def number_to_human_size(number, *args)
-        return number.nil? ? nil : pluralize(number.to_i, "Byte") if number.to_i < 1024
+        return nil if number.nil?
 
         options = args.extract_options!
         options.symbolize_keys!
@@ -268,22 +268,32 @@ module ActionView
         separator ||= (options[:separator] || defaults[:separator])
         delimiter ||= (options[:delimiter] || defaults[:delimiter])
 
-        max_exp  = STORAGE_UNITS.size - 1
-        number   = Float(number)
-        exponent = (Math.log(number) / Math.log(1024)).to_i # Convert to base 1024
-        exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
-        number  /= 1024 ** exponent
-        unit     = STORAGE_UNITS[exponent]
+        storage_units_format = I18n.translate(:'number.human.storage_units.format', :locale => options[:locale], :raise => true)
 
-        begin
-          escaped_separator = Regexp.escape(separator)
-          number_with_precision(number,
-            :precision => precision,
-            :separator => separator,
-            :delimiter => delimiter
-          ).sub(/(\d)(#{escaped_separator}[1-9]*)?0+\z/, '\1\2').sub(/#{escaped_separator}\z/, '') + " #{unit}"
-        rescue
-          number
+        if number.to_i < 1024
+          unit = I18n.translate(:'number.human.storage_units.units.byte', :locale => options[:locale], :count => number.to_i, :raise => true)
+          storage_units_format.gsub(/%n/, number.to_i.to_s).gsub(/%u/, unit)
+        else
+          max_exp  = STORAGE_UNITS.size - 1
+          number   = Float(number)
+          exponent = (Math.log(number) / Math.log(1024)).to_i # Convert to base 1024
+          exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
+          number  /= 1024 ** exponent
+
+          unit_key = STORAGE_UNITS[exponent]
+          unit = I18n.translate(:"number.human.storage_units.units.#{unit_key}", :locale => options[:locale], :count => number, :raise => true)
+
+          begin
+            escaped_separator = Regexp.escape(separator)
+            formatted_number = number_with_precision(number,
+              :precision => precision,
+              :separator => separator,
+              :delimiter => delimiter
+            ).sub(/(\d)(#{escaped_separator}[1-9]*)?0+\z/, '\1\2').sub(/#{escaped_separator}\z/, '')
+            storage_units_format.gsub(/%n/, formatted_number).gsub(/%u/, unit)
+          rescue
+            number
+          end
         end
       end
     end

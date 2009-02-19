@@ -18,7 +18,7 @@ class FileController < ApplicationController
       new_file = @web.wiki_files.create(params['file'])
       if new_file.valid?
         flash[:info] = "File '#{@file_name}' successfully uploaded"
-        redirect_to_page(@page_name)
+        redirect_to(params['referring_page'])
       else
         # pass the file with errors back into the form
         @file = new_file

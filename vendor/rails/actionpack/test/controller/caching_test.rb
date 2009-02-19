@@ -42,12 +42,13 @@ class PageCachingTestController < ActionController::Base
   end
 end
 
-class PageCachingTest < Test::Unit::TestCase
+class PageCachingTest < ActionController::TestCase
   def setup
     ActionController::Base.perform_caching = true
 
     ActionController::Routing::Routes.draw do |map|
       map.main '', :controller => 'posts'
+      map.formatted_posts 'posts.:format', :controller => 'posts'
       map.resources :posts
       map.connect ':controller/:action/:id'
     end
@@ -67,7 +68,7 @@ class PageCachingTest < Test::Unit::TestCase
 
   def teardown
     FileUtils.rm_rf(File.dirname(FILE_STORE_PATH))
-
+    ActionController::Routing::Routes.clear!
     ActionController::Base.perform_caching = false
   end
 
@@ -120,8 +121,7 @@ class PageCachingTest < Test::Unit::TestCase
     [:get, :post, :put, :delete].each do |method|
       unless method == :get and status == :ok
         define_method "test_shouldnt_cache_#{method}_with_#{status}_status" do
-          @request.env['REQUEST_METHOD'] = method.to_s.upcase
-          process status
+          send(method, status)
           assert_response status
           assert_page_not_cached status, "#{method} with #{status} status shouldn't have been cached"
         end
@@ -168,7 +168,7 @@ class ActionCachingTestController < ActionController::Base
 
   def forbidden
     render :text => "Forbidden"
-    headers["Status"] = "403 Forbidden"
+    response.status = "403 Forbidden"
   end
 
   def with_layout
@@ -222,7 +222,7 @@ class ActionCachingMockController
   end
 end
 
-class ActionCacheTest < Test::Unit::TestCase
+class ActionCacheTest < ActionController::TestCase
   def setup
     reset!
     FileUtils.mkdir_p(FILE_STORE_PATH)
@@ -401,7 +401,7 @@ class ActionCacheTest < Test::Unit::TestCase
 
   def test_xml_version_of_resource_is_treated_as_different_cache
     with_routing do |set|
-      ActionController::Routing::Routes.draw do |map|
+      set.draw do |map|
         map.connect ':controller/:action.:format'
         map.connect ':controller/:action'
       end
@@ -471,7 +471,7 @@ class FragmentCachingTestController < ActionController::Base
   def some_action; end;
 end
 
-class FragmentCachingTest < Test::Unit::TestCase
+class FragmentCachingTest < ActionController::TestCase
   def setup
     ActionController::Base.perform_caching = true
     @store = ActiveSupport::Cache::MemoryStore.new
@@ -527,7 +527,7 @@ class FragmentCachingTest < Test::Unit::TestCase
   def test_write_fragment_with_caching_disabled
     assert_nil @store.read('views/name')
     ActionController::Base.perform_caching = false
-    assert_equal nil, @controller.write_fragment('name', 'value')
+    assert_equal 'value', @controller.write_fragment('name', 'value')
     assert_nil @store.read('views/name')
   end
 
@@ -603,7 +603,7 @@ class FunctionalCachingController < ActionController::Base
   end
 end
 
-class FunctionalFragmentCachingTest < Test::Unit::TestCase
+class FunctionalFragmentCachingTest < ActionController::TestCase
   def setup
     ActionController::Base.perform_caching = true
     @store = ActiveSupport::Cache::MemoryStore.new

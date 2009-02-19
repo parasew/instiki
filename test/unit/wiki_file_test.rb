@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'fileutils'
 
-class WikiFileTest < Test::Unit::TestCase
+class WikiFileTest < ActiveSupport::TestCase
   include FileUtils
   fixtures :webs, :pages, :revisions, :system, :wiki_references
 

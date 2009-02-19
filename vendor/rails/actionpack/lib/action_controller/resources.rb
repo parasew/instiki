@@ -42,7 +42,7 @@ module ActionController
   #
   # Read more about REST at http://en.wikipedia.org/wiki/Representational_State_Transfer
   module Resources
-    INHERITABLE_OPTIONS = :namespace, :shallow, :actions
+    INHERITABLE_OPTIONS = :namespace, :shallow
 
     class Resource #:nodoc:
       DEFAULT_ACTIONS = :index, :create, :new, :edit, :show, :update, :destroy
@@ -119,7 +119,7 @@ module ActionController
       end
 
       def has_action?(action)
-        !DEFAULT_ACTIONS.include?(action) || @options[:actions].nil? || @options[:actions].include?(action)
+        !DEFAULT_ACTIONS.include?(action) || action_allowed?(action)
       end
 
       protected
@@ -135,22 +135,27 @@ module ActionController
         end
 
         def set_allowed_actions
-          only    = @options.delete(:only)
-          except  = @options.delete(:except)
+          only, except = @options.values_at(:only, :except)
+          @allowed_actions ||= {}
 
-          if only && except
-            raise ArgumentError, 'Please supply either :only or :except, not both.'
-          elsif only == :all || except == :none
-            options[:actions] = DEFAULT_ACTIONS
+          if only == :all || except == :none
+            only = nil
+            except = []
           elsif only == :none || except == :all
-            options[:actions] = []
-          elsif only
-            options[:actions] = DEFAULT_ACTIONS & Array(only).map(&:to_sym)
-          elsif except
-            options[:actions] = DEFAULT_ACTIONS - Array(except).map(&:to_sym)
-          else
-            # leave options[:actions] alone
+            only = []
+            except = nil
           end
+
+          if only
+            @allowed_actions[:only] = Array(only).map(&:to_sym)
+          elsif except
+            @allowed_actions[:except] = Array(except).map(&:to_sym)
+          end
+        end
+
+        def action_allowed?(action)
+          only, except = @allowed_actions.values_at(:only, :except)
+          (!only || only.include?(action)) && (!except || !except.include?(action))
         end
 
         def set_prefixes
@@ -283,7 +288,12 @@ module ActionController
     # * <tt>:new</tt> - Same as <tt>:collection</tt>, but for actions that operate on the new \resource action.
     # * <tt>:controller</tt> - Specify the controller name for the routes.
     # * <tt>:singular</tt> - Specify the singular name used in the member routes.
-    # * <tt>:requirements</tt> - Set custom routing parameter requirements.
+    # * <tt>:requirements</tt> - Set custom routing parameter requirements; this is a hash of either 
+    #     regular expressions (which must match for the route to match) or extra parameters. For example:
+    #
+    #       map.resource :profile, :path_prefix => ':name', :requirements => { :name => /[a-zA-Z]+/, :extra => 'value' }
+    #
+    #     will only match if the first part is alphabetic, and will pass the parameter :extra to the controller.
     # * <tt>:conditions</tt> - Specify custom routing recognition conditions.  \Resources sets the <tt>:method</tt> value for the method-specific routes.
     # * <tt>:as</tt> - Specify a different \resource name to use in the URL path. For example:
     #     # products_path == '/productos'
@@ -397,8 +407,6 @@ module ActionController
     #   # --> DELETE /posts/1 (fails)
     #   # --> POST /posts/1/comments (maps to the CommentsController#create action)
     #   # --> PUT /posts/1/comments/1 (fails)
-    #
-    # The <tt>:only</tt> and <tt>:except</tt> options are inherited by any nested resource(s).
     #
     # If <tt>map.resources</tt> is called with multiple resources, they all get the same options applied.
     #
@@ -535,9 +543,9 @@ module ActionController
 
         with_options :controller => resource.controller do |map|
           map_collection_actions(map, resource)
-          map_default_singleton_actions(map, resource)
           map_new_actions(map, resource)
           map_member_actions(map, resource)
+          map_default_singleton_actions(map, resource)
 
           map_associations(resource, options)
 
@@ -639,10 +647,8 @@ module ActionController
           formatted_route_path = "#{route_path}.:format"
 
           if route_name && @set.named_routes[route_name.to_sym].nil?
-            map.named_route(route_name, route_path, action_options)
-            map.named_route("formatted_#{route_name}", formatted_route_path, action_options)
+            map.named_route(route_name, formatted_route_path, action_options)
           else
-            map.connect(route_path, action_options)
             map.connect(formatted_route_path, action_options)
           end
         end
@@ -668,8 +674,4 @@ module ActionController
         end
       end
   end
-end
-
-class ActionController::Routing::RouteSet::Mapper
-  include ActionController::Resources
 end

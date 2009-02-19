@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
-class PageTest < Test::Unit::TestCase
+class PageTest < ActiveSupport::TestCase
   fixtures :webs, :pages, :revisions, :system
   
   def setup

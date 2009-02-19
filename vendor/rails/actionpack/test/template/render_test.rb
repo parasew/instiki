@@ -1,16 +1,21 @@
 require 'abstract_unit'
 require 'controller/fake_models'
 
-class ViewRenderTest < Test::Unit::TestCase
-  def setup
+module RenderTestCases
+  def setup_view(paths)
     @assigns = { :secret => 'in the sauce' }
-    @view = ActionView::Base.new(ActionController::Base.view_paths, @assigns)
+    @view = ActionView::Base.new(paths, @assigns)
+
+    # Reload and register danish language for testing
+    I18n.reload!
+    I18n.backend.store_translations 'da', {}
+
+    # Ensure original are still the same since we are reindexing view paths
+    assert_equal ORIGINAL_LOCALES, I18n.available_locales.map(&:to_s).sort
   end
 
   def test_render_file
-    assert_deprecated do
-      assert_equal "Hello world!", @view.render("test/hello_world.erb")
-    end
+    assert_equal "Hello world!", @view.render(:file => "test/hello_world.erb")
   end
 
   def test_render_file_not_using_full_path
@@ -18,15 +23,19 @@ class ViewRenderTest < Test::Unit::TestCase
   end
 
   def test_render_file_without_specific_extension
-    assert_deprecated do
-      assert_equal "Hello world!", @view.render("test/hello_world")
-    end
+    assert_equal "Hello world!", @view.render(:file => "test/hello_world")
+  end
+
+  def test_render_file_with_localization
+    old_locale = I18n.locale
+    I18n.locale = :da
+    assert_equal "Hey verden", @view.render(:file => "test/hello_world")
+  ensure
+    I18n.locale = old_locale
   end
 
   def test_render_file_at_top_level
-    assert_deprecated do
-      assert_equal 'Elastica', @view.render('/shared')
-    end
+    assert_equal 'Elastica', @view.render(:file => '/shared')
   end
 
   def test_render_file_with_full_path
@@ -35,34 +44,30 @@ class ViewRenderTest < Test::Unit::TestCase
   end
 
   def test_render_file_with_instance_variables
-    assert_deprecated do
-      assert_equal "The secret is in the sauce\n", @view.render("test/render_file_with_ivar.erb")
-    end
+    assert_equal "The secret is in the sauce\n", @view.render(:file => "test/render_file_with_ivar.erb")
   end
 
   def test_render_file_with_locals
     locals = { :secret => 'in the sauce' }
-    assert_deprecated do
-      assert_equal "The secret is in the sauce\n", @view.render("test/render_file_with_locals.erb", locals)
-    end
+    assert_equal "The secret is in the sauce\n", @view.render(:file => "test/render_file_with_locals.erb", :locals => locals)
   end
 
   def test_render_file_not_using_full_path_with_dot_in_path
-    assert_deprecated do
-      assert_equal "The secret is in the sauce\n", @view.render("test/dot.directory/render_file_with_ivar")
-    end
+    assert_equal "The secret is in the sauce\n", @view.render(:file => "test/dot.directory/render_file_with_ivar")
   end
 
   def test_render_has_access_current_template
-    assert_deprecated do
-      assert_equal "test/template.erb", @view.render("test/template.erb")
-    end
+    assert_equal "test/template.erb", @view.render(:file => "test/template.erb")
   end
 
   def test_render_update
     # TODO: You should not have to stub out template because template is self!
     @view.instance_variable_set(:@template, @view)
     assert_equal 'alert("Hello, World!");', @view.render(:update) { |page| page.alert('Hello, World!') }
+  end
+
+  def test_render_partial_from_default
+    assert_equal "only partial", @view.render("test/partial_only")
   end
 
   def test_render_partial
@@ -85,6 +90,10 @@ class ViewRenderTest < Test::Unit::TestCase
 
   def test_render_partial_with_locals
     assert_equal "5", @view.render(:partial => "test/counter", :locals => { :counter_counter => 5 })
+  end
+
+  def test_render_partial_with_locals_from_default
+    assert_equal "only partial", @view.render("test/partial_only", :counter_counter => 5)
   end
 
   def test_render_partial_with_errors
@@ -143,12 +152,6 @@ class ViewRenderTest < Test::Unit::TestCase
   end
 
   # TODO: The reason for this test is unclear, improve documentation
-  def test_render_js_partial_and_fallback_to_erb_layout
-    @view.template_format = :js
-    assert_equal "Before (Josh)\n\nAfter", @view.render(:partial => "test/layout_for_partial", :locals => { :name => "Josh" })
-  end
-
-  # TODO: The reason for this test is unclear, improve documentation
   def test_render_missing_xml_partial_and_raise_missing_template
     @view.template_format = :xml
     assert_raise(ActionView::MissingTemplate) { @view.render(:partial => "test/layout_for_partial") }
@@ -163,7 +166,7 @@ class ViewRenderTest < Test::Unit::TestCase
   end
 
   def test_render_fallbacks_to_erb_for_unknown_types
-    assert_equal "Hello, World!", @view.render(:inline => "Hello, World!", :type => :foo)
+    assert_equal "Hello, World!", @view.render(:inline => "Hello, World!", :type => :bar)
   end
 
   CustomHandler = lambda do |template|
@@ -181,6 +184,17 @@ class ViewRenderTest < Test::Unit::TestCase
     assert_equal 'source: "Hello, <%= name %>!"', @view.render(:inline => "Hello, <%= name %>!", :locals => { :name => "Josh" }, :type => :foo)
   end
 
+  class LegacyHandler < ActionView::TemplateHandler
+    def render(template, local_assigns)
+      "source: #{template.source}; locals: #{local_assigns.inspect}"
+    end
+  end
+
+  def test_render_legacy_handler_with_custom_type
+    ActionView::Template.register_template_handler :foo, LegacyHandler
+    assert_equal 'source: Hello, <%= name %>!; locals: {:name=>"Josh"}', @view.render(:inline => "Hello, <%= name %>!", :locals => { :name => "Josh" }, :type => :foo)
+  end
+
   def test_render_with_layout
     assert_equal %(<title></title>\nHello world!\n),
       @view.render(:file => "test/hello_world.erb", :layout => "layouts/yield")
@@ -189,5 +203,29 @@ class ViewRenderTest < Test::Unit::TestCase
   def test_render_with_nested_layout
     assert_equal %(<title>title</title>\n<div id="column">column</div>\n<div id="content">content</div>\n),
       @view.render(:file => "test/nested_layout.erb", :layout => "layouts/yield")
+  end
+end
+
+class CachedViewRenderTest < Test::Unit::TestCase
+  include RenderTestCases
+
+  # Ensure view path cache is primed
+  def setup
+    view_paths = ActionController::Base.view_paths
+    assert_equal ActionView::Template::EagerPath, view_paths.first.class
+    setup_view(view_paths)
+  end
+end
+
+class LazyViewRenderTest < Test::Unit::TestCase
+  include RenderTestCases
+
+  # Test the same thing as above, but make sure the view path
+  # is not eager loaded
+  def setup
+    path = ActionView::Template::Path.new(FIXTURE_LOAD_PATH)
+    view_paths = ActionView::Base.process_view_paths(path)
+    assert_equal ActionView::Template::Path, view_paths.first.class
+    setup_view(view_paths)
   end
 end

@@ -6,7 +6,7 @@ require 'admin_controller'
 # Raise errors beyond the default web-based presentation
 class AdminController; def rescue_action(e) logger.error(e); raise e end; end
 
-class AdminControllerTest < Test::Unit::TestCase
+class AdminControllerTest < ActionController::TestCase
   fixtures :webs, :pages, :revisions, :system, :wiki_references
 
   def setup

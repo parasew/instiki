@@ -51,7 +51,7 @@ font-size:100%
 
 h1#pageName {
 line-height:1em;
-margin:0.2em 0 0;
+margin:0.2em 0 0.2em 0;
 padding:0;
 }
 
@@ -60,6 +60,13 @@ color:#444;
 font-size:35%;
 line-height:1em;
 padding:0;
+}
+
+#svg_logo {
+float:left;
+margin:.5em .25em 0 -.625em;
+width:1.5em;
+height:1.625em;
 }
 
 a.nav,a.nav:link,a.nav:visited {
