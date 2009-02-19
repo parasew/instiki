@@ -1,3 +1,54 @@
+
+* 0.16.2: Big steps, Rails 2.3.0-RC1 and tons of new stuff!
+
+All the patching, developing and great hacking from Jacques Distler was
+merged into the main codebase of instiki. Jaques is now also maintaining the
+main branch (together with parasew), which brings instiki up-to-date!
+
+Find more information about all the changes in his blog:
+http://golem.ph.utexas.edu/~distler/blog/
+
+New Features:
+* Instiki comes and runs with Rails 2.3.0-RC1
+* Add a user interface to manage uploaded files.
+* Add a user interface to delete a Web.
+* Add a user interface to delete orphaned pages in a Category. In addition to
+  deleting all orphaned pages, you can now delete just the orphaned pages in a
+  particular category. Among other things, this provides a handy way to delete
+  a (selection of) page(s): just assign them to a new category (“delete”, say)
+  and delete the orphaned pages in that category.
+* BlahTeX/PNG Support (from Ari Stern). For the luddites, among you, old-skool
+  pictures of your equations, instead of MathML.
+* Serve Webs which use non-Markdown Text Filters (Textile, RDoc or Mixed) as
+  text/html. This makes those Text Filters usable, again.
+
+Bugfixes:
+(see http://golem.ph.utexas.edu/~distler/blog/archives/001893.html for a
+complete list)
+
+* fixes to xhtmldiff
+* fixed Sanitizer issues
+* Do dnsbl lookups more judiciously. Anti-spam effectiveness is undiminished,
+  but the application is more responsive.
+* Fix a Session CookieOverflow when rescuing Instiki::ValidationError
+* Domain independent caching
+* Fix for no Flash Messages 
+* Links on “published” Webs were all screwed-up. Fixed.
+* Make uploaded pictures display in the “published” view.
+* Make @import rules in the “Stylesheet Tweaks” work in the “published” view.
+* Actually verify the password, when setting a password for a Web, rather than
+  just pretending to do so.
+* fixes for nowiki “<nowiki>[[!include foo]]</nowiki>”)
+* Prevent Recursive includes (for real, this time).
+* Hide Equations From WikiChunk Processing
+* Fix a bug in the Chunk handler, which was mangling backslashes in included
+  pages.
+* Entering the wrong password on the “CreateWeb” form now redirects back to
+  the form, as it should.
+* Allow single-letter WikiLinks (e.g. “[[a]]”). Requested by a Japanese user.
+* Allow single-letter includes (e.g. “[[!include a]]”).
+
+
 ------------------------------------------------------------------------------
 * 0.13.0:
 
