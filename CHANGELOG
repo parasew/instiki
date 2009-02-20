@@ -1,15 +1,43 @@
 
-* 0.16.2: Big steps, Rails 2.3.0-RC1 and tons of new stuff!
+* 0.16.3: Big steps, Rails 2.3.0-RC1 and tons of new stuff!
 
 All the patching, developing and great hacking from Jacques Distler was
 merged into the main codebase of instiki. Jaques is now also maintaining the
 main branch (together with parasew), which brings instiki up-to-date!
 
-Find more information about all the changes in his blog:
-http://golem.ph.utexas.edu/~distler/blog/
+Find more information about all the changes in his site:
+
+  http://golem.ph.utexas.edu/instiki/
 
 New Features:
 * Instiki comes and runs with Rails 2.3.0-RC1
+* New Markdown interpreter: Maruku
+* Default markup dialect is Markdown+itex2MML
+* Mathematics suport, using itex2MML (Markdown+itex2MML)
+     http://golem.ph.utexas.edu/~distler/blog/itex2MMLcommands.html
+  or BlahTeX (Markdown+BlahTeX/PNG)
+     http://golem.ph.utexas.edu/instiki/show/BlahTeX
+* Theorem Environments
+* Automatic Equation numbering and automatic Theorem numbering,
+* Integrated presentation software
+     http://golem.ph.utexas.edu/instiki/show/S5
+  complete with support for themes
+  (available with Markdown, Markdown+itex2MML or Markdown+BlahTeX/PNG)
+* Sends application/xhtml+xml to compatible browsers
+  (available with Markdown, Markdown+itex2MML or Markdown+BlahTeX/PNG)
+  Serve Webs which use non-Markdown Text Filters (Textile, RDoc or Mixed) as
+  text/html. This makes those Text Filters usable, again.
+* Scalable Vector Graphics (SVG) enabled
+  (available with Markdown, Markdown+itex2MML or Markdown+BlahTeX/PNG).
+* Nifty SVG Logo
+  (available with Markdown, Markdown+itex2MML or Markdown+BlahTeX/PNG).
+* Atom 1.0 feeds.
+* ETag support.
+* Filesystem-based caching.
+* New, industrial-strength Sanitizer (anti-XSS protection).
+* Uses xhtmldiff for redline diff pages.
+* (Actually functional) LaTeX output.
+* InterWeb WikiLinks
 * Add a user interface to manage uploaded files.
 * Add a user interface to delete a Web.
 * Add a user interface to delete orphaned pages in a Category. In addition to
@@ -17,10 +45,9 @@ New Features:
   particular category. Among other things, this provides a handy way to delete
   a (selection of) page(s): just assign them to a new category (“delete”, say)
   and delete the orphaned pages in that category.
-* BlahTeX/PNG Support (from Ari Stern). For the luddites, among you, old-skool
-  pictures of your equations, instead of MathML.
-* Serve Webs which use non-Markdown Text Filters (Textile, RDoc or Mixed) as
-  text/html. This makes those Text Filters usable, again.
+* Add the manage_fixtures plugin for easy database migration
+* Descriptions in the File Upload Dialog are used as the default alt text (for
+  pictures) or the default link text (for files).
 
 Bugfixes:
 (see http://golem.ph.utexas.edu/~distler/blog/archives/001893.html for a
@@ -39,7 +66,6 @@ complete list)
 * Actually verify the password, when setting a password for a Web, rather than
   just pretending to do so.
 * fixes for nowiki “<nowiki>[[!include foo]]</nowiki>”)
-* Prevent Recursive includes (for real, this time).
 * Hide Equations From WikiChunk Processing
 * Fix a bug in the Chunk handler, which was mangling backslashes in included
   pages.
@@ -47,7 +73,39 @@ complete list)
   the form, as it should.
 * Allow single-letter WikiLinks (e.g. “[[a]]”). Requested by a Japanese user.
 * Allow single-letter includes (e.g. “[[!include a]]”).
-
+* Huge improvements to caching and cache-sweeping
+* Category listing restricts to current Web.
+* All WikiReference methods limit results to the current web
+* File uploads work right.
+* Make WEBrick respond to TERM signal. (Launchd, in particular, requires this.)
+* Ditch the URIChunk and LocalURIChunk handlers. Slow, buggy, and of dubious
+  utility.
+* Ensure unsafe operations (new, save,...) are POSTs, not GETs.
+* Fix utf-8 bug in WikiChunk handling.
+* Disable WikiChunk processing in tags.
+* Hide Equations From WikiChunk Processing
+* Fix for the "Backslashes in Included Equations" bug.
+* Sessions are now stored in a cookie (signed and Base-64 encoded).
+  Form_spam_protection stores form_keys in the session.
+  Make sure spambots implement both cookies and javascript, by storing
+  hashed (with salt) keys in the session.
+* Make sure request.ip is a valid IPv4 or IPv6 address.
+* Make remove_orphaned_pages work in a proxied situation.
+* In the wiki_controller, only apply the dnsbl_check before_filter 
+  to the :edit, :new, and :save :export actions, instead of all actions.
+  This makes mundane "show" requests faster, but does not 
+  compromise spam-fighting ability.
+* Be a little gentler in recovering from Instiki::ValidationErrors, when
+  saving a page. Previously, we threw away all the user's changes upon
+  the redirect. Now we attempt to salvage what he wrote.
+* Drop hostname from cache key.
+* Fix Recursive Includes.
+* Entering an incorrect password on the Create Web form should redirect
+  back to the form, with a flash error.
+* In the Stylesheet Tweaks, the owner of a Web can specify an @import rule
+  to pull in CSS styles form an external file. This worked in the "show"
+  view, but was broken in the "published" view. Fixed.
+* Allow multiple leading capital letters in a WikiWord.
 
 ------------------------------------------------------------------------------
 * 0.13.0:
