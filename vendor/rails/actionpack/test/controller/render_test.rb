@@ -277,6 +277,9 @@ class TestController < ActionController::Base
   def render_implicit_html_template_from_xhr_request
   end
 
+  def render_implicit_js_template_without_layout
+  end
+
   def formatted_html_erb
   end
 
@@ -686,6 +689,8 @@ class TestController < ActionController::Base
           "layouts/standard"
         when "action_talk_to_layout", "layout_overriding_layout"
           "layouts/talk_from_action"
+        when "render_implicit_html_template_from_xhr_request"
+          (request.xhr? ? 'layouts/xhr' : 'layouts/standard')
       end
     end
 end
@@ -1014,8 +1019,13 @@ class RenderTest < ActionController::TestCase
   end
 
   def test_should_implicitly_render_html_template_from_xhr_request
-    get :render_implicit_html_template_from_xhr_request, :format => :js
-    assert_equal "Hello HTML!", @response.body
+    xhr :get, :render_implicit_html_template_from_xhr_request
+    assert_equal "XHR!\nHello HTML!", @response.body
+  end
+
+  def test_should_implicitly_render_js_template_without_layout
+    get :render_implicit_js_template_without_layout, :format => :js
+    assert_no_match /<html>/, @response.body
   end
 
   def test_should_render_formatted_template

@@ -1,7 +1,5 @@
 require 'abstract_unit'
 
-uses_mocha 'integration' do
-
 class SessionTest < Test::Unit::TestCase
   StubApp = lambda { |env|
     [200, {"Content-Type" => "text/html", "Content-Length" => "13"}, "Hello, World!"]
@@ -298,7 +296,7 @@ class IntegrationProcessTest < ActionController::IntegrationTest
       assert_equal "Gone", status_message
       assert_response 410
       assert_response :gone
-      assert_equal ["cookie_1=; path=/", "cookie_3=chocolate; path=/"], headers["Set-Cookie"]
+      assert_equal "cookie_1=; path=/\ncookie_3=chocolate; path=/", headers["Set-Cookie"]
       assert_equal({"cookie_1"=>"", "cookie_2"=>"oatmeal", "cookie_3"=>"chocolate"}, cookies)
       assert_equal "Gone", response.body
     end
@@ -416,6 +414,4 @@ class MetalTest < ActionController::IntegrationTest
     assert_response :not_found
     assert_equal '', response.body
   end
-end
-
 end

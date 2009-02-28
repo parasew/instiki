@@ -172,21 +172,8 @@ module ActionController #:nodoc:
         @layout_conditions ||= read_inheritable_attribute(:layout_conditions)
       end
 
-      def default_layout(format) #:nodoc:
-        layout = read_inheritable_attribute(:layout)
-        return layout unless read_inheritable_attribute(:auto_layout)
-        find_layout(layout, format)
-      end
-
       def layout_list #:nodoc:
         Array(view_paths).sum([]) { |path| Dir["#{path.to_str}/layouts/**/*"] }
-      end
-
-      def find_layout(layout, *formats) #:nodoc:
-        return layout if layout.respond_to?(:render)
-        view_paths.find_template(layout.to_s =~ /layouts\// ? layout : "layouts/#{layout}", *formats)
-      rescue ActionView::MissingTemplate
-        nil
       end
 
       private
@@ -212,7 +199,8 @@ module ActionController #:nodoc:
     # object). If the layout was defined without a directory, layouts is assumed. So <tt>layout "weblog/standard"</tt> will return
     # weblog/standard, but <tt>layout "standard"</tt> will return layouts/standard.
     def active_layout(passed_layout = nil)
-      layout = passed_layout || self.class.default_layout(default_template_format)
+      layout = passed_layout || default_layout
+      return layout if layout.respond_to?(:render)
 
       active_layout = case layout
         when Symbol then __send__(layout)
@@ -220,27 +208,22 @@ module ActionController #:nodoc:
         else layout
       end
 
-      if active_layout
-        if layout = self.class.find_layout(active_layout, @template.template_format)
-          layout
-        else
-          raise ActionView::MissingTemplate.new(self.class.view_paths, active_layout)
-        end
-      end
+      find_layout(active_layout, default_template_format) if active_layout
     end
 
     private
-      def candidate_for_layout?(options)
-        template = options[:template] || default_template(options[:action])
-        if options.values_at(:text, :xml, :json, :file, :inline, :partial, :nothing, :update).compact.empty?
-          begin
-            !self.view_paths.find_template(template, default_template_format).exempt_from_layout?
-          rescue ActionView::MissingTemplate
-            true
-          end
-        end
+      def default_layout #:nodoc:
+        layout = self.class.read_inheritable_attribute(:layout)
+        return layout unless self.class.read_inheritable_attribute(:auto_layout)
+        find_layout(layout, default_template_format)
       rescue ActionView::MissingTemplate
-        false
+        nil
+      end
+
+      def find_layout(layout, format) #:nodoc:
+        view_paths.find_template(layout.to_s =~ /layouts\// ? layout : "layouts/#{layout}", format, false)
+      rescue ActionView::MissingTemplate
+        raise if Mime::Type.lookup_by_extension(format.to_s).html?
       end
 
       def pick_layout(options)
@@ -273,8 +256,26 @@ module ActionController #:nodoc:
         end
       end
 
+      def candidate_for_layout?(options)
+        template = options[:template] || default_template(options[:action])
+        if options.values_at(:text, :xml, :json, :file, :inline, :partial, :nothing, :update).compact.empty?
+          begin
+            template_object = self.view_paths.find_template(template, default_template_format)
+            # this restores the behavior from 2.2.2, where response.template.template_format was reset
+            # to :html for :js requests with a matching html template.
+            # see v2.2.2, ActionView::Base, lines 328-330
+            @real_format = :html if response.template.template_format == :js && template_object.format == "html"
+            !template_object.exempt_from_layout?
+          rescue ActionView::MissingTemplate
+            true
+          end
+        end
+      rescue ActionView::MissingTemplate
+        false
+      end
+
       def default_template_format
-        response.template.template_format
+        @real_format || response.template.template_format
       end
   end
 end

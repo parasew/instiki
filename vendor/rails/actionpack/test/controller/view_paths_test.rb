@@ -41,7 +41,7 @@ class ViewLoadPathsTest < ActionController::TestCase
   def teardown
     ActiveSupport::Deprecation.behavior = @old_behavior
   end
-
+  
   def test_template_load_path_was_set_correctly
     assert_equal [FIXTURE_LOAD_PATH], @controller.view_paths.map(&:to_s)
   end

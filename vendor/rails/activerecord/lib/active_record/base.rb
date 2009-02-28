@@ -663,7 +663,7 @@ module ActiveRecord #:nodoc:
 
 
       # Returns true if a record exists in the table that matches the +id+ or
-      # conditions given, or false otherwise. The argument can take four forms:
+      # conditions given, or false otherwise. The argument can take five forms:
       #
       # * Integer - Finds the record with this primary key.
       # * String - Finds the record with a primary key corresponding to this
@@ -672,6 +672,7 @@ module ActiveRecord #:nodoc:
       #   (such as <tt>['color = ?', 'red']</tt>).
       # * Hash - Finds the record that matches these +find+-style conditions
       #   (such as <tt>{:color => 'red'}</tt>).
+      # * No args - Returns false if the table is empty, true otherwise.
       #
       # For more information about specifying conditions as a Hash or Array,
       # see the Conditions section in the introduction to ActiveRecord::Base.
@@ -685,7 +686,8 @@ module ActiveRecord #:nodoc:
       #   Person.exists?('5')
       #   Person.exists?(:name => "David")
       #   Person.exists?(['name LIKE ?', "%#{query}%"])
-      def exists?(id_or_conditions)
+      #   Person.exists?
+      def exists?(id_or_conditions = {})
         connection.select_all(
           construct_finder_sql(
             :select     => "#{quoted_table_name}.#{primary_key}",
@@ -884,7 +886,8 @@ module ActiveRecord #:nodoc:
       # Deletes the records matching +conditions+ without instantiating the records first, and hence not
       # calling the +destroy+ method nor invoking callbacks. This is a single SQL DELETE statement that
       # goes straight to the database, much more efficient than +destroy_all+. Be careful with relations
-      # though, in particular <tt>:dependent</tt> rules defined on associations are not honored.
+      # though, in particular <tt>:dependent</tt> rules defined on associations are not honored.  Returns
+      # the number of rows affected.
       #
       # ==== Parameters
       #
@@ -1990,12 +1993,16 @@ module ActiveRecord #:nodoc:
           attribute_names.all? { |name| column_methods_hash.include?(name.to_sym) }
         end
 
-        def attribute_condition(argument)
+        def attribute_condition(quoted_column_name, argument)
           case argument
-            when nil   then "IS ?"
-            when Array, ActiveRecord::Associations::AssociationCollection, ActiveRecord::NamedScope::Scope then "IN (?)"
-            when Range then "BETWEEN ? AND ?"
-            else            "= ?"
+            when nil   then "#{quoted_column_name} IS ?"
+            when Array, ActiveRecord::Associations::AssociationCollection, ActiveRecord::NamedScope::Scope then "#{quoted_column_name} IN (?)"
+            when Range then if argument.exclude_end?
+                              "#{quoted_column_name} >= ? AND #{quoted_column_name} < ?"
+                            else
+                              "#{quoted_column_name} BETWEEN ? AND ?"
+                            end
+            else            "#{quoted_column_name} = ?"
           end
         end
 
@@ -2305,7 +2312,7 @@ module ActiveRecord #:nodoc:
                 table_name = connection.quote_table_name(table_name)
               end
 
-              "#{table_name}.#{connection.quote_column_name(attr)} #{attribute_condition(value)}"
+              attribute_condition("#{table_name}.#{connection.quote_column_name(attr)}", value)
             else
               sanitize_sql_hash_for_conditions(value, connection.quote_table_name(attr.to_s))
             end
@@ -3141,7 +3148,7 @@ module ActiveRecord #:nodoc:
     # #save_with_autosave_associations to be wrapped inside a transaction.
     include AutosaveAssociation, NestedAttributes
 
-    include Aggregations, Transactions, Reflection, Calculations, Serialization
+    include Aggregations, Transactions, Reflection, Batches, Calculations, Serialization
   end
 end
 

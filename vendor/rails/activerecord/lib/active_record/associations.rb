@@ -22,7 +22,7 @@ module ActiveRecord
       through_reflection      = reflection.through_reflection
       source_reflection_names = reflection.source_reflection_names
       source_associations     = reflection.through_reflection.klass.reflect_on_all_associations.collect { |a| a.name.inspect }
-      super("Could not find the source association(s) #{source_reflection_names.collect(&:inspect).to_sentence :two_words_connector => ' or ', :last_word_connector => ', or '} in model #{through_reflection.klass}.  Try 'has_many #{reflection.name.inspect}, :through => #{through_reflection.name.inspect}, :source => <name>'.  Is it one of #{source_associations.to_sentence :two_words_connector => ' or ', :last_word_connector => ', or '}?")
+      super("Could not find the source association(s) #{source_reflection_names.collect(&:inspect).to_sentence(:two_words_connector => ' or ', :last_word_connector => ', or ', :locale => :en)} in model #{through_reflection.klass}.  Try 'has_many #{reflection.name.inspect}, :through => #{through_reflection.name.inspect}, :source => <name>'.  Is it one of #{source_associations.to_sentence(:two_words_connector => ' or ', :last_word_connector => ', or ', :locale => :en)}?")
     end
   end
 
@@ -133,41 +133,40 @@ module ActiveRecord
     #                                     |            |  belongs_to  |
     #   generated methods                 | belongs_to | :polymorphic | has_one
     #   ----------------------------------+------------+--------------+---------
-    #   #other                            |     X      |      X       |    X
-    #   #other=(other)                    |     X      |      X       |    X
-    #   #build_other(attributes={})       |     X      |              |    X
-    #   #create_other(attributes={})      |     X      |              |    X
-    #   #other.create!(attributes={})     |            |              |    X
-    #   #other.nil?                       |     X      |      X       |
+    #   other                             |     X      |      X       |    X
+    #   other=(other)                     |     X      |      X       |    X
+    #   build_other(attributes={})        |     X      |              |    X
+    #   create_other(attributes={})       |     X      |              |    X
+    #   other.create!(attributes={})      |            |              |    X
     #
     # ===Collection associations (one-to-many / many-to-many)
     #                                     |       |          | has_many
     #   generated methods                 | habtm | has_many | :through
     #   ----------------------------------+-------+----------+----------
-    #   #others                           |   X   |    X     |    X
-    #   #others=(other,other,...)         |   X   |    X     |    X
-    #   #other_ids                        |   X   |    X     |    X
-    #   #other_ids=(id,id,...)            |   X   |    X     |    X
-    #   #others<<                         |   X   |    X     |    X
-    #   #others.push                      |   X   |    X     |    X
-    #   #others.concat                    |   X   |    X     |    X
-    #   #others.build(attributes={})      |   X   |    X     |    X
-    #   #others.create(attributes={})     |   X   |    X     |    X
-    #   #others.create!(attributes={})    |   X   |    X     |    X
-    #   #others.size                      |   X   |    X     |    X
-    #   #others.length                    |   X   |    X     |    X
-    #   #others.count                     |   X   |    X     |    X
-    #   #others.sum(args*,&block)         |   X   |    X     |    X
-    #   #others.empty?                    |   X   |    X     |    X
-    #   #others.clear                     |   X   |    X     |    X
-    #   #others.delete(other,other,...)   |   X   |    X     |    X
-    #   #others.delete_all                |   X   |    X     |
-    #   #others.destroy_all               |   X   |    X     |    X
-    #   #others.find(*args)               |   X   |    X     |    X
-    #   #others.find_first                |   X   |          |
-    #   #others.exists?                   |   X   |    X     |    X
-    #   #others.uniq                      |   X   |    X     |    X
-    #   #others.reset                     |   X   |    X     |    X
+    #   others                            |   X   |    X     |    X
+    #   others=(other,other,...)          |   X   |    X     |    X
+    #   other_ids                         |   X   |    X     |    X
+    #   other_ids=(id,id,...)             |   X   |    X     |    X
+    #   others<<                          |   X   |    X     |    X
+    #   others.push                       |   X   |    X     |    X
+    #   others.concat                     |   X   |    X     |    X
+    #   others.build(attributes={})       |   X   |    X     |    X
+    #   others.create(attributes={})      |   X   |    X     |    X
+    #   others.create!(attributes={})     |   X   |    X     |    X
+    #   others.size                       |   X   |    X     |    X
+    #   others.length                     |   X   |    X     |    X
+    #   others.count                      |   X   |    X     |    X
+    #   others.sum(args*,&block)          |   X   |    X     |    X
+    #   others.empty?                     |   X   |    X     |    X
+    #   others.clear                      |   X   |    X     |    X
+    #   others.delete(other,other,...)    |   X   |    X     |    X
+    #   others.delete_all                 |   X   |    X     |
+    #   others.destroy_all                |   X   |    X     |    X
+    #   others.find(*args)                |   X   |    X     |    X
+    #   others.find_first                 |   X   |          |
+    #   others.exists?                    |   X   |    X     |    X
+    #   others.uniq                       |   X   |    X     |    X
+    #   others.reset                      |   X   |    X     |    X
     #
     # == Cardinality and associations
     #
@@ -787,11 +786,7 @@ module ActiveRecord
       #       'ORDER BY p.first_name'
       def has_many(association_id, options = {}, &extension)
         reflection = create_has_many_reflection(association_id, options, &extension)
-
         configure_dependency_for_has_many(reflection)
-
-        add_multiple_associated_validation_callbacks(reflection.name) unless options[:validate] == false
-        add_multiple_associated_save_callbacks(reflection.name)
         add_association_callbacks(reflection.name, reflection.options)
 
         if options[:through]
@@ -813,8 +808,6 @@ module ActiveRecord
       # [association=(associate)]
       #   Assigns the associate object, extracts the primary key, sets it as the foreign key,
       #   and saves the associate object.
-      # [association.nil?]
-      #   Returns +true+ if there is no associated object.
       # [build_association(attributes = {})]
       #   Returns a new object of the associated type that has been instantiated
       #   with +attributes+ and linked to this object through a foreign key, but has not
@@ -833,7 +826,6 @@ module ActiveRecord
       # An Account class declares <tt>has_one :beneficiary</tt>, which will add:
       # * <tt>Account#beneficiary</tt> (similar to <tt>Beneficiary.find(:first, :conditions => "account_id = #{id}")</tt>)
       # * <tt>Account#beneficiary=(beneficiary)</tt> (similar to <tt>beneficiary.account_id = account.id; beneficiary.save</tt>)
-      # * <tt>Account#beneficiary.nil?</tt>
       # * <tt>Account#build_beneficiary</tt> (similar to <tt>Beneficiary.new("account_id" => id)</tt>)
       # * <tt>Account#create_beneficiary</tt> (similar to <tt>b = Beneficiary.new("account_id" => id); b.save; b</tt>)
       #
@@ -876,10 +868,10 @@ module ActiveRecord
       # [:source]
       #   Specifies the source association name used by <tt>has_one :through</tt> queries.  Only use it if the name cannot be
       #   inferred from the association.  <tt>has_one :favorite, :through => :favorites</tt> will look for a
-      #   <tt>:favorite</tt> on Favorite, unless a <tt>:source</tt> is given.      
+      #   <tt>:favorite</tt> on Favorite, unless a <tt>:source</tt> is given.
       # [:source_type]
       #   Specifies type of the source association used by <tt>has_one :through</tt> queries where the source
-      #   association is a polymorphic +belongs_to+.      
+      #   association is a polymorphic +belongs_to+.
       # [:readonly]
       #   If true, the associated object is readonly through the association.
       # [:validate]
@@ -902,22 +894,9 @@ module ActiveRecord
           association_accessor_methods(reflection, ActiveRecord::Associations::HasOneThroughAssociation)
         else
           reflection = create_has_one_reflection(association_id, options)
-
-          method_name = "has_one_after_save_for_#{reflection.name}".to_sym
-          define_method(method_name) do
-            association = association_instance_get(reflection.name)
-            if association && (new_record? || association.new_record? || association[reflection.primary_key_name] != id)
-              association[reflection.primary_key_name] = id
-              association.save(true)
-            end
-          end
-          after_save method_name
-
-          add_single_associated_validation_callbacks(reflection.name) if options[:validate] == true
           association_accessor_methods(reflection, HasOneAssociation)
           association_constructor_method(:build,  reflection, HasOneAssociation)
           association_constructor_method(:create, reflection, HasOneAssociation)
-
           configure_dependency_for_has_one(reflection)
         end
       end
@@ -934,8 +913,6 @@ module ActiveRecord
       #   Returns the associated object. +nil+ is returned if none is found.
       # [association=(associate)]
       #   Assigns the associate object, extracts the primary key, and sets it as the foreign key.
-      # [association.nil?]
-      #   Returns +true+ if there is no associated object.
       # [build_association(attributes = {})]
       #   Returns a new object of the associated type that has been instantiated
       #   with +attributes+ and linked to this object through a foreign key, but has not yet been saved.
@@ -953,7 +930,6 @@ module ActiveRecord
       # * <tt>Post#author</tt> (similar to <tt>Author.find(author_id)</tt>)
       # * <tt>Post#author=(author)</tt> (similar to <tt>post.author_id = author.id</tt>)
       # * <tt>Post#author?</tt> (similar to <tt>post.author == some_author</tt>)
-      # * <tt>Post#author.nil?</tt>
       # * <tt>Post#build_author</tt> (similar to <tt>post.author = Author.new</tt>)
       # * <tt>Post#create_author</tt> (similar to <tt>post.author = Author.new; post.author.save; post.author</tt>)
       # The declaration can also include an options hash to specialize the behavior of the association.
@@ -1013,40 +989,10 @@ module ActiveRecord
 
         if reflection.options[:polymorphic]
           association_accessor_methods(reflection, BelongsToPolymorphicAssociation)
-
-          method_name = "polymorphic_belongs_to_before_save_for_#{reflection.name}".to_sym
-          define_method(method_name) do
-            association = association_instance_get(reflection.name)
-            if association && association.target
-              if association.new_record?
-                association.save(true)
-              end
-
-              if association.updated?
-                self[reflection.primary_key_name] = association.id
-                self[reflection.options[:foreign_type]] = association.class.base_class.name.to_s
-              end
-            end
-          end
-          before_save method_name
         else
           association_accessor_methods(reflection, BelongsToAssociation)
           association_constructor_method(:build,  reflection, BelongsToAssociation)
           association_constructor_method(:create, reflection, BelongsToAssociation)
-
-          method_name = "belongs_to_before_save_for_#{reflection.name}".to_sym
-          define_method(method_name) do
-            if association = association_instance_get(reflection.name)
-              if association.new_record?
-                association.save(true)
-              end
-
-              if association.updated?
-                self[reflection.primary_key_name] = association.id
-              end
-            end
-          end
-          before_save method_name
         end
 
         # Create the callbacks to update counter cache
@@ -1074,8 +1020,6 @@ module ActiveRecord
           )
         end
 
-        add_single_associated_validation_callbacks(reflection.name) if options[:validate] == true
-
         configure_dependency_for_belongs_to(reflection)
       end
 
@@ -1089,6 +1033,22 @@ module ActiveRecord
       # to generate a join table name of "papers_paper_boxes" because of the length of the name "paper_boxes",
       # but it in fact generates a join table name of "paper_boxes_papers".  Be aware of this caveat, and use the
       # custom <tt>:join_table</tt> option if you need to.
+      #
+      # The join table should not have a primary key or a model associated with it. You must manually generate the
+      # join table with a migration such as this:
+      #
+      #   class CreateDevelopersProjectsJoinTable < ActiveRecord::Migration
+      #     def self.up
+      #       create_table :developers_projects, :id => false do |t|
+      #         t.integer :developer_id
+      #         t.integer :project_id
+      #       end
+      #     end
+      #
+      #     def self.down
+      #       drop_table :developers_projects
+      #     end
+      #   end
       #
       # Deprecated: Any additional fields added to the join table will be placed as attributes when pulling records out through
       # +has_and_belongs_to_many+ associations. Records returned from join tables with additional attributes will be marked as
@@ -1225,9 +1185,6 @@ module ActiveRecord
       #   'DELETE FROM developers_projects WHERE active=1 AND developer_id = #{id} AND project_id = #{record.id}'
       def has_and_belongs_to_many(association_id, options = {}, &extension)
         reflection = create_has_and_belongs_to_many_reflection(association_id, options, &extension)
-
-        add_multiple_associated_validation_callbacks(reflection.name) unless options[:validate] == false
-        add_multiple_associated_save_callbacks(reflection.name)
         collection_accessor_methods(reflection, HasAndBelongsToManyAssociation)
 
         # Don't use a before_destroy callback since users' before_destroy
@@ -1347,70 +1304,6 @@ module ActiveRecord
               send("#{reflection.name}=", reflection.class_name.constantize.find(ids))
             end
           end
-        end
-
-        def add_single_associated_validation_callbacks(association_name)
-          method_name = "validate_associated_records_for_#{association_name}".to_sym
-          define_method(method_name) do
-            if association = association_instance_get(association_name)
-              errors.add association_name unless association.target.nil? || association.valid?
-            end
-          end
-
-          validate method_name
-        end
-
-        def add_multiple_associated_validation_callbacks(association_name)
-          method_name = "validate_associated_records_for_#{association_name}".to_sym
-          define_method(method_name) do
-            association = association_instance_get(association_name)
-
-            if association
-              if new_record?
-                association
-              elsif association.loaded?
-                association.select { |record| record.new_record? }
-              else
-                association.target.select { |record| record.new_record? }
-              end.each do |record|
-                errors.add association_name unless record.valid?
-              end
-            end
-          end
-
-          validate method_name
-        end
-
-        def add_multiple_associated_save_callbacks(association_name)
-          method_name = "before_save_associated_records_for_#{association_name}".to_sym
-          define_method(method_name) do
-            @new_record_before_save = new_record?
-            true
-          end
-          before_save method_name
-
-          method_name = "after_create_or_update_associated_records_for_#{association_name}".to_sym
-          define_method(method_name) do
-            association = association_instance_get(association_name)
-
-            records_to_save = if @new_record_before_save
-              association
-            elsif association && association.loaded?
-              association.select { |record| record.new_record? }
-            elsif association && !association.loaded?
-              association.target.select { |record| record.new_record? }
-            else
-              []
-            end
-            records_to_save.each { |record| association.send(:insert_record, record) } unless records_to_save.blank?
-
-            # reconstruct the SQL queries now that we know the owner's id
-            association.send(:construct_sql) if association.respond_to?(:construct_sql)
-          end
-
-          # Doesn't use after_save as that would save associations added in after_create/after_update twice
-          after_create method_name
-          after_update method_name
         end
 
         def association_constructor_method(constructor, reflection, association_proxy_class)

@@ -1,7 +1,5 @@
 require 'abstract_unit'
 
-uses_mocha 'rescue' do
-
 class RescueController < ActionController::Base
   class NotAuthorized < StandardError
   end
@@ -200,13 +198,6 @@ class RescueControllerTest < ActionController::TestCase
   end
 
   def test_rescue_action_in_public_with_localized_error_file
-    # Reload and register danish language for testing
-    I18n.reload!
-    I18n.backend.store_translations 'da', {}
-
-    # Ensure original are still the same since we are reindexing view paths
-    assert_equal ORIGINAL_LOCALES, I18n.available_locales.map(&:to_s).sort
-
     # Change locale
     old_locale = I18n.locale
     I18n.locale = :da
@@ -543,4 +534,3 @@ class ControllerInheritanceRescueControllerTest < ActionController::TestCase
     assert_response :created
   end
 end
-end # uses_mocha
