@@ -3,7 +3,11 @@ module ActionController
     class Segment #:nodoc:
       RESERVED_PCHAR = ':@&=+$,;'
       SAFE_PCHAR = "#{URI::REGEXP::PATTERN::UNRESERVED}#{RESERVED_PCHAR}"
-      UNSAFE_PCHAR = Regexp.new("[^#{SAFE_PCHAR}]", false, 'N').freeze
+      if RUBY_VERSION >= '1.9'
+        UNSAFE_PCHAR = Regexp.new("[^#{SAFE_PCHAR}]", false).freeze
+      else
+        UNSAFE_PCHAR = Regexp.new("[^#{SAFE_PCHAR}]", false, 'N').freeze
+      end
 
       # TODO: Convert :is_optional accessor to read only
       attr_accessor :is_optional
@@ -191,23 +195,19 @@ module ActionController
       end
 
       def regexp_chunk
-        if regexp
-          if regexp_has_modifiers?
-            "(#{regexp.to_s})"
-          else
-            "(#{regexp.source})"
-          end
-        else
-          "([^#{Routing::SEPARATORS.join}]+)"
-        end
+        regexp ? regexp_string : default_regexp_chunk
+      end
+
+      def regexp_string
+        regexp_has_modifiers? ? "(#{regexp.to_s})" : "(#{regexp.source})"
+      end
+
+      def default_regexp_chunk
+        "([^#{Routing::SEPARATORS.join}]+)"
       end
 
       def number_of_captures
-        if regexp
-          regexp.number_of_captures + 1
-        else
-          1
-        end
+        regexp ? regexp.number_of_captures + 1 : 1
       end
 
       def build_pattern(pattern)
@@ -244,15 +244,10 @@ module ActionController
         "(?i-:(#{(regexp || Regexp.union(*possible_names)).source}))"
       end
 
-      def number_of_captures
-        1
-      end
-
       # Don't URI.escape the controller name since it may contain slashes.
       def interpolation_chunk(value_code = local_name)
         "\#{#{value_code}.to_s}"
       end
-
       # Make sure controller names like Admin/Content are correctly normalized to
       # admin/content
       def extract_value
@@ -274,7 +269,7 @@ module ActionController
       end
 
       def extract_value
-        "#{local_name} = hash[:#{key}] && Array(hash[:#{key}]).collect { |path_component| CGI.escape(path_component.to_param) }.to_param #{"|| #{default.inspect}" if default}"
+        "#{local_name} = hash[:#{key}] && Array(hash[:#{key}]).collect { |path_component| CGI.escape(path_component.to_param, ActionController::Routing::Segment::UNSAFE_PCHAR) }.to_param #{"|| #{default.inspect}" if default}"
       end
 
       def default
@@ -289,8 +284,8 @@ module ActionController
         "params[:#{key}] = PathSegment::Result.new_escaped((match[#{next_capture}]#{" || " + default.inspect if default}).split('/'))#{" if match[" + next_capture + "]" if !default}"
       end
 
-      def regexp_chunk
-        regexp || "(.*)"
+      def default_regexp_chunk
+        "(.*)"
       end
 
       def number_of_captures

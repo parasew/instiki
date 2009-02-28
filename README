@@ -35,8 +35,9 @@ if you are running Windows 95, 98 or ME and cannot get instiki to run, try Versi
 
 === If you are on Mac OSX
 
-Since the Apple guys really screwed it up, having an old Ruby Version (1.8.2) and a broken Readline Library with MacOSX Tiger, you have to
+On Leopard, you are all set.
 
+Tiger ships with a really old Ruby Version (1.8.2) and a broken Readline Library you have to
 - use the Ruby One-Click-Installer for OSX ( http://rubyosx.com ) if you don't already have macports' Ruby
 - make sure you read http://instiki.5uper.net/instiki/show/SQLite+issues+on+OSX
 - run "ruby instiki.rb" via command-line in the directory 
@@ -64,10 +65,14 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 * Password-protected webs: Keep it private
 * Authors: Each revision is associated with an author, so you can see who changed what
 * Reference tracker: Which other pages are pointing to the current?
-* Three markup choices: Textile http://www.textism.com/tools/textile
-  (default / RedCloth http://www.whytheluckystiff.net/ruby/redcloth ), 
-  Markdown (BlueCloth[http://bluecloth.rubyforge.org]), and RDoc[http://rdoc.sourceforge.net/doc]
-* Embedded webserver: Through WEBrick[http://www.webrick.org], also runs on Mongel if you want to.
+* Five markup choices:
+   Markdown-based choices [http://daringfireball.net/projects/markdown/syntax]:
+     Markdown+itex2MML (the default; requires itex2MML) 
+     Markdown+BlahTeX/PNG (requires blahtex and a working TeX installation
+     Markdown
+   Textile [http://www.textism.com/tools/textile]
+   RDoc [http://rdoc.sourceforge.net/doc]
+* Embedded webserver: uses Mongrel (if installed), or the bundled WEBrick webserver (if not).
 * Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
 * Color diffs: Track changes through revisions
 * Runs on SQLite per default, can be configured to run on PostgreSQL, MySQL, DB2, Firebird, Openbase, Oracle, SQL Server or Sybase
@@ -82,6 +87,9 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 
  * See CHANGELOG
 
+== Migrating from Instiki 0.11-0.12 to 0.16.3
+
+   rake upgrade_instiki
 
 == Migrating Instiki 0.10.2 storage to Instiki 0.11.0 database
 
@@ -150,3 +158,8 @@ Email:: alex[AT]verk.info
 From 0.11 onwards:: Matthias Tarasiewicz and 5uper.net
 Email:: parasew[AT]gmail.com
 Website:: http://5uper.net[http://5uper.net]
+
+From 0.13 onwards:: Matthias Tarasiewicz and Jacques Distler
+Email:: instiki-devel[AT]rubyforge.org
+Weblog Jacques: http://golem.ph.utexas.edu/~distler/blog/
+Weblog Parasew: http://parasew.com

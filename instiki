@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-$:.unshift(File.dirname(__FILE__) + '/vendor/plugins/rack/lib')
 # Executable file for a gem
 # must be same as ./instiki.rb
 

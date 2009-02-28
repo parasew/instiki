@@ -11,6 +11,10 @@ class WikiTest < Test::Unit::TestCase
 	match(WikiChunk::Word, 'This is a WikiWord okay?', :page_name => 'WikiWord')
   end
 
+  def test_lowercase_accented
+	no_match(WikiChunk::Word, "This is a Refer\303\252ncia?")
+  end
+
   def test_escaped
     # escape is only implemented in WikiChunk::Word 
 	match(WikiChunk::Word, 'Do not link to an \EscapedWord',

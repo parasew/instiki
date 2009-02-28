@@ -70,7 +70,7 @@ module WikiChunk
     attr_reader :escaped_text
 
     unless defined? WIKI_WORD
-      WIKI_WORD = Regexp.new('(":)?(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0)
+      WIKI_WORD = Regexp.new('(":)?(\\\\)?(' + WikiWords::WIKI_WORD_PATTERN + ')\b', 0, 'u')
     end
 
     def self.pattern
