@@ -1,4 +1,6 @@
-*2.3.1 [RC2] (February 27th, 2009)*
+*2.3.1 [RC2] (February ?, 2009)*
+
+* Added ability to pass in :public => true to fresh_when, stale?, and expires_in to make the request proxy cachable #2095 [Gregg Pollack]
 
 * Fixed that passing a custom form builder would be forwarded to nested fields_for calls #2023 [Eloy Duran/Nate Wiger]
 

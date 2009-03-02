@@ -7,7 +7,6 @@ rexml_versions = ['', File.dirname(__FILE__) + '/../vendor/plugins/rexml/lib/'].
   `ruby -r #{v + 'rexml/rexml'} -e 'p REXML::VERSION'`.split('.').collect {|n| n.to_i} }
 $:.unshift(File.dirname(__FILE__) + '/../vendor/plugins/rexml/lib') if (rexml_versions[0] <=> rexml_versions[1]) == -1
 
-#$:.unshift(File.dirname(__FILE__) + '/../vendor/plugins/rack/lib')
 require File.join(File.dirname(__FILE__), 'boot')
 
 require 'active_support/secure_random'
@@ -60,3 +59,7 @@ require_dependency 'instiki_errors'
 
 #require 'jcode'
 require 'caching_stuff'
+
+#Additional Mime-types 
+mime_types = YAML.load_file(File.join(File.dirname(__FILE__), 'mime_types.yml'))
+Rack::Mime::MIME_TYPES.merge!(mime_types)
