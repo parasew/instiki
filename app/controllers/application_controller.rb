@@ -48,6 +48,9 @@ class ApplicationController < ActionController::Base
     '.jpg' => 'image/jpeg',
     '.pdf' => 'application/pdf',
     '.png' => 'image/png',
+    '.oga' => 'audio/ogg',
+    '.ogg' => 'audio/ogg',
+    '.ogv' => 'video/ogg',    
     '.txt' => 'text/plain',
     '.tex' => 'text/plain',
     '.zip' => 'application/zip'
@@ -59,6 +62,8 @@ class ApplicationController < ActionController::Base
     'image/jpeg'               => 'inline',
     'application/pdf'          => 'inline',
     'image/png'                => 'inline',
+    'audio/ogg'                => 'inline',
+    'video/ogg'                => 'inline',
     'text/plain'               => 'inline',
     'application/zip'          => 'attachment'
   } unless defined? DISPOSITION
@@ -67,6 +72,7 @@ class ApplicationController < ActionController::Base
     original_options[:type] ||= (FILE_TYPES[File.extname(file_name)] or 'application/octet-stream')
     original_options[:disposition] ||= (DISPOSITION[original_options[:type]] or 'attachment')
     original_options[:stream] ||= false
+    original_options[:x_sendfile] = true if request.env.include?('HTTP_X_SENDFILE_TYPE')
     original_options
   end
   

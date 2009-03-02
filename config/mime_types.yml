@@ -3,6 +3,9 @@
 .gz: application/x-gzip
 .js: application/x-javascript
 .nb: application/mathematica
+.oga: audio/ogg
+.ogg: audio/ogg
+.ogv: video/ogg
 .pdf: application/pdf
 .svg: application/svg+xml
 .tar: application/x-tar

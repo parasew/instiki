@@ -35,6 +35,8 @@ class AbstractUrlGenerator
       file_link(mode, name, text, web.address, known_page, description)
     when :pic
       pic_link(mode, name, text, web.address, known_page)
+    when :video
+      video_link(mode, name, text, web.address, known_page)
     when :delete
       delete_link(mode, name, web.address, known_page)
     else
@@ -135,6 +137,31 @@ class UrlGenerator < AbstractUrlGenerator
     else 
       if known_pic 
         %{<img alt="#{text}" src="#{href}" />}
+      else 
+        %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
+      end
+    end
+  end
+
+  def video_link(mode, name, text, web_address, known_vid)
+    href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
+      :id => name
+    case mode
+    when :export
+      if known_vid 
+        %{<video src="#{CGI.escape(name)}" controls="controls">#{text}</video>}
+      else 
+        text
+      end
+    when :publish
+      if known_vid
+        %{<video src="#{href}" controls="controls">#{text}</video>}
+      else 
+        %{<span class="newWikiWord">#{text}</span>} 
+      end
+    else 
+      if known_vid 
+        %{<video src="#{href}" controls="controls">#{text}</video>}
       else 
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
       end
