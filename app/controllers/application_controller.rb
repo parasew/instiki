@@ -43,6 +43,9 @@ class ApplicationController < ActionController::Base
   end
 
   FILE_TYPES = {
+    '.aif' => 'audio/x-aiff',  
+    '.aiff'=> 'audio/x-aiff',  
+    '.avi' => 'video/x-msvideo',  
     '.exe' => 'application/octet-stream',
     '.gif' => 'image/gif',
     '.jpg' => 'image/jpeg',
@@ -50,20 +53,30 @@ class ApplicationController < ActionController::Base
     '.png' => 'image/png',
     '.oga' => 'audio/ogg',
     '.ogg' => 'audio/ogg',
-    '.ogv' => 'video/ogg',    
+    '.ogv' => 'video/ogg',
+    '.mov' => 'video/quicktime',
+    '.mp3' => 'audio/mpeg',
+    '.mp4' => 'video/mp4',
     '.txt' => 'text/plain',
     '.tex' => 'text/plain',
+    '.wav' => 'audio/x-wav',
     '.zip' => 'application/zip'
   } unless defined? FILE_TYPES
 
   DISPOSITION = {
     'application/octet-stream' => 'attachment',
+    'application/pdf'          => 'inline',
     'image/gif'                => 'inline',
     'image/jpeg'               => 'inline',
-    'application/pdf'          => 'inline',
     'image/png'                => 'inline',
+    'audio/mpeg'               => 'inline',
+    'audio/x-wav'              => 'inline',
+    'audio/x-aiff'             => 'inline',
     'audio/ogg'                => 'inline',
     'video/ogg'                => 'inline',
+    'video/mp4'                => 'inline',
+    'video/quicktime'          => 'inline',
+    'video/x-msvideo'          => 'inline',
     'text/plain'               => 'inline',
     'application/zip'          => 'attachment'
   } unless defined? DISPOSITION

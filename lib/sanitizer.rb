@@ -9,7 +9,7 @@ module Sanitizer
   require 'node'
   require 'stringsupport'
 
-  acceptable_elements = %w[a abbr acronym address area b big blockquote br
+  acceptable_elements = %w[a abbr acronym address area audio b big blockquote br
       button caption center cite code col colgroup dd del dfn dir div dl dt
       em fieldset font form h1 h2 h3 h4 h5 h6 hr i img input ins kbd label
       legend li map menu ol optgroup option p pre q s samp select small span
@@ -31,8 +31,8 @@ module Sanitizer
       align alt axis border cellpadding cellspacing char charoff charset
       checked cite class clear cols colspan color compact controls coords datetime
       dir disabled enctype for frame headers height href hreflang hspace id
-      ismap label lang longdesc maxlength media method multiple name nohref
-      noshade nowrap prompt readonly rel rev rows rowspan rules scope
+      ismap label lang longdesc loop maxlength media method multiple name nohref
+      noshade nowrap poster prompt readonly rel rev rows rowspan rules scope
       selected shape size span src start style summary tabindex target title
       type usemap valign value vspace width xml:lang]
 
