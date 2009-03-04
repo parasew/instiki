@@ -521,6 +521,12 @@ END_THM
     assert_markup_parsed_as(
       "<p><a class='existingWikiWord' href='../file/square.jpg' title='Square'>Blue Square</a></p>",
       '[[square.jpg|Blue Square:file]]')
+    assert_markup_parsed_as(
+      "<p><video controls='controls' src='../file/square.jpg'>Blue Square</video></p>",
+      '[[square.jpg|Blue Square:video]]')
+    assert_markup_parsed_as(
+      "<p><audio controls='controls' src='../file/square.jpg'>Blue Square</audio></p>",
+      '[[square.jpg|Blue Square:audio]]')
     assert_markup_parsed_as( 
       "<p><a class='existingWikiWord' href='../file/square.jpg' title='Square'>Square</a></p>",
       '[[square.jpg:file]]')
