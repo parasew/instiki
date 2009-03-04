@@ -1,4 +1,24 @@
+* 0.16.4
 
+New Features:
+* Add x-sendfile support for downloading uploaded files in Instiki.
+* Add support for HTML5 <video> and <audio> elements:
+  [[mymovie.ogv:video]], [[mysound.wav:audio]].
+  
+Bugs Fixed:
+* Update to Rails Edge (reports itself as the soon-to-be-released Rails
+  2.3.1), which fixes several bugs.
+* Removed bundled Rack (Rails 2.3.1 comes bundled with Rack 1.0).
+* Add config.action_view.cache_template_loading = true to production
+  environment.
+* Fix FastCGI bug
+  (http://rubyforge.org/tracker/index.php?func=detail&aid=24191&group_id=186 &atid=783).
+* Fix WikiWords bug
+  (http://rubyforge.org/pipermail/instiki-users/2009-February/001181.html).
+* Fix bug on Windows
+  (http://rubyforge.org/pipermail/instiki-users/2009-March/001183.html)
+
+------------------------------------------------------------------------------
 * 0.16.3: Big steps, Rails 2.3.0-RC1 and tons of new stuff!
 
 All the patching, developing and great hacking from Jacques Distler was
