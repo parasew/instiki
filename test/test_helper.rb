@@ -164,6 +164,31 @@ class StubUrlGenerator < AbstractUrlGenerator
   end
 end
 
+  def media_link(mode, name, text, web_address, known_media, media_type)
+    link = CGI.escape(name)
+    text = CGI.escapeHTML(CGI.unescapeHTML(text || :description))
+    case mode.to_sym
+    when :export
+      if known_media 
+        %{<#{media_type} src="#{CGI.escape(name)}" controls="controls">#{text}</#{media_type}>}
+      else 
+        text
+      end
+    when :publish
+      if known_media
+        %{<#{media_type} src="../file/#{link}" controls="controls">#{text}</#{media_type}>}
+      else 
+        %{<span class="newWikiWord">#{text}</span>} 
+      end
+    else 
+      if known_media 
+        %{<#{media_type} src="../file/#{link}" controls="controls">#{text}</#{media_type}>}
+      else 
+        %{<span class="newWikiWord">#{text}<a href="../file/#{link}">?</a></span>} 
+      end
+    end
+  end
+
 module Test
   module Unit
     module Assertions
