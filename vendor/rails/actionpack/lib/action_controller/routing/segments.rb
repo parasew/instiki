@@ -317,18 +317,22 @@ module ActionController
       end
     
       def regexp_chunk
-        '(\.[^/?\.]+)?'
+        '/|(\.[^/?\.]+)?'
       end
     
       def to_s
         '(.:format)?'
       end
-    
+
+      def extract_value
+        "#{local_name} = options[:#{key}] && options[:#{key}].to_s.downcase"
+      end
+
       #the value should not include the period (.)
       def match_extraction(next_capture)
         %[
           if (m = match[#{next_capture}])
-            params[:#{key}] = URI.unescape(m.from(1))
+            params[:#{key}] = CGI.unescape(m.from(1))
           end
         ]
       end
