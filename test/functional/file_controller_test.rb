@@ -85,6 +85,7 @@ class FileControllerTest < ActionController::TestCase
     pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
+    @request.remote_addr = '127.0.0.1'
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
     
     assert_response(:success, bypass_body_parsing = true)
@@ -93,6 +94,19 @@ class FileControllerTest < ActionController::TestCase
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end
   
+  def test_pic_x_sendfile_type_nonlocal
+    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
+    @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
+    r = get :file, :web => 'wiki1', :id => 'rails.gif'
+    
+    assert_response(:success, bypass_body_parsing = true)
+    assert_equal 'image/gif', r.headers['Content-Type']
+    assert_equal pic.size, r.body.size
+    assert_equal pic, r.body
+    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+  end
+
   def test_pic_unknown_pic
     r = get :file, :web => 'wiki1', :id => 'non-existant.gif'
     
