@@ -4,10 +4,10 @@ New Features:
 * Add x-sendfile support for downloading uploaded files in Instiki.
 * Add support for HTML5 <video> and <audio> elements:
   [[mymovie.ogv:video]], [[mysound.wav:audio]].
+* Runs on Rails 2.3.1
   
 Bugs Fixed:
-* Update to Rails Edge (reports itself as the soon-to-be-released Rails
-  2.3.1), which fixes several bugs.
+* Update to Rails 2.3.1, which fixes several bugs.
 * Removed bundled Rack (Rails 2.3.1 comes bundled with Rack 1.0).
 * Add config.action_view.cache_template_loading = true to production
   environment.
