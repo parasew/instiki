@@ -43,7 +43,7 @@ class Wiki
       ApplicationController.logger.debug "Web '#{web_address}' not found"
       return nil
     else
-      page = web.pages.find(:first, :conditions => ['name = ?', page_name])
+      page = web.pages.first(:conditions => ['name = ?', page_name])
       ApplicationController.logger.debug "Page '#{page_name}' #{page.nil? ? 'not' : ''} found"
       return page
     end
@@ -76,7 +76,7 @@ class Wiki
   end
 
   def system
-    @system ||= (System.find(:first) || System.create)
+    @system ||= (System.first() || System.create)
   end
 
   def setup?
@@ -84,7 +84,7 @@ class Wiki
   end
 
   def webs
-    @webs ||= Web.find(:all).inject({}) { |webs, web| webs.merge(web.address => web) }
+    @webs ||= Web.all.inject({}) { |webs, web| webs.merge(web.address => web) }
   end
 
   def storage_path

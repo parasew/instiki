@@ -8,7 +8,7 @@ module CacheSweepingHelper
   end
 
   def expire_cached_summary_pages(web)
-    categories = WikiReference.find(:all, :conditions => "link_type = 'C'")
+    categories = WikiReference.all(:conditions => "link_type = 'C'")
     %w(recently_revised list).each do |action|
       expire_action :controller => 'wiki', :web => web.address, :action => action
       categories.each do |category|

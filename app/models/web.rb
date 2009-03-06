@@ -32,11 +32,11 @@ class Web < ActiveRecord::Base
   end
 
   def page(name)
-    pages.find(:first, :conditions => ['name = ?', name])
+    pages.first(:conditions => ['name = ?', name])
   end
   
   def last_page
-    return Page.find(:first, :order => 'id desc', :conditions => ['web_id = ?', self.id])
+    return Page.first(:order => 'id desc', :conditions => ['web_id = ?', self.id])
   end
 
   def has_page?(name)
