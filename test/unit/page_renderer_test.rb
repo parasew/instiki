@@ -207,6 +207,16 @@ END_THM
   
   end
   
+  def test_have_latest_itex2mml
+#    set_web_property :markup, :markdownMML
+  
+    assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' } +
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+        %{<mi>A</mi><mo>\342\205\213</mo><mi>B</mi></math></p>},
+        "equation $A \\invamp B$")
+  end
+  
   def test_markdown_hyperlink_with_slash
     # in response to a bug, see http://dev.instiki.org/attachment/ticket/177
     set_web_property :markup, :markdown

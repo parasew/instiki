@@ -964,6 +964,8 @@ class WikiControllerTest < ActionController::TestCase
 \re@DeclareMathSymbol{\Perp}{\mathrel}{symbolsC}{121}
 \re@DeclareMathSymbol{\Vbar}{\mathrel}{symbolsC}{121}
 \re@DeclareMathSymbol{\sslash}{\mathrel}{stmry}{12}
+\re@DeclareMathSymbol{\invamp}{\mathrel}{symbolsC}{77}
+\re@DeclareMathSymbol{\parr}{\mathrel}{symbolsC}{77}
 \makeatother
 
 % Widecheck
