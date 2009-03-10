@@ -207,9 +207,7 @@ END_THM
   
   end
   
-  def test_have_latest_itex2mml
-#    set_web_property :markup, :markdownMML
-  
+  def test_have_latest_itex2mml  
     assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' } +
         %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
@@ -217,6 +215,28 @@ END_THM
         "equation $A \\invamp B$")
   end
   
+  def test_blahtex
+    if Kernel::system('blahtex --help > /dev/null 2>&1')
+      set_web_property :markup, :markdownPNG
+
+      re = Regexp.new(
+      %{<p>equation <span class='maruku-inline'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
+      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='vertical-align: -0\.5} +
+      %{55555555555556ex; height: 2\.22222222222222ex;'/></span></p>})
+      assert_match_markup_parsed_as(re, 'equation $a\sin(\theta)$')
+
+      re = Regexp.new(
+      %{<div class='maruku-equation'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
+      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.22222222} +
+      %{222222ex;'/><span class='maruku-eq-tex'><code style='display: none;'>a\\\\sin} +
+      %{\\(\\\\theta\\)<\/code><\/span><\/div>})
+      assert_match_markup_parsed_as(re, '$$a\sin(\theta)$$')
+
+    else
+      print "\nBlahTeX not found ... skipping.\n"
+    end
+  end
+
   def test_markdown_hyperlink_with_slash
     # in response to a bug, see http://dev.instiki.org/attachment/ticket/177
     set_web_property :markup, :markdown
