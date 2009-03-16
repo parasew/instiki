@@ -89,7 +89,12 @@ module ActiveRecord
             when Hash
               options
             when Proc
-              options.call(*args)
+              case parent_scope
+              when Scope
+                with_scope(:find => parent_scope.proxy_options) { options.call(*args) }
+              else
+                options.call(*args)
+              end
           end, &block)
         end
         (class << self; self end).instance_eval do
@@ -99,7 +104,7 @@ module ActiveRecord
         end
       end
     end
-    
+
     class Scope
       attr_reader :proxy_scope, :proxy_options, :current_scoped_methods_when_defined
       NON_DELEGATE_METHODS = %w(nil? send object_id class extend find size count sum average maximum minimum paginate first last empty? any? respond_to?).to_set
@@ -112,6 +117,7 @@ module ActiveRecord
       delegate :scopes, :with_scope, :to => :proxy_scope
 
       def initialize(proxy_scope, options, &block)
+        options ||= {}
         [options[:extend]].flatten.each { |extension| extend extension } if options[:extend]
         extend Module.new(&block) if block_given?
         unless Scope === proxy_scope
@@ -170,7 +176,7 @@ module ActiveRecord
         if scopes.include?(method)
           scopes[method].call(self, *args)
         else
-          with_scope :find => proxy_options, :create => proxy_options[:conditions].is_a?(Hash) ?  proxy_options[:conditions] : {} do
+          with_scope({:find => proxy_options, :create => proxy_options[:conditions].is_a?(Hash) ?  proxy_options[:conditions] : {}}, :reverse_merge) do
             method = :new if method == :build
             if current_scoped_methods_when_defined
               with_scope current_scoped_methods_when_defined do
