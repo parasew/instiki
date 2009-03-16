@@ -59,8 +59,8 @@ class HasOneAssociationsTest < ActiveRecord::TestCase
   end
 
   def test_type_mismatch
-    assert_raises(ActiveRecord::AssociationTypeMismatch) { companies(:first_firm).account = 1 }
-    assert_raises(ActiveRecord::AssociationTypeMismatch) { companies(:first_firm).account = Project.find(1) }
+    assert_raise(ActiveRecord::AssociationTypeMismatch) { companies(:first_firm).account = 1 }
+    assert_raise(ActiveRecord::AssociationTypeMismatch) { companies(:first_firm).account = Project.find(1) }
   end
 
   def test_natural_assignment
@@ -76,7 +76,25 @@ class HasOneAssociationsTest < ActiveRecord::TestCase
     companies(:first_firm).save
     assert_nil companies(:first_firm).account
     # account is dependent, therefore is destroyed when reference to owner is lost
-    assert_raises(ActiveRecord::RecordNotFound) { Account.find(old_account_id) }
+    assert_raise(ActiveRecord::RecordNotFound) { Account.find(old_account_id) }
+  end
+
+  def test_nullification_on_association_change
+    firm = companies(:rails_core)
+    old_account_id = firm.account.id
+    firm.account = Account.new
+    # account is dependent with nullify, therefore its firm_id should be nil
+    assert_nil Account.find(old_account_id).firm_id
+  end
+
+  def test_association_changecalls_delete
+    companies(:first_firm).deletable_account = Account.new
+    assert_equal [], Account.destroyed_account_ids[companies(:first_firm).id]
+  end
+
+  def test_association_change_calls_destroy
+    companies(:first_firm).account = Account.new
+    assert_equal [companies(:first_firm).id], Account.destroyed_account_ids[companies(:first_firm).id]
   end
 
   def test_natural_assignment_to_already_associated_record
@@ -263,8 +281,8 @@ class HasOneAssociationsTest < ActiveRecord::TestCase
   end
 
   def test_has_one_proxy_should_not_respond_to_private_methods
-    assert_raises(NoMethodError) { accounts(:signals37).private_method }
-    assert_raises(NoMethodError) { companies(:first_firm).account.private_method }
+    assert_raise(NoMethodError) { accounts(:signals37).private_method }
+    assert_raise(NoMethodError) { companies(:first_firm).account.private_method }
   end
 
   def test_has_one_proxy_should_respond_to_private_methods_via_send
@@ -272,4 +290,20 @@ class HasOneAssociationsTest < ActiveRecord::TestCase
     companies(:first_firm).account.send(:private_method)
   end
 
+  def test_save_of_record_with_loaded_has_one
+    @firm = companies(:first_firm)
+    assert_not_nil @firm.account
+
+    assert_nothing_raised do
+      Firm.find(@firm.id).save!
+      Firm.find(@firm.id, :include => :account).save!
+    end
+
+    @firm.account.destroy
+
+    assert_nothing_raised do
+      Firm.find(@firm.id).save!
+      Firm.find(@firm.id, :include => :account).save!
+    end
+  end
 end

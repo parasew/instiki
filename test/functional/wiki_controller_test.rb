@@ -208,9 +208,9 @@ class WikiControllerTest < ActionController::TestCase
 #    end
 
   else
-    puts 'Warning: tests involving pdflatex are very slow, therefore they are disabled by default.'
-    puts '         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable'
-    puts '         $INSTIKI_TEST_PDFLATEX to enable them.'
+#    puts 'Warning: tests involving pdflatex are very slow, therefore they are disabled by default.'
+#    puts '         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable'
+#    puts '         $INSTIKI_TEST_PDFLATEX to enable them.'
   end
   
 #  def test_export_tex    

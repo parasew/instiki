@@ -57,6 +57,7 @@ class ApplicationController < ActionController::Base
     '.mov' => 'video/quicktime',
     '.mp3' => 'audio/mpeg',
     '.mp4' => 'video/mp4',
+    '.spx' => 'audio/speex',
     '.txt' => 'text/plain',
     '.tex' => 'text/plain',
     '.wav' => 'audio/x-wav',
@@ -72,6 +73,7 @@ class ApplicationController < ActionController::Base
     'audio/mpeg'               => 'inline',
     'audio/x-wav'              => 'inline',
     'audio/x-aiff'             => 'inline',
+    'audio/speex'             => 'inline',
     'audio/ogg'                => 'inline',
     'video/ogg'                => 'inline',
     'video/mp4'                => 'inline',
@@ -260,7 +262,7 @@ module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
     MINOR = 16
-    TINY  = 4
+    TINY  = 5 
     SUFFIX = '(MML+)'
     PRERELEASE =  false
     if PRERELEASE
