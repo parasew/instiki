@@ -4,6 +4,9 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
+<%- if @tex_content =~  /\\mathbb\{[^}]*[a-z0-9]+[^}]*\}/ -%>
+\usepackage{mathbbol}
+<% end -%>
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{ucs}

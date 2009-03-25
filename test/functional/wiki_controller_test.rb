@@ -31,6 +31,7 @@ class WikiControllerTest < ActionController::TestCase
     @oak = pages(:oak)
     @elephant = pages(:elephant)
     @eternity = Regexp.new('author=.*; path=/; expires=' + Time.utc(2030).strftime("%a, %d-%b-%Y %H:%M:%S GMT"))
+    set_tex_header
   end
 
   def test_authenticate
@@ -849,17 +850,15 @@ class WikiControllerTest < ActionController::TestCase
     assert_response :missing
   end
 
-  def test_tex
-    r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
-    assert_response(:success)
-    
-    assert_equal %q!\documentclass[12pt,titlepage]{article}
+  def set_tex_header
+    @tex_header1 = %q!\documentclass[12pt,titlepage]{article}
 
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{graphicx}
+!
+    @tex_header2 = %q!\usepackage{graphicx}
 \usepackage{color}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
@@ -1084,7 +1083,14 @@ class WikiControllerTest < ActionController::TestCase
 
 %-------------------------------------------------------------------
 
-\section*{HomePage}
+!
+  end
+  
+  def test_tex
+    r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
+    assert_response(:success)
+    
+    assert_equal @tex_header1 + @tex_header2 + %q!\section*{HomePage}
 
 HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere --{} see SmartEngine in that SmartEngineGUI
 
@@ -1094,6 +1100,22 @@ HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWa
 !, r.body
   end
 
+  def test_tex_with_blackboard_digits
+    @wiki.write_page('wiki1', 'Page2',
+        "Page2 contents $\\mathbb{01234}$.\n",
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+    r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
+    assert_response(:success)
+    
+    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + %q!\section*{Page2}
+
+Page2 contents $\mathbb{01234}$.
+
+
+
+\end{document}
+!, r.body
+  end
 
   def test_web_list
     another_wiki = @wiki.create_web('Another Wiki', 'another_wiki')
