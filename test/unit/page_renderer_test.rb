@@ -213,6 +213,12 @@ END_THM
         %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
         %{<mi>A</mi><mo>\342\205\213</mo><mi>B</mi></math></p>},
         "equation $A \\invamp B$")
+
+    assert_markup_parsed_as(
+        %{<p>blackboard digits: <math class='maruku-mathml' display='} +
+        %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>math} +
+        %{bb</mi><mn>123 </mn></math></p>},
+        "blackboard digits: $\mathbb{123}$")
   end
   
   def test_blahtex
