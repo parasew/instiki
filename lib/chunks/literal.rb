@@ -32,7 +32,7 @@ module Literal
   class Math < AbstractLiteral
     MATH_START = '(\${1,2}|' + Regexp.escape('\[') + '|\\begin\{equation\})'
     MATH_END =   '(\${1,2}|' + Regexp.escape('\]') + '|\\end\{equation\})'
-    MATH_PATTERN = Regexp.new(MATH_START + '([^$]|\\\$)+' + MATH_END, Regexp::MULTILINE)
+    MATH_PATTERN = Regexp.new(MATH_START + '([^$]|\\\$)+?' + MATH_END, Regexp::MULTILINE)
     def self.pattern() MATH_PATTERN  end
   end
 

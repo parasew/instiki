@@ -28,12 +28,12 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	class HTMLHelper
 		include MaRuKu::Strings
 		
-		Tag = %r{^<(/)?(\w+)\s*([^>]*)>}m
+		Tag = %r{^<(/)?(\w+)\s*([^>]*?)>}m
 		PartialTag = %r{^<.*}m
 
 		EverythingElse = %r{^[^<]+}m
 		CommentStart = %r{^<!--}x
-		CommentEnd = %r{^.*-->}
+		CommentEnd = %r{^.*?-->}
 		TO_SANITIZE = ['img','hr','br'] 
 		
 		attr_reader :rest

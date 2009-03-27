@@ -143,5 +143,5 @@ module MaRuKu; module Strings
 	TableSeparator = %r{^(\|?#{Sep}\|?)+?\s*$}
 
 
-	EMailAddress = /<([^:]+@[^:]+)>/
+	EMailAddress = /<([^:]+?@[^:]+?)>/
 end end

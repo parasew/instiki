@@ -299,7 +299,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	end
 
 	def extension_meta(src, con, break_on_chars)
-		if m = src.read_regexp(/([^\s\:\"\']+):/)
+		if m = src.read_regexp(/([^\s\:\"\']+?):/)
 			name = m[1]
 			al = read_attribute_list(src, con, break_on_chars)
 #			puts "#{name}=#{al.inspect}"
@@ -443,7 +443,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	
 #	R_REF_ID = Regexp.compile(/([^\]\s]*)(\s*\])/)
 #	R_REF_ID = Regexp.compile(/([^\]\s]*)(\s*\])/)
-	R_REF_ID = Regexp.compile(/([^\]]*)\]/)
+	R_REF_ID = Regexp.compile(/([^\]]*?)\]/)
 	
 	# Reads a bracketed id "[refid]". Consumes also both brackets.
 	def read_ref_id(src, con)
