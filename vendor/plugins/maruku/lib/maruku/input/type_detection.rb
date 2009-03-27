@@ -74,9 +74,9 @@ module MaRuKu; module Strings
 
 		
 	# $1 = id   $2 = attribute list
-	AttributeDefinitionList = /^\s{0,3}\{([\w\d\s]+)\}:\s*(.*)\s*$/
+	AttributeDefinitionList = /^\s{0,3}\{([\w\d\s]+)\}:\s*(.*?)\s*$/
 	# 
-	InlineAttributeList = /^\s{0,3}\{([:#\.].*)\}\s*$/
+	InlineAttributeList = /^\s{0,3}\{([:#\.].*?)\}\s*$/
 	# Example:
 	#     ^:blah blah
 	#     ^: blah blah
@@ -128,11 +128,11 @@ module MaRuKu; module Strings
 		)?	# title is optional
 	  }x
 
-	IncompleteLink = %r{^[ ]{0,3}\[([^\[\]]+)\]:\s*$}
+	IncompleteLink = %r{^[ ]{0,3}\[([^\[\]]+?)\]:\s*$}
 
-	HeaderWithId = /^(.*)\{\#([\w_-]+)\}\s*$/
+	HeaderWithId = /^(.*?)\{\#([\w_-]+)\}\s*$/
 
-	HeaderWithAttributes = /^(.*)\{(.*)\}\s*$/
+	HeaderWithAttributes = /^(.*?)\{(.*?)\}\s*$/
 
 
 	# if contains a pipe, it could be a table header
@@ -140,7 +140,7 @@ module MaRuKu; module Strings
 	# -------------:
 	Sep = /\s*(\:)?\s*-+\s*(\:)?\s*/
 	# | -------------:| ------------------------------ |
-	TableSeparator = %r{^(\|?#{Sep}\|?)+\s*$}
+	TableSeparator = %r{^(\|?#{Sep}\|?)+?\s*$}
 
 
 	EMailAddress = /<([^:]+@[^:]+)>/
