@@ -10,28 +10,10 @@
 #| +--------------------------------------------------
 #+---------------------------------------------------
 
-## These cause Instiki to hang when it encounters
-##
-##   +-- 
-##   ###### Definition
-##   A _Froelicher Space_ is a triple $(X,C_X,F_X)$ 
-##   =-- {: .num_defn #FroelicherSpace
-##
-## or
-##
-##   +-- {: .num_defn #FroelicherSpace
-##   ###### Definition
-##   A _Froelicher Space_ is a triple $(X,C_X,F_X)$ 
-##   =--
-#
-#OpenDiv = /^[ ]{0,3}\+\-\-+\s*(\{([^{}]*|".*"|'.*')*\})?\s*\-*\s*$/
-#CloseDiv = /^[ ]{0,3}\=\-\-+\s*(\{([^{}]*|".*"|'.*')*\})?\s*\-*\s*$/
-#
-## note these are not enough for parsing the above example:
-## (but they don't produce a hang ...)
-#
-OpenDiv = /^[ ]{0,3}\+\-\-+\s*(.*)$/
-CloseDiv = /^[ ]{0,3}\=\-\-+\s*(.*)$/
+#OpenDiv = /^[ ]{0,3}\+\-\-+\s*(.*)$/
+#CloseDiv = /^[ ]{0,3}\=\-\-+\s*(.*)$/
+OpenDiv = /^[ ]{0,3}\+\-\-+\s*(\{([^{}]*?|".*?"|'.*?')*\})?\s*\-*\s*$/
+CloseDiv = /^[ ]{0,3}\=\-\-+\s*(\{([^{}]*?|".*?"|'.*?')*\})?\s*\-*\s*$/
 StartPipe = /^[ ]{0,3}\|(.*)$/ # $1 is rest of line
 DecorativeClosing = OpenDiv
 
