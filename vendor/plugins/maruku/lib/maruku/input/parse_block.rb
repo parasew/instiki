@@ -177,7 +177,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		line = src.shift_line.strip
 		al = nil
 		# Check if there is an IAL
-		if new_meta_data? and line =~ /^(.*)\{(.*)\}\s*$/
+		if new_meta_data? and line =~ /^(.*?)\{(.*?)\}\s*$/
 			line = $1.strip
 			ial = $2
 			al  = read_attribute_list(CharSource.new(ial,src), context=nil, break_on=[nil])
@@ -193,7 +193,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		line = src.shift_line.strip
 		al = nil
 		# Check if there is an IAL
-		if new_meta_data? and line =~ /^(.*)\{(.*)\}\s*$/
+		if new_meta_data? and line =~ /^(.*?)\{(.*?)\}\s*$/
 			line = $1.strip
 			ial = $2
 			al  = read_attribute_list(CharSource.new(ial,src), context=nil, break_on=[nil])
