@@ -33,8 +33,17 @@
 
     <label for="color">Color:</label>
     <select id="color" name="color">
-      <%= html_options({ 'Green' => '008B26', 'Purple' => '504685', 'Red' => 'DA0006', 
-                         'Orange' => 'C50', 'Grey' => '8BA2B0' }, @web.color) %>
+      <%= html_options({
+          'Green' => '008B26',
+          'Purple' => '504685',
+          'Red' => 'DA0006',
+          'Orange' => 'C50',
+          'Grey' => '8BA2B0',
+          'Blue' => '204A87',
+          'Brown' => '8F5902',
+          'Scarlet Red' => 'AA0006',
+          'Plum' => '5C3566'
+        }, @web.color) %>
     </select>
     <p>
       <input type="checkbox" class="disableAutoComplete" id="safe_mode" name="safe_mode" <%= 'checked="checked"' if @web.safe_mode? %> /> 
