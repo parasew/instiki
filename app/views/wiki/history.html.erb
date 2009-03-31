@@ -1,0 +1,23 @@
+<%- @title = @page.plain_name + " (history)" -%>
+<%- @show_footer = true -%>
+
+<%- @revisions_by_day.keys.sort.reverse.each do |day| -%>
+  <h3><%= format_date(day, include_time = false) %></h3>
+  <ul>
+  <%- for rev in @revisions_by_day[day] -%>
+    <li>
+      <%= link_to_revision(rev.page, @revision_numbers[rev.id],
+          text="Revision #{@revision_numbers[rev.id]}") %>
+      <%- if @revision_numbers[rev.id] > 1 -%>
+          (<%= link_to_revision(rev.page, @revision_numbers[rev.id],
+              text="diff", mode='diff') %>)
+      <%- end -%>
+      <div class="byline" style="margin-bottom: 0px">
+        by <%= link_to_page(rev.author) %>
+        at <%= format_date(rev.revised_at) %>
+        <%= "from #{rev.author.ip}" if rev.author.respond_to?(:ip) %>
+      </div>
+    </li>
+  <%- end -%>
+  </ul>
+<%- end -%>

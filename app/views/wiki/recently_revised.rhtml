@@ -8,6 +8,11 @@
   <%- for page in @pages_by_day[day] -%>
     <li>
       <%= link_to_existing_page page %>
+      <%- if page.revisions.length > 1 %>
+          (<%= link_to_revision(page, page.revisions.length, text='diff',
+               mode='diff') %>)
+          (<%= link_to_history(page, text='history') %>)
+      <%- end -%>
       <div class="byline" style="margin-bottom: 0px">
         by <%= link_to_page(page.author) %>
         at <%= format_date(page.revised_at) %>
