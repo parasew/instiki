@@ -9,7 +9,7 @@ class WikiController < ApplicationController
   before_filter :load_page
   before_filter :dnsbl_check, :only => [:edit, :new, :save, :export_html, :export_markup]
   caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, :file_list,
-        :history, :atom_with_content, :atom_with_headlines, :if => Proc.new { |c| c.send(:do_caching?) }
+        :history, :revision, :atom_with_content, :atom_with_headlines, :if => Proc.new { |c| c.send(:do_caching?) }
   cache_sweeper :revision_sweeper
 
   layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :tex, :s5, :export_html]
