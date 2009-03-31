@@ -26,7 +26,8 @@ ActionController::Routing::Routes.draw do |map|
   connect_to_web map, ':web/login', :controller => 'wiki', :action => 'login'
   connect_to_web map, ':web/web_list', :controller => 'wiki', :action => 'web_list'
   connect_to_web map, ':web/show/diff/:id', :controller => 'wiki', :action => 'show', :mode => 'diff'
-  connect_to_web map, ':web/revision/diff/:id', :controller => 'wiki', :action => 'revision', :mode => 'diff'
+  connect_to_web map, ':web/revision/diff/:id/:rev', :controller => 'wiki', :action => 'revision', :mode => 'diff', :requirements => { :rev => /\d*/}
+  connect_to_web map, ':web/revision/:id/:rev', :controller => 'wiki', :action => 'revision', :requirements => { :rev => /\d*/}
   connect_to_web map, ':web/list/:category', :controller => 'wiki', :action => 'list', :requirements => { :category => /.*/}, :category => nil
   connect_to_web map, ':web/recently_revised/:category', :controller => 'wiki', :action => 'recently_revised', :requirements => { :category => /.*/}, :category => nil
   connect_to_web map, ':web/:action/:id', :controller => 'wiki'
