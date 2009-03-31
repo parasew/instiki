@@ -52,6 +52,22 @@ module ApplicationHelper
     UrlGenerator.new(@controller).make_link(page.author.name, page.web, nil, options)
   end
 
+  # Create a hyperlink to a particular revision of a Wiki page
+  def link_to_revision(page, revision_number, text = nil, mode = nil, html_options = {})
+    link_to(
+        text || page.plain_name + "(rev # #{revision_number})",
+            {:web => @web.address, :action => 'revision', :id => page.name,
+              :rev => revision_number, :mode => mode}, html_options)
+  end
+
+  # Create a hyperlink to the history of a particular Wiki page
+  def link_to_history(page, text = nil, html_options = {})
+    link_to(
+        text || page.plain_name + "(history)",
+            {:web => @web.address, :action => 'history', :id => page.name},
+            html_options)
+  end
+
   def base_url
     home_page_url = url_for :controller => 'admin', :action => 'create_system', :only_path => true
     home_page_url.sub(%r-/create_system/?$-, '')

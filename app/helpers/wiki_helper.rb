@@ -6,6 +6,7 @@ module WikiHelper
     menu << back_for_revision if @revision_number > 1
     menu << current_revision
     menu << see_or_hide_changes_for_revision if @revision_number > 1
+    menu << history if @page.revisions.length > 1
     menu << rollback
     menu
   end
@@ -18,6 +19,7 @@ module WikiHelper
       menu << back_for_page
       menu << see_or_hide_changes_for_page
     end
+    menu << history if @page.revisions.length > 1
     menu
   end
 
@@ -30,6 +32,11 @@ module WikiHelper
   def edit_web
     link_to('Edit Web', {:web => @web.address, :action => 'edit_web'}, 
         {:class => 'navlink', :accesskey => 'W', :id => 'edit_web', :rel => 'nofollow'})
+  end
+
+  def history
+    link_to_history(@page, 'History',
+        {:class => 'navlink', :accesskey => 'S', :id => 'history', :rel => 'nofollow'})
   end
             
   def forward

@@ -314,6 +314,27 @@ class WikiController < ApplicationController
     end
   end
 
+  def history
+    if @page
+      @revisions_by_day = Hash.new { |h, day| h[day] = [] }
+      @revision_numbers = Hash.new { |h, id| h[id] = [] }
+      revision_number = @page.revisions.length
+      @page.revisions.reverse.each do |rev|
+        day = Date.new(rev.revised_at.year, rev.revised_at.month, rev.revised_at.day)
+        @revisions_by_day[day] << rev
+        @revision_numbers[rev.id] = revision_number
+        revision_number = revision_number - 1
+      end
+      render :action => 'history'
+    else
+      if not @page_name.nil? and @page_name.is_utf8? and not @page_name.empty?
+        redirect_to :web => @web_name, :action => 'new', :id => @page_name
+      else
+        render :text => 'Page name is not specified', :status => 404, :layout => 'error'
+      end
+    end
+  end
+
   def tex
     if @web.markup == :markdownMML or @web.markup == :markdownPNG or @web.markup == :markdown
       @tex_content = Maruku.new(@page.content).to_latex
