@@ -2,7 +2,7 @@ module CacheSweepingHelper
   
   def expire_cached_page(web, page_name)
     expire_action :controller => 'wiki', :web => web.address,
-        :action => %w(show published s5 tex print), :id => page_name
+        :action => %w(show published s5 tex print history), :id => page_name
     expire_action :controller => 'wiki', :web => web.address,
         :action => %w(show published), :id => page_name, :mode => 'diff'
   end
