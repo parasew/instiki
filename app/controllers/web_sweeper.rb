@@ -25,6 +25,7 @@ class WebSweeper < ActionController::Caching::Sweeper
     elsif record.is_a?(Page)
       expire_cached_page(record.web, record.name)
       expire_cached_summary_pages(record.web)
+      expire_cached_revisions(record)
     else
       expire_cached_summary_pages(record.web)
     end

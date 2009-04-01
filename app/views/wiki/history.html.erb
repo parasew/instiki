@@ -12,8 +12,10 @@
               "Revision #{@revision_numbers[rev.id]}" )
               ) %>
       <%- if @revision_numbers[rev.id] > 1 -%>
+          <span class="views">
           (<%= link_to_revision(rev.page, @revision_numbers[rev.id],
               text="diff", mode='diff') %>)
+          </span>
       <%- end -%>
       <div class="byline" style="margin-bottom: 0px">
         by <%= link_to_page(rev.author) %>
