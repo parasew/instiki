@@ -12,7 +12,7 @@
               "Revision #{@revision_numbers[rev.id]}" )
               ) %>
       <%- if @revision_numbers[rev.id] > 1 -%>
-          <span class="views">
+          <span class="hist_views">
           (<%= link_to_revision(rev.page, @revision_numbers[rev.id],
               text="diff", mode='diff') %>)
           </span>
