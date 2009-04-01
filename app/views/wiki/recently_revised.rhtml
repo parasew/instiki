@@ -9,9 +9,11 @@
     <li>
       <%= link_to_existing_page page %>
       <%- if page.revisions.length > 1 %>
+          <span class="views">
           (<%= link_to_revision(page, page.revisions.length, text='diff',
                mode='diff') %>)
           (<%= link_to_history(page, text='history') %>)
+          </span>
       <%- end -%>
       <div class="byline" style="margin-bottom: 0px">
         by <%= link_to_page(page.author) %>
