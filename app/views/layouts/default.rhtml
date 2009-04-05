@@ -5,7 +5,7 @@
     <%- if @page and (@page.name == 'HomePage') and (%w( show published print ).include?(params['action'])) -%>
       <%= h(@web.name) + (@show_diff ? ' (changes)' : '') %>
     <%- elsif @web -%>
-      <%= @title %> in <%= h @web.name -%>
+      <%= @title %> in <%= h @web.name %>
     <%- else -%>
       <%= @title %>
     <%- end -%>
@@ -23,14 +23,16 @@
     <%= File.read(RAILS_ROOT + '/public/stylesheets/instiki.css') if @inline_style %>
   </style>
   <%= stylesheet_link_tag 'instiki' unless @inline_style %>
-  <style type="text/css"><%= @style_additions %></style>
+  <%= "<style type='text/css'>#{@style_additions}</style>" if @style_additions %>
   <style type="text/css"><!--/*--><![CDATA[/*><!--*/    
     <%= @web ? @web.additional_style : '' %>
   /*]]>*/--></style>
   <%= javascript_include_tag :defaults %>
   <%- if @web -%>
-  	<%= auto_discovery_link_tag(:atom, :controller => 'wiki', :web => @web.address, :action => 'atom_with_headlines') %>
-  	<%= auto_discovery_link_tag(:atom, :controller => 'wiki', :web => @web.address, :action => 'atom_with_content') %>
+  	<%= auto_discovery_link_tag(:atom, {:controller => 'wiki', :web => @web.address, :action => 'atom_with_headlines'},
+  	      :title => 'Atom with headlines') %>
+  	<%= auto_discovery_link_tag(:atom, {:controller => 'wiki', :web => @web.address, :action => 'atom_with_content'},
+  	      :title => 'Atom with full content') %>
   <%- end -%>
 </head>
 
