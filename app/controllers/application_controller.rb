@@ -136,9 +136,6 @@ class ApplicationController < ActionController::Base
   end
 
   def rescue_action_in_public(exception)
-    if exception.instance_of?(ActiveController::Session::CookieStore::TamperedWithCookie)
-      render :text => 'Stale session. Please reload the page.', :status =>500, :layout => 'error'
-    else
       render :status => 500, :text => <<-EOL
         <html xmlns="http://www.w3.org/1999/xhtml"><body>
           <h2>Internal Error</h2>
@@ -146,7 +143,6 @@ class ApplicationController < ActionController::Base
           <!-- \n#{exception.to_s.is_utf8? ? exception.to_s.gsub!(/-{2,}/, '- -') : ''}\n#{exception.backtrace.join("\n")}\n -->
         </body></html>
       EOL
-    end
   end
 
   def return_to_last_remembered
