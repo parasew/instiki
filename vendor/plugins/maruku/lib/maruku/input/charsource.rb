@@ -122,7 +122,7 @@ class CharSourceManual
 	
 	def consume_whitespace
 		while c = cur_char 
-			if (c == 32 || c == ?\t)
+			if (c == ?\s || c == ?\t)
 #				puts "ignoring #{c}"
 				ignore_char
 			else
