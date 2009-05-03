@@ -22,7 +22,7 @@ require 'resolv'
 
 module DNSBL_Check
   $dnsbl_passed ||= []
-  DNSBLS = %w{list.dsbl.org bl.spamcop.net sbl-xbl.spamhaus.org}
+  DNSBLS = %w{bl.spamcop.net sbl-xbl.spamhaus.org}
 
   private
   # Filter to check if the client is listed. This will be run before all requests.
