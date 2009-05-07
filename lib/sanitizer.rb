@@ -22,7 +22,7 @@ module Sanitizer
       munderover none semantics]
       
   svg_elements = %w[a animate animateColor animateMotion animateTransform
-      circle defs desc ellipse font-face font-face-name font-face-src
+      circle clipPath defs desc ellipse font-face font-face-name font-face-src
       foreignObject g glyph hkern linearGradient line marker metadata
       missing-glyph mpath path polygon polyline radialGradient rect set
       stop svg switch text title tspan use]
@@ -47,11 +47,11 @@ module Sanitizer
 
   svg_attributes = %w[accent-height accumulate additive alphabetic
        arabic-form ascent attributeName attributeType baseProfile bbox begin
-       by calcMode cap-height class color color-rendering content cx cy d dx
-       dy descent display dur end fill fill-opacity fill-rule font-family 
-       font-size font-stretch font-style font-variant font-weight from fx fy g1 
-       g2 glyph-name gradientUnits hanging height horiz-adv-x horiz-origin-x id
-       ideographic k keyPoints keySplines keyTimes lang marker-end
+       by calcMode cap-height class clip-path clip-rule color color-rendering
+       content cx cy d dx dy descent display dur end fill fill-opacity fill-rule
+       font-family font-size font-stretch font-style font-variant font-weight from
+       fx fy g1 g2 glyph-name gradientUnits hanging height horiz-adv-x horiz-origin-x
+       id ideographic k keyPoints keySplines keyTimes lang marker-end
        marker-mid marker-start markerHeight markerUnits markerWidth
        mathematical max min name offset opacity orient origin
        overline-position overline-thickness panose-1 path pathLength points
