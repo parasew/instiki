@@ -69,7 +69,7 @@ module ActionView
           }
         ]
 
-        kode = "var pos=document;while(pos.lastChild.nodeType==1)pos=pos.lastChild;var hiddenfield=document.createElement('input');hiddenfield.setAttribute('type','hidden');hiddenfield.setAttribute('name','_form_key');hiddenfield.setAttribute('value','"+form_key+"');pos.parentNode.appendChild(hiddenfield);"
+        kode = "var pos=document.documentElement;while(pos && pos.lastChild && pos.lastChild.nodeType==1)pos=pos.lastChild;var hiddenfield=document.createElement('input');hiddenfield.setAttribute('type','hidden');hiddenfield.setAttribute('name','_form_key');hiddenfield.setAttribute('value','"+form_key+"');pos.parentNode.appendChild(hiddenfield);null;"
 
         max_length = kode.length+1 unless max_length>kode.length
 
@@ -82,8 +82,8 @@ module ActionView
           js = "var kode=\n"+js_wrap_quote(js_dbl_quote(kode),79)
           js = js+"\n;var i,c,x;while(eval(kode));"
           js = "function hivelogic_enkoder(){"+js+"}hivelogic_enkoder();"
-          js = '<script type="text/javascript">'+"\n/* <![CDATA[ */\n"+js
-          js = js+"\n/* ]]> */\n</script>\n"
+          js = '<script type="text/javascript">'+"\n<!--//--><![CDATA[//><!--\n"+js
+          js = js+"\n//--><!]]>\n</script>\n"
           result = js unless result.length>max_length
         end
 

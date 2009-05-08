@@ -1,3 +1,28 @@
+* 0.16.6
+
+New Features:
+* More colour schemes: blue, brown, scarlet red, and plum.
+  (From Jason Blevins)
+* History Pages: created a history page for each wiki page.
+  Link to it and to the "Diff" page from "Recently Revised".
+  (from Jason Blevins)
+* Support for SVG clipping paths
+  (requested by Andrew Stacey)
+* Updated for itex2MML 1.3.8. (You should
+  upgrade that, as well.) Support for blackboard bold lowercase
+  letters and digits.
+
+Bugs Fixed:
+* Fixed several bugs in Maruku, where "greedy" regexps
+  could lead to exponential slowdown on certain inputs.
+* Fixed a bug in listing/deleting links to uploaded video and
+  audio files.
+* Fixed some caching bugs.
+* Removed the defunct list.dsbl.org from anti-spam dnsbl lookups.
+* Resolved a conflict between form_spam_protect plugin and IE7.
+  (thanks to Jason Blevins)
+
+------------------------------------------------------------------------------
 * 0.16.5: Rails 2.3.2
 
 * Runs on the Stable Release, Rails 2.3.2.
