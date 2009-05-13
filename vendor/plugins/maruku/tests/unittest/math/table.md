@@ -1,6 +1,6 @@
 Write a comment here
 *** Parameters: ***
-{}
+require 'maruku/ext/math';{:html_math_engine => 'itex2mml' }
 *** Markdown input: ***
 <table markdown='1'>
 	$\alpha$
@@ -13,8 +13,8 @@ md_el(:document,[
 	md_html("<table markdown='1'>\n\t$\\alpha$\n\t<thead>\n\t\t<td>$\\beta$</td>\n\t</thead>\n</table>")
 ],{},[])
 *** Output of to_html ***
-<table><span class='maruku-inline'><code class='maruku-mathml'>\alpha</code></span><thead>
-		<td><span class='maruku-inline'><code class='maruku-mathml'>\beta</code></span></td>
+<table><math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>&alpha;</mi></math><thead>
+		<td><math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>&beta;</mi></math></td>
 	</thead>
 </table>
 *** Output of to_latex ***

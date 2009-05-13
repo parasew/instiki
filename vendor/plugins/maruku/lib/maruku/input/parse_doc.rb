@@ -198,14 +198,17 @@ Disabled by default because of security concerns.
 				XPath.match(doc, "//*[attribute::markdown]" ).each do |e|
 #					puts "Found #{e}"
 					# should we parse block-level or span-level?
-					parse_blocks = (e.attributes['markdown'] == 'block') || 
-					               block_tags.include?(e.name)
-					# remove 'markdown' attribute
-					e.delete_attribute 'markdown'
+					
+					how = e.attributes['markdown']
+					parse_blocks = (how == 'block') || block_tags.include?(e.name)
+					               
 					# Select all text elements of e
 					XPath.match(e, "//text()" ).each { |original_text| 
 						s = original_text.value.strip
 						if s.size > 0
+
+					#	    puts "Parsing #{s.inspect} as blocks: #{parse_blocks}  (#{e.name}, #{e.attributes['markdown']})  "
+
 							el = md_el(:dummy,
 							 	parse_blocks ? parse_text_as_markdown(s) :
 							                  parse_lines_as_span([s]) )
@@ -217,7 +220,11 @@ Disabled by default because of security concerns.
 							
 						end
 					}
-						
+					
+					
+          # remove 'markdown' attribute
+          e.delete_attribute 'markdown'
+          
 				end
 				
 			end
