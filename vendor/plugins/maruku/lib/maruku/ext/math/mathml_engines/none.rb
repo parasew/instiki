@@ -6,7 +6,7 @@ module MaRuKu; module Out; module HTML
 		# or return an empty array on error
 		#    return []  
 		# or have a string parsed by REXML:
-		tex = tex.gsub('&','&amp;')
+		tex = tex.escapeHTML
 		mathml = "<code>#{tex}</code>"
 		return Document.new(mathml).root
 	end

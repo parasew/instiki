@@ -22,9 +22,9 @@ md_el(:document,[
 <p>Here are some formulas:</p>
 
 <ul>
-<li><span class='maruku-inline'><code class='maruku-mathml'>\alpha</code></span></li>
+<li><code class='maruku-mathml'>\alpha</code></li>
 
-<li><span class='maruku-inline'><code class='maruku-mathml'>x^{n}+y^{n} \neq z^{n}</code></span></li>
+<li><code class='maruku-mathml'>x^{n}+y^{n} \neq z^{n}</code></li>
 </ul>
 
 <p>That&#8217;s it, nothing else is supported.</p>

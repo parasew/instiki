@@ -16,8 +16,8 @@ md_el(:document,[
 	md_el(:div,[
 		md_par(["this is the last warning!"]),
 		md_par(["please, go away!"]),
-		md_el(:div,[md_par(["or else terrible things will happen"])],{},[[:class, "menace"]])
-	],{},[[:class, "warning"]])
+		md_el(:div,[md_par(["or else terrible things will happen"])],{:label=>nil,:num=>nil,:type=>nil},[[:class, "menace"]])
+	],{:label=>nil,:num=>nil,:type=>nil},[[:class, "warning"]])
 ],{},[])
 *** Output of to_html ***
 <div class='warning'>
@@ -30,7 +30,11 @@ md_el(:document,[
 </div>
 </div>
 *** Output of to_latex ***
+this is the last warning!
 
+please, go away!
+
+or else terrible things will happen
 *** Output of to_md ***
 this is the last warning!
 

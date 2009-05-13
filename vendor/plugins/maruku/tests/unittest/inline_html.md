@@ -37,19 +37,11 @@ Without closing:
 
 <table>
 <tr>
-<td markdown="1">This is *true* markdown text. (no par)</td>
+<td markdown="1">This is a *true* markdown text. (no par)</td>
 <td markdown="block">This is *true* markdown text. (par)</td>
 </tr>
 </table>
 
-
-The following is invalid HTML, and will generate an error:
-
-<table>
-<td markdown="1">This is *true* markdown text. (no par)</td>
-<td markdown="block">This is *true* markdown text. (par)</td>
-</tr>
-</table>
 
 
 *** Output of inspect ***
@@ -68,10 +60,7 @@ md_el(:document,[
 	md_par(["Without closing:"]),
 	md_html("<img src=\"http://jigsaw.w3.org/css-validator/images/vcss\" />"),
 	md_html("<div markdown=\"1\">\n\tThis is *true* markdown text (paragraph)\n\n\t<p markdown=\"1\">\n\t\tThis is *true* markdown text (no paragraph)\n\t</p>\n\t<p markdown=\"block\">\n\t\tThis is *true* markdown text (block paragraph)\n\t</p>\n</div>"),
-	md_html("<table>\n<tr>\n<td markdown=\"1\">This is *true* markdown text. (no par)</td>\n<td markdown=\"block\">This is *true* markdown text. (par)</td>\n</tr>\n</table>"),
-	md_par(["The following is invalid HTML, and will generate an error:"]),
-	md_html("<table>\n<td markdown=\"1\">This is *true* markdown text. (no par)</td>\n<td markdown=\"block\">This is *true* markdown text. (par)</td>\n</tr>"),
-	md_html("</table>")
+	md_html("<table>\n<tr>\n<td markdown=\"1\">This is a *true* markdown text. (no par)</td>\n<td markdown=\"block\">This is *true* markdown text. (par)</td>\n</tr>\n</table>")
 ],{},[])
 *** Output of to_html ***
 <p>Input:</p>
@@ -118,7 +107,7 @@ md_el(:document,[
 </div><table>
 <tr>
 <td>
-<p>This is</p>
+<p>This is a</p>
 <em>
 <p>true</p>
 </em>
@@ -133,13 +122,6 @@ md_el(:document,[
 </td>
 </tr>
 </table>
-<p>The following is invalid HTML, and will generate an error:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>HTML parse error: 
-&lt;table&gt;
-&lt;td markdown=&quot;1&quot;&gt;This is *true* markdown text. (no par)&lt;/td&gt;
-&lt;td markdown=&quot;block&quot;&gt;This is *true* markdown text. (par)&lt;/td&gt;
-&lt;/tr&gt;</pre><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>HTML parse error: 
-&lt;/table&gt;</pre>
 *** Output of to_latex ***
 Input:
 
@@ -154,8 +136,6 @@ Result on span:
 Result alone:
 
 Without closing:
-
-The following is invalid HTML, and will generate an error:
 *** Output of to_md ***
 Input:
 
@@ -168,11 +148,8 @@ Result on span:
 Result alone:
 
 Without closing:
-
-The following is invalid HTML, and will
-generate an error:
 *** Output of to_s ***
-Input:Result: Input:Result on span: Result alone:Without closing:The following is invalid HTML, and will generate an error:
+Input:Result: Input:Result on span: Result alone:Without closing:
 *** EOF ***
 
 
