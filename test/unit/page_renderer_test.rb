@@ -1,3 +1,6 @@
+#!/usr/bin/env ruby
+# encoding: UTF-8
+
 require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
 class PageRendererTest < ActiveSupport::TestCase
@@ -156,7 +159,7 @@ END_THM
         %{xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi><mo stretchy='false'>} +
         %{(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics><annotation-xml encoding='SVG1.1'>} +
         %{<svg/></annotation-xml></semantics></math><span class='maruku-eq-tex'><code style='display: none;'>} +
-        %{\\sin(x) \\begin{svg}<svg/>\\end{svg}</code></span></div>},
+        %{\\sin(x) \\begin{svg}&lt;svg/&gt;\\end{svg}</code></span></div>},
         "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
   
     code_block = [ 
@@ -228,13 +231,13 @@ END_THM
       re = Regexp.new(
       %{<p>equation <span class='maruku-inline'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
       %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='vertical-align: -0\.5} +
-      %{55555555555556ex; height: 2\.22222222222222ex;'/></span></p>})
+      %{55555555555556ex; height: 2\.33333333333333ex;'/></span></p>})
       assert_match_markup_parsed_as(re, 'equation $a\sin(\theta)$')
 
       re = Regexp.new(
       %{<div class='maruku-equation'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
-      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.22222222} +
-      %{222222ex;'/><span class='maruku-eq-tex'><code style='display: none;'>a\\\\sin} +
+      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.333333333} +
+      %{33333ex;'/><span class='maruku-eq-tex'><code style='display: none;'>a\\\\sin} +
       %{\\(\\\\theta\\)<\/code><\/span><\/div>})
       assert_match_markup_parsed_as(re, '$$a\sin(\theta)$$')
 
