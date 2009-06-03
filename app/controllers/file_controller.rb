@@ -129,7 +129,7 @@ class FileController < ApplicationController
             next
           else
             logger.info "Page '#{page_name}' already exists. Adding a new revision to it."
-            wiki.revise_page(@web.address, page_name, page_content, Time.now, @author, PageRenderer.new)
+            wiki.revise_page(@web.address, page_name, page_name, page_content, Time.now, @author, PageRenderer.new)
           end
         else
           wiki.write_page(@web.address, page_name, page_content, Time.now, @author, PageRenderer.new)

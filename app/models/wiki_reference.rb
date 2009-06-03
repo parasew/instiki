@@ -2,6 +2,7 @@ class WikiReference < ActiveRecord::Base
 
   LINKED_PAGE = 'L'
   WANTED_PAGE = 'W'
+  REDIRECTED_PAGE = 'R'
   INCLUDED_PAGE = 'I'
   CATEGORY = 'C'
   AUTHOR = 'A'
@@ -9,7 +10,7 @@ class WikiReference < ActiveRecord::Base
   WANTED_FILE = 'E'
 
   belongs_to :page
-  validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, INCLUDED_PAGE, CATEGORY, AUTHOR, FILE, WANTED_FILE]
+  validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, REDIRECTED_PAGE, INCLUDED_PAGE, CATEGORY, AUTHOR, FILE, WANTED_FILE]
 
   def self.link_type(web, page_name)
     web.has_page?(page_name) ? LINKED_PAGE : WANTED_PAGE
@@ -51,6 +52,28 @@ class WikiReference < ActiveRecord::Base
     names = connection.select_all(sanitize_sql([query, page_name])).map { |row| row['name'] }
   end
 
+  def self.pages_redirected_to(web, page_name)
+    names = []
+    if web.has_page?(page_name) 
+      page = web.page(page_name)
+      redirected_names = page.redirects_for
+      redirected_names.each do |name|
+        names = names | self.pages_that_reference(web, name)
+      end
+    end
+    names
+  end
+
+  def self.page_that_redirects_for(web, page_name)
+    query = 'SELECT name FROM pages JOIN wiki_references ' +
+      'ON pages.id = wiki_references.page_id ' +
+      'WHERE wiki_references.referenced_name = ? ' +
+      "AND wiki_references.link_type = '#{REDIRECTED_PAGE}' " +
+      "AND pages.web_id = '#{web.id}'"
+    names = connection.select_all(sanitize_sql([query, page_name])).map { |row| row['name'] }
+    names[0] 
+  end
+  
   def self.pages_in_category(web, category)
     query = 
       "SELECT name FROM pages JOIN wiki_references " +
@@ -80,6 +103,10 @@ class WikiReference < ActiveRecord::Base
 
   def linked_page?
     link_type == LINKED_PAGE
+  end
+
+  def redirected_page?
+    link_type == REDIRECTED_PAGE
   end
 
   def wanted_page?

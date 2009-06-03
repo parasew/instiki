@@ -32,7 +32,7 @@ class PageTest < ActiveSupport::TestCase
   end
 
   def test_revise
-    @page.revise('HisWay would be MyWay in kinda lame', Time.local(2004, 4, 4, 16, 55), 
+    @page.revise('HisWay would be MyWay in kinda lame', @page.name, Time.local(2004, 4, 4, 16, 52), 
         'MarianneSyhler', test_renderer)
     @page.reload
 
@@ -44,14 +44,14 @@ class PageTest < ActiveSupport::TestCase
   end
   
   def test_revise_continous_revision
-    @page.revise('HisWay would be MyWay in kinda lame', Time.local(2004, 4, 4, 16, 55), 
+    @page.revise('HisWay would be MyWay in kinda lame', @page.name, Time.local(2004, 4, 4, 16, 55), 
         'MarianneSyhler', test_renderer)
     @page.reload
     assert_equal 2, @page.revisions.length
     assert_equal 'HisWay would be MyWay in kinda lame', @page.content
 
     # consecutive revision by the same author within 30 minutes doesn't create a new revision
-    @page.revise('HisWay would be MyWay in kinda update', Time.local(2004, 4, 4, 16, 57), 
+    @page.revise('HisWay would be MyWay in kinda update', @page.name, Time.local(2004, 4, 4, 16, 57), 
         'MarianneSyhler', test_renderer)
     @page.reload
     assert_equal 2, @page.revisions.length
@@ -59,7 +59,7 @@ class PageTest < ActiveSupport::TestCase
     assert_equal Time.local(2004, 4, 4, 16, 57), @page.revised_at
 
     # but consecutive revision by another author results in a new revision
-    @page.revise('HisWay would be MyWay in the house', Time.local(2004, 4, 4, 16, 58), 
+    @page.revise('HisWay would be MyWay in the house', @page.name, Time.local(2004, 4, 4, 16, 58), 
         'DavidHeinemeierHansson', test_renderer)
     @page.reload
     assert_equal 3, @page.revisions.length
@@ -67,10 +67,23 @@ class PageTest < ActiveSupport::TestCase
 
     # consecutive update after 30 minutes since the last one also creates a new revision, 
     # even when it is by the same author
-    @page.revise('HisWay would be MyWay in my way', Time.local(2004, 4, 4, 17, 30), 
+    @page.revise('HisWay would be MyWay in my way', @page.name, Time.local(2004, 4, 4, 17, 30), 
         'DavidHeinemeierHansson', test_renderer)
     @page.reload
     assert_equal 4, @page.revisions.length
+  end
+  
+  def test_change_name
+    @page.revise('HisWay would be MyWay in my way', 'SecondPage', Time.local(2004, 4, 5, 17, 56), 
+        'MarianneSyhler', test_renderer)
+    @page.reload
+
+    assert_equal "Second Page", @page.plain_name
+    assert_equal 2, @page.revisions.length, 'Should have two revisions'
+    assert_equal 'MarianneSyhler', @page.current_revision.author.to_s, 
+        'Marianne should be the author now'
+    assert_equal 'DavidHeinemeierHansson', @page.revisions.first.author.to_s, 
+        'David was the first author'
   end
 
   def test_revise_content_unchanged
@@ -78,7 +91,7 @@ class PageTest < ActiveSupport::TestCase
     revisions_number_before = @page.revisions.size
   
     assert_raises(Instiki::ValidationError) { 
-      @page.revise(@page.current_revision.content, Time.now, 'AlexeyVerkhovsky', test_renderer)
+      @page.revise(@page.current_revision.content, @page.name, Time.now, 'AlexeyVerkhovsky', test_renderer)
     }
     
     assert_equal last_revision_before, @page.current_revision(true)
@@ -88,7 +101,7 @@ class PageTest < ActiveSupport::TestCase
   def test_revise_changes_references_from_wanted_to_linked_for_new_pages
     web = Web.find(1)
     new_page = Page.new(:web => web, :name => 'NewPage')
-    new_page.revise('Reference to WantedPage, and to WantedPage2', Time.now, 'AlexeyVerkhovsky', 
+    new_page.revise('Reference to WantedPage, and to WantedPage2', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
         test_renderer)
     
     references = new_page.wiki_references(true)
@@ -99,7 +112,7 @@ class PageTest < ActiveSupport::TestCase
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
 
     wanted_page = Page.new(:web => web, :name => 'WantedPage')
-    wanted_page.revise('And here it is!', Time.now, 'AlexeyVerkhovsky', test_renderer)
+    wanted_page.revise('And here it is!', 'WantedPage', Time.now, 'AlexeyVerkhovsky', test_renderer)
 
     # link type stored for NewPage -> WantedPage reference should change from WANTED to LINKED
     # reference NewPage -> WantedPage2 should remain the same
@@ -112,8 +125,8 @@ class PageTest < ActiveSupport::TestCase
   end
 
   def test_rollback
-    @page.revise("spot two", Time.now, "David", test_renderer)
-    @page.revise("spot three", Time.now + 2000, "David", test_renderer)
+    @page.revise("spot two", @page.name, Time.now, "David", test_renderer)
+    @page.revise("spot three", @page.name, Time.now + 2000, "David", test_renderer)
     assert_equal 3, @page.revisions(true).length, "Should have three revisions"
     @page.current_revision(true)
     @page.rollback(0, Time.now, '127.0.0.1', test_renderer)

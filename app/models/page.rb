@@ -4,13 +4,14 @@ class Page < ActiveRecord::Base
   has_many :wiki_references, :order => 'referenced_name'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
 
-  def revise(content, time, author, renderer)
+  def revise(content, name, time, author, renderer)
     revisions_size = new_record? ? 0 : revisions.size
-    if (revisions_size > 0) and content == current_revision.content
+    if (revisions_size > 0) and content == current_revision.content and name == self.name
       raise Instiki::ValidationError.new(
           "You have tried to save page '#{name}' without changing its content")
     end
     
+    self.name = name
     author = Author.new(author.to_s) unless author.is_a?(Author)
 
     # Try to render content to make sure that markup engine can take it,
@@ -37,7 +38,7 @@ class Page < ActiveRecord::Base
       raise Instiki::ValidationError.new("Revision #{revision_number} not found")
     end
     author = Author.new(roll_back_revision.author.name, author_ip)
-    revise(roll_back_revision.content, time, author, renderer)
+    revise(roll_back_revision.content, self.name, time, author, renderer)
   end
 
   def revisions?
@@ -69,6 +70,10 @@ class Page < ActiveRecord::Base
 
   def linked_from
     web.select.pages_that_link_to(name)
+  end
+  
+  def redirects_for
+    wiki_references.select { |ref| ref.redirected_page?}.map { |ref| ref.referenced_name }
   end
 
   def included_from

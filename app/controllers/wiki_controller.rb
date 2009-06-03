@@ -268,9 +268,13 @@ class WikiController < ApplicationController
         raise Instiki::ValidationError.new('Your content was not valid utf-8.')
       end
       if @page
-        wiki.revise_page(@web_name, @page_name, the_content, Time.now, 
+        new_name = params['new_name'] || @page_name
+        raise Instiki::ValidationError.new('Your new title was not valid utf-8.') unless new_name.is_utf8?
+        raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if @page_name != new_name && @web.has_page?(new_name)
+        wiki.revise_page(@web_name, @page_name, new_name, the_content, Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
         @page.unlock
+        @page_name = new_name
       else
         wiki.write_page(@web_name, @page_name, the_content, Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)

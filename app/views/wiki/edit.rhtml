@@ -12,6 +12,16 @@
 	<% form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
 	             { 'id' => 'editForm', 'method' => 'post', 'onsubmit' => 'cleanAuthorName()',
 	               'accept-charset' => 'utf-8' }) do %>
+<% if @page_name != 'HomePage' -%>
+	   <p>
+	      <%= check_box_tag :alter_title, value = "1", checked=false,
+	         'onchange' => "toggleVisibility();" %> <label for="alter_title">Change page name.</label><br/>
+	      <span id="title_change" style="display:none"><label for="new_name">New name:</label> <%= text_field_tag :new_name, h(@page.name.purify),
+			        :onblur => "addRedirect();"  %></span>
+	   </p>
+<% else -%>
+       <%= hidden_field_tag 'new_name', @page_name %>
+<% end%> 
 	   <div>	
 		<textarea name="content" id="content" rows="24" cols="60"><%= h(flash[:content] || 
                          ((params['content'] && params['content'].is_utf8?) ?  params['content'] : @page.content).purify) %></textarea>
@@ -31,10 +41,30 @@
 	<%- end -%>
 
 <script type="text/javascript">
+function toggleVisibility() {
+  var span = document.getElementById('title_change');
+  if (span.style.display =='inline') {
+     span.style.display ='none';
+     document.getElementById('new_name').value = "<%= @page.name %>";
+     var content = document.getElementById('content').value
+     document.getElementById('content').value = content.replace(/\[\[!redirects <%= Regexp.escape(@page.name) %>\]\]\n/, '')
+     }
+  else
+     span.style.display ='inline'
+}
+
+function addRedirect(){
+  if (document.getElementById('new_name').value != "<%= @page.name %>" ) {
+    var content = document.getElementById('content');
+    content.value = '[[!redirects <%= @page.name %>]]\n' + content.value
+    }
+}
+
 function cleanAuthorName() {
   if (document.getElementById('authorName').value == "") {
     document.getElementById('authorName').value = 'AnonymousCoward';
   }
 }
+
 document.forms["editForm"].elements["content"].focus();
 </script>
