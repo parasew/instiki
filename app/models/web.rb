@@ -14,7 +14,7 @@ class Web < ActiveRecord::Base
   
   def add_page(name, content, time, author, renderer)
     page = page(name) || Page.new(:web => self, :name => name)
-    page.revise(content, time, author, renderer)
+    page.revise(content, name, time, author, renderer)
   end
   
   def authors
@@ -42,6 +42,14 @@ class Web < ActiveRecord::Base
   def has_page?(name)
     Page.count(:conditions => ['web_id = ? AND name = ?', id, name]) > 0
   end
+  
+  def has_redirect_for?(name)
+     WikiReference.page_that_redirects_for(self, name) 
+  end
+
+  def page_that_redirects_for(name)
+     page(WikiReference.page_that_redirects_for(self, name))
+  end
 
   def has_file?(file_name)
     WikiFile.find_by_file_name(file_name) != nil
@@ -51,10 +59,14 @@ class Web < ActiveRecord::Base
     WikiFile.all(:order => sort_order, :conditions => ['web_id = ?', id])
   end
 
-  def pages_that_link_to(file_name)
+  def pages_that_link_to(page_name)
+    WikiReference.pages_that_link_to(self, page_name)
+  end
+
+  def pages_that_link_to_file(file_name)
     WikiReference.pages_that_link_to_file(self, file_name)
   end
-  
+
   def description(file_name)
     file = WikiFile.find_by_file_name(file_name)
     file.description if file

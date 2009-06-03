@@ -173,6 +173,13 @@ class PageRenderer
           :link_type => WikiReference::INCLUDED_PAGE
     end
     
+    redirect_chunks = rendering_result.find_chunks(Redirect)
+    redirects = redirect_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
+    redirects.each do |redirected_page_name|
+      references.build :referenced_name => redirected_page_name, 
+          :link_type => WikiReference::REDIRECTED_PAGE
+    end
+
     categories = rendering_result.find_chunks(Category).map { |cat| cat.list }.flatten
     categories.each do |category|
       references.build :referenced_name => category, :link_type => WikiReference::CATEGORY

@@ -2,6 +2,7 @@ require 'cgi'
 require 'chunks/engines'
 require 'chunks/category'
 require_dependency 'chunks/include'
+require_dependency 'chunks/redirect'
 require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
@@ -38,7 +39,7 @@ require 'sanitizer'
 module ChunkManager
   attr_reader :chunks_by_type, :chunks_by_id, :chunks, :chunk_id
 
-  ACTIVE_CHUNKS = [ NoWiki, Category, WikiChunk::Link,
+  ACTIVE_CHUNKS = [ NoWiki, Category, Redirect, WikiChunk::Link,
                     WikiChunk::Word ]
 
   HIDE_CHUNKS = [ Literal::Pre, Literal::Tags, Literal::Math ]

@@ -118,7 +118,7 @@ class FileControllerTest < ActionController::TestCase
     # edit and re-render a page so that it has an "unknown file" link to 'rails-e2e.gif'
     PageRenderer.setup_url_generator(StubUrlGenerator.new)
     renderer = PageRenderer.new
-    @wiki.revise_page('wiki1', 'Oak', '[[rails-e2e.gif:pic]]', 
+    @wiki.revise_page('wiki1', 'Oak', 'Oak', '[[rails-e2e.gif:pic]]', 
         Time.now, 'AnonymousBrave', renderer)
     assert_equal "<p><span class='newWikiWord'>rails-e2e.gif<a href='../file/rails-e2e.gif'>" +
         "?</a></span></p>",
@@ -146,7 +146,7 @@ class FileControllerTest < ActionController::TestCase
     assert @web.has_file?('rails-e2e.gif')
     assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)
     PageRenderer.setup_url_generator(StubUrlGenerator.new)
-    @wiki.revise_page('wiki1', 'Oak', 'Try [[rails-e2e.gif:pic]] again.',
+    @wiki.revise_page('wiki1', 'Oak', 'Oak', 'Try [[rails-e2e.gif:pic]] again.',
         Time.now, 'AnonymousBrave', renderer)
     assert_equal "<p>Try <img alt='Rails, end-to-end' src='../file/rails-e2e.gif'/> again.</p>",
         renderer.display_content
