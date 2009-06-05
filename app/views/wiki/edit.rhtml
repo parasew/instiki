@@ -1,5 +1,5 @@
 <%- 
-  @title = "Editing #{CGI.escapeHTML(@page.name)}"
+  @title = "Editing #{@page.name.escapeHTML}"
   @content_width = 720
   @hide_navigation = true
 -%>
@@ -41,6 +41,7 @@
 	<%- end -%>
 
 <script type="text/javascript">
+<!--//--><![CDATA[//><!--
 function toggleVisibility() {
   var span = document.getElementById('title_change');
   if (span.style.display =='inline') {
@@ -67,4 +68,5 @@ function cleanAuthorName() {
 }
 
 document.forms["editForm"].elements["content"].focus();
+//--><!]]>
 </script>
