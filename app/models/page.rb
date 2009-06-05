@@ -71,10 +71,6 @@ class Page < ActiveRecord::Base
   def linked_from
     web.select.pages_that_link_to(name)
   end
-  
-  def redirects_for
-    wiki_references.select { |ref| ref.redirected_page?}.map { |ref| ref.referenced_name }
-  end
 
   def included_from
     web.select.pages_that_include(name)
