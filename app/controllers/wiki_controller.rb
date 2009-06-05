@@ -229,9 +229,17 @@ class WikiController < ApplicationController
     @page_name ||= 'HomePage'
     @page ||= wiki.read_page(@web_name, @page_name)
     @link_mode ||= :publish
-    render(:text => "Page '#{@page_name}' not found", :status => 404, :layout => 'error') and return unless @page
-    
-    @renderer = PageRenderer.new(@page.revisions.last)
+    if @page
+       @renderer = PageRenderer.new(@page.revisions.last)
+    else
+      real_page = WikiReference.page_that_redirects_for(@web, @page_name)
+        if real_page
+          flash[:info] = "Redirected from \"#{@page_name}\"."
+          redirect_to :web => @web_name, :action => 'published', :id => real_page
+        else
+          render(:text => "Page '#{@page_name}' not found", :status => 404, :layout => 'error')
+        end
+     end
   end
   
   def revision
@@ -311,7 +319,13 @@ class WikiController < ApplicationController
       end
     else
       if not @page_name.nil? and @page_name.is_utf8? and not @page_name.empty?
-        redirect_to :web => @web_name, :action => 'new', :id => @page_name
+        real_page = WikiReference.page_that_redirects_for(@web, @page_name)
+        if real_page
+          flash[:info] = "Redirected from \"#{@page_name}\"."
+          redirect_to :web => @web_name, :action => 'show', :id => real_page
+        else
+          redirect_to :web => @web_name, :action => 'new', :id => @page_name
+        end
       else
         render :text => 'Page name is not specified', :status => 404, :layout => 'error'
       end
