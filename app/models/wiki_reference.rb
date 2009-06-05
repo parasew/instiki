@@ -54,14 +54,9 @@ class WikiReference < ActiveRecord::Base
 
   def self.pages_redirected_to(web, page_name)
     names = []
-    if web.has_page?(page_name) 
-      page = web.page(page_name)
-      redirected_names = page.redirects_for
-      redirected_names.each do |name|
-        names = names | self.pages_that_reference(web, name)
-      end
-    end
-    names
+    page = web.page(page_name)
+    Thread.current[:page_redirects][page.name].each { |name| names = names + self.pages_that_reference(web, name) }
+    names.uniq    
   end
 
   def self.page_that_redirects_for(web, page_name)
@@ -70,8 +65,8 @@ class WikiReference < ActiveRecord::Base
       'WHERE wiki_references.referenced_name = ? ' +
       "AND wiki_references.link_type = '#{REDIRECTED_PAGE}' " +
       "AND pages.web_id = '#{web.id}'"
-    names = connection.select_all(sanitize_sql([query, page_name])).map { |row| row['name'] }
-    names[0] 
+    row = connection.select_one(sanitize_sql([query, page_name]))
+    row['name'] if row
   end
   
   def self.pages_in_category(web, category)

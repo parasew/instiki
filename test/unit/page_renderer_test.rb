@@ -524,6 +524,7 @@ END_THM
   end
   
   def test_revisions_diff
+    Thread.current[:page_redirects] = { @page.name => []}
     Revision.create(:page => @page, :content => 'What a blue and lovely morning', 
         :author => Author.new('DavidHeinemeierHansson'), :revised_at => Time.now)
     Revision.create(:page => @page, :content => 'What a red and lovely morning today', 
