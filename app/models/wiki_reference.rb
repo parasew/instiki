@@ -55,7 +55,8 @@ class WikiReference < ActiveRecord::Base
   def self.pages_redirected_to(web, page_name)
     names = []
     page = web.page(page_name)
-    Thread.current[:page_redirects][page.name].each { |name| names = names + self.pages_that_reference(web, name) }
+    redirected_pages = Thread.current[:page_redirects][page.name]
+    redirected_pages.each { |name| names = names + self.pages_that_reference(web, name) } if redirected_pages
     names.uniq    
   end
 
