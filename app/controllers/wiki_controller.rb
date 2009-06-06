@@ -261,10 +261,11 @@ class WikiController < ApplicationController
     end
     author_name = params['author']
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
-    render(:text => "Your name was not valid utf-8", :layout => 'error', :status => 400) and return unless author_name.is_utf8?
-    cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
     
     begin
+      raise Instiki::ValidationError.new('Your name was not valid utf-8') unless author_name.is_utf8?
+      raise Instiki::ValidationError.new('Your name cannot contain a "."') if author_name.include? '.'
+      cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
       the_content = params['content']
       filter_spam(the_content)
       unless the_content.is_utf8?
@@ -278,6 +279,7 @@ class WikiController < ApplicationController
       if @page
         new_name = params['new_name'] || @page_name
         raise Instiki::ValidationError.new('Your new title was not valid utf-8.') unless new_name.is_utf8?
+        raise Instiki::ValidationError.new('Your new title cannot contain a "."') if new_name.include? '.'
         raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if @page_name != new_name && @web.has_page?(new_name)
         wiki.revise_page(@web_name, @page_name, new_name, the_content, Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
