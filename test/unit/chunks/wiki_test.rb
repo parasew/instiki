@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: UTF-8
 
 require File.dirname(__FILE__) + '/../../test_helper'
 require 'chunks/wiki'
@@ -77,6 +78,13 @@ class WikiTest < Test::Unit::TestCase
     content = 'This is a [[!include pagename]] and [[!include WikiWord]] and [[!include x]]but [[blah]]'
     recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
     assert_equal %w(pagename WikiWord x), recognized_includes
+  end
+
+  def test_redirects_chunk_pattern
+    content = 'This is a [[!redirects pagename]] and [[!redirects WikiWord]] and' +
+      ' [[!redirects x]] and [[!redirects page name]] but [[blah]]'
+    recognized_redirects = content.scan(Redirect.pattern).collect { |m| m[0] }
+    assert_equal %w(pagename WikiWord x page\ name), recognized_redirects
   end
 
   def test_textile_link

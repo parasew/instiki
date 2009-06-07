@@ -124,6 +124,39 @@ class PageTest < ActiveSupport::TestCase
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
   end
 
+  def test_revise_changes_references_from_wanted_to_linked_for_redirected_pages
+    web = Web.find(1)
+    new_page = Page.new(:web => web, :name => 'NewPage')
+    new_page.revise('Reference to HappyPage, and to WantedPage2', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
+        test_renderer)
+    
+    references = new_page.wiki_references(true)
+    assert_equal 2, references.size
+    assert_equal 'HappyPage', references[0].referenced_name
+    assert_equal WikiReference::WANTED_PAGE, references[0].link_type
+    assert_equal 'WantedPage2', references[1].referenced_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+
+    my_page = Page.new(:web => web, :name => 'MyPage')
+    my_page.revise("[[!redirects HappyPage]]\nAnd here it is!", 'MyPage', Time.now, 'AlexeyVerkhovsky', test_renderer)
+    my_references = my_page.wiki_references(true)
+    assert_equal 1, my_references.size
+    assert_equal 'HappyPage', my_references[0].referenced_name
+    assert_equal WikiReference::REDIRECTED_PAGE, my_references[0].link_type
+
+    # link type stored for NewPage -> HappyPage reference should change from WANTED to LINKED
+    # reference NewPage -> WantedPage2 should remain the same
+    references = new_page.wiki_references(true)
+    assert_match( "Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>Happy Page</a>",
+         test_renderer(new_page.revisions.last).display_content(true) )
+    assert_equal 2, references.size
+    assert_equal 'HappyPage', references[0].referenced_name
+#   Doesn't work, since picking up the change in wiki_references requires a database query.
+#    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
+    assert_equal 'WantedPage2', references[1].referenced_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+  end
+
   def test_rollback
     @page.revise("spot two", @page.name, Time.now, "David", test_renderer)
     @page.revise("spot three", @page.name, Time.now + 2000, "David", test_renderer)
