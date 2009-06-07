@@ -29,6 +29,7 @@ class WikiControllerTest < ActionController::TestCase
     @web = webs(:test_wiki)
     @home = @page = pages(:home_page)
     @oak = pages(:oak)
+    @liquor = pages(:liquor)
     @elephant = pages(:elephant)
     @eternity = Regexp.new('author=.*; path=/; expires=' + Time.utc(2030).strftime("%a, %d-%b-%Y %H:%M:%S GMT"))
     set_tex_header
@@ -130,7 +131,7 @@ class WikiControllerTest < ActionController::TestCase
     begin 
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
-        assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml index.xhtml), zip.dir.entries('.').sort
+        assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml index.xhtml liquor.xhtml), zip.dir.entries('.').sort
         assert_match /.*<html .*All about elephants.*<\/html>/, 
             zip.file.read('Elephant.xhtml').gsub(/\s+/, ' ')
         assert_match /.*<html .*All about oak.*<\/html>/, 
@@ -161,7 +162,7 @@ class WikiControllerTest < ActionController::TestCase
     begin 
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
-        assert_equal %w(Elephant.html FirstPage.html HomePage.html MyWay.html NoWikiWord.html Oak.html SmartEngine.html ThatWay.html index.html), zip.dir.entries('.').sort
+        assert_equal %w(Elephant.html FirstPage.html HomePage.html MyWay.html NoWikiWord.html Oak.html SmartEngine.html ThatWay.html index.html liquor.html), zip.dir.entries('.').sort
         assert_match /.*<html .*All about elephants.*<\/html>/, 
             zip.file.read('Elephant.html').gsub(/\s+/, ' ')
         assert_match /.*<html .*All about oak.*<\/html>/, 
@@ -260,7 +261,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     assert_nil r.template_objects['category']
     assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), 
-                  @oak, pages(:smart_engine), pages(:that_way)], 
+                  @oak, pages(:smart_engine), pages(:that_way), @liquor], 
                  r.template_objects['pages_in_category']
   end
 
@@ -356,7 +357,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal %w(animals trees), r.template_objects['categories']
     assert_nil r.template_objects['category']
     all_pages = @elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), 
-                @oak, pages(:smart_engine), pages(:that_way)
+                @oak, pages(:smart_engine), pages(:that_way), @liquor
     assert_equal all_pages, r.template_objects['pages_in_category']
     
     pages_by_day = r.template_objects['pages_by_day']
@@ -383,7 +384,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal %w(animals categorized trees), r.template_objects['categories']
     # no category is specified in params
     assert_nil r.template_objects['category']
-    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, page2, pages(:smart_engine), pages(:that_way)], r.template_objects['pages_in_category'],
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, page2, pages(:smart_engine), pages(:that_way), @liquor], r.template_objects['pages_in_category'],
         "Pages are not as expected: " +
         r.template_objects['pages_in_category'].map {|p| p.name}.inspect
     assert_equal 'the web', r.template_objects['set_name']
@@ -396,7 +397,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     # no category is specified in params
     assert_nil r.template_objects['category']
-    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way)], r.template_objects['pages_in_category'], 
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way), @liquor], r.template_objects['pages_in_category'], 
         "Pages are not as expected: " +
         r.template_objects['pages_in_category'].map {|p| p.name}.inspect
     assert_equal 'the web', r.template_objects['set_name']
@@ -438,7 +439,8 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     pages = r.template_objects['pages_by_revision']
-    assert_equal [@elephant, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home], pages,
+    assert_equal [@elephant, @liquor, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine),
+          pages(:my_way), pages(:first_page), @home], pages,
         "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert !r.template_objects['hide_description']
   end
@@ -464,7 +466,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     pages = r.template_objects['pages_by_revision']
-    assert_equal [@elephant, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home], pages, "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
+    assert_equal [@elephant, @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home], pages, "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
     
     xml = REXML::Document.new(r.body)
@@ -703,6 +705,22 @@ class WikiControllerTest < ActionController::TestCase
     assert !@home.locked?(Time.now), 'HomePage should be unlocked if an edit was unsuccessful'
   end
 
+  def test_save_new_revision_identical_to_last_but_new_name
+    revisions_before = @liquor.revisions.size
+    @liquor.lock(Time.now, 'AnAuthor')
+  
+    r = process 'save', {'web' => 'wiki1', 'id' => 'liquor', 
+        'content' => @liquor.revisions.last.content.dup, 'new_name' => 'booze',
+        'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
+
+    assert_redirected_to :action => 'show', :web => 'wiki1', :id => 'booze'
+
+    revisions_after = @liquor.revisions.size
+    assert_equal revisions_before + 1, revisions_after
+    @booze = Page.find(@liquor.id)
+    assert !@booze.locked?(Time.now), 'booze should be unlocked if an edit was unsuccessful'
+  end
+
   def test_save_blank_author
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => ''
@@ -716,6 +734,18 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'AnonymousCoward', another_page.author
   end
 
+  def test_save_invalid_author_name
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
+      'author' => 'foo.bar'
+    assert_redirected_to :action => 'new', :web => 'wiki1', :id => 'NewPage'
+    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
+
+    r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page', 
+      'author' => "\000"
+
+    assert_redirected_to :action => 'new', :web => 'wiki1', :id => 'AnotherPage'
+    assert r.flash[:error].to_s == "Your name was not valid utf-8"
+  end
 
   def test_search
     r = process 'search', 'web' => 'wiki1', 'query' => '\s[A-Z]ak'

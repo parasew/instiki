@@ -326,6 +326,14 @@ END_THM
         '_should we go ThatWay or ThisWay _')
   end
   
+  def test_content_with_redirected_link
+    assert_markup_parsed_as(
+        "<p>This is a redirected link: <a class='existingWikiWord' href='../show/liquor'>" +
+	    "booze</a>. This is not: <span class='newWikiWord'>hooch<a href='../show/hooch'>?</a>" +
+	    '</span></p>', 
+        'This is a redirected link: [[booze]]. This is not: [[hooch]]')
+  end
+
   def test_content_with_wikiword_in_equations
     assert_markup_parsed_as(
         "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
@@ -524,7 +532,6 @@ END_THM
   end
   
   def test_revisions_diff
-    Thread.current[:page_redirects] = { @page.name => []}
     Revision.create(:page => @page, :content => 'What a blue and lovely morning', 
         :author => Author.new('DavidHeinemeierHansson'), :revised_at => Time.now)
     Revision.create(:page => @page, :content => 'What a red and lovely morning today', 
@@ -703,7 +710,7 @@ END_THM
 
   def assert_markup_parsed_as(expected_output, input)
     revision = Revision.new(:page => @page, :content => input, :author => Author.new('AnAuthor'))
-    assert_equal expected_output, test_renderer(revision).display_content, 'Rendering output not as expected'
+    assert_equal expected_output, test_renderer(revision).display_content(true), 'Rendering output not as expected'
   end
 
   def assert_match_markup_parsed_as(expected_output, input)

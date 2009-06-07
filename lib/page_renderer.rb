@@ -182,8 +182,8 @@ class PageRenderer
     
     # ugly hack: store these in a thread-local variable, so that the cache-sweeper has access to it.
     Thread.current[:page_redirects] ?
-      Thread.current[:page_redirects].update({ @revision.page.name => redirects}) :
-      Thread.current[:page_redirects] = { @revision.page.name => redirects}
+      Thread.current[:page_redirects].update({ @revision.page => redirects}) :
+      Thread.current[:page_redirects] = { @revision.page => redirects}
     
     categories = rendering_result.find_chunks(Category).map { |cat| cat.list }.flatten
     categories.each do |category|

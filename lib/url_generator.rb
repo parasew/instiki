@@ -18,7 +18,7 @@ class AbstractUrlGenerator
       page_exists = web.has_page?(asked_name)
       known_page = page_exists || web.has_redirect_for?(asked_name)
       if known_page && !page_exists
-        name = web.page_that_redirects_for(asked_name)
+        name = web.page_that_redirects_for(asked_name).name
       else
         name = asked_name
       end
