@@ -53,3 +53,11 @@ elephant:
   updated_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
   web_id: 1
   name: Elephant
+
+liquor:
+  id: 9
+  created_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
+  updated_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
+  web_id: 1
+  name: liquor
+  

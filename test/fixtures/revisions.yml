@@ -81,3 +81,13 @@ elephant_first_revision:
   content: "All about elephants.\ncategory: animals"
   author: Guest
   ip: 127.0.0.2
+
+liquor_first_revision:
+  id: 10
+  created_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
+  updated_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
+  revised_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
+  page_id: 9
+  content: "[[!redirects booze]]\n Drinky-poo."
+  author: Guest
+  ip: 127.0.0.2

@@ -127,7 +127,7 @@ class StubUrlGenerator < AbstractUrlGenerator
 
   def page_link(mode, name, text, web_address, known_page)
     link = CGI.escape(name)
-    case mode.to_sym
+    case mode
     when :export
       if known_page then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
       else %{<span class="newWikiWord">#{text}</span>} end

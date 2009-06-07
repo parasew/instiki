@@ -109,4 +109,11 @@ elephant_1:
   link_type: C
   created_at: <%= Time.now.to_formatted_s(:db) %>
   updated_at: <%= Time.now.to_formatted_s(:db) %>
-  
+
+liquor_1:
+  id: 15
+  page_id: 9
+  referenced_name: booze
+  link_type: R
+  created_at: <%= Time.now.to_formatted_s(:db) %>
+  updated_at: <%= Time.now.to_formatted_s(:db) %>

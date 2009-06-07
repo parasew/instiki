@@ -21,6 +21,7 @@ class AdminControllerTest < ActionController::TestCase
     @request.session.dbman = FakeSessionDbMan
     @wiki = Wiki.new
     @oak = pages(:oak)
+    @liquor = pages(:liquor)
     @elephant = pages(:elephant)
     @web = webs(:test_wiki)
     @home = @page = pages(:home_page)
@@ -211,12 +212,13 @@ class AdminControllerTest < ActionController::TestCase
 
   def test_remove_orphaned_pages
     @wiki.system.update_attribute(:password, 'pswd')
-    page_order = [@home, pages(:my_way), @oak, pages(:smart_engine), pages(:that_way)]
-    orphan_page_linking_to_oak = @wiki.write_page('wiki1', 'Pine',
-        "Refers to [[Oak]].\n" +
+    page_order = [@home, pages(:my_way), @oak, pages(:smart_engine), pages(:that_way), @liquor]
+    test_renderer(@web.page('liquor').revisions.last).display_content(true)
+    orphan_page_linking_to_oak_and_redirecting_to_liquor = @wiki.write_page('wiki1', 'Pine',
+        "Refers to [[Oak]] and to [[booze]].\n" +
         "category: trees", 
         Time.now, Author.new('TreeHugger', '127.0.0.2'), test_renderer)
-
+    
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
 
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
@@ -229,6 +231,7 @@ class AdminControllerTest < ActionController::TestCase
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
     @web.pages(true)
     page_order.delete(@oak)
+    page_order.delete(@liquor)
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
 
@@ -242,7 +245,8 @@ class AdminControllerTest < ActionController::TestCase
 
   def test_remove_orphaned_pages_in_category
     @wiki.system.update_attribute(:password, 'pswd')
-    page_order = [pages(:elephant), pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way)]
+    page_order = [pages(:elephant), pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
+       @oak, pages(:smart_engine), pages(:that_way), @liquor]
     orphan_page_linking_to_oak = @wiki.write_page('wiki1', 'Pine',
         "Refers to [[Oak]].\n" +
         "category: trees", 
