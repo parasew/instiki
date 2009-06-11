@@ -13,10 +13,8 @@ class WikiReference < ActiveRecord::Base
   validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, REDIRECTED_PAGE, INCLUDED_PAGE, CATEGORY, AUTHOR, FILE, WANTED_FILE]
 
   def self.link_type(web, page_name)
-    if web.has_page?(page_name)
+    if web.has_page?(page_name) || self.page_that_redirects_for(web, page_name)
       LINKED_PAGE
-    elsif self.page_that_redirects_for(web, page_name)
-      REDIRECTED_PAGE
     else
       WANTED_PAGE
     end
