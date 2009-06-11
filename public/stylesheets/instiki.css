@@ -393,6 +393,16 @@ margin:0;
 padding:0;
 }
 
+span.wikilink-error {
+ border: solid 2px red;
+ background-color: pink;
+}
+
+span.wikilink-error b {
+ font-size: 80%;
+ color: #009;
+}
+
 merror {display:inline;font-size:1em;}
 math[display=block] {overflow:auto;}
 math { white-space: nowrap }
