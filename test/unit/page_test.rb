@@ -155,6 +155,16 @@ class PageTest < ActiveSupport::TestCase
 #    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+    
+    new_page.revise('Reference to HappyPage', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
+        test_renderer)
+    references = new_page.wiki_references(true)
+    assert_match( "Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>Happy Page</a>",
+         test_renderer(new_page.revisions.last).display_content(true) )
+    assert_equal 1, references.size
+#   now it works.
+    assert_equal 'HappyPage', references[0].referenced_name
+    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
   end
 
   def test_rollback
