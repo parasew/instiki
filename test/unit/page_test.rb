@@ -127,7 +127,7 @@ class PageTest < ActiveSupport::TestCase
   def test_revise_changes_references_from_wanted_to_linked_for_redirected_pages
     web = Web.find(1)
     new_page = Page.new(:web => web, :name => 'NewPage')
-    new_page.revise('Reference to HappyPage, and to WantedPage2', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
+    new_page.revise('Reference to HappyPage, and to WantedPage2', 'NewPage', Time.local(2004, 4, 5, 17, 56), 'AlexeyVerkhovsky', 
         test_renderer)
     
     references = new_page.wiki_references(true)
@@ -156,15 +156,21 @@ class PageTest < ActiveSupport::TestCase
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
     
-    new_page.revise('Reference to HappyPage', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
+    new_page.revise('Reference to HappyPage and to WantedPage2.pdf and [[foo.pdf]]', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
         test_renderer)
     references = new_page.wiki_references(true)
-    assert_match( "Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>Happy Page</a>",
+    assert_equal( "<p>Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>Happy Page</a>" +
+      " and to <span class='newWikiWord'>Wanted Page2<a href='../show/WantedPage2'>?</a></span>.pdf " +
+      "and <span class='wikilink-error'><b>Illegal link (contains a &#39;.&#39;):</b> [[foo.pdf]]</span></p>",
          test_renderer(new_page.revisions.last).display_content(true) )
-    assert_equal 1, references.size
+    assert_equal 3, references.size
 #   now it works.
     assert_equal 'HappyPage', references[0].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
+    assert_equal 'WantedPage2', references[1].referenced_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+    assert_equal 'foo.pdf', references[2].referenced_name
+    assert_equal WikiReference::WANTED_PAGE, references[1].link_type
   end
 
   def test_rollback

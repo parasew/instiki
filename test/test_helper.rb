@@ -127,6 +127,7 @@ class StubUrlGenerator < AbstractUrlGenerator
 
   def page_link(mode, name, text, web_address, known_page)
     link = CGI.escape(name)
+    return %{<span class='wikilink-error'><b>Illegal link (contains a '.'):</b> [[#{text}]]</span>} if text.include?('.')
     case mode
     when :export
       if known_page then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
