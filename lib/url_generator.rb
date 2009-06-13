@@ -87,7 +87,7 @@ class UrlGenerator < AbstractUrlGenerator
   end
 
   def page_link(mode, name, text, web_address, known_page)
-    return %{<span class='wikilink-error'><b>Illegal link (contains a '.'):</b> [[#{text}]]</span>} if text.include?('.')
+    return %{<span class='wikilink-error'><b>Illegal link (target contains a '.'):</b> #{name}</span>} if name.include?('.')
     case mode
     when :export
       if known_page 
