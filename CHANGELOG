@@ -1,3 +1,17 @@
+* 0.17
+
+New features:
+* Ability to rename pages
+* Ability to redirect Wikilinks, using
+    [[!redirect ...]]
+* HTTP 302 redirects, for redirected/renamed pages
+
+Bugs Fixed:
+* Rails gets very unhappy with "." in page or author names.
+  Make sure that doesn't happen.
+* Fix a Maruku escaping bug.
+
+------------------------------------------------------------------------------
 * 0.16.6
 
 New Features:
