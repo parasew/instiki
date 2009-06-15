@@ -17,7 +17,7 @@
   <%= javascript_include_tag 'page_helper' %>
  
   <style type="text/css">
-    h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, #TextileHelp h3 { 
+    h1#pageName, div.info, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, #TextileHelp h3 { 
       color: #<%= @web ? @web.color : "393" %>; 
     }
     <%= File.read(RAILS_ROOT + '/public/stylesheets/instiki.css') if @inline_style %>
