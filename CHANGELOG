@@ -10,6 +10,11 @@ Bugs Fixed:
 * Rails gets very unhappy with "." in page or author names.
   Make sure that doesn't happen.
 * Fix a Maruku escaping bug.
+* WEBrick should respond to TERM signals 
+  (needed by MacOSX and, perhaps, others).
+* Add a flash message for redirection to "new" page
+  when the target of "show" action is not found.
+* Flash[:info] messages use Web's colour scheme.
 
 ------------------------------------------------------------------------------
 * 0.16.6
