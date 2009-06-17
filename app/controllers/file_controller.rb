@@ -28,7 +28,7 @@ class FileController < ApplicationController
       # no form supplied, this is a request to download the file
       file = @web.files_path + '/' + @file_name
       if File.exists?(file)
-        send_file(file)
+        send_file(file) if check_authorized
       else
         return unless check_allow_uploads
         @file = WikiFile.new(:file_name => @file_name)
@@ -86,10 +86,20 @@ class FileController < ApplicationController
   end
 
   protected
+  
+  def check_authorized
+    if authorized? or @web.published?
+      return true
+    else
+      @hide_navigation  = true
+      render(:status => 403, :text => 'This web is private', :layout => true)
+      return false
+    end    
+  end
 
   def check_allow_uploads
     render(:status => 404, :text => "Web #{params['web'].inspect} not found", :layout => 'error') and return false unless @web
-    if @web.allow_uploads?
+    if @web.allow_uploads? and authorized?
       return true
     else
       @hide_navigation  = true

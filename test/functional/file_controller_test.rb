@@ -80,7 +80,32 @@ class FileControllerTest < ActionController::TestCase
     assert_equal pic, r.body
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end
+
+  def test_pic_download_gif_published_web
+    @web.update_attribute(:published, true)
+    @web.update_attribute(:password, 'pswd')
+    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
+    
+    r = get :file, :web => 'wiki1', :id => 'rails.gif'
+    
+    assert_response(:success, bypass_body_parsing = true)
+    assert_equal 'image/gif', r.headers['Content-Type']
+    assert_equal pic.size, r.body.size
+    assert_equal pic, r.body
+    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+  end
   
+  def test_pic_download_gif_unpublished_web
+    @web.update_attribute(:published, false)
+    @web.update_attribute(:password, 'pswd')
+    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
+    r = get :file, :web => 'wiki1', :id => 'rails.gif'
+
+    assert_response(:forbidden)
+  end
+
   def test_pic_x_sendfile
     pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
@@ -94,6 +119,33 @@ class FileControllerTest < ActionController::TestCase
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end
   
+  def test_pic_x_sendfile_published_web
+    @web.update_attribute(:published, true)
+    @web.update_attribute(:password, 'pswd')
+    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
+    @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
+    @request.remote_addr = '127.0.0.1'
+    r = get :file, :web => 'wiki1', :id => 'rails.gif'
+    
+    assert_response(:success, bypass_body_parsing = true)
+    assert_match  '/rails.gif', r.headers['X-Sendfile']
+    assert_equal 'image/gif', r.headers['Content-Type']
+    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+  end
+
+  def test_pic_x_sendfile_unpublished_web
+    @web.update_attribute(:published, false)
+    @web.update_attribute(:password, 'pswd')
+    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
+    @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
+    @request.remote_addr = '127.0.0.1'
+    r = get :file, :web => 'wiki1', :id => 'rails.gif'
+    
+    assert_response(:forbidden)
+  end
+
   def test_pic_x_sendfile_type_nonlocal
     pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
@@ -112,6 +164,40 @@ class FileControllerTest < ActionController::TestCase
     
     assert_response(:success)
     assert_template 'file/file'
+  end
+
+  def test_pic_upload_published_web
+    @web.update_attribute(:published, true)
+    @web.update_attribute(:password, 'pswd')
+    @web.update_attribute(:allow_uploads, true)
+    # edit and re-render a page so that it has an "unknown file" link to 'rails-e2e.gif'
+    PageRenderer.setup_url_generator(StubUrlGenerator.new)
+    renderer = PageRenderer.new
+    @wiki.revise_page('wiki1', 'Oak', 'Oak', '[[rails-e2e.gif:pic]]', 
+        Time.now, 'AnonymousBrave', renderer)
+    assert_equal "<p><span class='newWikiWord'>rails-e2e.gif</span></p>",
+        renderer.display_published
+  
+    # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
+    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
+    assert_response(:forbidden)
+  end
+
+  def test_pic_upload_unpublished_web
+    @web.update_attribute(:published, false)
+    @web.update_attribute(:password, 'pswd')
+    @web.update_attribute(:allow_uploads, true)
+    # edit and re-render a page so that it has an "unknown file" link to 'rails-e2e.gif'
+    PageRenderer.setup_url_generator(StubUrlGenerator.new)
+    renderer = PageRenderer.new
+    @wiki.revise_page('wiki1', 'Oak', 'Oak', '[[rails-e2e.gif:pic]]', 
+        Time.now, 'AnonymousBrave', renderer)
+    assert_equal "<p><span class='newWikiWord'>rails-e2e.gif</span></p>",
+        renderer.display_published
+  
+    # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
+    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
+    assert_response(:forbidden)
   end
 
   def test_pic_upload_end_to_end
