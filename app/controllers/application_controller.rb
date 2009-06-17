@@ -222,15 +222,14 @@ class ApplicationController < ActionController::Base
   end
   
   def authorization_needed?
-    not %w( login authenticate feeds published atom_with_headlines atom_with_content).include?(action_name)
+    not %w(login authenticate feeds published atom_with_headlines atom_with_content s5 file blahtex_png).include?(action_name)
   end
 
   def authorized?
     @web.nil? or
     @web.password.nil? or
     cookies[CGI.escape(@web_name)] == @web.password or
-    password_check(params['password']) or
-    (@web.published? and action_name == 's5')
+    password_check(params['password'])
   end
 
 end
