@@ -38,7 +38,7 @@ class FileController < ApplicationController
   end
   
   def blahtex_png
-    send_file(@web.blahtex_pngs_path + '/' + params['id'])
+    send_file(@web.blahtex_pngs_path + '/' + params['id']) if check_authorized
   end
     
   def delete
