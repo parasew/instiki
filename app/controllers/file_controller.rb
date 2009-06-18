@@ -7,8 +7,8 @@ class FileController < ApplicationController
 
   layout 'default'
   
-  before_filter :dnsbl_check
-  before_filter :check_allow_uploads, :except => :file
+  before_filter :dnsbl_check, :check_authorized
+  before_filter :check_allow_uploads, :except => [:file, :blahtex_png]
 
   def file
     @file_name = params['id']
@@ -28,7 +28,7 @@ class FileController < ApplicationController
       # no form supplied, this is a request to download the file
       file = @web.files_path + '/' + @file_name
       if File.exists?(file)
-        send_file(file) if check_authorized
+        send_file(file)
       else
         return unless check_allow_uploads
         @file = WikiFile.new(:file_name => @file_name)
@@ -38,7 +38,7 @@ class FileController < ApplicationController
   end
   
   def blahtex_png
-    send_file(@web.blahtex_pngs_path + '/' + params['id']) if check_authorized
+    send_file(@web.blahtex_pngs_path + '/' + params['id'])
   end
     
   def delete
