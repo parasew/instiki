@@ -46,7 +46,7 @@ function toggleVisibility() {
   var span = document.getElementById('title_change');
   if (span.style.display =='inline') {
      span.style.display ='none';
-     document.getElementById('new_name').value = "<%= @page.name %>";
+     document.getElementById('new_name').value = "<%= escape_javascript(@page.name) %>";
      var content = document.getElementById('content').value
      document.getElementById('content').value = content.replace(/\[\[!redirects <%= Regexp.escape(@page.name) %>\]\]\n/, '')
      }
@@ -55,9 +55,9 @@ function toggleVisibility() {
 }
 
 function addRedirect(){
-  if (document.getElementById('new_name').value != "<%= @page.name %>" ) {
+  if (document.getElementById('new_name').value != "<%= escape_javascript(@page.name) %>" ) {
     var content = document.getElementById('content');
-    content.value = '[[!redirects <%= @page.name %>]]\n' + content.value
+    content.value = '[[!redirects <%= escape_javascript(@page.name) %>]]\n' + content.value
     }
 }
 
