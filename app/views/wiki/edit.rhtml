@@ -48,7 +48,7 @@ function toggleVisibility() {
      span.style.display ='none';
      document.getElementById('new_name').value = "<%= escape_javascript(@page.name) %>";
      var content = document.getElementById('content').value
-     document.getElementById('content').value = content.replace(/\[\[!redirects <%= Regexp.escape(@page.name) %>\]\]\n/, '')
+     document.getElementById('content').value = content.replace(/\[\[!redirects <%= Regexp.escape(@page.name).gsub('/', '\\/') %>\]\]\n/, '')
      }
   else
      span.style.display ='inline'
