@@ -448,30 +448,30 @@ span.theorem_label {font-style:normal; font-weight:bold;}
 .num_note .theorem_label:after {
    content: " " counter(note); counter-increment: note;}
 
-code.ruby .normal {}
-code.ruby span.attribute { color: #090; }
-code.ruby span.char { color: #F00; }
-code.ruby span.class { color: #A020F0; font-weight: bold; }
-code.ruby span.comment { color: #00F; }
-code.ruby span.constant { color: #008B8B; }
-code.ruby span.escape { color: #6A5ACD; }
-code.ruby span.expr { color: #22C; }
-code.ruby span.global { color: #1A4; }
-code.ruby span.ident { color: #004; }
-code.ruby span.keyword { color: #A52A2A; font-weight: bold; }
-code.ruby span.method { color: #008B8B; }
-code.ruby span.module { color: #A020F0; font-weight: bold; }
-code.ruby span.number { color: #D0D; }
-code.ruby span.punct { color: #6A5ACD; }
-code.ruby span.regex { color: #D0D; }
-code.ruby span.string { color: #D0D; }
-code.ruby span.symbol { color: #008B8B; }
+pre.ruby .normal {}
+pre.ruby span.attribute { color: #090; }
+pre.ruby span.char { color: #F00; }
+pre.ruby span.class { color: #A020F0; font-weight: bold; }
+pre.ruby span.comment { color: #00F; }
+pre.ruby span.constant { color: #008B8B; }
+pre.ruby span.escape { color: #6A5ACD; }
+pre.ruby span.expr { color: #22C; }
+pre.ruby span.global { color: #1A4; }
+pre.ruby span.ident { color: #004; }
+pre.ruby span.keyword { color: #A52A2A; font-weight: bold; }
+pre.ruby span.method { color: #008B8B; }
+pre.ruby span.module { color: #A020F0; font-weight: bold; }
+pre.ruby span.number { color: #D0D; }
+pre.ruby span.punct { color: #6A5ACD; }
+pre.ruby span.regex { color: #D0D; }
+pre.ruby span.string { color: #D0D; }
+pre.ruby span.symbol { color: #008B8B; }
 
-code.xml .normal {}
-code.xml .namespace { color: #D66; font-weight: bold; }
-code.xml .tag { color: #F55; }
-code.xml .comment { color: #070; font-style: italic; }
-code.xml .punct { color: #449; font-weight: bold; }
-code.xml .string { color: #949; }
-code.xml .number { color: #F99; }
-code.xml .attribute { color: #771; }
+pre.xml .normal {}
+pre.xml .namespace { color: #D66; font-weight: bold; }
+pre.xml .tag { color: #F55; }
+pre.xml .comment { color: #070; font-style: italic; }
+pre.xml .punct { color: #449; font-weight: bold; }
+pre.xml .string { color: #949; }
+pre.xml .number { color: #F99; }
+pre.xml .attribute { color: #771; }

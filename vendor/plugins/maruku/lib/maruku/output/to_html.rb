@@ -574,10 +574,10 @@ and
 				
 				code = Document.new(html, {:respect_whitespace =>:all}).root
 				code.name = 'code'
-				code.attributes['class'] = lang
 				code.attributes['lang'] = lang
-				
+							
 				pre = Element.new 'pre'
+				pre.attributes['class'] = lang
 				pre << code
 				pre
 			rescue LoadError => e
