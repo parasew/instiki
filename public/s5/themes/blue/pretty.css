@@ -100,3 +100,6 @@ img.incremental {visibility:hidden}
 /* diagnostics
 li:after {content:" [" attr(class) "]";color:#F88}
 */
+pre.ruby span.ident { color: #AAF; }
+pre.ruby span.punct { color: #9C8CFF; }
+pre.xml .punct { color: #8DF; font-weight: bold; }
