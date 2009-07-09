@@ -222,6 +222,12 @@ END_THM
         %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>math} +
         %{bb</mi><mn>123 </mn></math></p>},
         "blackboard digits: $\mathbb{123}$")
+
+    assert_markup_parsed_as(
+        %{<p>\\rlap: <math class='maruku-mathml' display='} +
+        %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mpadded} +
+        %{ width='0'><mn>123 </mn></mpadded></math></p>},
+        '\rlap: $\rlap{123}$')
   end
   
   def test_blahtex
