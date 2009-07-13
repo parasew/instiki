@@ -136,6 +136,8 @@ class PageTest < ActiveSupport::TestCase
     assert_equal WikiReference::WANTED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+    wanted_pages = web.select.wanted_pages
+    assert_equal ["HappyPage", "HisWay", "OverThere", "WantedPage2"], wanted_pages
 
     my_page = Page.new(:web => web, :name => 'MyPage')
     my_page.revise("[[!redirects HappyPage]]\nAnd here it is!", 'MyPage', Time.now, 'AlexeyVerkhovsky', test_renderer)
@@ -143,10 +145,12 @@ class PageTest < ActiveSupport::TestCase
     assert_equal 1, my_references.size
     assert_equal 'HappyPage', my_references[0].referenced_name
     assert_equal WikiReference::REDIRECTED_PAGE, my_references[0].link_type
+    wanted_pages = web.select.wanted_pages
+    assert_equal ["HisWay", "OverThere", "WantedPage2"], wanted_pages
 
     # link type stored for NewPage -> HappyPage reference should change from WANTED to LINKED
     # reference NewPage -> WantedPage2 should remain the same
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references #(true)
     assert_match( "Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>Happy Page</a>",
          test_renderer(new_page.revisions.last).display_content(true) )
     assert_equal 2, references.size
@@ -155,6 +159,8 @@ class PageTest < ActiveSupport::TestCase
 #    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+    wanted_pages = web.select.wanted_pages
+    assert_equal ["HisWay", "OverThere", "WantedPage2"], wanted_pages
     
     new_page.revise('Reference to HappyPage and to WantedPage2.pdf and [[foo.pdf]]', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
         test_renderer)
@@ -171,6 +177,8 @@ class PageTest < ActiveSupport::TestCase
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
     assert_equal 'foo.pdf', references[2].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
+    wanted_pages = web.select.wanted_pages
+    assert_equal ["HisWay", "OverThere", "WantedPage2"], wanted_pages
   end
 
   def test_rollback
