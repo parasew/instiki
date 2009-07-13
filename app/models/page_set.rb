@@ -83,11 +83,16 @@ class PageSet < Array
   # Returns all the wiki words in this page set for which
   # there are no pages in this page set's web
   def wanted_pages
-    wiki_words - web.select.names
+    known_pages = (web.select.names + redirected_names).uniq
+    wiki_words - known_pages
   end
 
   def names
     self.map { |page| page.name }
+  end
+  
+  def redirected_names
+    self.wiki_words.select {|name| web.has_redirect_for?(name) }.uniq.sort
   end
 
   def wiki_words
