@@ -250,6 +250,7 @@ class WikiController < ApplicationController
 
   def rollback
     get_page_and_revision
+    @page.lock(Time.now, @author)
   end
 
   def save
