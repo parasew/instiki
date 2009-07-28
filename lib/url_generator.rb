@@ -69,15 +69,15 @@ class UrlGenerator < AbstractUrlGenerator
       end
     when :publish
       if known_file 
-        href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
-            :id => name
+        href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
+            :id => name, :only_path => true
         %{<a class="existingWikiWord"  title="#{description}" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
     else 
       href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file', 
-          :id => name
+          :id => name, :only_path => true
       if known_file
         %{<a class="existingWikiWord"  title="#{description}" href="#{href}">#{text}</a>}
       else 
@@ -98,7 +98,7 @@ class UrlGenerator < AbstractUrlGenerator
     when :publish
       if known_page
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'published', 
-            :id => name
+            :id => name, :only_path => true
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>} 
@@ -106,11 +106,11 @@ class UrlGenerator < AbstractUrlGenerator
     when :show
       if known_page
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'show', 
-            :id => name
+            :id => name, :only_path => true
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'new', 
-            :id => name
+            :id => name, :only_path => true
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>}
       end
     else 
@@ -118,11 +118,11 @@ class UrlGenerator < AbstractUrlGenerator
         web = Web.find_by_address(web_address)
         action = web.published? ? 'published' : 'show'
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
-            :id => name
+            :id => name, :only_path => true
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'new', 
-            :id => name
+            :id => name, :only_path => true
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>}
       end
     end
@@ -130,7 +130,7 @@ class UrlGenerator < AbstractUrlGenerator
 
   def pic_link(mode, name, text, web_address, known_pic)
     href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
-      :id => name
+      :id => name, :only_path => true
     case mode
     when :export
       if known_pic 
@@ -155,7 +155,7 @@ class UrlGenerator < AbstractUrlGenerator
 
   def media_link(mode, name, text, web_address, known_media, media_type)
     href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
-      :id => name
+      :id => name, :only_path => true
     case mode
     when :export
       if known_media 
@@ -180,7 +180,7 @@ class UrlGenerator < AbstractUrlGenerator
 
   def delete_link(mode, name, web_address, known_file)
     href = @controller.url_for :controller => 'file', :web => web_address,
-        :action => 'delete', :id => name
+        :action => 'delete', :id => name, :only_oath => true
     if mode == :show and known_file
       %{<span class="deleteWikiWord"><a href="#{href}">Delete #{name}</a></span>}
     else 

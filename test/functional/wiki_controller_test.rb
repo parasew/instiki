@@ -322,13 +322,13 @@ class WikiControllerTest < ActionController::TestCase
     
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='http:\/\/test.host\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body
 
     r = process('show', 'web' => 'wiki1', 'id' => 'HomePage')
     
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='http:\/\/test.host\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body
   end
 
 
@@ -864,7 +864,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='http:\/\/test.host\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body
+    assert_match /<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body
   end
   
   def test_show_page_nonexistant_page
