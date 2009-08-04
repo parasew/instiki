@@ -6,6 +6,12 @@ class RevisionSweeper < ActionController::Caching::Sweeper
   
   observe Revision, Page
   
+  def before_save(record)
+    if record.is_a?(Revision) 
+      expire_cached_revisions(record.page)
+    end
+  end
+  
   def after_save(record)
     if record.is_a?(Revision)
       expire_caches(record.page)

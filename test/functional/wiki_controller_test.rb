@@ -427,11 +427,15 @@ class WikiControllerTest < ActionController::TestCase
   def test_rollback
     # rollback shows a form where a revision can be edited.
     # its assigns the same as or revision
+    home_page = Page.find(@home.id)
+    assert !home_page.locked?(Time.now)
     r = process 'rollback', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '1'
 
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
     assert_equal @home.revisions[0], r.template_objects['revision']
+    home_page = Page.find(@home.id)
+    assert home_page.locked?(Time.now)
   end
 
   def test_atom_with_content
