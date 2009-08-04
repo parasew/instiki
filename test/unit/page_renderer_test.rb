@@ -543,6 +543,7 @@ END_THM
     Revision.create(:page => @page, :content => 'What a red and lovely morning today', 
         :author => Author.new('DavidHeinemeierHansson'), :revised_at => Time.now)
 
+    @page.reload
     assert_equal "<p><span> What a<del class='diffmod'> blue</del><ins class='diffmod'> red" +
         "</ins> and lovely morning<ins class='diffins'> today</ins></span></p>", test_renderer(@page.revisions.last).display_diff
   end

@@ -250,7 +250,11 @@ class WikiController < ApplicationController
 
   def rollback
     get_page_and_revision
-    @page.lock(Time.now, @author)
+    if @page.locked?(Time.now) and not params['break_lock']
+      redirect_to :web => @web_name, :action => 'locked', :id => @page_name
+    else
+      @page.lock(Time.now, @author)
+    end
   end
 
   def save
