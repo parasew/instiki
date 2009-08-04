@@ -2,6 +2,7 @@ require 'abstract_unit'
 
 class DurationTest < ActiveSupport::TestCase
   def test_inspect
+    assert_equal '0 seconds',                       0.seconds.inspect
     assert_equal '1 month',                         1.month.inspect
     assert_equal '1 month and 1 day',               (1.month + 1.day).inspect
     assert_equal '6 months and -2 days',            (6.months - 2.days).inspect
@@ -44,20 +45,20 @@ class DurationTest < ActiveSupport::TestCase
     Time.stubs(:now).returns Time.local(2000)
     # since
     assert_equal 36.hours.since, 1.5.days.since
-    assert_equal((24 * 1.7).hours.since, 1.7.days.since)
+    assert_in_delta((24 * 1.7).hours.since, 1.7.days.since, 0.01)
     # ago
     assert_equal 36.hours.ago, 1.5.days.ago
-    assert_equal((24 * 1.7).hours.ago, 1.7.days.ago)
+    assert_in_delta((24 * 1.7).hours.ago, 1.7.days.ago, 0.01)
   end
 
   def test_since_and_ago_with_fractional_weeks
     Time.stubs(:now).returns Time.local(2000)
     # since
     assert_equal((7 * 36).hours.since, 1.5.weeks.since)
-    assert_equal((7 * 24 * 1.7).hours.since, 1.7.weeks.since)
+    assert_in_delta((7 * 24 * 1.7).hours.since, 1.7.weeks.since, 0.01)
     # ago
     assert_equal((7 * 36).hours.ago, 1.5.weeks.ago)
-    assert_equal((7 * 24 * 1.7).hours.ago, 1.7.weeks.ago)
+    assert_in_delta((7 * 24 * 1.7).hours.ago, 1.7.weeks.ago, 0.01)
   end
 
   def test_deprecated_fractional_years

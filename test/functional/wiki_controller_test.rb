@@ -39,7 +39,7 @@ class WikiControllerTest < ActionController::TestCase
     set_web_property :password, 'pswd'
   
     get :authenticate, :web => 'wiki1', :password => 'pswd'
-    assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal 'pswd', @response.cookies['wiki1']
   end
 
@@ -47,7 +47,7 @@ class WikiControllerTest < ActionController::TestCase
     set_web_property :password, 'pswd'
 
     r = process('authenticate', 'web' => 'wiki1', 'password' => 'wrong password')
-    assert_redirected_to :action => 'login', :web => 'wiki1'
+    assert_redirected_to :action => 'login', :controller => 'wiki', :web => 'wiki1'
     assert_nil r.cookies['web_address']
   end
 
@@ -72,7 +72,7 @@ class WikiControllerTest < ActionController::TestCase
   
     r = process('cancel_edit', 'web' => 'wiki1', 'id' => 'Oak')
     
-    assert_redirected_to :action => 'show', :id => 'Oak'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'Oak'
     assert !Page.find(@oak.id).locked?(Time.now)
   end
 
@@ -85,7 +85,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_edit_page_locked_page
     @home.lock(Time.now, 'Locky')
     process 'edit', 'web' => 'wiki1', 'id' => 'HomePage'
-    assert_redirected_to :action => 'locked'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'locked', :id => 'HomePage'
   end
 
   def test_edit_page_break_lock
@@ -233,19 +233,19 @@ class WikiControllerTest < ActionController::TestCase
     # delete extra web fixture
     webs(:instiki).destroy
     process('index')
-    assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
   end
 
   def test_index_multiple_webs
     @wiki.create_web('Test Wiki 2', 'wiki2')
     process('index')
-    assert_redirected_to :action => 'web_list'
+    assert_redirected_to :controller => 'wiki', :action => 'web_list'
   end
 
   def test_index_multiple_webs_web_explicit
     @wiki.create_web('Test Wiki 2', 'wiki2')
     process('index', 'web' => 'wiki2')
-    assert_redirected_to :web => 'wiki2', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki2', :controller => 'wiki', :action => 'show', :id => 'HomePage'
   end
 
   def test_index_wiki_not_initialized
@@ -598,7 +598,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'NewPage'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
     new_page = @wiki.read_page('wiki1', 'NewPage')
@@ -610,7 +610,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n\000", 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage', :content => ''
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'new', :id => 'NewPage', :content => ''
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
   end
@@ -619,7 +619,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#xfffe;", 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'new', :id => 'NewPage', :content => ''
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
   end
@@ -628,7 +628,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#65535;", 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'NewPage'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'new', :id => 'NewPage', :content => ''
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
   end
@@ -640,7 +640,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Revised HomePage', 
       'author' => 'Batman'
 
-    assert_redirected_to :web => 'wiki1', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal 'Batman', r.cookies['author']
     home_page = @wiki.read_page('wiki1', 'HomePage')
     assert_equal current_revisions+1, home_page.revisions.size
@@ -656,7 +656,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => "Revised HomePage\000", 
       'author' => 'Batman'
 
-    assert_redirected_to :web => 'wiki1', :action => 'edit', :id => 'HomePage',
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'edit', :id => 'HomePage',
        :content => 'HisWay would be MyWay $\sin(x)\begin{svg}<svg/>\end{svg}\includegraphics[width' +
                    '=3em]{foo}$ in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEng' +
                    'ine in that SmartEngineGUI'
@@ -688,7 +688,10 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'save', {'web' => 'wiki1', 'id' => 'HomePage',
         'content' => @home.revisions.last.content.dup + "\n Try viagra.\n",
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/HomePage'}
-    assert_redirected_to :action => 'edit', :web => 'wiki1', :id => 'HomePage'
+    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage',
+      :content => 'HisWay would be MyWay $\sin(x)\begin{svg}<svg/>\end{svg}\includegraphics[width=3e'+
+                  'm]{foo}$ in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEngine in'+
+                  " that SmartEngineGUI\n Try viagra.\n"
     assert r.flash[:error].to_s == "Your edit was blocked by spam filtering"
   end
 
@@ -700,7 +703,10 @@ class WikiControllerTest < ActionController::TestCase
         'content' => @home.revisions.last.content.dup, 
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/HomePage'}
 
-    assert_redirected_to :action => 'edit', :web => 'wiki1', :id => 'HomePage'
+    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage',
+      :content => 'HisWay would be MyWay $\sin(x)\begin{svg}<svg/>\end{svg}\includegraphics[width=3e'+
+                  'm]{foo}$ in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEngine in'+
+                  ' that SmartEngineGUI'
     assert r.flash[:error].to_s == "You have tried to save page 'HomePage' without changing its content"
 
     revisions_after = @home.revisions.size
@@ -717,7 +723,7 @@ class WikiControllerTest < ActionController::TestCase
         'content' => @liquor.revisions.last.content.dup, 'new_name' => 'booze',
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
 
-    assert_redirected_to :action => 'show', :web => 'wiki1', :id => 'booze'
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'booze'
 
     revisions_after = @liquor.revisions.size
     assert_equal revisions_before + 1, revisions_after
@@ -741,20 +747,20 @@ class WikiControllerTest < ActionController::TestCase
   def test_save_invalid_author_name
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :web => 'wiki1', :id => 'NewPage'
+    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
     assert r.flash[:error].to_s == 'Your name cannot contain a "."'
 
     r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page', 
       'author' => "\000"
 
-    assert_redirected_to :action => 'new', :web => 'wiki1', :id => 'AnotherPage'
+    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'AnotherPage'
     assert r.flash[:error].to_s == "Your name was not valid utf-8"
   end
 
   def test_search
     r = process 'search', 'web' => 'wiki1', 'query' => '\s[A-Z]ak'
     
-    assert_redirected_to :action => 'show', :id => 'Oak'
+    assert_redirected_to :web => 'wiki1', :action => 'show', :controller => 'wiki', :id => 'Oak'
   end
 
   def test_search_multiple_results
@@ -873,7 +879,7 @@ class WikiControllerTest < ActionController::TestCase
   
   def test_show_page_nonexistant_page
     process('show', 'id' => 'UnknownPage', 'web' => 'wiki1')
-    assert_redirected_to :web => 'wiki1', :action => 'new', :id => 'UnknownPage'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'new', :id => 'UnknownPage'
   end
 
   def test_show_no_page

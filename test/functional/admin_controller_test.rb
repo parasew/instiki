@@ -58,7 +58,7 @@ class AdminControllerTest < ActionController::TestCase
     process 'create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki'
 
-    assert_redirected_to :web => @wiki.webs.keys.first, :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => @wiki.webs.keys.first, :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal wiki_before, @wiki
     # and no new web should be created either
     assert_equal old_size, @wiki.webs.size
@@ -68,7 +68,7 @@ class AdminControllerTest < ActionController::TestCase
   def test_create_system_no_form_and_wiki_already_initialized
     assert @wiki.setup?
     process('create_system')
-    assert_redirected_to :web => @wiki.webs.keys.first, :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => @wiki.webs.keys.first, :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert(@response.has_flash_object?(:error))
   end
 
@@ -78,7 +78,7 @@ class AdminControllerTest < ActionController::TestCase
   
     process 'create_web', 'system_password' => 'pswd', 'name' => 'Wiki Two', 'address' => 'wiki2'
     
-    assert_redirected_to :web => 'wiki2', :action => 'new', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki2', :controller => 'wiki', :action => 'new', :id => 'HomePage'
     wiki2 = @wiki.webs['wiki2']
     assert wiki2
     assert_equal 'Wiki Two', wiki2.name
@@ -90,7 +90,7 @@ class AdminControllerTest < ActionController::TestCase
   
     process 'create_web', 'system_password' => 'instiki', 'name' => 'Wiki Two', 'address' => 'wiki2'
     
-    assert_redirected_to :web => 'wiki2', :action => 'new', :id => 'HomePage'
+    assert_redirected_to :web => 'wiki2', :controller => 'wiki', :action => 'new', :id => 'HomePage'
   end
 
   def test_create_web_failed_authentication
@@ -98,7 +98,7 @@ class AdminControllerTest < ActionController::TestCase
   
     process 'create_web', 'system_password' => 'wrong', 'name' => 'Wiki Two', 'address' => 'wiki2'
     
-    assert_redirected_to :web => nil, :action => 'create_web'
+    assert_redirected_to :controller => 'admin', :action => 'create_web'
     assert_nil @wiki.webs['wiki2']
   end
 
@@ -107,7 +107,6 @@ class AdminControllerTest < ActionController::TestCase
     process 'create_web'
     assert_response :success
   end
-
 
   def test_edit_web_no_form
     process 'edit_web', 'web' => 'wiki1'
@@ -125,7 +124,7 @@ class AdminControllerTest < ActionController::TestCase
         'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on',
         'max_upload_size' => '300')
 
-    assert_redirected_to :web => 'renamed_wiki1', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'renamed_wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     @web = Web.find(@web.id)
     assert_equal 'renamed_wiki1', @web.address
     assert_equal 'Renamed Wiki1', @web.name
@@ -164,7 +163,7 @@ class AdminControllerTest < ActionController::TestCase
     # safe_mode, published, brackets_only, count_pages, allow_uploads not set 
     # and should become false
 
-    assert_redirected_to :web => 'renamed_wiki1', :action => 'show', :id => 'HomePage'
+    assert_redirected_to :web => 'renamed_wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     @web = Web.find(@web.id)
     assert !@web.safe_mode?
     assert !@web.published?
@@ -237,7 +236,7 @@ class AdminControllerTest < ActionController::TestCase
 
     # third pass does not destroy HomePage
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
-    assert_redirected_to :action => 'list'
+    assert_redirected_to  :web => 'wiki1', :controller => 'wiki', :action => 'list'
     @web.pages(true)
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
@@ -271,14 +270,14 @@ class AdminControllerTest < ActionController::TestCase
     # third pass does does nothing, since there are no pages in the
     # 'leaves' category.
     r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'leaves', 'system_password_orphaned_in_category' => 'pswd')
-    assert_redirected_to :action => 'list'
+    assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
     @web.pages(true)
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
 
     # fourth pass destroys Oak
     r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees', 'system_password_orphaned_in_category' => 'pswd')
-    assert_redirected_to :action => 'list'
+    assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
     @web.pages(true)
     page_order.delete(@oak)
     assert_equal page_order, @web.select.sort,

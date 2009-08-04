@@ -1756,7 +1756,7 @@ class BasicsTest < ActiveRecord::TestCase
   end
 
   def test_scoped_find_with_group_and_having
-    developers = Developer.with_scope(:find => { :group => 'salary', :having => "SUM(salary) > 10000", :select => "SUM(salary) as salary" }) do
+    developers = Developer.with_scope(:find => { :group => 'developers.salary', :having => "SUM(salary) > 10000", :select => "SUM(salary) as salary" }) do
       Developer.find(:all)
     end
     assert_equal 3, developers.size
@@ -2014,7 +2014,7 @@ class BasicsTest < ActiveRecord::TestCase
 
   def test_inspect_instance
     topic = topics(:first)
-    assert_equal %(#<Topic id: 1, title: "The First Topic", author_name: "David", author_email_address: "david@loudthinking.com", written_on: "#{topic.written_on.to_s(:db)}", bonus_time: "#{topic.bonus_time.to_s(:db)}", last_read: "#{topic.last_read.to_s(:db)}", content: "Have a nice day", approved: false, replies_count: 1, parent_id: nil, type: nil>), topic.inspect
+    assert_equal %(#<Topic id: 1, title: "The First Topic", author_name: "David", author_email_address: "david@loudthinking.com", written_on: "#{topic.written_on.to_s(:db)}", bonus_time: "#{topic.bonus_time.to_s(:db)}", last_read: "#{topic.last_read.to_s(:db)}", content: "Have a nice day", approved: false, replies_count: 1, parent_id: nil, parent_title: nil, type: nil>), topic.inspect
   end
 
   def test_inspect_new_instance

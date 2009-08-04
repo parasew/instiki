@@ -151,8 +151,8 @@ module ActionController # :nodoc:
       if @body.respond_to?(:call)
         @writer = lambda { |x| callback.call(x) }
         @body.call(self, self)
-      elsif @body.is_a?(String)
-        @body.each_line(&callback)
+      elsif @body.respond_to?(:to_str)
+        yield @body
       else
         @body.each(&callback)
       end

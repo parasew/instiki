@@ -32,10 +32,10 @@ rescue LoadError
 end
 
 begin
-  gem 'rack', '~> 1.0.0'
+  gem 'rack', '~> 1.1.0'
   require 'rack'
 rescue Gem::LoadError
-  require 'action_controller/vendor/rack-1.0/rack'
+  require 'action_controller/vendor/rack-1.1.pre/rack'
 end
 
 module ActionController
@@ -45,7 +45,6 @@ module ActionController
     [Base, CGIHandler, CgiRequest, Request, Response, Http::Headers, UrlRewriter, UrlWriter]
   end
 
-  autoload :AbstractRequest, 'action_controller/request'
   autoload :Base, 'action_controller/base'
   autoload :Benchmarking, 'action_controller/benchmarking'
   autoload :Caching, 'action_controller/caching'
