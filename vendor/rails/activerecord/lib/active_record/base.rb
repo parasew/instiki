@@ -687,14 +687,9 @@ module ActiveRecord #:nodoc:
       #   Person.exists?(['name LIKE ?', "%#{query}%"])
       #   Person.exists?
       def exists?(id_or_conditions = {})
-        connection.select_all(
-          construct_finder_sql(
-            :select     => "#{quoted_table_name}.#{primary_key}",
-            :conditions => expand_id_conditions(id_or_conditions),
-            :limit      => 1
-          ),
-          "#{name} Exists"
-        ).size > 0
+        find_initial(
+          :select => "#{quoted_table_name}.#{primary_key}",
+          :conditions => expand_id_conditions(id_or_conditions)) ? true : false
       end
 
       # Creates an object (or multiple objects) and saves it to the database, if validations pass.
@@ -2168,7 +2163,7 @@ module ActiveRecord #:nodoc:
         #     default_scope :order => 'last_name, first_name'
         #   end
         def default_scope(options = {})
-          self.default_scoping << { :find => options, :create => (options.is_a?(Hash) && options.has_key?(:conditions)) ? options[:conditions] : {} }
+          self.default_scoping << { :find => options, :create => options[:conditions].is_a?(Hash) ? options[:conditions] : {} }
         end
 
         # Test whether the given method and optional key are scoped.
@@ -2228,12 +2223,12 @@ module ActiveRecord #:nodoc:
         #   ["name='%s' and group_id='%s'", "foo'bar", 4]  returns  "name='foo''bar' and group_id='4'"
         #   { :name => "foo'bar", :group_id => 4 }  returns "name='foo''bar' and group_id='4'"
         #   "name='foo''bar' and group_id='4'" returns "name='foo''bar' and group_id='4'"
-        def sanitize_sql_for_conditions(condition)
+        def sanitize_sql_for_conditions(condition, table_name = quoted_table_name)
           return nil if condition.blank?
 
           case condition
             when Array; sanitize_sql_array(condition)
-            when Hash;  sanitize_sql_hash_for_conditions(condition)
+            when Hash;  sanitize_sql_hash_for_conditions(condition, table_name)
             else        condition
           end
         end
@@ -3034,11 +3029,11 @@ module ActiveRecord #:nodoc:
       def execute_callstack_for_multiparameter_attributes(callstack)
         errors = []
         callstack.each do |name, values|
-          klass = (self.class.reflect_on_aggregation(name.to_sym) || column_for_attribute(name)).klass
-          if values.empty?
-            send(name + "=", nil)
-          else
-            begin
+          begin
+            klass = (self.class.reflect_on_aggregation(name.to_sym) || column_for_attribute(name)).klass
+            if values.empty?
+              send(name + "=", nil)
+            else
               value = if Time == klass
                 instantiate_time_object(name, values)
               elsif Date == klass
@@ -3052,9 +3047,9 @@ module ActiveRecord #:nodoc:
               end
 
               send(name + "=", value)
-            rescue => ex
-              errors << AttributeAssignmentError.new("error on assignment #{values.inspect} to #{name}", ex, name)
             end
+          rescue => ex
+            errors << AttributeAssignmentError.new("error on assignment #{values.inspect} to #{name}", ex, name)
           end
         end
         unless errors.empty?
@@ -3080,7 +3075,7 @@ module ActiveRecord #:nodoc:
       end
 
       def type_cast_attribute_value(multiparameter_name, value)
-        multiparameter_name =~ /\([0-9]*([a-z])\)/ ? value.send("to_" + $1) : value
+        multiparameter_name =~ /\([0-9]*([if])\)/ ? value.send("to_" + $1) : value
       end
 
       def find_parameter_position(multiparameter_name)

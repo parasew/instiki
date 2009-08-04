@@ -18,7 +18,7 @@ class GemDependencyTest < Test::Unit::TestCase
   def test_configuration_adds_gem_dependency
     config = Rails::Configuration.new
     config.gem "xaws-s3x", :lib => "aws/s3", :version => "0.4.0"
-    assert_equal [["install", "xaws-s3x", "--version", '"= 0.4.0"']], config.gems.collect(&:install_command)
+    assert_equal [["install", "xaws-s3x", "--version", '"= 0.4.0"']], config.gems.collect { |g| g.install_command }
   end
 
   def test_gem_creates_install_command
@@ -142,6 +142,78 @@ class GemDependencyTest < Test::Unit::TestCase
         g.dependencies
       end
     end
+  end
+
+  def test_gem_ignores_development_dependencies
+    dummy_gem = Rails::GemDependency.new "dummy-gem-k"
+    dummy_gem.add_load_paths
+    dummy_gem.load
+    assert_equal 1, dummy_gem.dependencies.size
+  end
+
+  def test_gem_guards_against_duplicate_unpacks
+    dummy_gem = Rails::GemDependency.new "dummy-gem-a"
+    dummy_gem.stubs(:frozen?).returns(true)
+    dummy_gem.expects(:unpack_base).never
+    dummy_gem.unpack
+  end
+
+  def test_gem_does_not_unpack_framework_gems
+    dummy_gem = Rails::GemDependency.new "dummy-gem-a"
+    dummy_gem.stubs(:framework_gem?).returns(true)
+    dummy_gem.expects(:unpack_base).never
+    dummy_gem.unpack
+  end
+
+  def test_gem_from_directory_name_attempts_to_load_specification
+    assert_raises RuntimeError do
+      dummy_gem = Rails::GemDependency.from_directory_name('dummy-gem-1.1')
+    end
+  end
+
+  def test_gem_from_directory_name
+    dummy_gem = Rails::GemDependency.from_directory_name('dummy-gem-1.1', false)
+    assert_equal 'dummy-gem', dummy_gem.name
+    assert_equal '= 1.1',     dummy_gem.version_requirements.to_s
+  end
+
+  def test_gem_from_directory_name_loads_specification_successfully
+    assert_nothing_raised do
+      dummy_gem = Rails::GemDependency.from_directory_name(File.join(Rails::GemDependency.unpacked_path, 'dummy-gem-g-1.0.0'))
+      assert_not_nil dummy_gem.specification
+    end
+  end
+
+  def test_gem_from_invalid_directory_name
+    assert_raises RuntimeError do
+      dummy_gem = Rails::GemDependency.from_directory_name('dummy-gem')
+    end
+    assert_raises RuntimeError do
+      dummy_gem = Rails::GemDependency.from_directory_name('dummy')
+    end
+  end
+
+  def test_gem_determines_build_status
+    assert_equal true,  Rails::GemDependency.new("dummy-gem-a").built?
+    assert_equal true,  Rails::GemDependency.new("dummy-gem-i").built?
+    assert_equal false, Rails::GemDependency.new("dummy-gem-j").built?
+  end
+  
+  def test_gem_determines_build_status_only_on_vendor_gems
+    framework_gem = Rails::GemDependency.new('dummy-framework-gem')
+    framework_gem.stubs(:framework_gem?).returns(true)  # already loaded
+    framework_gem.stubs(:vendor_rails?).returns(false)  # but not in vendor/rails
+    framework_gem.stubs(:vendor_gem?).returns(false)  # and not in vendor/gems
+    framework_gem.add_load_paths  # freeze framework gem early 
+    assert framework_gem.built?
+  end
+
+  def test_gem_build_passes_options_to_dependencies
+    start_gem = Rails::GemDependency.new("dummy-gem-g")
+    dep_gem = Rails::GemDependency.new("dummy-gem-f")
+    start_gem.stubs(:dependencies).returns([dep_gem])
+    dep_gem.expects(:build).with({ :force => true }).once
+    start_gem.build(:force => true)
   end
 
 end
