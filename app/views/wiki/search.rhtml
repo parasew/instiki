@@ -35,4 +35,7 @@
     expression. That's actually what Instiki uses, so go right ahead and flex your 
     "[a-z]*Leet?RegExpSkill(s|z)"
   </p>
+  <p>
+    <b>Create a new page, named:</b> "<span class='newWikiWord'><%= link_to h(params[:query]), :web => @web.address, :action => 'new', :id => params[:query] %></span>"
+  </p>
 <%- end -%>

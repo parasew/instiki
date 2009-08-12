@@ -782,11 +782,15 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_search_zero_results
-    r = process 'search', 'web' => 'wiki1', 'query' => 'non-existant text'
+    r = process 'search', 'web' => 'wiki1', 'query' => 'non-existant < text'
     
     assert_response(:success)
     assert_equal [], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"}+
+        %{<span class='newWikiWord'><a href=\"/wiki1/new/non-existant+%3C+t}+
+        %{ext\">non-existant &lt; text</a></span>}))
+    assert_match create_pattern, r.body
   end
 
   def test_search_null_in_query
