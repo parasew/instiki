@@ -196,7 +196,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_robots_metatag
-    if controller_name == 'wiki' and %w(show published).include? action_name 
+    if controller_name == 'wiki' and %w(show published s5).include? action_name and !(params[:mode] == 'diff')
       @robots_metatag_value = 'index,follow'
     else
       @robots_metatag_value = 'noindex,nofollow'
