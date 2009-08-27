@@ -475,3 +475,40 @@ pre.xml .punct { color: #449; font-weight: bold; }
 pre.xml .string { color: #949; }
 pre.xml .number { color: #F99; }
 pre.xml .attribute { color: #771; }
+
+/* Hack for Mozilla bug 449396 */
+[mathvariant="bold"] *  {
+  font-style: normal;
+  font-variant: normal;
+  font-weight: bold;
+}
+[mathvariant="italic"] *  {
+  font-style: italic;
+  font-variant: normal;
+  font-weight: normal;
+}
+[mathvariant="bold-italic"] *  {
+  font-style: italic;
+  font-variant: normal;
+  font-weight: bold;
+}
+[mathvariant="sans-serif"] *  {
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+}
+[mathvariant="bold-sans-serif"] *  {
+  font-style: normal;
+  font-variant: normal;
+  font-weight: bold;
+}
+[mathvariant="sans-serif-italic"] *  {
+  font-style: italic;
+  font-variant: normal;
+  font-weight: normal;
+}
+[mathvariant="sans-serif-bold-italic"] *  {
+  font-style: italic;
+  font-variant: normal;
+  font-weight: bold;
+}
