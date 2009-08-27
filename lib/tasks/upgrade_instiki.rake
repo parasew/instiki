@@ -1,9 +1,10 @@
-require 'sqlite3'
+require 'active_record'
 
-task :upgrade_instiki do
-  db = SQLite3::Database.new( "db/production.db.sqlite3" )
-  db.execute( "select * from webs" ) do |row|
-    if File.exists?('public/' + row[4])
+task :upgrade_instiki => :environment do
+  ActiveRecord::Base.establish_connection(:production)
+  webs = ActiveRecord::Base.connection.execute( "select * from webs" )
+  webs.each do |row|
+   if File.exists?('public/' + row[4])
       if File.exists?('webs/' + row[4])
         print "Warning! The directory webs/#{row[4]} already exists. Skipping.\n" 
       else
