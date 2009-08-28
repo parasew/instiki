@@ -212,6 +212,13 @@ END_THM
   
   def test_have_latest_itex2mml  
     assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' displa} +
+        %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
+        %{MathML'><munder><mi>A</mi><mo>\314\262</mo></m} +
+        %{under></math></p>},
+        "equation $\\underline{A}$")
+
+    assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' } +
         %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
         %{<mi>A</mi><mo>\342\205\213</mo><mi>B</mi></math></p>},
@@ -220,13 +227,13 @@ END_THM
     assert_markup_parsed_as(
         %{<p>blackboard digits: <math class='maruku-mathml' display='} +
         %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>math} +
-        %{bb</mi><mn>123 </mn></math></p>},
+        %{bb</mi><mn>123</mn></math></p>},
         "blackboard digits: $\mathbb{123}$")
 
     assert_markup_parsed_as(
         %{<p>\\rlap: <math class='maruku-mathml' display='} +
         %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mpadded} +
-        %{ width='0'><mn>123 </mn></mpadded></math></p>},
+        %{ width='0'><mn>123</mn></mpadded></math></p>},
         '\rlap: $\rlap{123}$')
   end
   

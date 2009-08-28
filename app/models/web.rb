@@ -128,21 +128,18 @@ class Web < ActiveRecord::Base
             "#{File.expand_path(dir)} and add files to it."
     end
   end
-  
+
   def files_path
+    path = Rails.root.join("webs")
     if default_web?
-      "#{RAILS_ROOT}/webs/files"
+      path.join("files")
     else
-      "#{RAILS_ROOT}/webs/#{self.address}/files"
+      path.join(address, "files")
     end
   end
 
   def blahtex_pngs_path
-    if default_web?
-      "#{RAILS_ROOT}/webs/files/pngs"
-    else
-      "#{RAILS_ROOT}/webs/#{self.address}/files/pngs"
-    end
+    files_path.join("pngs")
   end
 
   private
