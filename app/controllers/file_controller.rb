@@ -26,7 +26,7 @@ class FileController < ApplicationController
       end
     else
       # no form supplied, this is a request to download the file
-      file = @web.files_path + '/' + @file_name
+      file = @web.files_path.join(@file_name)
       if File.exists?(file)
         send_file(file)
       else
@@ -38,7 +38,7 @@ class FileController < ApplicationController
   end
   
   def blahtex_png
-    send_file(@web.blahtex_pngs_path + '/' + params['id'])
+    send_file(@web.blahtex_pngs_path.join(params['id']))
   end
     
   def delete

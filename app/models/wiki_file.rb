@@ -46,7 +46,7 @@ class WikiFile < ActiveRecord::Base
   end
   
   def content_path
-    web.files_path + '/' + file_name
+    web.files_path.join(file_name)
   end
   
   def write_content_to_file
