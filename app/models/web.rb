@@ -82,18 +82,19 @@ class Web < ActiveRecord::Base
     self[:markup].to_sym
   end
 
+  # @return [Hash] a Hash wherein the key is some author's name, and the 
+  #   values are an array of page names for that author.
   def page_names_by_author
-    connection.select_all(
-        'SELECT DISTINCT r.author AS author, p.name AS page_name ' +
-        'FROM revisions r ' +
-        'JOIN pages p ON r.page_id = p.id ' +
-        "WHERE p.web_id = #{self.id} " +
-        'ORDER by p.name').inject({}) { |result, row|
-        author, page_name = row['author'], row['page_name']
-        result[author] = [] unless result.has_key?(author)
-        result[author] << page_name
-        result
-    }
+    data = revisions.all(
+      :select => "DISTINCT revisions.author AS author, pages.name AS page_name",
+      :order  => "pages.name"
+    )
+
+    data.inject({}) do |result, revision|
+      result[revision.author] ||= []
+      result[revision.author] <<  revision.page_name
+      result
+    end
   end
 
   def remove_pages(pages_to_be_removed)
