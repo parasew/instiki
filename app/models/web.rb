@@ -56,8 +56,9 @@ class Web < ActiveRecord::Base
     pages.find_by_name(name)
   end
 
+  # @return [Page] the last associated Page record
   def last_page
-    return Page.first(:order => 'id desc', :conditions => ['web_id = ?', self.id])
+    pages.last
   end
 
   def has_page?(name)
