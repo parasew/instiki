@@ -61,8 +61,11 @@ class Web < ActiveRecord::Base
     pages.last
   end
 
+  # @param [String] name the name of some potential Page record
+  # @return [Boolean] whether or not a given Page record exists with a given 
+  #   name
   def has_page?(name)
-    Page.count(:conditions => ['web_id = ? AND name = ?', id, name]) > 0
+    pages.exists?(:name => name)
   end
 
   def has_redirect_for?(name)
