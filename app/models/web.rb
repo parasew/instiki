@@ -1,22 +1,22 @@
 class Web < ActiveRecord::Base
-  has_many :pages, :dependent => :destroy
+  has_many :pages,      :dependent => :destroy
   has_many :wiki_files, :dependent => :destroy
 
   def wiki
     Wiki.new
   end
-  
+
   def settings_changed?(markup, safe_mode, brackets_only)
     self.markup != markup || 
     self.safe_mode != safe_mode || 
     self.brackets_only != brackets_only
   end
-  
+
   def add_page(name, content, time, author, renderer)
     page = page(name) || Page.new(:web => self, :name => name)
     page.revise(content, name, time, author, renderer)
   end
-  
+
   def authors
     connection.select_all(
         'SELECT DISTINCT r.author AS author ' + 
@@ -24,7 +24,7 @@ class Web < ActiveRecord::Base
         'JOIN pages p ON p.id = r.page_id ' +
         'WHERE p.web_id = ' + self.id.to_s +
         ' ORDER by 1 '
-        ).collect { |row| row['author'] }        
+        ).collect { |row| row['author'] }
   end
 
   def categories
@@ -34,7 +34,7 @@ class Web < ActiveRecord::Base
   def page(name)
     pages.first(:conditions => ['name = ?', name])
   end
-  
+
   def last_page
     return Page.first(:order => 'id desc', :conditions => ['web_id = ?', self.id])
   end
@@ -42,7 +42,7 @@ class Web < ActiveRecord::Base
   def has_page?(name)
     Page.count(:conditions => ['web_id = ? AND name = ?', id, name]) > 0
   end
-  
+
   def has_redirect_for?(name)
      WikiReference.page_that_redirects_for(self, name) 
   end
@@ -54,7 +54,7 @@ class Web < ActiveRecord::Base
   def has_file?(file_name)
     WikiFile.find_by_file_name(file_name) != nil
   end
-  
+
   def file_list(sort_order = 'file_name')
     WikiFile.all(:order => sort_order, :conditions => ['web_id = ?', id])
   end
@@ -82,8 +82,7 @@ class Web < ActiveRecord::Base
         'FROM revisions r ' +
         'JOIN pages p ON r.page_id = p.id ' +
         "WHERE p.web_id = #{self.id} " +
-        'ORDER by p.name'
-    ).inject({}) { |result, row|
+        'ORDER by p.name').inject({}) { |result, row|
         author, page_name = row['author'], row['page_name']
         result[author] = [] unless result.has_key?(author)
         result[author] << page_name
@@ -94,23 +93,23 @@ class Web < ActiveRecord::Base
   def remove_pages(pages_to_be_removed)
     pages_to_be_removed.each { |p| p.destroy }
   end
-  
+
   def revised_at
     select.most_recent_revision
   end
-    
+
   def select(&condition)
     PageSet.new(self, pages, condition)
   end
-  
+
   def select_all
     PageSet.new(self, pages, nil)
   end
-  
+
   def to_param
     address
   end
-  
+
   def create_files_directory
     return unless allow_uploads == 1
     dummy_file = self.wiki_files.build(:file_name => '0', :description => '0', :content => '0')
@@ -148,30 +147,30 @@ class Web < ActiveRecord::Base
     def wiki_words
       pages.inject([]) { |wiki_words, page| wiki_words << page.wiki_words }.flatten.uniq
     end
-    
+
     # Returns an array of all the page names on this web
     def page_names
       pages.map { |p| p.name }
     end
-    
+
   protected
     before_save :sanitize_markup
     after_save :create_files_directory
     before_validation :validate_address
     validates_uniqueness_of :address
     validates_length_of :color, :in => 3..6
-  
+
     def sanitize_markup
       self.markup = markup.to_s
     end
-    
+
     def validate_address
       unless address == CGI.escape(address)
         self.errors.add(:address, 'should contain only valid URI characters')
         raise Instiki::ValidationError.new("#{self.class.human_attribute_name('address')} #{errors.on(:address)}")
       end
     end
-    
+
     def default_web?
       defined? DEFAULT_WEB and self.address == DEFAULT_WEB
     end
