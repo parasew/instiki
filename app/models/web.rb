@@ -77,8 +77,9 @@ class Web < ActiveRecord::Base
     file.description if file
   end
 
+  # @return [Symbol] the type of markup used by this Web
   def markup
-    read_attribute('markup').to_sym
+    self[:markup].to_sym
   end
 
   def page_names_by_author
