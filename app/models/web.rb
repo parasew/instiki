@@ -23,14 +23,13 @@ class Web < ActiveRecord::Base
     page.revise(content, name, time, author, renderer)
   end
 
+  # @return [Array<String>] a collection of all the names of the authors that 
+  #   have ever contributed to the pages for this Web
   def authors
-    connection.select_all(
-        'SELECT DISTINCT r.author AS author ' + 
-        'FROM revisions r ' +
-        'JOIN pages p ON p.id = r.page_id ' +
-        'WHERE p.web_id = ' + self.id.to_s +
-        ' ORDER by 1 '
-        ).collect { |row| row['author'] }
+    revisions.all(
+      :select => "DISTINCT revisions.author",
+      :order  => "1"
+    ).collect(&:author)
   end
 
   def categories
