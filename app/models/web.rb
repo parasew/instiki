@@ -1,6 +1,12 @@
 class Web < ActiveRecord::Base
+  ## Associations
+
   has_many :pages,      :dependent => :destroy
   has_many :wiki_files, :dependent => :destroy
+
+  has_many :revisions,  :through => :pages
+
+  ## Methods
 
   def wiki
     Wiki.new
