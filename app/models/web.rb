@@ -49,8 +49,11 @@ class Web < ActiveRecord::Base
     select.map { |page| page.categories }.flatten.uniq.sort
   end
 
+  # @param [String] name the name of some associated Page record to find
+  # @return [Page, nil] the associated Page record, or +nil+ if no record is 
+  #   found with the provided name
   def page(name)
-    pages.first(:conditions => ['name = ?', name])
+    pages.find_by_name(name)
   end
 
   def last_page
