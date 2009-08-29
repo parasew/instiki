@@ -6,6 +6,19 @@ class Web < ActiveRecord::Base
 
   has_many :revisions,  :through => :pages
 
+  ## Hooks
+
+  before_save :sanitize_markup
+  after_save :create_files_directory
+
+  before_validation :validate_address
+
+  ## Validations
+
+  validates_uniqueness_of :address
+
+  validates_length_of :color, :in => 3..6
+
   ## Methods
 
   def wiki
@@ -161,11 +174,6 @@ class Web < ActiveRecord::Base
     end
 
   protected
-    before_save :sanitize_markup
-    after_save :create_files_directory
-    before_validation :validate_address
-    validates_uniqueness_of :address
-    validates_length_of :color, :in => 3..6
 
     def sanitize_markup
       self.markup = markup.to_s
