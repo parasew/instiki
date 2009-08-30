@@ -1,15 +1,16 @@
-require 'active_record'
-
 task :upgrade_instiki => :environment do
-  ActiveRecord::Base.establish_connection(:production)
-  webs = ActiveRecord::Base.connection.execute( "select * from webs" )
-  webs.each do |row|
-   if File.exists?('public/' + row[4])
-      if File.exists?('webs/' + row[4])
-        print "Warning! The directory webs/#{row[4]} already exists. Skipping.\n" 
+  RAILS_ENV = 'production' unless ENV['RAILS_ENV']
+  puts "Upgrading Instiki in #{RAILS_ENV} environment."
+
+  Web.all.each do |web|
+    public_path = Rails.root.join("public", web.address)
+    if public_path.exist?
+      webs_path = Rails.root.join("webs", web.address)
+      if webs_path.exist?
+        puts "Warning! The directory #{webs_path} already exists. Skipping."
       else
-        File.rename('public/' + row[4], 'webs/' + row[4])
-        print "Moved: #{row[4]}\n"
+        public_path.rename(webs_path)
+        puts "Moved #{public_path} to #{webs_path}"
       end
     end
   end
