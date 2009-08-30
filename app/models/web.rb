@@ -77,11 +77,11 @@ class Web < ActiveRecord::Base
   end
 
   def has_file?(file_name)
-    WikiFile.find_by_file_name(file_name) != nil
+    wiki_files.exists?(:file_name => file_name)
   end
 
-  def file_list(sort_order = 'file_name')
-    WikiFile.all(:order => sort_order, :conditions => ['web_id = ?', id])
+  def file_list(sort_order="file_name")
+    wiki_files.all(:order => sort_order)
   end
 
   def pages_that_link_to(page_name)
