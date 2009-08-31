@@ -204,7 +204,8 @@ class Web < ActiveRecord::Base
       end
     end
 
+    # @return [Boolean] whether or not this record is considered the default Web
     def default_web?
-      defined? DEFAULT_WEB and self.address == DEFAULT_WEB
+      defined?(DEFAULT_WEB) && address == DEFAULT_WEB
     end
 end
