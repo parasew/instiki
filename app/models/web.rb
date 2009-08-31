@@ -32,7 +32,7 @@ class Web < ActiveRecord::Base
   end
 
   def add_page(name, content, time, author, renderer)
-    page = page(name) || Page.new(:web => self, :name => name)
+    page = page(name) || pages.build(:name => name)
     page.revise(content, name, time, author, renderer)
   end
 
