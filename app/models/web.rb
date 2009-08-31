@@ -92,9 +92,11 @@ class Web < ActiveRecord::Base
     WikiReference.pages_that_link_to_file(self, file_name)
   end
 
+  # @param [String] file_name the name of some WikiFile of interest
+  # @return [String, nil] the description of some WikiFile of interest, nil if 
+  #   the WikiFile could not be found
   def description(file_name)
-    file = WikiFile.find_by_file_name(file_name)
-    file.description if file
+    wiki_files.find_by_file_name(file_name).try(:description)
   end
 
   # @return [Symbol] the type of markup used by this Web
@@ -137,21 +139,30 @@ class Web < ActiveRecord::Base
     address
   end
 
+  # Called by an +after_save+ hook. Creates the directory that houses this 
+  # Web's associated files.
+  #
+  # TODO Move this into the WikiFile model
   def create_files_directory
     return unless allow_uploads == 1
-    dummy_file = self.wiki_files.build(:file_name => '0', :description => '0', :content => '0')
+
+    dummy_file = wiki_files.build(
+      :file_name   => "0",
+      :description => "0",
+      :content     => "0"
+    )
+
     File.umask(0002)
-    dir = File.dirname(dummy_file.content_path)
+
     begin
-      require 'fileutils'
-      FileUtils.mkdir_p dir
+      dummy_file.content_path.parent.mkpath
       dummy_file.save
       dummy_file.destroy
     rescue => e
-      logger.error("Failed create files directory for #{self.address}: #{e}")
+      logger.error "Failed create files directory for #{address}: #{e}"
       raise "Instiki could not create directory to store uploaded files. " +
             "Please make sure that Instiki is allowed to create directory " +
-            "#{File.expand_path(dir)} and add files to it."
+            "#{dummy_file.content_path.expand_path} and add files to it."
     end
   end
 
