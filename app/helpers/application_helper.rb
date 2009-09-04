@@ -54,7 +54,7 @@ module ApplicationHelper
 
   # Create a hyperlink to a particular revision of a Wiki page
   def link_to_revision(page, revision_number, text = nil, mode = nil, html_options = {})
-    revision_number == page.revisions.length ?
+    revision_number == page.revisions.size ?
       link_to(
         text || page.plain_name,
             {:web => @web.address, :action => 'show', :id => page.name,
