@@ -8,9 +8,9 @@
   <%- for page in @pages_by_day[day] -%>
     <li>
       <%= link_to_existing_page page %>
-      <%- if page.revisions.length > 1 %>
+      <%- if page.revisions.size > 1 %>
           <span class="views">
-          ( <%= link_to_revision(page, page.revisions.length, text='diff',
+          ( <%= link_to_revision(page, page.revisions.size, text='diff',
                mode='diff') %> | <%= link_to_history(page, text='history') %> )
           </span>
       <%- end -%>

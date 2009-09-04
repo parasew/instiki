@@ -10,7 +10,8 @@ class AbstractUrlGenerator
   # Create a link for the given page (or file) name and link text based
   # on the render mode in options and whether the page (file) exists
   # in the web.
-  def make_link(asked_name, web, text = nil, options = {})
+  def make_link(current_web, asked_name, web, text = nil, options = {})
+    @web = current_web
     mode = (options[:mode] || :show).to_sym
     link_type = (options[:link_type] || :show).to_sym
 
@@ -105,7 +106,9 @@ class UrlGenerator < AbstractUrlGenerator
       end
     when :show
       if known_page
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'show', 
+        web = Web.find_by_address(web_address)
+        action = web.published? && web != @web ? 'published' : 'show'
+        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
             :id => name, :only_path => true
         %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
       else 
