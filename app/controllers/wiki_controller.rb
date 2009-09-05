@@ -19,7 +19,7 @@ class WikiController < ApplicationController
       redirect_home
     elsif not @wiki.setup?
       redirect_to :controller => 'admin', :action => 'create_system'
-    elsif @wiki.webs.length == 1
+    elsif @wiki.webs.size == 1
       redirect_home @wiki.webs.values.first.address
     else
       redirect_to :action => 'web_list'
@@ -98,7 +98,7 @@ class WikiController < ApplicationController
           <div class="byline">
             #{page.revisions? ? "Revised" : "Created" } on #{ page.revised_at.strftime('%B %d, %Y %H:%M:%S') }
             by
-            #{ UrlGenerator.new(self).make_link(page.author.name, @web, nil, { :mode => :export }) }
+            #{ UrlGenerator.new(self).make_link(@web, page.author.name, @web, nil, { :mode => :export }) }
           </div>
         </body>
         </html>
@@ -345,7 +345,7 @@ class WikiController < ApplicationController
     if @page
       @revisions_by_day = Hash.new { |h, day| h[day] = [] }
       @revision_numbers = Hash.new { |h, id| h[id] = [] }
-      revision_number = @page.revisions.length
+      revision_number = @page.revisions.size
       @page.revisions.reverse.each do |rev|
         day = Date.new(rev.revised_at.year, rev.revised_at.month, rev.revised_at.day)
         @revisions_by_day[day] << rev
@@ -462,7 +462,7 @@ class WikiController < ApplicationController
     if params['rev']
       @revision_number = params['rev'].to_i
     else
-      @revision_number = @page.revisions.length
+      @revision_number = @page.revisions.size
     end
     @revision = @page.revisions[@revision_number - 1]
   end

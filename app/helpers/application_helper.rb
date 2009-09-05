@@ -44,17 +44,17 @@ module ApplicationHelper
   # Creates a hyperlink to a Wiki page, or to a "new page" form if the page doesn't exist yet
   def link_to_page(page_name, web = @web, text = nil, options = {})
     raise 'Web not defined' if web.nil?
-    UrlGenerator.new(@controller).make_link(page_name, web, text, 
+    UrlGenerator.new(@controller).make_link(@web, page_name, web, text, 
         options.merge(:base_url => "#{base_url}/#{web.address}"))
   end
 
   def author_link(page, options = {})
-    UrlGenerator.new(@controller).make_link(page.author.name, page.web, nil, options)
+    UrlGenerator.new(@controller).make_link(@web, page.author.name, page.web, nil, options)
   end
 
   # Create a hyperlink to a particular revision of a Wiki page
   def link_to_revision(page, revision_number, text = nil, mode = nil, html_options = {})
-    revision_number == page.revisions.length ?
+    revision_number == page.revisions.size ?
       link_to(
         text || page.plain_name,
             {:web => @web.address, :action => 'show', :id => page.name,
