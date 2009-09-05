@@ -195,7 +195,7 @@ class DateExtCalculationsTest < Test::Unit::TestCase
   end
 
   def test_end_of_day
-    assert_equal Time.local(2005,2,21,23,59,59), Date.new(2005,2,21).end_of_day
+    assert_equal Time.local(2005,2,21,23,59,59,999999.999), Date.new(2005,2,21).end_of_day
   end
 
   def test_xmlschema
@@ -248,6 +248,12 @@ class DateExtCalculationsTest < Test::Unit::TestCase
     end
   ensure
     Time.zone_default = nil
+  end
+
+  def test_date_advance_should_not_change_passed_options_hash
+    options = { :years => 3, :months => 11, :days => 2 }
+    Date.new(2005,2,28).advance(options)
+    assert_equal({ :years => 3, :months => 11, :days => 2 }, options)
   end
 
   protected

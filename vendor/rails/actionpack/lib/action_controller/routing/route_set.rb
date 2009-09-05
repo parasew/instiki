@@ -405,11 +405,14 @@ module ActionController
           end
 
           # don't use the recalled keys when determining which routes to check
-          routes = routes_by_controller[controller][action][options.reject {|k,v| !v}.keys.sort_by { |x| x.object_id }]
+          future_routes, deprecated_routes = routes_by_controller[controller][action][options.reject {|k,v| !v}.keys.sort_by { |x| x.object_id }]
+          routes = Routing.generate_best_match ? deprecated_routes : future_routes
 
-          routes.each do |route|
+          routes.each_with_index do |route, index|
             results = route.__send__(method, options, merged, expire_on)
-            return results if results && (!results.is_a?(Array) || results.first)
+            if results && (!results.is_a?(Array) || results.first)
+              return results
+            end
           end
         end
 
@@ -448,7 +451,10 @@ module ActionController
         @routes_by_controller ||= Hash.new do |controller_hash, controller|
           controller_hash[controller] = Hash.new do |action_hash, action|
             action_hash[action] = Hash.new do |key_hash, keys|
-              key_hash[keys] = routes_for_controller_and_action_and_keys(controller, action, keys)
+              key_hash[keys] = [
+                routes_for_controller_and_action_and_keys(controller, action, keys),
+                deprecated_routes_for_controller_and_action_and_keys(controller, action, keys)
+              ]
             end
           end
         end
@@ -460,10 +466,11 @@ module ActionController
         merged = options if expire_on[:controller]
         action = merged[:action] || 'index'
 
-        routes_by_controller[controller][action][merged.keys]
+        routes_by_controller[controller][action][merged.keys][1]
       end
 
       def routes_for_controller_and_action(controller, action)
+        ActiveSupport::Deprecation.warn "routes_for_controller_and_action() has been deprecated. Please use routes_for()"
         selected = routes.select do |route|
           route.matches_controller_and_action? controller, action
         end
@@ -471,6 +478,12 @@ module ActionController
       end
 
       def routes_for_controller_and_action_and_keys(controller, action, keys)
+        routes.select do |route|
+          route.matches_controller_and_action? controller, action
+        end
+      end
+
+      def deprecated_routes_for_controller_and_action_and_keys(controller, action, keys)
         selected = routes.select do |route|
           route.matches_controller_and_action? controller, action
         end
