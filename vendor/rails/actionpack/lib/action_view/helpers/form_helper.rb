@@ -726,6 +726,7 @@ module ActionView
         options = options.stringify_keys
         tag_value = options.delete("value")
         name_and_id = options.dup
+        name_and_id["id"] = name_and_id["for"]
         add_default_name_and_id_for_value(tag_value, name_and_id)
         options.delete("index")
         options["for"] ||= name_and_id["id"]
@@ -860,8 +861,8 @@ module ActionView
 
       private
         def add_default_name_and_id_for_value(tag_value, options)
-          if tag_value
-            pretty_tag_value    = tag_value.to_s.gsub(/\s/, "_").gsub(/\W/, "").downcase
+          unless tag_value.nil?
+            pretty_tag_value = tag_value.to_s.gsub(/\s/, "_").gsub(/\W/, "").downcase
             specified_id = options["id"]
             add_default_name_and_id(options)
             options["id"] += "_#{pretty_tag_value}" unless specified_id

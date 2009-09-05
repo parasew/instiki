@@ -1,3 +1,34 @@
+* 0.17.2
+
+Security: Updated to Rails 2.3.4
+* Fixes Timing Weakness in Rails MessageVerifier and the Cookie Store
+  http://weblog.rubyonrails.org/2009/9/4/timing-weakness-in-ruby-on-rails
+* Fixes XSS Vulnerability in Rails
+  http://weblog.rubyonrails.org/2009/9/4/xss-vulnerability-in-ruby-on-rails
+
+New Features:
+* Syntax colouring (`ruby` and `html`) for code blocks.
+* Updated for itex2MML 1.3.10 (supports \rlap{} and \underline{}). You should upgrade that, too.
+* Add a "Create New Page" Link to the Search Page. (Based on an idea by nowa)
+* Updated to Rails 2.3.4 
+
+Bugs Fixed:
+* Wikilinks to published webs should be to the published action. This didn't work
+  right for inter-web links. (Reported by Mike Shulman)
+* Use .size, rather than .length for ActiveRecord associations. A huge memory saving
+  in building the recently_revised page.
+* Refactor the upgrade_instiki rake task, to make it database-agnostic. (Many thanks to James Herdman)
+* Web#files_path and Web#blatex_pngs_path now return Pathname objects. (Thanks, again, to James Herdman)
+* Workaround for Mozilla Bug 449396. (Reported by Andrew Stacey)
+* Correctly Set noindex,nofollow On /diff Pages.
+* Page-renaming javascript deals correctly with page names containing ampersands, slashes, and other garbage.
+* List of Wanted Pages should not include redirected pages.
+* The Regexp, used in Maruku to detect "email" headers (used, e.g., for S5 slideshow metadata) could, for some inputs, interact badly with Instiki's Chunk Handler. Fixed.
+* Ensure "rollback" locks page for editing.
+* Generate relative URLs, when possible. (Patch by Dennis Knauf)
+* Expire revisions of an edited page. Use a `before_save` hook to deal with the situation where a page's name has been changed.
+
+------------------------------------------------------------------------------
 * 0.17
 
 New features:
