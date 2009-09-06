@@ -1,6 +1,0 @@
-secret
-db/*.sqlite3*
-log/*.log
-storage/*
-db/*.sql
-webs/*
