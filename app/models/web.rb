@@ -21,6 +21,7 @@ class Web < ActiveRecord::Base
 
   ## Methods
 
+  # @return [Wiki] a new Wiki instance
   def wiki
     Wiki.new
   end
@@ -119,6 +120,7 @@ class Web < ActiveRecord::Base
     end
   end
 
+  # OPTIMIZE Use the +delete_all+ with conditions for extra efficiency
   def remove_pages(pages_to_be_removed)
     pages_to_be_removed.each { |p| p.destroy }
   end
@@ -135,6 +137,7 @@ class Web < ActiveRecord::Base
     PageSet.new(self, pages, nil)
   end
 
+  # @return [String] uses the +address+ attribute for this record's parameter name
   def to_param
     address
   end
@@ -166,6 +169,7 @@ class Web < ActiveRecord::Base
     end
   end
 
+  # @return [Pathname] the path to the files for this record
   def files_path
     path = Rails.root.join("webs")
     if default_web?
@@ -175,6 +179,7 @@ class Web < ActiveRecord::Base
     end
   end
 
+  # @return [Pathname] the path to PNGs for this record
   def blahtex_pngs_path
     files_path.join("pngs")
   end
