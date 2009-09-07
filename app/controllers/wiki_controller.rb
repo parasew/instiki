@@ -162,8 +162,7 @@ class WikiController < ApplicationController
   end
 
   def search
-    @query = params['query']
-    render(:text => "Your query string was not valid utf-8", :layout => 'error', :status => 400) and return unless @query.is_utf8?
+    @query = params['query'].purify
     @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     all_pages_found = (@results + @title_results).uniq
@@ -180,7 +179,7 @@ class WikiController < ApplicationController
   end
 
   def edit
-    if @page.nil? or not @page_name.is_utf8?
+    if @page.nil?
       redirect_home
     elsif @page.locked?(Time.now) and not params['break_lock']
       redirect_to :web => @web_name, :action => 'locked', :id => @page_name
@@ -190,12 +189,10 @@ class WikiController < ApplicationController
   end
   
   def locked
-    render(:text => 'Page name is not valid utf-8.', :status => 400, :layout => 'error') unless @page_name.is_utf8? 
     # to template
   end
   
   def new
-    render(:text => 'Page name is not valid utf-8.', :status => 400, :layout => 'error') unless @page_name.is_utf8? 
     # to template
   end
 
@@ -258,32 +255,22 @@ class WikiController < ApplicationController
   end
 
   def save
-    render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil? or not @page_name.is_utf8?
+    render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil?
     unless (request.post? || ENV["RAILS_ENV"] == "test")
       headers['Allow'] = 'POST'
       render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
       return
     end
-    author_name = params['author']
+    author_name = params['author'].purify
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
     
     begin
-      raise Instiki::ValidationError.new('Your name was not valid utf-8') unless author_name.is_utf8?
       raise Instiki::ValidationError.new('Your name cannot contain a "."') if author_name.include? '.'
       cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
-      the_content = params['content']
+      the_content = params['content'].purify
       filter_spam(the_content)
-      unless the_content.is_utf8?
-        if @page
-          the_content = @page.content
-        else
-          the_content = ''
-        end 
-        raise Instiki::ValidationError.new('Your content was not valid utf-8.')
-      end
       if @page
-        new_name = params['new_name'] || @page_name
-        raise Instiki::ValidationError.new('Your new title was not valid utf-8.') unless new_name.is_utf8?
+        new_name = params['new_name'] ? params['new_name'].purify : @page_name
         raise Instiki::ValidationError.new('Your new title cannot contain a "."') if new_name.include? '.'
         raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if @page_name != new_name && @web.has_page?(new_name)
         wiki.revise_page(@web_name, @page_name, new_name, the_content, Time.now, 
@@ -325,7 +312,7 @@ class WikiController < ApplicationController
         end
       end
     else
-      if not @page_name.nil? and @page_name.is_utf8? and not @page_name.empty?
+      if not @page_name.nil? and not @page_name.empty?
         real_page = WikiReference.page_that_redirects_for(@web, @page_name)
         if real_page
           flash[:info] = "Redirected from \"#{@page_name}\"."
@@ -354,7 +341,7 @@ class WikiController < ApplicationController
       end
       render :action => 'history'
     else
-      if not @page_name.nil? and @page_name.is_utf8? and not @page_name.empty?
+      if not @page_name.nil? and not @page_name.empty?
         redirect_to :web => @web_name, :action => 'new', :id => @page_name
       else
         render :text => 'Page name is not specified', :status => 404, :layout => 'error'
@@ -397,7 +384,7 @@ class WikiController < ApplicationController
   end
   
   def load_page
-    @page_name = params['id']
+    @page_name = params['id'] ? params['id'].purify : nil
     @page = @wiki.read_page(@web_name, @page_name) if @page_name
   end
 

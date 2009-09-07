@@ -124,14 +124,10 @@ class FileController < ApplicationController
     zip = Zip::ZipInputStream.open(archive)
     while (entry = zip.get_next_entry) do
       ext_length = File.extname(entry.name).length
-      page_name = entry.name[0..-(ext_length + 1)]
-      page_content = entry.get_input_stream.read
+      page_name = entry.name[0..-(ext_length + 1)].purify
+      page_content = entry.get_input_stream.read.purify
       logger.info "Processing page '#{page_name}'"
       begin
-        if !page_content.is_utf8?
-          logger.info "Page '#{page_name}' contains non-utf8 character data. Skipping."
-          next
-        end
         existing_page = @wiki.read_page(@web.address, page_name)
         if existing_page
           if existing_page.content == page_content

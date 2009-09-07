@@ -607,30 +607,39 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_not_utf8
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n\000", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Cont\000ents of a new page\r\n\000", 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'new', :id => 'NewPage', :content => ''
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
+    new_page = @wiki.read_page('wiki1', 'NewPage')
+    assert_equal "Contents of a new page\r\n", new_page.content
+    assert_equal 'AuthorOfNewPage', new_page.author
   end
 
   def test_save_not_utf8_ncr
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#xfffe;", 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'new', :id => 'NewPage', :content => ''
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
+    new_page = @wiki.read_page('wiki1', 'NewPage')
+    assert_equal "Contents of a new page\r\n", new_page.content
+    assert_equal 'AuthorOfNewPage', new_page.author
   end
 
   def test_save_not_utf8_dec_ncr
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#65535;", 
       'author' => 'AuthorOfNewPage'
     
-    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'new', :id => 'NewPage', :content => ''
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
+    new_page = @wiki.read_page('wiki1', 'NewPage')
+    assert_equal "Contents of a new page\r\n", new_page.content
+    assert_equal 'AuthorOfNewPage', new_page.author
   end
 
   def test_save_new_revision_of_existing_page
@@ -653,17 +662,15 @@ class WikiControllerTest < ActionController::TestCase
     @home.lock(Time.now, 'Batman')
     current_revisions = @home.revisions.size
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => "Revised HomePage\000", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => "Newly rev\000ised HomePage", 
       'author' => 'Batman'
 
-    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'edit', :id => 'HomePage',
-       :content => 'HisWay would be MyWay $\sin(x)\begin{svg}<svg/>\end{svg}\includegraphics[width' +
-                   '=3em]{foo}$ in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEng' +
-                   'ine in that SmartEngineGUI'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal 'Batman', r.cookies['author']
     home_page = @wiki.read_page('wiki1', 'HomePage')
-    assert_equal current_revisions, home_page.revisions.size
-    assert_equal 'DavidHeinemeierHansson', home_page.author
+    assert_equal current_revisions+1, home_page.revisions.size
+    assert_equal 'Newly revised HomePage', home_page.content
+    assert_equal 'Batman', home_page.author
     assert !home_page.locked?(Time.now)
   end
 
@@ -750,11 +757,20 @@ class WikiControllerTest < ActionController::TestCase
     assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
     assert r.flash[:error].to_s == 'Your name cannot contain a "."'
 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
+      'author' => "Fu\000Manchu"
+
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
+    new_page = @wiki.read_page('wiki1', 'NewPage')
+    assert_equal 'FuManchu', new_page.author
+
     r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page', 
       'author' => "\000"
 
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'AnotherPage'
-    assert r.flash[:error].to_s == "Your name was not valid utf-8"
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'AnotherPage'
+    new_page = @wiki.read_page('wiki1', 'AnotherPage')
+    assert_equal 'AnonymousCoward', new_page.author
+
   end
 
   def test_search
@@ -794,17 +810,24 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_search_null_in_query
-    r = process 'search', 'web' => 'wiki1', 'query' => "\x00"
+    r = process 'search', 'web' => 'wiki1', 'query' => "non-existant\x00"
     
-    assert_response(400)
-    assert_match /Your query string was not valid utf-8/, r.body
+    assert_response(:success)
+    assert_match /No pages contain \"non-existant\"/, r.body
   end
 
   def test_search_FFFF_in_query
     r = process 'search', 'web' => 'wiki1', 'query' => "\xEF\xBF\xBF"
     
-    assert_response(400)
-    assert_match /Your query string was not valid utf-8/, r.body
+    assert_response(:success)
+    assert_match /9 page\(s\) containing search string in the page name:/, r.body
+
+    r = process 'search', 'web' => 'wiki1', 'query' => "Al\357\277\277l about"
+    
+    assert_response(:success)
+    assert_equal 'All about', r.template_objects['query']
+    assert_equal [@elephant, @oak], r.template_objects['results']
+    assert_equal [], r.template_objects['title_results']
   end
 
   def test_search_FFFD_in_query

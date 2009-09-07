@@ -2,27 +2,25 @@
 
 class String
 
-# Check whether a string is valid utf-8
+# Take a string, and remove any invalid substrings, returning a valid utf-8 string.
 #
 # :call-seq:
-#    string.is_utf8?    -> boolean
+#    string.purify    -> new_string
 #
-# returns true if the sequence of bytes in string is valid utf-8
+# returns a valid utf-8 string, purged of any subsequences of illegal bytes.
 #--
-   def is_utf8?
-     #expand NCRs to utf-8
-     text = self.gsub(/&#[xX]([a-fA-F0-9]+);/) { |m| [$1.hex].pack('U*') }
-     text.gsub!(/&#(\d+);/) { |m| [$1.to_i].pack('U*') }
-     
-     # You might think this is faster, but it isn't
-     #pieces = self.split(/&#[xX]([a-fA-F0-9]+);/)
-     #1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].hex].pack('U*')}
-     #pieces = pieces.join.split(/&#(\d+);/)
-     #1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].to_i].pack('U*')}
-     #text = pieces.join
-          
-     #ensure the resulting string of bytes is valid utf-8
-     text =~  /\A(
+   def purify
+     text = expand_ncrs
+     text.split(//u).grep(UTF8_REGEX).join
+   end
+
+  def expand_ncrs
+    text = gsub(/&#[xX]([a-fA-F0-9]+);/) { |m| [$1.hex].pack('U*') }
+    text.gsub!(/&#(\d+);/) { |m| [$1.to_i].pack('U*') }
+    text
+  end
+
+  UTF8_REGEX = /\A(
          [\x09\x0A\x0D\x20-\x7E]            # ASCII
        | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
        |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
@@ -33,13 +31,31 @@ class String
        |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
        | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
        |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-     )*\Z/nx;
-   end
+     )+\Z/nx;
 #++
+     
+# Check whether a string is valid utf-8
+#
+# :call-seq:
+#    string.is_utf8?    -> boolean
+#
+# returns true if the sequence of bytes in string is valid utf-8
+#--
+   def is_utf8?
+     #expand NCRs to utf-8
+     text = self.expand_ncrs
+     
+     # You might think this is faster, but it isn't
+     #pieces = self.split(/&#[xX]([a-fA-F0-9]+);/)
+     #1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].hex].pack('U*')}
+     #pieces = pieces.join.split(/&#(\d+);/)
+     #1.step(pieces.length-1, 2) {|i| pieces[i] = [pieces[i].to_i].pack('U*')}
+     #text = pieces.join
+          
+     #ensure the resulting string of bytes is valid utf-8
+     text =~ UTF8_REGEX
+   end
 
-  def purify
-    delete("\x01-\x08\x0B\x0C\x0E-\x1F", "\ufffe\uffff") 
-  end
 #:stopdoc: 
   MATHML_ENTITIES = {
 	'Alpha' => '&#x0391;',
