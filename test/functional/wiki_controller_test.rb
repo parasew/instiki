@@ -771,6 +771,12 @@ class WikiControllerTest < ActionController::TestCase
     new_page = @wiki.read_page('wiki1', 'AnotherPage')
     assert_equal 'AnonymousCoward', new_page.author
 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Revised contents of a new page', 
+      'author' => "G&#xfffe;eo&#2147483647;rge &#38; June"
+
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'AnotherPage'
+    new_page = @wiki.read_page('wiki1', 'AnotherPage')
+    assert_equal 'George &#38; June', new_page.author
   end
 
   def test_search
