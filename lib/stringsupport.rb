@@ -10,13 +10,13 @@ class String
 # returns a valid utf-8 string, purged of any subsequences of illegal bytes.
 #--
    def purify
-     text = expand_ncrs
+     text = check_ncrs
      text.split(//u).grep(UTF8_REGEX).join
    end
 
-  def expand_ncrs
-    text = gsub(/&#[xX]([a-fA-F0-9]+);/) { |m| [$1.hex].pack('U*') }
-    text.gsub!(/&#(\d+);/) { |m| [$1.to_i].pack('U*') }
+  def check_ncrs
+    text = gsub(/&#[xX]([a-fA-F0-9]+);/) { |m| [$1.hex].pack('U*') =~ UTF8_REGEX ? m : '' }
+    text.gsub!(/&#(\d+);/) { |m| [$1.to_i].pack('U*') =~ UTF8_REGEX ? m : '' }
     text
   end
 
@@ -43,7 +43,7 @@ class String
 #--
    def is_utf8?
      #expand NCRs to utf-8
-     text = self.expand_ncrs
+     text = self.check_ncrs
      
      # You might think this is faster, but it isn't
      #pieces = self.split(/&#[xX]([a-fA-F0-9]+);/)
