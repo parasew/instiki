@@ -16,8 +16,7 @@ class String
 
   def check_ncrs
     text = gsub(/&#[xX]([a-fA-F0-9]+);/) { |m| [$1.hex].pack('U*') =~ UTF8_REGEX ? m : '' }
-    text.gsub!(/&#(\d+);/) { |m| [$1.to_i].pack('U*') =~ UTF8_REGEX ? m : '' }
-    text
+    text.gsub(/&#(\d+);/) { |m| [$1.to_i].pack('U*') =~ UTF8_REGEX ? m : '' }
   end
 
   UTF8_REGEX = /\A(
