@@ -211,6 +211,14 @@ END_THM
   end
   
   def test_have_latest_itex2mml  
+  
+      assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' displa} +
+        %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
+        %{MathML'><mi>A</mi><mo>\342\206\255</mo><mi>B</} +
+        %{mi></math></p>},
+        "equation $A \\leftrightsquigarrow B$")
+
     assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +

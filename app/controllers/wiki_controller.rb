@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'maruku'
+require 'maruku/ext/math'
 require 'zip/zip'
 require 'stringsupport'
 require 'resolv'
