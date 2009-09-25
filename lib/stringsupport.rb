@@ -2295,8 +2295,8 @@ class String
     end
 
     def convert_to_utf8 #:nodoc:
-      if self =~ /^(lt|gt|amp|quot|apos)$/
-        self.replace "&" + self + ";"
+      if self =~ /^(lt|gt|amp|quot|apos)$/i
+        self.replace "&" + self.downcase + ";"
       elsif MATHML_ENTITIES.has_key?(self)         
         self.replace MATHML_ENTITIES[self].split(';').collect {|s| s.gsub(/^&#x([A-F0-9]+)$/, '\1').hex }.pack('U*')
       else
