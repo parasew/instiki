@@ -42,4 +42,10 @@ class NoWikiTest < Test::Unit::TestCase
     )
   end
 
+  def test_sanitize_nowiki_bad_utf8
+    match(NoWiki, "<nowiki>\357elephant &AMP; \302ivory</nowiki>",
+                :plain_text => "\357\277\275elephant &amp; \357\277\275ivory"
+    )
+  end
+
 end
