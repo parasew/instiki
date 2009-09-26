@@ -39,6 +39,12 @@ class SanitizeTest < Test::Unit::TestCase
     assert_equal(output, my_rex(input))
     assert_equal(output2, input.to_utf8)
   end
+  
+  def test_sanitize_malformed_utf8
+    input = "<p>\357elephant &AMP; \302ivory</p>"
+    output = "<p>\357\277\275elephant &amp; \357\277\275ivory</p>"
+    check_sanitization(input, output, output, output)
+  end    
 
   Sanitizer::ALLOWED_ELEMENTS.each do |tag_name|
     define_method "test_should_allow_#{tag_name}_tag" do
