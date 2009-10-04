@@ -930,6 +930,7 @@ class WikiControllerTest < ActionController::TestCase
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{mathtools}
 !
     @tex_header2 = %q!\usepackage{graphicx}
 \usepackage{color}
