@@ -215,6 +215,13 @@ END_THM
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
+        %{MathML'><mi>A</mi><mpadded lspace='-100%width'} +
+        %{ width='0'><mi>B</mi></mpadded></math></p>},
+        "equation $A \\mathllap{B}$")
+
+      assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' displa} +
+        %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
         %{MathML'><mi>A</mi><mo>\342\211\224</mo><mi>B</} +
         %{mi></math></p>},
         "equation $A \\coloneqq B$")
@@ -247,8 +254,8 @@ END_THM
 
     assert_markup_parsed_as(
         %{<p>\\rlap: <math class='maruku-mathml' display='} +
-        %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mpadded} +
-        %{ width='0'><mn>123</mn></mpadded></math></p>},
+        %{inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+        %{<mn>123</mn></math></p>},
         '\rlap: $\rlap{123}$')
   end
   
