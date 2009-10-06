@@ -1010,7 +1010,13 @@ class WikiControllerTest < ActionController::TestCase
 % math-mode versions of \rlap, etc
 % from Alexander Perlis, "A complement to \smash, \llap, and lap"
 %   http://math.arizona.edu/~aprl/publications/mathclap/
-\def\clap#1{\hbox to 0pt{\hss#1\hss}}\def\mathllap{\mathpalette\mathllapinternal}\def\mathrlap{\mathpalette\mathrlapinternal}\def\mathclap{\mathpalette\mathclapinternal}\def\mathllapinternal#1#2{\llap{$\mathsurround=0pt#1{#2}$}}\def\mathrlapinternal#1#2{\rlap{$\mathsurround=0pt#1{#2}$}}\def\mathclapinternal#1#2{\clap{$\mathsurround=0pt#1{#2}$}}
+\def\clap#1{\hbox to 0pt{\hss#1\hss}}
+\def\mathllap{\mathpalette\mathllapinternal}
+\def\mathrlap{\mathpalette\mathrlapinternal}
+\def\mathclap{\mathpalette\mathclapinternal}
+\def\mathllapinternal#1#2{\llap{$\mathsurround=0pt#1{#2}$}}
+\def\mathrlapinternal#1#2{\rlap{$\mathsurround=0pt#1{#2}$}}
+\def\mathclapinternal#1#2{\clap{$\mathsurround=0pt#1{#2}$}}
 
 % Renames \sqrt as \oldsqrt and redefine root to result in \sqrt[#1]{#2}
 \let\oldroot\root
