@@ -8,26 +8,27 @@ module Sanitizer
   require 'action_controller/vendor/html-scanner/html/tokenizer'
   require 'node'
   require 'stringsupport'
+  require 'set'
 
-  acceptable_elements = %w[a abbr acronym address area audio b big blockquote br
+  acceptable_elements = Set.new %w[a abbr acronym address area audio b big blockquote br
       button caption center cite code col colgroup dd del dfn dir div dl dt
       em fieldset font form h1 h2 h3 h4 h5 h6 hr i img input ins kbd label
       legend li map menu ol optgroup option p pre q s samp select small span
       strike strong sub sup table tbody td textarea tfoot th thead tr tt u
       ul var video]
       
-  mathml_elements = %w[annotation annotation-xml maction math merror mfrac
+  mathml_elements = Set.new %w[annotation annotation-xml maction math merror mfrac
       mfenced mi mmultiscripts mn mo mover mpadded mphantom mprescripts mroot
       mrow mspace msqrt mstyle msub msubsup msup mtable mtd mtext mtr munder
       munderover none semantics]
       
-  svg_elements = %w[a animate animateColor animateMotion animateTransform
+  svg_elements = Set.new %w[a animate animateColor animateMotion animateTransform
       circle clipPath defs desc ellipse font-face font-face-name font-face-src
       foreignObject g glyph hkern linearGradient line marker metadata
       missing-glyph mpath path polygon polyline radialGradient rect set
       stop svg switch text title tspan use]
       
-  acceptable_attributes = %w[abbr accept accept-charset accesskey action
+  acceptable_attributes = Set.new %w[abbr accept accept-charset accesskey action
       align alt axis border cellpadding cellspacing char charoff charset
       checked cite class clear cols colspan color compact controls coords datetime
       dir disabled enctype for frame headers height href hreflang hspace id
@@ -36,7 +37,7 @@ module Sanitizer
       selected shape size span src start style summary tabindex target title
       type usemap valign value vspace width xml:lang]
 
-  mathml_attributes = %w[actiontype align close columnalign columnalign
+  mathml_attributes = Set.new %w[actiontype align close columnalign columnalign
       columnalign columnlines columnspacing columnspan depth display
       displaystyle encoding equalcolumns equalrows fence fontstyle fontweight
       frame height linethickness lspace mathbackground mathcolor mathvariant
@@ -45,7 +46,7 @@ module Sanitizer
       separators stretchy width width xlink:href xlink:show xlink:type xmlns
       xmlns:xlink]
 
-  svg_attributes = %w[accent-height accumulate additive alphabetic
+  svg_attributes = Set.new %w[accent-height accumulate additive alphabetic
        arabic-form ascent attributeName attributeType baseProfile bbox begin
        by calcMode cap-height class clip-path clip-rule color color-rendering
        content cx cy d dx dy descent display dur end fill fill-opacity fill-rule
@@ -67,16 +68,16 @@ module Sanitizer
        xlink:show xlink:title xlink:type xml:base xml:lang xml:space xmlns
        xmlns:xlink y y1 y2 zoomAndPan]
        
-  attr_val_is_uri = %w[href src cite action longdesc xlink:href xml:base]
+  attr_val_is_uri = Set.new %w[href src cite action longdesc xlink:href xml:base]
   
-  SVG_ATTR_VAL_ALLOWS_REF = %w[clip-path color-profile cursor fill
+  SVG_ATTR_VAL_ALLOWS_REF = Set.new %w[clip-path color-profile cursor fill
       filter marker marker-start marker-mid marker-end mask stroke]
 
-  SVG_ALLOW_LOCAL_HREF = %w[altGlyph animate animateColor animateMotion
+  SVG_ALLOW_LOCAL_HREF = Set.new %w[altGlyph animate animateColor animateMotion
       animateTransform cursor feImage filter linearGradient pattern
       radialGradient textpath tref set use]
     
-  acceptable_css_properties = %w[azimuth background-color
+  acceptable_css_properties = Set.new %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
       border-right-color border-top-color clear color cursor direction
       display elevation float font font-family font-size font-style
@@ -86,19 +87,19 @@ module Sanitizer
       text-align text-decoration text-indent unicode-bidi vertical-align
       voice-family volume white-space width]
 
-  acceptable_css_keywords = %w[auto aqua black block blue bold both bottom
+  acceptable_css_keywords = Set.new %w[auto aqua black block blue bold both bottom
       brown center collapse dashed dotted fuchsia gray green !important
       italic left lime maroon medium none navy normal nowrap olive pointer
       purple red right solid silver teal top transparent underline white
       yellow]
 
-  acceptable_svg_properties = %w[fill fill-opacity fill-rule stroke
+  acceptable_svg_properties = Set.new %w[fill fill-opacity fill-rule stroke
       stroke-width stroke-linecap stroke-linejoin stroke-opacity]
       
-  acceptable_protocols = %w[ed2k ftp http https irc mailto news gopher nntp
+  acceptable_protocols = Set.new %w[ed2k ftp http https irc mailto news gopher nntp
       telnet webcal xmpp callto feed urn aim rsync tag ssh sftp rtsp afs]
       
-      VOID_ELEMENTS = %w[img br hr link meta area base basefont 
+      VOID_ELEMENTS = Set.new %w[img br hr link meta area base basefont 
                     col frame input isindex param]
 
       ALLOWED_ELEMENTS = acceptable_elements + mathml_elements + svg_elements  unless defined?(ALLOWED_ELEMENTS)
