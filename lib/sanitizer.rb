@@ -117,9 +117,9 @@ module Sanitizer
       # ALLOWED_PROTOCOLS are allowed.
       # You can adjust what gets sanitized, by defining these constant arrays before this Module is loaded. 
       #
-      #   sanitize_html('<script> do_nasty_stuff() </script>')
+      #   sanitize_xhtml('<script> do_nasty_stuff() </script>')
       #    => &lt;script> do_nasty_stuff() &lt;/script>
-      #   sanitize_html('<a href="javascript: sucker();">Click here for $100</a>')
+      #   sanitize_xhtml('<a href="javascript: sucker();">Click here for $100</a>')
       #    => <a>Click here for $100</a>
       def xhtml_sanitize(html)
         if html.index("<")
@@ -131,31 +131,7 @@ module Sanitizer
             new_text << case node.tag?
               when true
                 if ALLOWED_ELEMENTS.include?(node.name)
-                  if node.attributes
-                    node.attributes.delete_if { |attr,v| !ALLOWED_ATTRIBUTES.include?(attr) }
-                    ATTR_VAL_IS_URI.each do |attr|
-                      val_unescaped = node.attributes[attr].to_s.unescapeHTML.gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
-                      if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ and !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
-                        node.attributes.delete attr 
-                      end
-                    end
-                    SVG_ATTR_VAL_ALLOWS_REF.each do |attr|
-                      node.attributes[attr] = node.attributes[attr].to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/m, ' ') if node.attributes[attr]
-                    end
-                    if SVG_ALLOW_LOCAL_HREF.include?(node.name) && node.attributes['xlink:href'] && node.attributes['xlink:href'] =~ /^\s*[^#\s].*/m
-                       node.attributes.delete 'xlink:href'
-                    end
-                    if node.attributes['style']
-                      node.attributes['style'] = sanitize_css(node.attributes['style']) 
-                    end
-                    node.attributes.each do |attr,val|
-                      if String === val
-                         node.attributes[attr] = val.unescapeHTML.escapeHTML
-                      else
-                        node.attributes.delete attr
-                      end
-                    end
-                  end
+                  process_attributes_for(node)
                   node.to_s
                 else
                   node.to_s.gsub(/</, "&lt;").gsub(/>/, "&gt;")
@@ -169,7 +145,32 @@ module Sanitizer
         end
         html
       end
-      
+
+  protected
+  
+    def process_attributes_for(node)
+      return unless node.attributes
+      node.attributes.each do |attr,val|
+        if String === val && ALLOWED_ATTRIBUTES.include?(attr)
+          val = val.unescapeHTML.escapeHTML
+        else
+          node.attributes.delete attr; next
+        end
+        if attr == 'xlink:href' && SVG_ALLOW_LOCAL_HREF.include?(node.name) && val =~ /^\s*[^#\s]/m
+          node.attributes.delete attr; next
+        end
+        if ATTR_VAL_IS_URI.include?(attr)
+          val_unescaped = val.unescapeHTML.gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
+          if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ && !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
+            node.attributes.delete attr; next
+          end                        
+        end                     
+        val = val.to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/m, ' ') if SVG_ATTR_VAL_ALLOWS_REF.include?(attr)
+        val = sanitize_css(val) if attr == 'style'
+        node.attributes[attr] = val
+      end
+    end
+
     def sanitize_css(style)
       # disallow urls
       style = style.to_s.gsub(/url\s*\(\s*[^\s)]+?\s*\)\s*/, ' ')
