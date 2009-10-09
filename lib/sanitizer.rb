@@ -113,13 +113,17 @@ module Sanitizer
       # Sanitize the +html+, escaping all elements not in ALLOWED_ELEMENTS, and stripping out all
       # attributes not in ALLOWED_ATTRIBUTES. Style attributes are parsed, and a restricted set,
       # specified by ALLOWED_CSS_PROPERTIES and ALLOWED_CSS_KEYWORDS, are allowed through.
-      # attributes in ATTR_VAL_IS_URI are scanned, and only URI schemes specified in
+      # Attributes in ATTR_VAL_IS_URI are scanned, and only URI schemes specified in
       # ALLOWED_PROTOCOLS are allowed.
+      # Certain SVG attributes (SVG_ATTR_VAL_ALLOWS_REF) may take a url as a value. These are restricted to
+      # fragment-id's (in-document references). Certain SVG elements (SVG_ALLOW_LOCAL_HREF) allow href attributes
+      # which, again, are restricted to be fragment-id's.
+      # 
       # You can adjust what gets sanitized, by defining these constant arrays before this Module is loaded. 
       #
-      #   sanitize_xhtml('<script> do_nasty_stuff() </script>')
+      #   xhtml_sanitize('<script> do_nasty_stuff() </script>')
       #    => &lt;script> do_nasty_stuff() &lt;/script>
-      #   sanitize_xhtml('<a href="javascript: sucker();">Click here for $100</a>')
+      #   xhtml_sanitize_xhtml('<a href="javascript: sucker();">Click here for $100</a>')
       #    => <a>Click here for $100</a>
       def xhtml_sanitize(html)
         if html.index("<")
@@ -165,7 +169,7 @@ module Sanitizer
             node.attributes.delete attr; next
           end                        
         end                     
-        val = val.to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/m, ' ') if SVG_ATTR_VAL_ALLOWS_REF.include?(attr)
+        val = val.to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/mi, ' ') if SVG_ATTR_VAL_ALLOWS_REF.include?(attr)
         val = sanitize_css(val) if attr == 'style'
         node.attributes[attr] = val
       end
