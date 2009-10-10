@@ -70,10 +70,10 @@ module Sanitizer
        
   attr_val_is_uri = Set.new %w[href src cite action longdesc xlink:href xml:base]
   
-  SVG_ATTR_VAL_ALLOWS_REF = Set.new %w[clip-path color-profile cursor fill
+  svg_attr_val_allows_ref = Set.new %w[clip-path color-profile cursor fill
       filter marker marker-start marker-mid marker-end mask stroke]
 
-  SVG_ALLOW_LOCAL_HREF = Set.new %w[altGlyph animate animateColor animateMotion
+  svg_allow_local_href = Set.new %w[altGlyph animate animateColor animateMotion
       animateTransform cursor feImage filter linearGradient pattern
       radialGradient textpath tref set use]
     
@@ -99,6 +99,7 @@ module Sanitizer
   acceptable_protocols = Set.new %w[ed2k ftp http https irc mailto news gopher nntp
       telnet webcal xmpp callto feed urn aim rsync tag ssh sftp rtsp afs]
       
+      SHORTHAND_CSS_PROPERTIES = Set.new %w[background border margin padding]
       VOID_ELEMENTS = Set.new %w[img br hr link meta area base basefont 
                     col frame input isindex param]
 
@@ -109,11 +110,13 @@ module Sanitizer
       ALLOWED_SVG_PROPERTIES = acceptable_svg_properties unless defined?(ALLOWED_SVG_PROPERTIES)
       ALLOWED_PROTOCOLS = acceptable_protocols unless defined?(ALLOWED_PROTOCOLS)
       ATTR_VAL_IS_URI = attr_val_is_uri unless defined?(ATTR_VAL_IS_URI)
+      SVG_ATTR_VAL_ALLOWS_REF = svg_attr_val_allows_ref unless defined?(SVG_ATTR_VAL_ALLOWS_REF)
+      SVG_ALLOW_LOCAL_HREF = svg_allow_local_href unless defined?(SVG_ALLOW_LOCAL_HREF)
 
       # Sanitize the +html+, escaping all elements not in ALLOWED_ELEMENTS, and stripping out all
       # attributes not in ALLOWED_ATTRIBUTES. Style attributes are parsed, and a restricted set,
       # specified by ALLOWED_CSS_PROPERTIES and ALLOWED_CSS_KEYWORDS, are allowed through.
-      # Attributes in ATTR_VAL_IS_URI are scanned, and only URI schemes specified in
+      # Attributes in ATTR_VAL_IS_URI are scanned, and only uri schemes specified in
       # ALLOWED_PROTOCOLS are allowed.
       # Certain SVG attributes (SVG_ATTR_VAL_ALLOWS_REF) may take a url as a value. These are restricted to
       # fragment-id's (in-document references). Certain SVG elements (SVG_ALLOW_LOCAL_HREF) allow href attributes
@@ -135,7 +138,7 @@ module Sanitizer
           results << case node.tag?
             when true
               if ALLOWED_ELEMENTS.include?(node.name)
-                process_attributes_for(node)
+                process_attributes_for node
                 node.to_s
               else
                 node.to_s.gsub(/</, "&lt;").gsub(/>/, "&gt;")
@@ -191,7 +194,7 @@ module Sanitizer
         prop.downcase!
         if self.class.const_get("ALLOWED_CSS_PROPERTIES").include?(prop)
           clean << "#{prop}: #{val};"
-        elsif %w[background border margin padding].include?(prop.split('-')[0])
+        elsif self.class.const_get("SHORTHAND_CSS_PROPERTIES").include?(prop.split('-')[0])
           clean << "#{prop}: #{val};" unless val.split().any? do |keyword|
             !self.class.const_get("ALLOWED_CSS_KEYWORDS").include?(keyword) and
             keyword !~ /^(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)$/
@@ -201,6 +204,6 @@ module Sanitizer
         end
       end
 
-      style = clean.join(' ')
+      clean.join(' ')
     end
 end
