@@ -77,9 +77,9 @@ module XHTML #:nodoc:
 
     # Return a textual representation of the node.
     def to_s
-      s = ""
+      s = []
       @children.each { |child| s << child.to_s }
-      s
+      s.join
     end
 
     # Return false (subclasses must override this to provide specific matching
@@ -150,13 +150,19 @@ module XHTML #:nodoc:
           end
 
           if scanner.skip(/!\[CDATA\[/)
-            scanner.scan_until(/\]\]>/)
+            unless scanner.skip_until(/\]\]>/)
+              if strict
+                raise "expected ]]> (got #{scanner.rest.inspect} for #{content})"
+              else
+                scanner.skip_until(/\Z/)
+              end
+            end
+
             return CDATA.new(parent, line, pos, scanner.pre_match.gsub(/<!\[CDATA\[/, ''))
           end
           
           closing = ( scanner.scan(/\//) ? :close : nil )
           return Text.new(parent, line, pos, content) unless name = scanner.scan(/[\w:-]+/)
-          name
   
           unless closing
             scanner.skip(/\s*/)
@@ -165,17 +171,18 @@ module XHTML #:nodoc:
               value = true
               if scanner.scan(/\s*=\s*/)
                 if delim = scanner.scan(/['"]/)
-                  value = ""
+                  v = []
                   while text = scanner.scan(/[^#{delim}\\]+|./)
                     case text
                       when "\\" then
-                        value << text
-                        value << scanner.getch
+                        v << text
+                        v << scanner.getch
                       when delim
                         break
-                      else value << text
+                      else v << text
                     end
                   end
+                  value = v.join
                 else
                   value = scanner.scan(/[^\s>\/]+/)
                 end
@@ -265,7 +272,7 @@ module XHTML #:nodoc:
   # itself.
   class CDATA < Text #:nodoc:
     def to_s
-      "<![CDATA[#{super}]>"
+      "<![CDATA[#{super}]]>"
     end
   end
 
@@ -309,22 +316,20 @@ module XHTML #:nodoc:
 
     # Returns a textual representation of the node
     def to_s
-      s = ''
       if @closing == :close
-        s = "</#{@name}>"  unless self.childless?
+        "</#{@name}>"  unless self.childless?
       else
-        s = "<#{@name}"
-        atlist = @attributes.sort
-        atlist.each do |att|
-          s << " #{att[0]}"
-          s << "='#{att[1]}'" if String === att[1]
+        s = ["<#{@name}"]
+        @attributes.sort.each do |k,v|
+          s << " #{k}"
+          s << "='#{v}'" if String === v
         end
         s << "/" if (@children.empty? && @closing == :self) or self.childless?
         s << ">"
         @children.each { |child| s << child.to_s }
-        s << "</#{@name}>" if @closing != :self && !@closing.nil? && !@children.empty? 
+        s << "</#{@name}>" if @closing != :self && !@closing.nil? && !@children.empty?
+        s.join
       end
-      s
     end
 
     # If either the node or any of its children meet the given conditions, the
