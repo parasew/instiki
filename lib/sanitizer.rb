@@ -123,31 +123,33 @@ module Sanitizer
       #
       #   xhtml_sanitize('<script> do_nasty_stuff() </script>')
       #    => &lt;script> do_nasty_stuff() &lt;/script>
-      #   xhtml_sanitize_xhtml('<a href="javascript: sucker();">Click here for $100</a>')
+      #   xhtml_sanitize('<a href="javascript: sucker();">Click here for $100</a>')
       #    => <a>Click here for $100</a>
       def xhtml_sanitize(html)
-        if html.index("<")
-          tokenizer = HTML::Tokenizer.new(html.to_utf8)
-          new_text = ""
+        return html unless sanitizeable?(html)
+        tokenizer = HTML::Tokenizer.new(html.to_utf8)
+        results = []
 
-          while token = tokenizer.next
-            node = XHTML::Node.parse(nil, 0, 0, token, false)
-            new_text << case node.tag?
-              when true
-                if ALLOWED_ELEMENTS.include?(node.name)
-                  process_attributes_for(node)
-                  node.to_s
-                else
-                  node.to_s.gsub(/</, "&lt;").gsub(/>/, "&gt;")
-                end
+        while token = tokenizer.next
+          node = XHTML::Node.parse(nil, 0, 0, token, false)
+          results << case node.tag?
+            when true
+              if ALLOWED_ELEMENTS.include?(node.name)
+                process_attributes_for(node)
+                node.to_s
               else
-                node.to_s.unescapeHTML.escapeHTML
-            end
+                node.to_s.gsub(/</, "&lt;").gsub(/>/, "&gt;")
+              end
+            else
+              node.to_s.unescapeHTML.escapeHTML
           end
-
-          html = new_text
         end
-        html
+
+        results.join
+      end
+
+      def sanitizeable?(text)
+        !(text.nil? || text.empty? || !text.index("<"))
       end
 
   protected

@@ -373,10 +373,10 @@ END_THM
     assert_markup_parsed_as(
         "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
 	    "That Way</a> or</p>\n<div class='maruku-equation' id='eq:eq1'>" +
-	    "<math class='maruku-mathml' display='block' " +
+	    "<span class='maruku-eq-number'>(1)</span><math class='maruku-mathml' display='block' " +
 	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math>" +
 	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay</code>" +
-	    "</span><span class='maruku-eq-number'>(1)</span></div>", 
+	    "</span></div>", 
         "should we go ThatWay or \n\\[ThisWay\\]\n")
 
     assert_markup_parsed_as(
@@ -393,7 +393,7 @@ END_THM
 	    "That Way</a> or</p>\n<div class='maruku-equation'>" +
 	    "<math class='maruku-mathml' display='block' " +
 	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi><mi>$</mi>" +
-	    "<mn>100 </mn><mi>ThatWay</mi></math>" +
+	    "<mn>100</mn><mi>ThatWay</mi></math>" +
 	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay \\$100 " +
 	    "ThatWay</code></span></div>", 
         "should we go ThatWay or \n$$ThisWay \\$100 ThatWay $$\n")
