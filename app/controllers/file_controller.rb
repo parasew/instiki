@@ -7,8 +7,8 @@ class FileController < ApplicationController
 
   layout 'default'
   
-  before_filter :dnsbl_check, :check_authorized
-  before_filter :check_allow_uploads, :except => [:file, :blahtex_png]
+  before_filter :check_authorized
+  before_filter :check_allow_uploads, :dnsbl_check, :except => [:file, :blahtex_png]
 
   def file
     @file_name = params['id']
