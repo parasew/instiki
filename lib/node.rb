@@ -308,7 +308,7 @@ module XHTML #:nodoc:
 
     # Returns non-+nil+ if this tag can contain child nodes.
     def childless?(xml = false)
-      return false if xml && @closing.nil?
+       return false if xml && @closing.nil?
 #      !@closing.nil? ||
         @name =~ /^(img|br|hr|link|meta|area|base|basefont|
                     col|frame|input|isindex|param)$/ox
@@ -327,7 +327,7 @@ module XHTML #:nodoc:
         s << "/" if (@children.empty? && @closing == :self) or self.childless?
         s << ">"
         @children.each { |child| s << child.to_s }
-        s << "</#{@name}>" if @closing != :self && !@closing.nil? && !@children.empty?
+        s << "</#{@name}>" unless @closing == :self or self.childless? or @children.empty?
         s.join
       end
     end
