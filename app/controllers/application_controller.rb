@@ -87,7 +87,8 @@ class ApplicationController < ActionController::Base
     original_options[:type] ||= (FILE_TYPES[File.extname(file_name)] or 'application/octet-stream')
     original_options[:disposition] ||= (DISPOSITION[original_options[:type]] or 'attachment')
     original_options[:stream] ||= false
-    original_options[:x_sendfile] = true if request.env.include?('HTTP_X_SENDFILE_TYPE') && request.remote_addr == LOCALHOST
+    original_options[:x_sendfile] = true if request.env.include?('HTTP_X_SENDFILE_TYPE') &&
+            ( request.remote_addr == LOCALHOST || defined?(PhusionPassenger) )
     original_options
   end
   
