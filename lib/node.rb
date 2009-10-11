@@ -308,7 +308,7 @@ module XHTML #:nodoc:
 
     # Returns non-+nil+ if this tag can contain child nodes.
     def childless?(xml = false)
-       return false if xml && @closing.nil?
+      return false if xml && @closing.nil?
 #      !@closing.nil? ||
         @name =~ /^(img|br|hr|link|meta|area|base|basefont|
                     col|frame|input|isindex|param)$/ox
