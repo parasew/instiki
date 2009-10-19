@@ -273,7 +273,8 @@ class WikiController < ApplicationController
       if @page
         new_name = params['new_name'] ? params['new_name'].purify : @page_name
         raise Instiki::ValidationError.new('Your new title cannot contain a "."') if new_name.include? '.'
-        raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if @page_name != new_name && @web.has_page?(new_name)
+        raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if
+            @page_name != new_name && @web.has_page?(new_name)
         wiki.revise_page(@web_name, @page_name, new_name, the_content, Time.now, 
             Author.new(author_name, remote_ip), PageRenderer.new)
         @page.unlock
@@ -286,11 +287,15 @@ class WikiController < ApplicationController
     rescue Instiki::ValidationError => e
       flash[:error] = e.to_s
       logger.error e
+      param_hash = {:web => @web_name, :id => @page_name}
+      # Work around Rails bug: flash will not display if query string is longer than 10192 bytes
+      param_hash.update( :content => the_content ) if the_content && 
+         CGI::escape(the_content).length < 10183 && the_content != @page.current_revision.content
       if @page
         @page.unlock
-        redirect_to :action => 'edit', :web => @web_name, :id => @page_name, :content => the_content
+        redirect_to param_hash.update( :action => 'edit' )
       else
-        redirect_to :action => 'new', :web => @web_name, :id => @page_name, :content => the_content
+        redirect_to param_hash.update( :action => 'new' )
       end
     end
   end
