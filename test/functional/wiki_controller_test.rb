@@ -710,10 +710,7 @@ class WikiControllerTest < ActionController::TestCase
         'content' => @home.revisions.last.content.dup, 
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/HomePage'}
 
-    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage',
-      :content => 'HisWay would be MyWay $\sin(x)\begin{svg}<svg/>\end{svg}\includegraphics[width=3e'+
-                  'm]{foo}$ in kinda ThatWay in HisWay though MyWay \OverThere -- see SmartEngine in'+
-                  ' that SmartEngineGUI'
+    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage'
     assert r.flash[:error].to_s == "You have tried to save page 'HomePage' without changing its content"
 
     revisions_after = @home.revisions.size
@@ -750,11 +747,36 @@ class WikiControllerTest < ActionController::TestCase
     another_page = @wiki.read_page('wiki1', 'AnotherPage')
     assert_equal 'AnonymousCoward', another_page.author
   end
+  
+  def test_save_revised_content_invalid_author_name
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Contents of a very new page',
+          'author' => 'foo.bar'
+    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage',
+      :content => 'Contents of a very new page'
+    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
+
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'a'*10184,
+          'author' => 'foo.bar'
+    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage'
+    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
+    
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
+          'author' => 'foo.bar'
+    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage',
+      :content => 'Contents of a new page'
+    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
+
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'a'*10184,
+          'author' => 'foo.bar'
+    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
+    assert r.flash[:error].to_s == 'Your name cannot contain a "."'    
+  end
 
   def test_save_invalid_author_name
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
+    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage',
+      :content => 'Contents of a new page'
     assert r.flash[:error].to_s == 'Your name cannot contain a "."'
 
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
