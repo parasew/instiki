@@ -266,12 +266,14 @@ class WikiController < ApplicationController
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
     
     begin
+      the_content = params['content'].purify
+      prev_content = ''
+      filter_spam(the_content)
       raise Instiki::ValidationError.new('Your name cannot contain a "."') if author_name.include? '.'
       cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
-      the_content = params['content'].purify
-      filter_spam(the_content)
       if @page
         new_name = params['new_name'] ? params['new_name'].purify : @page_name
+        prev_content = @page.current_revision.content
         raise Instiki::ValidationError.new('Your new title cannot contain a "."') if new_name.include? '.'
         raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if
             @page_name != new_name && @web.has_page?(new_name)
@@ -290,7 +292,7 @@ class WikiController < ApplicationController
       param_hash = {:web => @web_name, :id => @page_name}
       # Work around Rails bug: flash will not display if query string is longer than 10192 bytes
       param_hash.update( :content => the_content ) if the_content && 
-         CGI::escape(the_content).length < 10183 && the_content != @page.current_revision.content
+         CGI::escape(the_content).length < 10183 && the_content != prev_content
       if @page
         @page.unlock
         redirect_to param_hash.update( :action => 'edit' )
