@@ -98,19 +98,13 @@ class UrlGenerator < AbstractUrlGenerator
       end
     when :publish
       if known_page
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'published', 
-            :id => name, :only_path => true
-        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+        wikilink_for(mode, name, text, web_address)
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
     when :show
       if known_page
-        web = Web.find_by_address(web_address)
-        action = web.published? && web != @web ? 'published' : 'show'
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
-            :id => name, :only_path => true
-        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+        wikilink_for(mode, name, text, web_address)
       else 
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'new', 
             :id => name, :only_path => true
@@ -118,11 +112,7 @@ class UrlGenerator < AbstractUrlGenerator
       end
     else 
       if known_page
-        web = Web.find_by_address(web_address)
-        action = web.published? ? 'published' : 'show'
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
-            :id => name, :only_path => true
-        %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+        wikilink_for(mode, name, text, web_address)
       else 
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'new', 
             :id => name, :only_path => true
@@ -190,5 +180,14 @@ class UrlGenerator < AbstractUrlGenerator
       %{<span class="deleteWikiWord">[[#{name}:delete]]</span>}
     end
   end
-  
+
+  private
+
+    def wikilink_for(mode, name, text, web_address)
+      web = Web.find_by_address(web_address)
+      action = web.published? && !(web == @web && mode != :publish) ? 'published' : 'show'
+      href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
+            :id => name, :only_path => true
+      %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+    end  
 end

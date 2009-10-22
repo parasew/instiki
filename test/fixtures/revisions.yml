@@ -88,6 +88,6 @@ liquor_first_revision:
   updated_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
   revised_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
   page_id: 9
-  content: "[[!redirects booze]]\n Drinky-poo."
+  content: "[[!redirects booze]]\n Drinky-poo.  [[Instiki:HomePage|go there]]"
   author: Guest
   ip: 127.0.0.2
