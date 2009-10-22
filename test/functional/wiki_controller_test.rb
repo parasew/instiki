@@ -329,6 +329,52 @@ class WikiControllerTest < ActionController::TestCase
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
     assert_match /<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body
+
+    r = process 'save', 'web' => 'instiki', 'id' => 'HomePage', 'content' => 'Contents of a new page', 
+      'author' => 'AuthorOfNewPage'
+    assert_equal Web.find_by_address('instiki').has_page?('HomePage'), true
+
+    r = process('published', 'web' => 'wiki1', 'id' => 'liquor')
+
+    assert_response(:success)
+    assert_equal @liquor, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage'>go there<\/a>/, r.body
+
+    r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
+
+    assert_response(:success)
+    assert_equal @liquor, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage'>go there<\/a>/, r.body
+
+    Web.find_by_address('instiki').update_attribute(:published, true)
+
+    r = process('published', 'web' => 'wiki1', 'id' => 'liquor')
+
+    assert_response(:success)
+    assert_equal @liquor, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage'>go there<\/a>/, r.body
+
+    r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
+
+    assert_response(:success)
+    assert_equal @liquor, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage'>go there<\/a>/, r.body
+
+    set_web_property :published, false
+
+    r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
+
+    assert_response(:success)
+    assert_equal @liquor, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage'>go there<\/a>/, r.body
+
+    Web.find_by_address('instiki').update_attribute(:published, false)
+
+    r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
+
+    assert_response(:success)
+    assert_equal @liquor, r.template_objects['page']
+    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage'>go there<\/a>/, r.body
   end
 
 
