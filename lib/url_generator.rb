@@ -102,14 +102,6 @@ class UrlGenerator < AbstractUrlGenerator
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
-    when :show
-      if known_page
-        wikilink_for(mode, name, text, web_address)
-      else 
-        href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'new', 
-            :id => name, :only_path => true
-        %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>}
-      end
     else 
       if known_page
         wikilink_for(mode, name, text, web_address)
