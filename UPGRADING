@@ -1,0 +1,13 @@
+UPGRADING
+=========
+
+See the upgrading instructions 
+
+     http://golem.ph.utexas.edu/wiki/instiki/show/Upgrading
+
+for detailed instructions. At a minimum, you need to backup your database.
+After installing the new software and restoring your database, you need to run
+
+     rake upgrade_instiki
+
+from the commandline, to complete the upgrade.

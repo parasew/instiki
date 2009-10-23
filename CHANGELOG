@@ -1,3 +1,40 @@
+N.B.: You *must* run
+
+     rake upgrade_instiki
+
+after installing the new software, to enjoy the benefits of this new version.
+
+------------------------------------------------------------------------------
+* 0.17.3
+
+The most important facet of this release is a small change in the database
+schema. Previously, people migrating from the default SQLite3 database to MySQL
+ran the risk of silent data loss, because MySQL had a more strict interpretation
+of the column types in the database. The new schema will prevent such problems.
+
+     rake upgrade_instiki
+
+will seamlessly upgrade your existing database to the new schema.
+
+New Features:
+* Passenger support (including X-Sendfile support, if the Apache mod_xsendfile
+  module is installed).
+* Update for itex2MML 1.3.13. (You should upgrade your itex2MML to the latest
+  version, too.)
+
+Bugs Fixed:
+* Refactored the Web model (from James Herdman).
+* Clean malformed utf-8 strings, rather than complaining about them.
+* Updated location of Textile help, since _why_the_lucky_stiff left the 'net.
+* Fixed a TeX rendering bug.
+* Updated list of XHTML+MathML named entities to match W3C Working Draft.
+* Refactored the Sanitizer (speedup).
+* Fix S5 Slideshows for non-root Instiki URLs.
+* Work around a Rails flash bug.
+* Links from published webs should work right (finally?).
+* An important database migration for MySQL users.
+
+------------------------------------------------------------------------------
 * 0.17.2
 
 Security: Updated to Rails 2.3.4
