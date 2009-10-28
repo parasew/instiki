@@ -59,6 +59,7 @@ require_dependency 'instiki_errors'
 
 #require 'jcode'
 require 'caching_stuff'
+require 'logging_stuff'
 
 #Additional Mime-types 
 mime_types = YAML.load_file(File.join(File.dirname(__FILE__), 'mime_types.yml'))
