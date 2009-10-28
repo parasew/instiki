@@ -177,7 +177,7 @@ class UrlGenerator < AbstractUrlGenerator
 
     def wikilink_for(mode, name, text, web_address)
       web = Web.find_by_address(web_address)
-      action = web.published? && !(web == @web && ![:publish, :s5].include?(mode) ) ? 'published' : 'show'
+      action = web.published? && (web != @web || [:publish, :s5].include?(mode) ) ? 'published' : 'show'
       href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
             :id => name, :only_path => true
       %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
