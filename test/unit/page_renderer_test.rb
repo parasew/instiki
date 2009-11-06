@@ -215,6 +215,14 @@ END_THM
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
+        %{MathML'><mi>A</mi><mo>=</mo><maction actiontyp} +
+        %{e='tooltip'><mi>B</mi><mtext>Spoons!</mtext></} +
+        %{maction></math></p>},
+        "equation $A=\\tooltip{Spoons!}{B}$")
+
+      assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' displa} +
+        %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
         %{MathML'><mi>A</mi><mpadded lspace='-100%width'} +
         %{ width='0'><mi>B</mi></mpadded></math></p>},
         "equation $A \\mathllap{B}$")

@@ -41,7 +41,22 @@ function fixRunIn() {
     });
 }
 
+function mactionWorkarounds() {
+  $$('maction[actiontype="tooltip"]').each( function(mtool){
+     Element.writeAttribute(mtool, 'title', mtool.lastChild.firstChild.data);
+        });
+  $$('maction[actiontype="statusline"]').each( function(mstatus){
+     Event.observe(mstatus, 'mouseover', function(){
+           window.status = mstatus.lastChild.firstChild.data;
+        });
+     Event.observe(mstatus, 'mouseout', function(){
+           window.status = '';
+        });
+     });
+}
+
 window.onload = function (){
         extractBlockquoteCitations();
         fixRunIn();
+        mactionWorkarounds();
 };
