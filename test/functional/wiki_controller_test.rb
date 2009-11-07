@@ -1207,7 +1207,8 @@ class WikiControllerTest < ActionController::TestCase
 \newcommand{\scriptscriptsize}{\scriptscriptstyle}
 \newcommand{\mathfr}{\mathfrak}
 \newcommand{\statusline}[2]{#2}
-\newcommand{\toggle}[2]{#1}
+\newcommand{\tooltip}[2]{#2}
+\newcommand{\toggle}[2]{#2}
 
 % Theorem Environments
 \theoremstyle{plain}
