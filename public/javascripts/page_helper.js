@@ -43,15 +43,13 @@ function fixRunIn() {
 
 function mactionWorkarounds() {
   $$('maction[actiontype="tooltip"]').each( function(mtool){
-     Element.writeAttribute(mtool, 'title', mtool.lastChild.firstChild.data);
-        });
+     Element.writeAttribute(mtool, 'title',
+       Element.firstDescendant(mtool).nextSibling.firstChild.data);
+     });
   $$('maction[actiontype="statusline"]').each( function(mstatus){
-     Event.observe(mstatus, 'mouseover', function(){
-           window.status = mstatus.lastChild.firstChild.data;
-        });
-     Event.observe(mstatus, 'mouseout', function(){
-           window.status = '';
-        });
+     var v = Element.firstDescendant(mstatus).nextSibling.firstChild.data;
+     Event.observe(mstatus, 'mouseover', function(){window.status =  v;});
+     Event.observe(mstatus, 'mouseout',  function(){window.status = '';});
      });
 }
 
