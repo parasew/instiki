@@ -6,6 +6,12 @@ font-size:1em;
 line-height:1.3em;
 }
 
+.skipNav {
+position:relative;
+left:-1000em;
+font-size:0em;
+}
+
 #Container {
 margin:0 10px;
 text-align:center;
