@@ -251,7 +251,7 @@ END_THM
     assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><munder><mi>A</mi><mo>_</mo></m} +
+        %{MathML'><munder><mi>A</mi><mo>\314\262</mo></m} +
         %{under></math></p>},
         "equation $\\underline{A}$")
 
