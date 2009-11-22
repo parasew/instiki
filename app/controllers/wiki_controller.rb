@@ -68,7 +68,7 @@ class WikiController < ApplicationController
   end
   
   def export_html
-    stylesheet = File.read(File.join(RAILS_ROOT, 'public', 'stylesheets', 'instiki.css'))
+    stylesheet = Rails.root.join('public', 'stylesheets', 'instiki.css').read
     export_pages_as_zip(html_ext) do |page| 
 
       renderer = PageRenderer.new(page.revisions.last)
@@ -423,7 +423,7 @@ class WikiController < ApplicationController
     
     file_prefix = "#{@web.address}-#{file_type}-"
     timestamp = @web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')
-    file_path = File.join(@wiki.storage_path, file_prefix + timestamp + '.zip')
+    file_path = @wiki.storage_path.join(file_prefix + timestamp + '.zip')
     tmp_path = "#{file_path}.tmp"
 
     Zip::ZipOutputStream.open(tmp_path) do |zip_out|
@@ -438,7 +438,7 @@ class WikiController < ApplicationController
             "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL=HomePage.#{file_type}\"></head></html>"
       end
     end
-    FileUtils.rm_rf(Dir[File.join(@wiki.storage_path, file_prefix + '*.zip')])
+    FileUtils.rm_rf(Dir[@wiki.storage_path.join(file_prefix + '*.zip')])
     FileUtils.mv(tmp_path, file_path)
     send_file file_path
   end
@@ -516,9 +516,9 @@ class WikiController < ApplicationController
   end
 
   def load_spam_patterns
-    spam_patterns_file = "#{RAILS_ROOT}/config/spam_patterns.txt"
+    spam_patterns_file = Rails.root.join('config', 'spam_patterns.txt')
     if File.exists?(spam_patterns_file)
-      File.readlines(spam_patterns_file).inject([]) { |patterns, line| patterns << Regexp.new(line.chomp, Regexp::IGNORECASE) } 
+      spam_patterns_file.readlines.inject([]) { |patterns, line| patterns << Regexp.new(line.chomp, Regexp::IGNORECASE) } 
     else
       []
     end

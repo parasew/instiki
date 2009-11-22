@@ -18,9 +18,9 @@ Rails::Initializer.run do |config|
   #   in a file, for reuse between server restarts. If you want to
   #   change the key, just delete the file, and it will be regenerated
   #   on the next restart. Doing so will invalitate all existing sessions.
-  secret_file = File.join(RAILS_ROOT, "secret")  
+  secret_file = Rails.root.join("secret")  
   if File.exist?(secret_file)  
-    secret = File.read(secret_file)  
+    secret = secret_file.read  
   else  
     secret =  ActiveSupport::SecureRandom.hex(64)
     File.open(secret_file, 'w', 0600) { |f| f.write(secret) }  

@@ -1,7 +1,7 @@
 class Wiki 
 
   cattr_accessor :storage_path, :logger
-  self.storage_path = "#{RAILS_ROOT}/storage/"
+  self.storage_path = Rails.root.join('storage')
 
   def authenticate(password)
     password == (system.password || 'instiki')
