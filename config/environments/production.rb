@@ -8,7 +8,7 @@ config.cache_classes = true
 ####
 # This rotates the log file, keeping 25 files, of 1MB each.
 
-config.action_controller.logger = Logger.new("#{RAILS_ROOT}/log/#{RAILS_ENV}.log", 25, 1024000)
+config.action_controller.logger = Logger.new(Rails.root.join('log', "#{RAILS_ENV}.log"), 25, 1024000)
 
 # Unfortunately, the above does not work well under Mongrel, as the default Ruby logger class
 # does no locking and you will have several processes running, each wanting to write to (and 
