@@ -1,5 +1,5 @@
 require 'chunks/chunk'
-require 'sanitize'
+require 'sanitizer'
 
 # This chunks allows certain parts of a wiki page to be hidden from the
 # rest of the rendering pipeline. It should be run at the beginning
@@ -17,7 +17,7 @@ require 'sanitize'
 
 class NoWiki < Chunk::Abstract
 
-  include Sanitize
+  include Sanitizer
   
   NOWIKI_PATTERN = Regexp.new('<nowiki>(.*?)</nowiki>', Regexp::MULTILINE)
   def self.pattern() NOWIKI_PATTERN end
@@ -26,7 +26,7 @@ class NoWiki < Chunk::Abstract
 
   def initialize(match_data, content)
     super
-    @plain_text = @unmask_text = safe_sanitize_xhtml(match_data[1])
+    @plain_text = @unmask_text = safe_xhtml_sanitize(match_data[1])
   end
 
 end

@@ -281,12 +281,12 @@ END_THM
       re = Regexp.new(
       %{<p>equation <span class='maruku-inline'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
       %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='vertical-align: -0\.5} +
-      %{55555555555556ex; height: 2\.33333333333333ex;'/></span></p>})
+      %{(5)+6ex; height: 2\.3(3)+ex;'/></span></p>})
       assert_match_markup_parsed_as(re, 'equation $a\sin(\theta)$')
 
       re = Regexp.new(
       %{<div class='maruku-equation'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
-      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.333333333} +
+      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.3(3)+} +
       %{33333ex;'/><span class='maruku-eq-tex'><code style='display: none;'>a\\\\sin} +
       %{\\(\\\\theta\\)<\/code><\/span><\/div>})
       assert_match_markup_parsed_as(re, '$$a\sin(\theta)$$')
@@ -504,7 +504,7 @@ END_THM
   
   def test_malformed_nowiki
     assert_markup_parsed_as( 
-      '<p><i><b/></i></p>', 
+      '<p>&lt;i&gt;&lt;b&gt;&lt;/i&gt;&lt;/b&gt;</p>', 
       '<nowiki><i><b></i></b></nowiki> ')
   end
 

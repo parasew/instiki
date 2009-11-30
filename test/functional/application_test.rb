@@ -1,6 +1,6 @@
 # Unit tests for ApplicationController (the abstract controller class)
 
-require File.dirname(__FILE__) + '/../test_helper'
+require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 require 'wiki_controller'
 
 # Need some concrete class to test the abstract class features

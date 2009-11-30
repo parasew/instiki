@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require File.dirname(__FILE__) + '/../../test_helper'
+require File.expand_path(File.dirname(__FILE__) + '/../../test_helper')
 require 'chunks/wiki'
 
 class WikiTest < Test::Unit::TestCase

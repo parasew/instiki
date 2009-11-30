@@ -30,6 +30,7 @@ module Engines
 
   class Textile < AbstractEngine
     def mask
+      @content.as_utf8
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
@@ -39,6 +40,7 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask
+      @content.as_utf8
       # If the request is for S5, call Maruku accordingly (without math)
       if @content.options[:mode] == :s5
         my_content = Maruku.new(@content.delete("\r").to_utf8,
@@ -56,6 +58,7 @@ module Engines
 
   class MarkdownMML < AbstractEngine
     def mask
+      @content.as_utf8
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
         my_content = Maruku.new(@content.delete("\r").to_utf8,
@@ -77,6 +80,7 @@ module Engines
 
   class MarkdownPNG < AbstractEngine
     def mask
+      @content.as_utf8
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
         my_content = Maruku.new(@content.delete("\r").to_utf8,
@@ -108,6 +112,7 @@ module Engines
 
   class Mixed < AbstractEngine
     def mask
+      @content.as_utf8
       redcloth = RedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
@@ -117,6 +122,7 @@ module Engines
 
   class RDoc < AbstractEngine
     def mask
+      @content.as_utf8
       html = RDocSupport::RDocFormatter.new(@content).to_html
     end
   end

@@ -9,6 +9,7 @@ require 'wiki_controller'
 require 'rexml/document'
 require 'tempfile'
 require 'zip/zipfilesystem'
+require 'stringsupport'
 
 # Raise errors beyond the default web-based presentation
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
@@ -935,7 +936,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
+    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body.as_bytes
   end
 
   def test_recursive_include_II
@@ -947,7 +948,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body.as_bytes
   end
   
   def test_recursive_include_III
@@ -961,7 +962,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body.as_bytes
   end
 
   def test_nonrecursive_include

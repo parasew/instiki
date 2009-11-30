@@ -169,7 +169,7 @@ module Sanitizer
           node.attributes.delete attr; next
         end
         if ATTR_VAL_IS_URI.include?(attr)
-          val_unescaped = val.unescapeHTML.gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
+          val_unescaped = val.unescapeHTML.as_bytes.gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
           if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ && !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
             node.attributes.delete attr; next
           end                        
@@ -206,4 +206,23 @@ module Sanitizer
 
       clean.join(' ')
     end
+    
+# Sanitize a string, parsed using XHTML parsing rules. Reparse the result to
+#    ensure well-formedness. 
+#
+# :call-seq:
+#    safe_sanitize_xhtml(string)                    -> string
+#
+# Unless otherwise specified, the string is assumed to be utf-8 encoded.
+#
+# The string returned is utf-8 encoded. If you want, you can use iconv to convert it to some other encoding.
+# (REXML trees are always utf-8 encoded.)
+  def safe_xhtml_sanitize(html, options = {})
+    sanitized = xhtml_sanitize(html.purify)
+    doc = REXML::Document.new("<div xmlns='http://www.w3.org/1999/xhtml'>#{sanitized}</div>")
+    sanitized = doc.to_s.gsub(/\A<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>\Z/m, '\1')
+    rescue REXML::ParseException
+      sanitized = sanitized.escapeHTML
+  end 
+
 end
