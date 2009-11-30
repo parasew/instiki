@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require File.dirname(__FILE__) + '/../../test_helper'
+require File.expand_path(File.dirname(__FILE__) + '/../../test_helper')
 require 'chunks/nowiki'
 
 class NoWikiTest < Test::Unit::TestCase
@@ -26,25 +26,25 @@ class NoWikiTest < Test::Unit::TestCase
 
   def test_sanitize_nowiki
 	match(NoWiki, 'This sentence contains <nowiki>[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*</nowiki>. Do not touch!',
-		:plain_text => "[[test]]&amp;<a href='a&amp;b'>shebang</a> &lt;script&gt;alert(\"xss!\");&lt;/script&gt; *foo*"
+		:plain_text => "[[test]]&amp;<a href='a&amp;b'>shebang</a> &lt;script&gt;alert(&quot;xss!&quot;);&lt;/script&gt; *foo*"
 	)
   end
 
   def test_sanitize_nowiki_ill_formed
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/></nowiki>",
-                :plain_text => "&lt;animateColor xlink:href=&#39;#foo&#39;&gt;&lt;/animateColor&gt;"
+                :plain_text => "&lt;animateColor xlink:href=&#39;#foo&#39;/&gt;"
     )
   end
 
   def test_sanitize_nowiki_ill_formed_II
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/>\000</nowiki>",
-                :plain_text => %(&lt;animateColor xlink:href=&#39;#foo&#39;&gt;&lt;/animateColor&gt;\xEF\xBF\xBD)
+                :plain_text => %(&lt;animateColor xlink:href=&#39;#foo&#39;/&gt;)
     )
   end
 
   def test_sanitize_nowiki_bad_utf8
     match(NoWiki, "<nowiki>\357elephant &AMP; \302ivory</nowiki>",
-                :plain_text => "\357\277\275elephant &amp; \357\277\275ivory"
+                :plain_text => "".respond_to?(:force_encoding) ? "elephant &amp;AMP; ivory" : "ephant &amp;AMP; vory"
     )
   end
 

@@ -19,7 +19,7 @@ class SanitizerTest < Test::Unit::TestCase
   end
 
   def check_sanitization(input, htmloutput, xhtmloutput, rexmloutput)
-    assert_equal xhtmloutput, do_sanitize_xhtml(input)
+    assert_equal xhtmloutput.as_bytes, do_sanitize_xhtml(input).as_bytes
   end
 
   def test_sanitize_named_entities
@@ -27,12 +27,12 @@ class SanitizerTest < Test::Unit::TestCase
     output = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric \360\235\224\270 \342\201\227, uppercase \342\204\242 &lt;</p>"
     output2 = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric &#x1D538; &#8279;, uppercase \342\204\242 &lt;</p>"
     check_sanitization(input, output, output, output)
-    assert_equal(output2, input.to_utf8)
+    assert_equal(output2, input.to_utf8.as_bytes)
   end
 
   def test_sanitize_malformed_utf8
     input = "<p>\357elephant &AMP; \302ivory</p>".purify
-    output = "<p>ephant &amp; vory</p>"
+    output = "".respond_to?(:force_encoding) ? "<p>elephant &amp; ivory</p>" : "<p>ephant &amp; vory</p>"
     check_sanitization(input, output, output, output)
   end    
 

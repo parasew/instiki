@@ -1,187 +1,189 @@
 #!/usr/bin/env ruby
 
-require File.expand_path(File.join(File.dirname(__FILE__), '/../test_helper'))
+require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 require 'sanitize'
+require 'json'
+
 
 class SanitizeTest < Test::Unit::TestCase
+
   include Sanitize
 
   def setup
 
   end
 
-  Sanitize::ALLOWED_ELEMENTS.each do |tag_name|
+  def do_sanitize_xhtml stream
+    safe_sanitize_xhtml(stream)
+  end
+
+  def check_sanitization(input, htmloutput, xhtmloutput, rexmloutput)
+    assert_equal htmloutput, do_sanitize_xhtml(input)
+  end
+  
+  def rexml_doc(string)
+    REXML::Document.new(
+      "<div xmlns='http://www.w3.org/1999/xhtml'>#{string}</div>")
+  end
+  
+  def my_rex(string)
+    sanitize_rexml(rexml_doc(string.to_utf8)).gsub(/\A<div xmlns="http:\/\/www.w3.org\/1999\/xhtml">(.*)<\/div>\Z/m, '\1')
+  end
+
+  def test_sanitize_named_entities
+    input = '<p>Greek &phis; &phi;, double-struck &Aopf;, numeric &#x1D538; &#8279;, uppercase &TRADE; &LT;</p>'
+    output = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric \360\235\224\270 \342\201\227, uppercase \342\204\242 &lt;</p>"
+    output2 = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric &#x1D538; &#8279;, uppercase \342\204\242 &lt;</p>"
+    assert_equal(output, sanitize_xhtml(input))
+    assert_equal(output, sanitize_html(input))
+    assert_equal(output, my_rex(input))
+    assert_equal(output2, input.to_utf8)
+  end
+  
+  def test_sanitize_malformed_utf8
+    input = "<p>\357elephant &AMP; \302ivory</p>"
+    output = "<p>\357\277\275elephant &amp; \357\277\275ivory</p>"
+    check_sanitization(input, output, output, output)
+  end    
+
+  Sanitizer::ALLOWED_ELEMENTS.each do |tag_name|
     define_method "test_should_allow_#{tag_name}_tag" do
-      assert_equal "<#{tag_name} title=\"1\">foo &lt;bad>bar&lt;/bad> baz</#{tag_name}>",
-        sanitize_html("<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>")
+      input       = "<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>"
+      htmloutput  = "<#{tag_name.downcase} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name.downcase}>"
+      xhtmloutput = "<#{tag_name} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>"
+      rexmloutput = xhtmloutput
+      
+      if %w[caption colgroup optgroup option tbody td tfoot th thead tr].include?(tag_name)
+        htmloutput = "foo &lt;bad&gt;bar&lt;/bad&gt; baz"
+        xhtmloutput = htmloutput
+      elsif tag_name == 'col'
+        htmloutput = "foo &lt;bad&gt;bar&lt;/bad&gt; baz"
+        xhtmloutput = htmloutput
+        rexmloutput = "<col title='1' />"
+      elsif tag_name == 'table'
+        htmloutput = "foo &lt;bad&gt;bar&lt;/bad&gt;baz<table title='1'> </table>"
+        xhtmloutput = htmloutput
+      elsif tag_name == 'image'
+        htmloutput = "<img title='1'/>foo &lt;bad&gt;bar&lt;/bad&gt; baz"
+        xhtmloutput = htmloutput
+        rexmloutput = "<image title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</image>"
+      elsif VOID_ELEMENTS.include?(tag_name)
+        htmloutput = "<#{tag_name} title='1'/>foo &lt;bad&gt;bar&lt;/bad&gt; baz"
+        xhtmloutput = htmloutput
+        htmloutput += '<br/>' if tag_name == 'br'
+        rexmloutput =  "<#{tag_name} title='1' />"
+      end
+      check_sanitization(input, xhtmloutput, xhtmloutput, rexmloutput)
     end
   end
 
-  Sanitize::ALLOWED_ELEMENTS.each do |tag_name|
+  Sanitizer::ALLOWED_ELEMENTS.each do |tag_name|
     define_method "test_should_forbid_#{tag_name.upcase}_tag" do
-      assert_equal "&lt;#{tag_name.upcase} title=\"1\">foo &lt;bad>bar&lt;/bad> baz&lt;/#{tag_name.upcase}>",
-        sanitize_html("<#{tag_name.upcase} title='1'>foo <bad>bar</bad> baz</#{tag_name.upcase}>")
+      input = "<#{tag_name.upcase} title='1'>foo <bad>bar</bad> baz</#{tag_name.upcase}>"
+      output = "&lt;#{tag_name.upcase} title=\"1\"&gt;foo &lt;bad&gt;bar&lt;/bad&gt; baz&lt;/#{tag_name.upcase}&gt;"
+      xhtmloutput = "&lt;#{tag_name.upcase} title='1'&gt;foo &lt;bad&gt;bar&lt;/bad&gt; baz&lt;/#{tag_name.upcase}&gt;"
+      check_sanitization(input, output, xhtmloutput, output)
     end
   end
 
-  Sanitize::ALLOWED_ATTRIBUTES.each do |attribute_name|
-    if attribute_name != 'style'
-      define_method "test_should_allow_#{attribute_name}_attribute" do
-        assert_equal "<p #{attribute_name}=\"foo\">foo &lt;bad>bar&lt;/bad> baz</p>",
-          sanitize_html("<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>")
+  Sanitizer::ALLOWED_ATTRIBUTES.each do |attribute_name|
+    next if attribute_name == 'style' || attribute_name.include?(':')
+    define_method "test_should_allow_#{attribute_name}_attribute" do
+      input = "<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>"
+      output = "<p #{attribute_name}='foo'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
+      htmloutput = "<p #{attribute_name.downcase}='foo'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
+      check_sanitization(input, output, output, output)
+    end
+  end
+
+  Sanitizer::ALLOWED_ATTRIBUTES.each do |attribute_name|
+    define_method "test_should_forbid_#{attribute_name.upcase}_attribute" do
+      input = "<p #{attribute_name.upcase}='display: none;'>foo <bad>bar</bad> baz</p>"
+      output =  "<p>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
+      check_sanitization(input, output, output, output)
+    end
+  end
+
+  Sanitizer::ALLOWED_PROTOCOLS.each do |protocol|
+    define_method "test_should_allow_#{protocol}_uris" do
+      input = %(<a href="#{protocol}">foo</a>)
+      output = "<a href='#{protocol}'>foo</a>"
+      check_sanitization(input, output, output, output)
+    end
+  end
+
+  Sanitizer::ALLOWED_PROTOCOLS.each do |protocol|
+    define_method "test_should_allow_uppercase_#{protocol}_uris" do
+      input = %(<a href="#{protocol.upcase}">foo</a>)
+      output = "<a href='#{protocol.upcase}'>foo</a>"
+      check_sanitization(input, output, output, output)
+    end
+  end
+
+  Sanitizer::SVG_ALLOW_LOCAL_HREF.each do |tag_name|
+    next unless Sanitizer::ALLOWED_ELEMENTS.include?(tag_name)
+    define_method "test_#{tag_name}_should_allow_local_href_with_ns_decl" do
+      input = %(<#{tag_name} xlink:href="#foo" xmlns:xlink='http://www.w3.org/1999/xlink'/>)
+      output = "<#{tag_name.downcase} xlink:href='#foo' xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      xhtmloutput = "<#{tag_name} xlink:href='#foo' xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      check_sanitization(input, xhtmloutput, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_allow_local_href_with_newline_and_ns_decl" do
+      input = %(<#{tag_name} xlink:href="\n#foo" xmlns:xlink='http://www.w3.org/1999/xlink'/>)
+      output = "<#{tag_name.downcase} xlink:href='\n#foo' xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      xhtmloutput = "<#{tag_name} xlink:href='\n#foo' xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      check_sanitization(input, xhtmloutput, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_forbid_local_href_without_ns_decl" do
+      input = %(<#{tag_name} xlink:href="#foo"/>)
+      output = "&lt;#{tag_name.downcase} xlink:href='#foo'/>"
+      xhtmloutput = "&lt;#{tag_name} xlink:href=&#39;#foo&#39;&gt;&lt;/#{tag_name}&gt;"
+      check_sanitization(input, xhtmloutput, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_forbid_local_href_with_newline_without_ns_decl" do
+      input = %(<#{tag_name} xlink:href="\n#foo"/>)
+      output = "&lt;#{tag_name.downcase} xlink:href='\n#foo'/>"
+      xhtmloutput = "&lt;#{tag_name} xlink:href=&#39;\n#foo&#39;&gt;&lt;/#{tag_name}&gt;"
+      check_sanitization(input, xhtmloutput, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_forbid_nonlocal_href_with_ns_decl" do
+      input = %(<#{tag_name} xlink:href="http://bad.com/foo" xmlns:xlink='http://www.w3.org/1999/xlink'/>)
+      output = "<#{tag_name.downcase} xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      xhtmloutput = "<#{tag_name} xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      check_sanitization(input, xhtmloutput, xhtmloutput, xhtmloutput)
+    end
+
+    define_method "test_#{tag_name}_should_forbid_nonlocal_href_with_newline_and_ns_decl" do
+      input = %(<#{tag_name} xlink:href="\nhttp://bad.com/foo" xmlns:xlink='http://www.w3.org/1999/xlink'/>)
+      output = "<#{tag_name.downcase} xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      xhtmloutput = "<#{tag_name} xmlns:xlink='http://www.w3.org/1999/xlink'/>"
+      check_sanitization(input, xhtmloutput, xhtmloutput, xhtmloutput)
+    end
+  end
+
+  def test_should_handle_astral_plane_characters
+    input = "<p>&#x1d4b5; &#x1d538;</p>"
+    output = "<p>\360\235\222\265 \360\235\224\270</p>"
+    check_sanitization(input, output, output, output)
+
+    input = "<p><tspan>\360\235\224\270</tspan> a</p>"
+    output = "<p><tspan>\360\235\224\270</tspan> a</p>"
+    check_sanitization(input, output, output, output)
+  end
+  
+    JSON::parse(open(File.expand_path(File.join(File.dirname(__FILE__), '/../sanitizer.dat'))).read).each do |test|
+      define_method "test_#{test['name']}" do
+        check_sanitization(
+          test['input'],
+          test['output'],
+          test['xhtml'] || test['output'],
+          test['rexml'] || test['output']
+        )
       end
     end
-  end
-
-  Sanitize::ALLOWED_ATTRIBUTES.each do |attribute_name|
-    define_method "test_should_forbid_#{attribute_name.upcase}_attribute" do
-      assert_equal "<p>foo &lt;bad>bar&lt;/bad> baz</p>",
-        sanitize_html("<p #{attribute_name.upcase}='display: none;'>foo <bad>bar</bad> baz</p>")
-    end
-  end
-
-  Sanitize::ALLOWED_PROTOCOLS.each do |protocol|
-    define_method "test_should_allow_#{protocol}_uris" do
-      assert_equal "<a href=\"#{protocol}\">foo</a>",
-        sanitize_html(%(<a href="#{protocol}">foo</a>))
-    end
-  end
-
-  Sanitize::ALLOWED_PROTOCOLS.each do |protocol|
-    define_method "test_should_allow_uppercase_#{protocol}_uris" do
-      assert_equal "<a href=\"#{protocol.upcase}\">foo</a>",
-        sanitize_html(%(<a href="#{protocol.upcase}">foo</a>))
-    end
-  end
-
-  def test_should_allow_anchors
-    assert_equal "<a href=\"foo\">&lt;script>baz&lt;/script></a>",
-     sanitize_html("<a href='foo' onclick='bar'><script>baz</script></a>")
-  end
-
-  # RFC 3986, sec 4.2
-  def test_allow_colons_in_path_component
-    assert_equal "<a href=\"./this:that\">foo</a>",
-      sanitize_html("<a href=\"./this:that\">foo</a>")
-  end
-
-  %w(src width height alt).each do |img_attr|
-    define_method "test_should_allow_image_#{img_attr}_attribute" do
-      assert_equal "<img #{img_attr}=\"foo\" />",
-        sanitize_html("<img #{img_attr}='foo' onclick='bar' />")
-    end
-  end
-
-  def test_should_handle_non_html
-    assert_equal 'abc',  sanitize_html("abc")
-  end
-
-  def test_should_handle_blank_text
-    assert_equal '', sanitize_html('')
-  end
-
-  [%w(img src), %w(a href)].each do |(tag, attr)|
-    define_method "test_should_strip_#{attr}_attribute_in_#{tag}_with_bad_protocols" do
-      assert_equal %(<#{tag} title="1">boo</#{tag}>), sanitize_html(%(<#{tag} #{attr}="javascript:XSS" title="1">boo</#{tag}>))
-    end
-  end
-
-  [%w(img src), %w(a href)].each do |(tag, attr)|
-    define_method "test_should_strip_#{attr}_attribute_in_#{tag}_with_bad_protocols_and_whitespace" do
-      assert_equal %(<#{tag} title="1">boo</#{tag}>), sanitize_html(%(<#{tag} #{attr}=" javascript:XSS" title="1">boo</#{tag}>))
-    end
-  end
-
-  [%(<img src="javascript:alert('XSS');" />), 
-   %(<img src=javascript:alert('XSS') />), 
-   %(<img src="JaVaScRiPt:alert('XSS')" />), 
-   %(<img src='javascript:alert(&quot;XSS&quot;)' />),
-   %(<img src='javascript:alert(String.fromCharCode(88,83,83))' />),
-   %(<img src='&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;' />),
-   %(<img src='&#0000106;&#0000097;&#0000118;&#0000097;&#0000115;&#0000099;&#0000114;&#0000105;&#0000112;&#0000116;&#0000058;&#0000097;&#0000108;&#0000101;&#0000114;&#0000116;&#0000040;&#0000039;&#0000088;&#0000083;&#0000083;&#0000039;&#0000041' />),
-   %(<img src='&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x3A;&#x61;&#x6C;&#x65;&#x72;&#x74;&#x28;&#x27;&#x58;&#x53;&#x53;&#x27;&#x29' />),
-   %(<img src="jav\tascript:alert('XSS');" />),
-   %(<img src="jav&#x09;ascript:alert('XSS');" />),
-   %(<img src="jav&#x0A;ascript:alert('XSS');" />),
-   %(<img src="jav&#x0D;ascript:alert('XSS');" />),
-   %(<img src=" &#14;  javascript:alert('XSS');" />),
-   %(<img src="&#x20;javascript:alert('XSS');" />),
-   %(<img src="&#xA0;javascript:alert('XSS');" />)].each_with_index do |img_hack, i|
-    define_method "test_should_not_fall_for_xss_image_hack_#{i}" do
-      assert_equal "<img />", sanitize_html(img_hack)
-    end
-  end
-
-  def test_should_sanitize_tag_broken_up_by_null
-    assert_equal "&lt;scr>alert(\"XSS\")&lt;/scr>", sanitize_html(%(<scr\0ipt>alert(\"XSS\")</scr\0ipt>))
-  end
-  
-  def test_should_sanitize_invalid_script_tag
-    assert_equal "&lt;script />&lt;/script>", sanitize_html(%(<script/XSS SRC="http://ha.ckers.org/xss.js"></script>))
-  end
-  
-  def test_should_sanitize_script_tag_with_multiple_open_brackets
-    assert_equal "&lt;&lt;script>alert(\"XSS\");//&lt;&lt;/script>", sanitize_html(%(<<script>alert("XSS");//<</script>))
-    assert_equal %(&lt;iframe src="http:" />&lt;), sanitize_html(%(<iframe src=http://ha.ckers.org/scriptlet.html\n<))
-  end
-  
-  def test_should_sanitize_unclosed_script
-    assert_equal "&lt;script src=\"http:\" /><b>", sanitize_html(%(<script src=http://ha.ckers.org/xss.js?<b>))
-  end
-  
-  def test_should_sanitize_half_open_scripts
-    assert_equal  "<img>", sanitize_html(%(<img src="javascript:alert('XSS')"))
-  end
-  
-  def test_should_not_fall_for_ridiculous_hack
-    img_hack = %(<img\nsrc\n=\n"\nj\na\nv\na\ns\nc\nr\ni\np\nt\n:\na\nl\ne\nr\nt\n(\n'\nX\nS\nS\n'\n)\n"\n />)
-    assert_equal "<img />", sanitize_html(img_hack)
-  end
-
-  def test_platypus
-    assert_equal %(<a href=\"http://www.ragingplatypus.com/\" style=\"display: block; width: 100%; height: 100%; background-color: black; background-image: ; background-x: center; background-y: center;\">never trust your upstream platypus</a>),
-       sanitize_html(%(<a href="http://www.ragingplatypus.com/" style="display:block; position:absolute; left:0; top:0; width:100%; height:100%; z-index:1; background-color:black; background-image:url(http://www.ragingplatypus.com/i/cam-full.jpg); background-x:center; background-y:center; background-repeat:repeat;">never trust your upstream platypus</a>))
-  end
-
-  def test_xul
-    assert_equal %(<p style="">fubar</p>),
-     sanitize_html(%(<p style="-moz-binding:url('http://ha.ckers.org/xssmoz.xml#xss')">fubar</p>))
-  end
-
-  def test_input_image
-    assert_equal %(<input type="image" />),
-      sanitize_html(%(<input type="image" src="javascript:alert('XSS');" />))
-  end
-
-  def test_non_alpha_non_digit
-    assert_equal "&lt;script />&lt;/script>",
-      sanitize_html(%(<script/XSS src="http://ha.ckers.org/xss.js"></script>))
-    assert_equal "<a>foo</a>",
-      sanitize_html('<a onclick!#$%&()*~+-_.,:;?@[/|\]^`=alert("XSS")>foo</a>')
-    assert_equal "<img />",
-      sanitize_html('<img/src="http://ha.ckers.org/xss.js"/>')
-  end
-
-  def test_img_dynsrc_lowsrc
-     assert_equal "<img />",
-       sanitize_html(%(<img dynsrc="javascript:alert('XSS')" />))
-     assert_equal "<img />",
-       sanitize_html(%(<img lowsrc="javascript:alert('XSS')" />))
-  end
-
-  def test_div_background_image_unicode_encoded
-    assert_equal '<div style="">foo</div>',
-      sanitize_html(%(<div style="background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072\0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029'\0029">foo</div>))
-  end
-
-  def test_div_expression
-    assert_equal '<div style="">foo</div>',
-      sanitize_html(%(<div style="width: expression(alert('XSS'));">foo</div>))
-  end
-
-  def test_img_vbscript
-     assert_equal '<img />',
-       sanitize_html(%(<img src='vbscript:msgbox("XSS")' />))
-  end
 
 end
