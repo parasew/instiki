@@ -270,7 +270,7 @@ class WikiController < ApplicationController
       prev_content = ''
       filter_spam(the_content)
       raise Instiki::ValidationError.new('Your name cannot contain a "."') if author_name.include? '.'
-      cookies['author'] = { :value => author_name, :expires => Time.utc(2030) }
+      cookies['author'] = { :value => author_name.dup.as_bytes, :expires => Time.utc(2030) }
       if @page
         new_name = params['new_name'] ? params['new_name'].purify : @page_name
         prev_content = @page.current_revision.content

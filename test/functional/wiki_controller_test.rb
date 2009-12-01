@@ -653,6 +653,18 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'AuthorOfNewPage', new_page.author
   end
 
+  def test_save_astral_plane_characters
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Double-struck A: \xF0\x9D\x94\xB8", 
+      'author' => "\xF0\x9D\x94\xB8\xC3\xBCthorOfNewPage"
+    
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
+    assert_match @eternity, r.headers["Set-Cookie"][0]
+    new_page = @wiki.read_page('wiki1', 'NewPage')
+    assert_equal "Double-struck A: \360\235\224\270", new_page.content
+    assert_equal "\360\235\224\270\303\274thorOfNewPage", new_page.author
+    assert_equal "\360\235\224\270\303\274thorOfNewPage", r.cookies['author']
+  end
+
   def test_save_not_utf8
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Cont\000ents of a new page\r\n\000", 
       'author' => 'AuthorOfNewPage'
