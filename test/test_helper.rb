@@ -43,13 +43,13 @@ class Test::Unit::TestCase
       (1..30).each do |i|
         @wiki.write_page('wiki1', "page#{i}", "Test page #{i}\ncategory: test", 
                          Time.local(1976, 10, i, 12, 00, 00), Author.new('Dema', '127.0.0.2'),
-                         test_renderer)
+                         x_test_renderer)
       end
     end
     @web = Web.find(@web.id)
   end
 
-  def test_renderer(revision = nil)
+  def x_test_renderer(revision = nil)
     PageRenderer.setup_url_generator(StubUrlGenerator.new)
     PageRenderer.new(revision)
   end

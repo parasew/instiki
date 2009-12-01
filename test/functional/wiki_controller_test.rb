@@ -55,7 +55,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_authors
     @wiki.write_page('wiki1', 'BreakSortingOrder',
         "This page breaks the accidentally correct sorting order of authors",
-        Time.now, Author.new('BreakingTheOrder', '127.0.0.2'), test_renderer)
+        Time.now, Author.new('BreakingTheOrder', '127.0.0.2'), x_test_renderer)
 
     r = process('authors', 'web' => 'wiki1')
 
@@ -106,7 +106,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_edit_page_with_special_symbols
     @wiki.write_page('wiki1', 'With : Special /> symbols', 
          'This page has special symbols in the name', Time.now, Author.new('Special', '127.0.0.3'), 
-         test_renderer)
+         x_test_renderer)
     
     r = process 'edit', 'web' => 'wiki1', 'id' => 'With : Special /> symbols'
     assert_response(:success)
@@ -118,7 +118,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_export_xhtml
     @request.accept = 'application/xhtml+xml'
     # rollback homepage to a version that is easier to match
-    @home.rollback(0, Time.now, 'Rick', test_renderer)
+    @home.rollback(0, Time.now, 'Rick', x_test_renderer)
     r = process 'export_html', 'web' => 'wiki1'
     
     assert_response(:success, bypass_body_parsing = true)
@@ -149,7 +149,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_export_html
     @request.accept = 'tex/html'
     # rollback homepage to a version that is easier to match
-    @home.rollback(0, Time.now, 'Rick', test_renderer)
+    @home.rollback(0, Time.now, 'Rick', x_test_renderer)
     r = process 'export_html', 'web' => 'wiki1'
     
     assert_response(:success, bypass_body_parsing = true)
@@ -423,7 +423,7 @@ class WikiControllerTest < ActionController::TestCase
     page2 = @wiki.write_page('wiki1', 'Page2',
         "Page2 contents.\n" +
         "category: categorized", 
-        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
       
     r = process('recently_revised', 'web' => 'wiki1')
     assert_response(:success)
@@ -508,7 +508,7 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_atom_with_headlines
     @title_with_spaces = @wiki.write_page('wiki1', 'Title With Spaces', 
-      'About spaces', 1.hour.ago, Author.new('TreeHugger', '127.0.0.2'), test_renderer)
+      'About spaces', 1.hour.ago, Author.new('TreeHugger', '127.0.0.2'), x_test_renderer)
     
     @request.host = 'localhost'
     @request.port = 8080
@@ -622,7 +622,7 @@ class WikiControllerTest < ActionController::TestCase
     # Since we're declaring <title> to be of type="html", the content is unescaped once before interpreting.
     # Evidently, the desired behaviour is that the final result be HTML-encoded. Hence the double-encoding here.
     @wiki.write_page('wiki1', 'Title&With&Ampersands', 
-      'About spaces', 1.hour.ago, Author.new('NitPicker', '127.0.0.3'), test_renderer)
+      'About spaces', 1.hour.ago, Author.new('NitPicker', '127.0.0.3'), x_test_renderer)
 
     r = process 'atom_with_headlines', 'web' => 'wiki1'
 
@@ -633,7 +633,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_atom_timestamp    
     new_page = @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime', 
       'Created on 1 Jan 1970 at 0:00:00 Z', Time.at(0), Author.new('NitPicker', '127.0.0.3'),
-      test_renderer)
+      x_test_renderer)
 
     r = process 'atom_with_headlines', 'web' => 'wiki1'
     assert_tag :tag =>'published',
@@ -921,7 +921,7 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_show_page_with_multiple_revisions
     @wiki.write_page('wiki1', 'HomePage', 'Second revision of the HomePage end', Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
@@ -931,7 +931,7 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_recursive_include
     @wiki.write_page('wiki1', 'HomePage', 'Self-include: [[!include HomePage]]', Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
@@ -941,9 +941,9 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_recursive_include_II
     @wiki.write_page('wiki1', 'Foo', "extra fun [[!include HomePage]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
     @wiki.write_page('wiki1', 'HomePage', "Recursive-include:\n\n[[!include Foo]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
@@ -953,11 +953,11 @@ class WikiControllerTest < ActionController::TestCase
   
   def test_recursive_include_III
     @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[!include HomePage]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
     @wiki.write_page('wiki1', 'Foo', "[[!include Bar]]\n\n[[!include Bar]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
     @wiki.write_page('wiki1', 'HomePage', "Recursive-include:\n\n[[!include Foo]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
@@ -967,11 +967,11 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_nonrecursive_include
     @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[HomePage]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
     @wiki.write_page('wiki1', 'Foo', "[[!include Bar]]\n\n[[!include Bar]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
     @wiki.write_page('wiki1', 'HomePage', "Nonrecursive-include:\n\n[[!include Foo]]", Time.now, 
-        Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
@@ -1258,7 +1258,7 @@ HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWa
   def test_tex_with_blackboard_digits
     @wiki.write_page('wiki1', 'Page2',
         "Page2 contents $\\mathbb{01234}$.\n",
-        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), test_renderer)
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
     r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
     assert_response(:success)
     

@@ -35,7 +35,9 @@ class CacheStoreSettingTest < ActiveSupport::TestCase
 
   def test_mem_cache_fragment_cache_store_with_given_mem_cache_like_object
     MemCache.expects(:new).never
-    store = ActiveSupport::Cache.lookup_store :mem_cache_store, stub("memcache", :get => true)
+    memcache = Object.new
+    def memcache.get() true end
+    store = ActiveSupport::Cache.lookup_store :mem_cache_store, memcache
     assert_kind_of(ActiveSupport::Cache::MemCacheStore, store)
   end
 
@@ -323,5 +325,24 @@ uses_memcached 'memcached backed store' do
     end
 
     include CacheStoreBehavior
+  end
+end
+
+class CacheStoreLoggerTest < ActiveSupport::TestCase
+  def setup
+    @cache = ActiveSupport::Cache.lookup_store(:memory_store)
+
+    @buffer = StringIO.new
+    @cache.logger = Logger.new(@buffer)
+  end
+
+  def test_logging
+    @cache.fetch('foo') { 'bar' }
+    assert @buffer.string.present?
+  end
+
+  def test_mute_logging
+    @cache.mute { @cache.fetch('foo') { 'bar' } }
+    assert @buffer.string.blank?
   end
 end
