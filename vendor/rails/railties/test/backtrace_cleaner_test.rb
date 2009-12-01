@@ -18,12 +18,12 @@ if defined? Test::Unit::Util::BacktraceFilter
     test "test with backtrace should use the rails backtrace cleaner to clean" do
       Rails.stubs(:backtrace_cleaner).returns(stub(:clean))
       Rails.backtrace_cleaner.expects(:clean).with(@backtrace, nil)
-      @test.filter_backtrace(@backtrace)
+      @test.send(:filter_backtrace, @backtrace)
     end
     
     test "filter backtrace should have the same arity as Test::Unit::Util::BacktraceFilter" do
       assert_nothing_raised do
-        @test.filter_backtrace(@backtrace, '/opt/local/lib')
+        @test.send(:filter_backtrace, @backtrace, '/opt/local/lib')
       end
     end
   end
@@ -37,7 +37,7 @@ class BacktraceCleanerVendorGemTest < ActiveSupport::TestCase
   end
 
   test "should format installed gems correctly" do
-    @backtrace = [ "#{Gem.default_dir}/gems/nosuchgem-1.2.3/lib/foo.rb" ]
+    @backtrace = [ "#{Gem.path[0]}/gems/nosuchgem-1.2.3/lib/foo.rb" ]
     @result = @cleaner.clean(@backtrace)
     assert_equal "nosuchgem (1.2.3) lib/foo.rb", @result[0]
   end

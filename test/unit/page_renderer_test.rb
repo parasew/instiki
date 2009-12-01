@@ -15,14 +15,14 @@ class PageRendererTest < ActiveSupport::TestCase
   
   def test_wiki_word_linking
     @web.add_page('SecondPage', 'Yo, yo. Have you EverBeenHated', 
-                   Time.now, 'DavidHeinemeierHansson', test_renderer)
+                   Time.now, 'DavidHeinemeierHansson', x_test_renderer)
     
     assert_equal("<p>Yo, yo. Have you <span class='newWikiWord'>Ever Been Hated" + 
         "<a href='../show/EverBeenHated'>?</a></span></p>", 
         rendered_content(@web.page("SecondPage")))
     
     @web.add_page('EverBeenHated', 'Yo, yo. Have you EverBeenHated', Time.now, 
-                  'DavidHeinemeierHansson', test_renderer)
+                  'DavidHeinemeierHansson', x_test_renderer)
     assert_equal("<p>Yo, yo. Have you <a class='existingWikiWord' " +
         "href='../show/EverBeenHated'>Ever Been Hated</a></p>", 
         rendered_content(@web.page("SecondPage")))
@@ -30,18 +30,18 @@ class PageRendererTest < ActiveSupport::TestCase
   
   def test_wiki_words
     assert_equal %w( HisWay MyWay SmartEngine SmartEngineGUI ThatWay ), 
-        test_renderer(@revision).wiki_words.sort
+        x_test_renderer(@revision).wiki_words.sort
     
-    @wiki.write_page('wiki1', 'NoWikiWord', 'hey you!', Time.now, 'Me', test_renderer)
-    assert_equal [], test_renderer(@wiki.read_page('wiki1', 'NoWikiWord').revisions.last).wiki_words
+    @wiki.write_page('wiki1', 'NoWikiWord', 'hey you!', Time.now, 'Me', x_test_renderer)
+    assert_equal [], x_test_renderer(@wiki.read_page('wiki1', 'NoWikiWord').revisions.last).wiki_words
   end
   
   def test_existing_pages
-    assert_equal %w( MyWay SmartEngine ThatWay ), test_renderer(@revision).existing_pages.sort
+    assert_equal %w( MyWay SmartEngine ThatWay ), x_test_renderer(@revision).existing_pages.sort
   end
   
   def test_unexisting_pages
-    assert_equal %w( HisWay SmartEngineGUI ), test_renderer(@revision).unexisting_pages.sort
+    assert_equal %w( HisWay SmartEngineGUI ), x_test_renderer(@revision).unexisting_pages.sort
   end
 
   def test_content_with_wiki_links
@@ -56,7 +56,7 @@ class PageRendererTest < ActiveSupport::TestCase
         "<a class='existingWikiWord' href='../show/SmartEngine'>Smart Engine</a> in that " +
         "<span class='newWikiWord'>Smart Engine GUI" +
         "<a href='../show/SmartEngineGUI'>?</a></span></p>", 
-        test_renderer(@revision).display_content
+        x_test_renderer(@revision).display_content
   end
 
   def test_markdown
@@ -349,7 +349,7 @@ END_THM
   
     assert_equal "<tt>hello</tt> that <span class='newWikiWord'>Smart Engine GUI" +
         "<a href='../show/SmartEngineGUI'>?</a></span>\n\n", 
-        test_renderer(@revision).display_content
+        x_test_renderer(@revision).display_content
   end
   
 #  def test_content_with_auto_links
@@ -555,7 +555,7 @@ END_THM
         %{<a class='existingWikiWord' href='MyWay.html'>My Way</a> OverThere \342\200\223 see } +
         "<a class='existingWikiWord' href='SmartEngine.html'>Smart Engine</a> in that " +
         "<span class='newWikiWord'>Smart Engine GUI</span></p>", 
-        test_renderer(@revision).display_content_for_export
+        x_test_renderer(@revision).display_content_for_export
   end
   
   def test_double_replacing
@@ -564,21 +564,21 @@ END_THM
         "<a href='../show/VersionHistory'>?</a></span></p>\n\n<p>cry " +
         "<span class='newWikiWord'>Version History<a href='../show/VersionHistory'>?</a>" +
         '</span></p>', 
-        test_renderer(@revision).display_content
+        x_test_renderer(@revision).display_content
   
     @revision.content = "f\r\nVersionHistory\r\n\r\ncry VersionHistory"
     assert_equal "<p>f <span class='newWikiWord'>Version History" +
         "<a href='../show/VersionHistory'>?</a></span></p>\n\n<p>cry " +
         "<span class='newWikiWord'>Version History<a href='../show/VersionHistory'>?</a>" +
         "</span></p>", 
-        test_renderer(@revision).display_content
+        x_test_renderer(@revision).display_content
   end  
   
   def test_difficult_wiki_words
     @revision.content = "[[It's just awesome GUI!]]"
     assert_equal "<p><span class='newWikiWord'>It&#39;s just awesome GUI!" +
         "<a href='../show/It%27s+just+awesome+GUI%21'>?</a></span></p>", 
-        test_renderer(@revision).display_content
+        x_test_renderer(@revision).display_content
   end
   
   def test_revisions_diff
@@ -589,7 +589,7 @@ END_THM
 
     @page.reload
     assert_equal "<p><span> What a<del class='diffmod'> blue</del><ins class='diffmod'> red" +
-        "</ins> and lovely morning<ins class='diffins'> today</ins></span></p>", test_renderer(@page.revisions.last).display_diff
+        "</ins> and lovely morning<ins class='diffins'> today</ins></span></p>", x_test_renderer(@page.revisions.last).display_diff
   end
   
   def test_nowiki_sanitization
@@ -687,7 +687,7 @@ END_THM
   
   def test_references_creation_links
     new_page = @web.add_page('NewPage', 'HomePage NewPage', 
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
         
     references = new_page.wiki_references(true)
     assert_equal 2, references.size
@@ -699,7 +699,7 @@ END_THM
 
   def test_references_creation_includes
     new_page = @web.add_page('NewPage', '[[!include IncludedPage]]',
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
         
     references = new_page.wiki_references(true)
     assert_equal 1, references.size
@@ -709,7 +709,7 @@ END_THM
 
   def test_references_creation_categories
     new_page = @web.add_page('NewPage', "Foo\ncategory: NewPageCategory",
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 
     references = new_page.wiki_references(true)
     assert_equal 1, references.size
@@ -719,7 +719,7 @@ END_THM
 
   def test_references_creation_sanitized_categories
     new_page = @web.add_page('NewPage', "Foo\ncategory: <script>alert('XSS');</script>",
-        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', test_renderer)
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 
     references = new_page.wiki_references(true)
     assert_equal 1, references.size
@@ -728,49 +728,49 @@ END_THM
   end
   
   def test_rendering_included_page_under_different_modes
-    included = @web.add_page('Included', 'link to HomePage', Time.now, 'AnAuthor', test_renderer)
-    main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', test_renderer)
+    included = @web.add_page('Included', 'link to HomePage', Time.now, 'AnAuthor', x_test_renderer)
+    main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', x_test_renderer)
     
     assert_equal "<p>link to <a class='existingWikiWord' href='../show/HomePage'>Home Page</a></p>", 
-                 test_renderer(main).display_content
+                 x_test_renderer(main).display_content
     assert_equal "<p>link to <a class='existingWikiWord' href='../published/HomePage'>Home Page</a></p>",
-                 test_renderer(main).display_published
+                 x_test_renderer(main).display_published
     assert_equal "<p>link to <a class='existingWikiWord' href='HomePage.html'>Home Page</a></p>", 
-                 test_renderer(main).display_content_for_export
+                 x_test_renderer(main).display_content_for_export
   end
 
   def test_rendering_included_page_backslashes_in_equations
-    included = @web.add_page('Included', '\\\\ $\begin{matrix} a \\\\ b\end{matrix}$', Time.now, 'AnAuthor', test_renderer)
-    main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', test_renderer)
+    included = @web.add_page('Included', '\\\\ $\begin{matrix} a \\\\ b\end{matrix}$', Time.now, 'AnAuthor', x_test_renderer)
+    main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', x_test_renderer)
     
     assert_equal "<p>\\ <math class='maruku-mathml' display='inline' " +
                  "xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mtable rowspacing='0.5ex'>" +
                  "<mtr><mtd><mi>a</mi></mtd></mtr> <mtr><mtd><mi>b</mi></mtd></mtr></mtable>" +
                  "</mrow></math></p>", 
-                 test_renderer(main).display_content
+                 x_test_renderer(main).display_content
   end
 
   private
 
   def add_sample_pages
     @in_love = @web.add_page('EverBeenInLove', 'Who am I me', 
-        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson', test_renderer)
+        Time.local(2004, 4, 4, 16, 50), 'DavidHeinemeierHansson', x_test_renderer)
     @hated = @web.add_page('EverBeenHated', 'I am me EverBeenHated', 
-        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson', test_renderer)
+        Time.local(2004, 4, 4, 16, 51), 'DavidHeinemeierHansson', x_test_renderer)
   end
 
   def assert_markup_parsed_as(expected_output, input)
     revision = Revision.new(:page => @page, :content => input, :author => Author.new('AnAuthor'))
-    assert_equal expected_output, test_renderer(revision).display_content(true), 'Rendering output not as expected'
+    assert_equal expected_output, x_test_renderer(revision).display_content(true), 'Rendering output not as expected'
   end
 
   def assert_match_markup_parsed_as(expected_output, input)
     revision = Revision.new(:page => @page, :content => input, :author => Author.new('AnAuthor'))
-    assert_match expected_output, test_renderer(revision).display_content, 'Rendering output not as expected'
+    assert_match expected_output, x_test_renderer(revision).display_content, 'Rendering output not as expected'
   end
 
   def rendered_content(page)
-    test_renderer(page.revisions.last).display_content
+    x_test_renderer(page.revisions.last).display_content
   end
   
 end

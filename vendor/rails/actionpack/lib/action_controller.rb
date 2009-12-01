@@ -37,6 +37,7 @@ begin
 rescue Gem::LoadError
   require 'action_controller/vendor/rack-1.1.pre/rack'
 end
+require 'action_controller/cgi_ext'
 
 module ActionController
   # TODO: Review explicit to see if they will automatically be handled by
@@ -74,6 +75,7 @@ module ActionController
   autoload :SessionManagement, 'action_controller/session_management'
   autoload :StatusCodes, 'action_controller/status_codes'
   autoload :Streaming, 'action_controller/streaming'
+  autoload :StringCoercion, 'action_controller/string_coercion'
   autoload :TestCase, 'action_controller/test_case'
   autoload :TestProcess, 'action_controller/test_process'
   autoload :Translation, 'action_controller/translation'

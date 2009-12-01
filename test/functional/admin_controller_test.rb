@@ -212,11 +212,11 @@ class AdminControllerTest < ActionController::TestCase
   def test_remove_orphaned_pages
     @wiki.system.update_attribute(:password, 'pswd')
     page_order = [@home, pages(:my_way), @oak, pages(:smart_engine), pages(:that_way), @liquor]
-    test_renderer(@web.page('liquor').revisions.last).display_content(true)
+    x_test_renderer(@web.page('liquor').revisions.last).display_content(true)
     orphan_page_linking_to_oak_and_redirecting_to_liquor = @wiki.write_page('wiki1', 'Pine',
         "Refers to [[Oak]] and to [[booze]].\n" +
         "category: trees", 
-        Time.now, Author.new('TreeHugger', '127.0.0.2'), test_renderer)
+        Time.now, Author.new('TreeHugger', '127.0.0.2'), x_test_renderer)
     
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
 
@@ -249,7 +249,7 @@ class AdminControllerTest < ActionController::TestCase
     orphan_page_linking_to_oak = @wiki.write_page('wiki1', 'Pine',
         "Refers to [[Oak]].\n" +
         "category: trees", 
-        Time.now, Author.new('TreeHugger', '127.0.0.2'), test_renderer)
+        Time.now, Author.new('TreeHugger', '127.0.0.2'), x_test_renderer)
 
     r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees','system_password_orphaned_in_category' => 'pswd')
 

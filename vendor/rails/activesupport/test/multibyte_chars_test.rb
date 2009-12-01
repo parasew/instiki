@@ -103,7 +103,13 @@ class MultibyteCharsUTF8BehaviourTest < Test::Unit::TestCase
 
     # NEWLINE, SPACE, EM SPACE
     @whitespace = "\n#{[32, 8195].pack('U*')}"
-    @whitespace.force_encoding(Encoding::UTF_8) if @whitespace.respond_to?(:force_encoding)
+
+    # Ruby 1.9 doesn't recognize EM SPACE as whitespace!
+    if @whitespace.respond_to?(:force_encoding)
+      @whitespace.slice!(2)
+      @whitespace.force_encoding(Encoding::UTF_8)
+    end
+
     @byte_order_mark = [65279].pack('U')
   end
 
@@ -379,6 +385,17 @@ class MultibyteCharsUTF8BehaviourTest < Test::Unit::TestCase
     assert_equal 'わちにこ', @chars.reverse
   end
 
+  def test_reverse_should_work_with_normalized_strings
+    str = 'bös'
+    reversed_str = 'söb'
+    assert_equal chars(reversed_str).normalize(:kc), chars(str).normalize(:kc).reverse
+    assert_equal chars(reversed_str).normalize(:c), chars(str).normalize(:c).reverse
+    assert_equal chars(reversed_str).normalize(:d), chars(str).normalize(:d).reverse
+    assert_equal chars(reversed_str).normalize(:kd), chars(str).normalize(:kd).reverse
+    assert_equal chars(reversed_str).decompose, chars(str).decompose.reverse
+    assert_equal chars(reversed_str).compose, chars(str).compose.reverse
+  end
+
   def test_slice_should_take_character_offsets
     assert_equal nil, ''.mb_chars.slice(0)
     assert_equal 'こ', @chars.slice(0)
@@ -391,7 +408,7 @@ class MultibyteCharsUTF8BehaviourTest < Test::Unit::TestCase
     assert_equal 'ちわ', @chars.slice(2..10)
     assert_equal '', @chars.slice(4..10)
     assert_equal 'に', @chars.slice(/に/u)
-    assert_equal 'にち', @chars.slice(/に\w/u)
+    assert_equal 'にち', @chars.slice(/に./u)
     assert_equal nil, @chars.slice(/unknown/u)
     assert_equal 'にち', @chars.slice(/(にち)/u, 1)
     assert_equal nil, @chars.slice(/(にち)/u, 2)
