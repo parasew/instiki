@@ -30,9 +30,9 @@ class String
 # returns a valid utf-8 string, purged of any subsequences of illegal bytes.
 #--
    def purify
-     text = check_ncrs
-     if text.respond_to?(:encoding)
-       text.split(//).collect{|c| c.as_bytes}.grep(UTF8_REGEX).join.as_utf8
+     text = self.dup.check_ncrs.as_utf8
+     if text.respond_to?(:force_encoding)
+       text.chars.collect{|c| c.as_bytes}.grep(UTF8_REGEX).join.as_utf8
      else
        text.split(//u).grep(UTF8_REGEX).join
      end
