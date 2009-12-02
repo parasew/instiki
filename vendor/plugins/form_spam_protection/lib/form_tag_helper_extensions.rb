@@ -11,7 +11,7 @@ module ActionView
             session[:form_keys][Digest::SHA1.hexdigest(form_key)] = [Time.now, 0]
             if session[:form_keys].length > 30
               first = session[:form_keys].values.sort { |a,b| a[0] <=> b[0] } [0]
-              session[:form_keys].delete(session[:form_keys].index(first))
+              session[:form_keys].delete(session[:form_keys].key(first))
             end
             out << domEnkode(form_key)
           end

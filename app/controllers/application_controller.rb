@@ -269,3 +269,8 @@ module Instiki
     end
   end
 end
+
+# Monkey patch, to make Hash#key work in Ruby 1.8
+class Hash
+  alias_method(:key, :index) unless method_defined?(:key)
+end
