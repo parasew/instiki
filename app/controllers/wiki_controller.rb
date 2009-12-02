@@ -438,7 +438,7 @@ class WikiController < ApplicationController
             "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL=HomePage.#{file_type}\"></head></html>"
       end
     end
-    FileUtils.rm_rf(Dir[@wiki.storage_path.join(file_prefix + '*.zip')])
+    FileUtils.rm_rf(Dir[@wiki.storage_path.join(file_prefix + '*.zip').to_s])
     FileUtils.mv(tmp_path, file_path)
     send_file file_path
   end

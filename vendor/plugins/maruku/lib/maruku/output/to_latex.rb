@@ -338,19 +338,19 @@ Otherwise, a standard `verbatim` environment is used.
 \\end{#{name}}\n"	
 	end
 	
-	SAFE_CHARS = Set.new((?a..?z).to_a + (?A..?Z).to_a)
+	SAFE_CHARS = Set.new(('a'..'z').to_a + ('A'..'Z').to_a)
 	# the ultimate escaping
 	# (is much better than using \verb)
 	def latex_escape(source)
 		s=""; 
 		
-		source.each_byte do |b| 
-			if b == ?\ 
+		source.each_char do |b| 
+			if b == '\\' 
 				s << '~'
 			elsif SAFE_CHARS.include? b
 				s << b
 			else
-				s += "\\char%d" % b 
+				s += "\\char%d" % b.ord 
 			end
 		end
 		s
