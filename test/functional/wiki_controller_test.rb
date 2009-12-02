@@ -1267,6 +1267,23 @@ HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWa
 !, r.body
   end
 
+  def test_tex_character_conversions
+    @wiki.write_page('wiki1', 'Page2',
+        "Page2 contents { & ^ <.\n",
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
+    assert_response(:success)
+    
+    assert_equal @tex_header1 + @tex_header2 + %q!\section*{Page2}
+
+Page2 contents \{ \& {\tt \symbol{94}} {\tt \symbol{60}}.
+
+
+
+\end{document}
+!, r.body
+  end
+
   def test_tex_with_blackboard_digits
     @wiki.write_page('wiki1', 'Page2',
         "Page2 contents $\\mathbb{01234}$.\n",

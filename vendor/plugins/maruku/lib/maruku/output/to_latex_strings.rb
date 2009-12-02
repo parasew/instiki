@@ -23,19 +23,19 @@
 class String
 
 	# These are TeX's special characters
-	LATEX_ADD_SLASH = [ ?{, ?}, ?$, ?&, ?#, ?_, ?%]
+	LATEX_ADD_SLASH = [ '{', '}', '$', '&', '#', '_', '%']
 
 	# These, we transform to {\tt \char<ascii code>}
-	LATEX_TO_CHARCODE = [ ?^, ?~, ?>,?<]
+	LATEX_TO_CHARCODE = [ '^', '~', '>', '<']
 
 	def escape_to_latex(s)
 		s2 = ""
-		s.each_byte do |b|
+		s.each_char do |b|
 			if LATEX_TO_CHARCODE.include? b
-				s2 += "{\\tt \\char#{b}}" 
+				s2 += "{\\tt \\symbol{#{b.ord}}}" 
 			elsif LATEX_ADD_SLASH.include? b
 				s2 << ?\\ << b
-			elsif b == ?\\
+			elsif b == '\\'
 			# there is no backslash in cmr10 fonts
 				s2 += "$\\backslash$"
 			else
