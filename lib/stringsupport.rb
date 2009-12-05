@@ -6,20 +6,30 @@ class String
 #
 # Under 1.8, this is a NOOP. Under 1.9, it sets the encoding to "ASCII-8BIT"
 #--
+if "".respond_to?(:force_encoding)
   def as_bytes
-    force_encoding("ASCII-8BIT") if self.respond_to?(:force_encoding)
+    force_encoding("ASCII-8BIT")
+  end
+else
+  def as_bytes
     self
   end
+end
 
 #++
 # A method to allow string-oriented operations in both Ruby 1.8 and Ruby 1.9
 #
 # Under 1.8, this is a NOOP. Under 1.9, it sets the encoding to "UTF-8"
 #--
+if "".respond_to?(:force_encoding)
   def as_utf8
-    force_encoding("UTF-8") if self.respond_to?(:force_encoding)
+    force_encoding("UTF-8")
+  end
+else
+  def as_utf8
     self
   end
+end
 
 #++
 # Take a string, and remove any invalid substrings, returning a valid utf-8 string.
@@ -29,14 +39,17 @@ class String
 #
 # returns a valid utf-8 string, purged of any subsequences of illegal bytes.
 #--
-   def purify
-     text = self.dup.check_ncrs.as_utf8
-     if text.respond_to?(:force_encoding)
-       text.chars.collect{|c| c.as_bytes}.grep(UTF8_REGEX).join.as_utf8
-     else
-       text.split(//u).grep(UTF8_REGEX).join
-     end
-   end
+if "".respond_to?(:force_encoding)
+  def purify
+    text = check_ncrs.as_utf8
+    text.chars.collect{|c| c.as_bytes}.grep(UTF8_REGEX).join.as_utf8
+  end
+else
+  def purify
+    text = check_ncrs
+    text.split(//u).grep(UTF8_REGEX).join
+  end
+end
 
   def check_ncrs
     text = gsub(/&#[xX]([a-fA-F0-9]+);/) { |m| [$1.hex].pack('U*').as_bytes =~ UTF8_REGEX ? m : '' }
