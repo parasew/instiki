@@ -358,7 +358,7 @@ class WikiController < ApplicationController
   end
 
   def tex
-    if @web.markup == :markdownMML or @web.markup == :markdownPNG or @web.markup == :markdown
+    if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       @tex_content = Maruku.new(@page.content).to_latex
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
@@ -366,7 +366,7 @@ class WikiController < ApplicationController
   end
 
   def s5
-    if @web.markup == :markdownMML || @web.markup == :markdownPNG || @web.markup == :markdown
+    if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       my_rendered = PageRenderer.new(@page.revisions.last)
       @s5_content = my_rendered.display_s5
       @s5_theme = my_rendered.s5_theme
