@@ -1,4 +1,5 @@
 require 'chunks/chunk'
+require 'stringsupport'
 
 # Contains all the methods for finding and replacing wiki related links.
 module WikiChunk
@@ -33,7 +34,7 @@ module WikiChunk
     end
 
     def self.apply_to(content)
-      content.gsub!( self.pattern ) do |matched_text|
+      content.as_utf8.gsub!( self.pattern ) do |matched_text|
         chunk = self.new($~, content)
         if chunk.textile_url?
           # do not substitute

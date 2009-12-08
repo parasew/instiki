@@ -190,7 +190,7 @@ class WikiContent < String
   def render!
     pre_render!
     @options[:engine].apply_to(self)
-    as_bytes
+    as_utf8
     # unmask in one go. $~[1] is the chunk id
     gsub!(MASK_RE[ACTIVE_CHUNKS]) do
       chunk = @chunks_by_id[$~[1].to_i]
@@ -202,7 +202,6 @@ class WikiContent < String
         chunk.unmask_text
       end
     end
-    as_utf8
     self.replace xhtml_sanitize(self)
   end
 
