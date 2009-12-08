@@ -41,7 +41,7 @@ end
 #--
 if "".respond_to?(:force_encoding)
   def purify
-    text = check_ncrs.as_utf8
+    text = self.dup.check_ncrs.as_utf8
     text.chars.collect{|c| c.as_bytes}.grep(UTF8_REGEX).join.as_utf8
   end
 else

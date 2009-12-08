@@ -7,6 +7,7 @@ require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
 require 'sanitizer'
+require 'stringsupport'
 
 
 # Wiki content is just a string that can process itself with a chain of
@@ -189,6 +190,7 @@ class WikiContent < String
   def render!
     pre_render!
     @options[:engine].apply_to(self)
+    as_bytes
     # unmask in one go. $~[1] is the chunk id
     gsub!(MASK_RE[ACTIVE_CHUNKS]) do
       chunk = @chunks_by_id[$~[1].to_i]
@@ -200,6 +202,7 @@ class WikiContent < String
         chunk.unmask_text
       end
     end
+    as_utf8
     self.replace xhtml_sanitize(self)
   end
 
