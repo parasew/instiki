@@ -53,8 +53,44 @@ function mactionWorkarounds() {
      });
 }
 
+function updateSize(elt) {
+   // adjust to the size of the user's browser area.
+    var parentheight = document.viewport.getHeight() - $('pageName').getHeight() 
+                               - $('editFormButtons').getHeight() - $('hidebutton').getHeight();
+    var parentwidth = Math.min( document.viewport.getWidth(), elt.parentNode.getWidth() ) - 10 ;
+    var f = $('MarkupHelp');
+    if (f.visible()) {parentwidth = parentwidth - f.getWidth()}
+    elt.writeAttribute({'cols': Math.floor(parentwidth/10), 'rows': Math.floor(parentheight/20)} );
+    elt.setStyle({Width: parentwidth, Height: parentheight});
+}
+
+function resizeableTextarea() {
+//make the textarea resize to fit available space
+  var f = $('MarkupHelp');
+  if (f) {
+    var hidebutton = new Element('input', {id:'hidebutton', type: 'button', value: 'Hide markup help'});
+    f.insert({before: hidebutton});
+  }
+  $$('textarea#content').each( function(textarea)  {
+    Event.observe(hidebutton, 'click', function(){
+      if (f.visible()) {
+        f.hide();
+        hidebutton.writeAttribute({value: 'Show markup help'});
+        updateSize(textarea)
+      } else {
+        f.show();
+        hidebutton.writeAttribute({value: 'Hide markup help'});  
+        updateSize(textarea)    
+      }
+    });
+    Event.observe(window, 'resize', function(){ updateSize(textarea) });
+    updateSize(textarea);
+   });
+}
+
 window.onload = function (){
         extractBlockquoteCitations();
         fixRunIn();
         mactionWorkarounds();
+        resizeableTextarea();
 };
