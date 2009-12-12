@@ -57,13 +57,12 @@ function updateSize(elt, w, h) {
    // adjust to the size of the user's browser area.
    // w and h are the original, unadjusted, width and height per row/column
     var parentheight = document.viewport.getHeight() - $('pageName').getHeight() 
-                 - $('editFormButtons').getHeight() - $('hidebutton').getHeight();
+                  - $('editFormButtons').getHeight() - $('hidebutton').getHeight();
     var parentwidth = $('Content').getWidth();
     var f = $('MarkupHelp');
-    if (f.visible()) {parentwidth = parentwidth - f.getWidth() - 20}
-    var newcols = Math.floor(parentwidth/w) - 1;
-    var newrows = Math.floor(parentheight/h - 3);
-    elt.writeAttribute({'cols': newcols, 'rows': newrows });
+    if (f.visible()) { parentwidth = parentwidth - f.getWidth() - 20 }
+    elt.writeAttribute({'cols': Math.floor(parentwidth/w)  - 1,
+                        'rows': Math.floor(parentheight/h) - 6 });
     elt.setStyle({Width: parentwidth, Height: parentheight});
 }
 
@@ -71,7 +70,7 @@ function resizeableTextarea() {
 //make the textarea resize to fit available space
   var f = $('MarkupHelp');
   if (f) {
-    var hidebutton = new Element('input', {id:'hidebutton', type: 'button', value: 'Hide markup help'});
+    var hidebutton = new Element('input', {id:'hidebutton', type:'button', value: 'Hide markup help'});
     f.insert({before: hidebutton});
   }
   $$('textarea#content').each( function(textarea)  {
