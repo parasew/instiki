@@ -408,6 +408,11 @@ span.wikilink-error b {
  color: #009;
 }
 
+textarea#content {
+font-size: 1em;
+line-height: 1.125;
+}
+
 merror {display:inline;font-size:1em;}
 math[display=block] {overflow:auto;}
 math { white-space: nowrap }

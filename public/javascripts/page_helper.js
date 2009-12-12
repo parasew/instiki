@@ -53,14 +53,17 @@ function mactionWorkarounds() {
      });
 }
 
-function updateSize(elt) {
+function updateSize(elt, w, h) {
    // adjust to the size of the user's browser area.
+   // w and h are the original, unadjusted, width and height per row/column
     var parentheight = document.viewport.getHeight() - $('pageName').getHeight() 
-                               - $('editFormButtons').getHeight() - $('hidebutton').getHeight();
-    var parentwidth = Math.min( document.viewport.getWidth(), elt.parentNode.getWidth() ) - 10 ;
+                 - $('editFormButtons').getHeight() - $('hidebutton').getHeight();
+    var parentwidth = $('Content').getWidth();
     var f = $('MarkupHelp');
-    if (f.visible()) {parentwidth = parentwidth - f.getWidth()}
-    elt.writeAttribute({'cols': Math.floor(parentwidth/10), 'rows': Math.floor(parentheight/20)} );
+    if (f.visible()) {parentwidth = parentwidth - f.getWidth() - 20}
+    var newcols = Math.floor(parentwidth/w) - 1;
+    var newrows = Math.floor(parentheight/h - 3);
+    elt.writeAttribute({'cols': newcols, 'rows': newrows });
     elt.setStyle({Width: parentwidth, Height: parentheight});
 }
 
@@ -72,19 +75,21 @@ function resizeableTextarea() {
     f.insert({before: hidebutton});
   }
   $$('textarea#content').each( function(textarea)  {
+    var w = textarea.getWidth()/textarea.getAttribute('cols');
+    var h = textarea.getStyle('lineHeight').replace(/(\d*)px/, "$1");
     Event.observe(hidebutton, 'click', function(){
       if (f.visible()) {
         f.hide();
         hidebutton.writeAttribute({value: 'Show markup help'});
-        updateSize(textarea)
+        updateSize(textarea, w, h)
       } else {
         f.show();
         hidebutton.writeAttribute({value: 'Hide markup help'});  
-        updateSize(textarea)    
+        updateSize(textarea, w, h)    
       }
     });
-    Event.observe(window, 'resize', function(){ updateSize(textarea) });
-    updateSize(textarea);
+    Event.observe(window, 'resize', function(){ updateSize(textarea, w, h) });
+    updateSize(textarea, w, h);
    });
 }
 
