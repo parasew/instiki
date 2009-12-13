@@ -61,8 +61,12 @@ function updateSize(elt, w, h) {
     var parentwidth = $('Content').getWidth();
     var f = $('MarkupHelp');
     if (f.visible()) { parentwidth = parentwidth - f.getWidth() - 20 }
+    var changename = $('alter_title');
+    if (changename) {
+      parentheight = parentheight - changename.parentNode.getHeight()-2*h;
+    }
     elt.writeAttribute({'cols': Math.floor(parentwidth/w)  - 1,
-                        'rows': Math.floor(parentheight/h) - 6 });
+                        'rows': Math.floor(parentheight/h) - 4 });
     elt.setStyle({Width: parentwidth, Height: parentheight});
 }
 
@@ -76,6 +80,12 @@ function resizeableTextarea() {
   $$('textarea#content').each( function(textarea)  {
     var w = textarea.getWidth()/textarea.getAttribute('cols');
     var h = textarea.getStyle('lineHeight').replace(/(\d*)px/, "$1");
+    var changename = $('alter_title');
+    if (changename) {
+      Event.observe(changename.parentNode, 'change', function() {
+        updateSize(textarea, w, h);
+      });
+    }
     Event.observe(hidebutton, 'click', function(){
       if (f.visible()) {
         f.hide();
