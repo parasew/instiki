@@ -9,7 +9,7 @@ class WikiController < ApplicationController
 
   before_filter :load_page
   before_filter :dnsbl_check, :only => [:edit, :new, :save, :export_html, :export_markup]
-  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, :file_list,
+  caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, :file_list, :source,
         :history, :revision, :atom_with_content, :atom_with_headlines, :if => Proc.new { |c| c.send(:do_caching?) }
   cache_sweeper :revision_sweeper
 
@@ -393,7 +393,7 @@ class WikiController < ApplicationController
     return text if text.length <= length
     len = length - truncate_string.length
     t = ''
-    text.split.collect do | word|
+    text.split.collect do |word|
       if t.length + word.length <= len
         t << word + ' '
       else 
