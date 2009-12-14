@@ -389,19 +389,6 @@ class WikiController < ApplicationController
     end       
   end
 
-  def truncate(text, length = 30, truncate_string = '...')
-    return text if text.length <= length
-    len = length - truncate_string.length
-    t = ''
-    text.split.collect do |word|
-      if t.length + word.length <= len
-        t << word + ' '
-      else 
-        return t.chop + truncate_string
-      end
-    end
-  end
-
   protected
 
   def do_caching?

@@ -19,6 +19,7 @@ class WikiControllerTest < ActionController::TestCase
   
   def setup
     @controller = WikiController.new
+    @controller.extend ApplicationHelper
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
     class << @request.session
