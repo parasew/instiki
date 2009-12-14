@@ -38,9 +38,9 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_truncate_page_name
     wanted_page_name = 'This is a very, very, very, very, VERY long page name'
-    evil_page_name = 'This page name has lots of fun &amp; games'
+    evil_page_name = 'This page has plenty of fun &amp; games'
     assert_equal 'This is a very, very, very,...',  @controller.truncate(WikiWords.separate(wanted_page_name), 35)
-    assert_equal 'This page name has lots of...',  @controller.truncate(WikiWords.separate(evil_page_name))
+    assert_equal 'This page has plenty of fun...',  @controller.truncate(WikiWords.separate(evil_page_name))
   end
 
   def test_authenticate
@@ -322,6 +322,16 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal :show, r.template_objects['link_mode']
   end
 
+
+  def test_source
+    r = process('source', 'web' => 'wiki1', 'id' => 'HomePage')
+
+    assert_response(:success)
+    assert_match Regexp.new(Regexp.escape(%{HisWay would be MyWay $\\sin(x)\\begin{svg}&} +
+      %{lt;svg/&gt;\\end{svg}\\includegraphics\[width=3em\]{foo}$ in kinda} +
+      %{ ThatWay in HisWay though MyWay \\OverThere -- see SmartEngine in t} +
+      %{hat SmartEngineGUI})), r.body
+  end
 
   def test_published
     set_web_property :published, true
