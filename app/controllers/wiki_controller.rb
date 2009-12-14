@@ -392,7 +392,8 @@ class WikiController < ApplicationController
   def truncate(text, length = 30, truncate_string = '...')
     return text if text.length <= length
     len = length - truncate_string.length
-    text.split.inject('') do |t, word|
+    t = ''
+    text.split.collect do | word|
       if t.length + word.length <= len
         t << word + ' '
       else 
