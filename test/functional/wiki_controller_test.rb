@@ -36,6 +36,13 @@ class WikiControllerTest < ActionController::TestCase
     set_tex_header
   end
 
+  def test_truncate_page_name
+    wanted_page_name = 'This is a very, very, very, very, VERY long page name'
+    evil_page_name = 'This page name has lots of fun &amp; games'
+    assert_equal 'This is a very, very, very,...',  @controller.truncate(WikiWords.separate(wanted_page_name), 35)
+    assert_equal 'This page name has lots of...',  @controller.truncate(WikiWords.separate(evil_page_name))
+  end
+
   def test_authenticate
     set_web_property :password, 'pswd'
   
