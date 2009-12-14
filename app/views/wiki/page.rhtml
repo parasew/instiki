@@ -45,6 +45,9 @@
             {:id => 'view_S5'} %>
    <%- end -%>
   <%- end -%>
+    |
+    <%= link_to 'Source', {:web => @web.address, :action => 'source', :id => @page.name}, 
+            {:id => 'view_source', :rel => 'nofollow' } %>
   </span>
 
   <%= render :partial => 'inbound_links' %>

@@ -13,7 +13,7 @@ class WikiController < ApplicationController
         :history, :revision, :atom_with_content, :atom_with_headlines, :if => Proc.new { |c| c.send(:do_caching?) }
   cache_sweeper :revision_sweeper
 
-  layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :tex, :s5, :export_html]
+  layout 'default', :except => [:atom_with_content, :atom_with_headlines, :atom, :source, :tex, :s5, :export_html]
 
   def index
     if @web_name
@@ -357,6 +357,10 @@ class WikiController < ApplicationController
     end
   end
 
+  def source
+    #to template
+  end
+
   def tex
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       @tex_content = Maruku.new(@page.content).to_latex
@@ -383,6 +387,18 @@ class WikiController < ApplicationController
     else
       'html'
     end       
+  end
+
+  def truncate(text, length = 30, truncate_string = '...')
+    return text if text.length <= length
+    len = length - truncate_string.length
+    text.split.inject('') do |t, word|
+      if t.length + word.length <= len
+        t << word + ' '
+      else 
+        return t.chop + truncate_string
+      end
+    end
   end
 
   protected
@@ -503,11 +519,7 @@ class WikiController < ApplicationController
   def rss_with_content_allowed?
     @web.password.nil? or @web.published?
   end
-  
-  def truncate(text, length = 30, truncate_string = '...')
-    if text.length > length then text[0..(length - 3)] + truncate_string else text end
-  end
-  
+
   def filter_spam(content)
     @@spam_patterns ||= load_spam_patterns
     @@spam_patterns.each do |pattern| 
