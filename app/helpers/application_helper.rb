@@ -1,5 +1,6 @@
 # The methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
+require 'stringsupport'
 
   # Accepts a container (hash, array, enumerable, your type) and returns a string of option tags. Given a container 
   # where the elements respond to first and last (such as a two-element array), the "lasts" serve as option values and
@@ -111,15 +112,17 @@ module ApplicationHelper
     PageRenderer.new(page.revisions.last).display_content
   end
 
-  def truncate(text, length = 30, truncate_string = '...')
-    return text if text.length <= length
-    len = length - truncate_string.length
+  def truncate(text, *args)
+    options = args.extract_options!
+    options.reverse_merge!(:length => 30, :omission => "...")
+    return text if text.num_chars <= options[:length]
+    len = options[:length] - options[:omission].as_utf8.num_chars
     t = ''
     text.split.collect do |word|
-      if t.length + word.length <= len
+      if t.num_chars + word.num_chars <= len
         t << word + ' '
       else 
-        return t.chop + truncate_string
+        return t.chop + options[:omission]
       end
     end
   end

@@ -40,8 +40,12 @@ class WikiControllerTest < ActionController::TestCase
   def test_truncate_page_name
     wanted_page_name = 'This is a very, very, very, very, VERY long page name'
     evil_page_name = 'This page has plenty of fun &amp; games'
-    assert_equal 'This is a very, very, very,...',  @controller.truncate(WikiWords.separate(wanted_page_name), 35)
+    unicode_page_name = "This p\xF0\x9D\x94\xB8\xF0\x9D\x94\xBE\xF0\x9D\x94\xBC has plenty of fun &amp; games"
+    assert_equal 'This is a very, very, very,...',  @controller.truncate(WikiWords.separate(wanted_page_name), :length => 35)
     assert_equal 'This page has plenty of fun...',  @controller.truncate(WikiWords.separate(evil_page_name))
+    truncated = "".respond_to?(:force_encoding) ? "This p\u{1D538}\u{1D53E}\u{1D53C} has plenty of fun\u2633\u2633" :
+                 "This p\xF0\x9D\x94\xB8\xF0\x9D\x94\xBE\xF0\x9D\x94\xBC has plenty of fun\xE2\x98\xB3\xE2\x98\xB3"
+    assert_equal truncated, @controller.truncate(WikiWords.separate(unicode_page_name), :omission =>"\xE2\x98\xB3\xE2\x98\xB3")
   end
 
   def test_authenticate

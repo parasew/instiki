@@ -2,7 +2,29 @@
 
 class String
 
+# Return the number of unicode characters in a string
+#
+# :call-seq:
+#    string.num_chars    -> integer
+#
+# Because Rails 2.3.5's String#mb_chars.length is broken,
+# we provide this method.
+#--
+if "".respond_to?(:force_encoding)
+  def num_chars
+    length
+  end
+else
+  def num_chars
+    unpack('U*').length
+  end
+end
+
+#++
 # A method to allow byte-oriented operations in both Ruby 1.8 and Ruby 1.9
+#
+# :call-seq:
+#    string.to_utf_8 -> string (with the encoding set to "ASCII-8BIT")
 #
 # Under 1.8, this is a NOOP. Under 1.9, it sets the encoding to "ASCII-8BIT"
 #--
@@ -18,6 +40,9 @@ end
 
 #++
 # A method to allow string-oriented operations in both Ruby 1.8 and Ruby 1.9
+#
+# :call-seq:
+#    string.to_utf_8 -> string (with the encoding set to "UTF-8")
 #
 # Under 1.8, this is a NOOP. Under 1.9, it sets the encoding to "UTF-8"
 #--
