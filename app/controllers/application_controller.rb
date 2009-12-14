@@ -1,7 +1,7 @@
 # The filters added to this controller will be run for all controllers in the application.
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
-#  require 'dnsbl_check'
+
   protect_forms_from_spam
   before_filter :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
   after_filter :remember_location, :teardown_url_generator
@@ -17,6 +17,10 @@ class ApplicationController < ActionController::Base
 
   def self.wiki
     Wiki.new
+  end
+
+  def xhtml_enabled?
+    in_a_web? and [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
   end
 
   protected
@@ -166,8 +170,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  public
-
   def set_content_type_header
     response.charset = 'utf-8'
     if %w(atom_with_content atom_with_headlines).include?(action_name)
@@ -189,12 +191,6 @@ class ApplicationController < ActionController::Base
       response.content_type = Mime::HTML
     end
   end
-
-  def xhtml_enabled?
-    in_a_web? and (@web.markup == :markdownMML or @web.markup == :markdownPNG or @web.markup == :markdown)
-  end
-
-  protected
 
   def set_robots_metatag
     if controller_name == 'wiki' and %w(show published s5).include? action_name and !(params[:mode] == 'diff')
