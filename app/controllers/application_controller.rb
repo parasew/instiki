@@ -19,11 +19,13 @@ class ApplicationController < ActionController::Base
     Wiki.new
   end
 
+  protected
+
   def xhtml_enabled?
     in_a_web? and [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
   end
 
-  protected
+  helper_method :xhtml_enabled?
 
   def check_authorization
     if in_a_web? and authorization_needed? and not authorized?
