@@ -19,13 +19,22 @@ class ApplicationController < ActionController::Base
     Wiki.new
   end
 
+  helper_method :xhtml_enabled?, :html_ext
+
   protected
 
   def xhtml_enabled?
     in_a_web? and [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
   end
 
-  helper_method :xhtml_enabled?
+  def html_ext
+    if xhtml_enabled? && request.env.include?('HTTP_ACCEPT') &&
+           Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)
+       'xhtml'
+    else
+      'html'
+    end       
+  end
 
   def check_authorization
     if in_a_web? and authorization_needed? and not authorized?
