@@ -64,7 +64,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_file
-        %{<a class="existingWikiWord" title="#{description}" href="#{CGI.escape(name)}.#{@controller.html_ext}">#{text}</a>}
+        %{<a class="existingWikiWord" title="#{description}" href="#{CGI.escape(name)}.#{html_ext}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
@@ -92,7 +92,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_page 
-        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.#{@controller.html_ext}">#{text}</a>}
+        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.#{html_ext}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
@@ -181,5 +181,11 @@ class UrlGenerator < AbstractUrlGenerator
       href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
             :id => name, :only_path => true
       %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
-    end  
+    end
+    
+    def html_ext
+      @html_ext ||= @controller.method(:html_ext).call
+      # Why method().call ? A Ruby 1.9.2preview1 bug:
+      # http://redmine.ruby-lang.org/issues/show/1802
+    end
 end

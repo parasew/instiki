@@ -380,15 +380,6 @@ class WikiController < ApplicationController
     end
   end
 
-  def html_ext
-    if xhtml_enabled? && request.env.include?('HTTP_ACCEPT') &&
-           Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)
-       'xhtml'
-    else
-      'html'
-    end       
-  end
-
   protected
 
   def do_caching?
