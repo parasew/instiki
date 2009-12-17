@@ -346,7 +346,7 @@ white-space:nowrap;
 
 div#MarkupHelp td.arrow {
 color:#666;
-padding:0 0.75em;
+padding:0 0.75em 0 0;
 }
 
 div#MarkupHelp h3 {

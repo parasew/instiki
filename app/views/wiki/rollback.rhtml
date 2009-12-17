@@ -7,8 +7,8 @@
 <%= "<p style='color:red'>Please correct the error that caused this error in rendering:<br/><small>#{params["msg"]}</small></p>" if params["msg"] %>
 
 <div id="MarkupHelp">
-  <%= render(:file => "#{@web.markup}_help") %>
-  <%= render(:file => 'wiki_words_help') %>
+<%= render(:file => "#{@web.markup}_help") -%>
+<%= render(:file => 'wiki_words_help') unless @web.brackets_only? -%>
 </div>
 
 	<% form_tag({:web => @web.address, :action => 'save', :id => @page.name},
