@@ -35,7 +35,8 @@ begin
   gem 'rack', '~> 1.1.0'
   require 'rack'
 rescue Gem::LoadError
-  require 'action_controller/vendor/rack-1.1.pre/rack'
+  $:.unshift "#{File.dirname(__FILE__)}/../../../plugins/rack/lib"
+  require 'rack'
 end
 require 'action_controller/cgi_ext'
 
