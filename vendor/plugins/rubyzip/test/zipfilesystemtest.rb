@@ -6,6 +6,7 @@ $: << "../lib"
 
 require 'zip/zipfilesystem'
 require 'test/unit'
+require 'fileutils'
 
 module ExtraAssertions
 
@@ -23,7 +24,7 @@ module ExtraAssertions
     assert_equal(retVal, yield) # Invoke test
     assert_equal(expectedArgs, callArgs)
   ensure
-    anObject.instance_eval "alias #{method} #{method}_org"
+    anObject.instance_eval "undef #{method}; alias #{method} #{method}_org"
   end
 
 end
@@ -60,6 +61,15 @@ class ZipFsFileNonmutatingTest < Test::Unit::TestCase
   def test_open_read
     blockCalled = false
     @zipFile.file.open("file1", "r") {
+      |f|
+      blockCalled = true
+      assert_equal("this is the entry 'file1' in my test archive!", 
+		    f.readline.chomp)
+    }
+    assert(blockCalled)
+
+    blockCalled = false
+    @zipFile.file.open("file1", "rb") { # test binary flag is ignored
       |f|
       blockCalled = true
       assert_equal("this is the entry 'file1' in my test archive!", 
@@ -552,7 +562,7 @@ end
 class ZipFsFileMutatingTest < Test::Unit::TestCase
   TEST_ZIP = "zipWithDirs_copy.zip"
   def setup
-    File.copy("data/zipWithDirs.zip", TEST_ZIP)
+    FileUtils.cp("data/zipWithDirs.zip", TEST_ZIP)
   end
 
   def teardown
@@ -579,7 +589,7 @@ class ZipFsFileMutatingTest < Test::Unit::TestCase
                     zf.file.read("test_open_write_entry"))
 
       # Test with existing entry
-      zf.file.open("file1", "w") {
+      zf.file.open("file1", "wb") { #also check that 'b' option is ignored
         |f|
         blockCalled = true
         f.write "This is what I'm writing too"
@@ -640,7 +650,7 @@ class ZipFsDirectoryTest < Test::Unit::TestCase
   TEST_ZIP = "zipWithDirs_copy.zip"
 
   def setup
-    File.copy("data/zipWithDirs.zip", TEST_ZIP)
+    FileUtils.cp("data/zipWithDirs.zip", TEST_ZIP)
   end
 
   def test_delete
