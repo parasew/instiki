@@ -1,6 +1,12 @@
-require 'rubygems'
-gem 'mocha'
+# add lib folder to the path
+$:.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 
+require 'sqlite3'
+
+require 'rubygems'
+require 'test/unit'
+
+# define mocks to be used
 require 'mocha'
 
 class Driver < Mocha::Mock
@@ -41,5 +47,21 @@ class Statement < Mocha::Mock
     stubs( :close ).returns(0)
     stubs( :remainder ).returns('')
     stubs( :execute ).returns(MockResultSet.new)
+  end
+end
+
+# UTF conversion extensions
+class String
+  def to_utf16(terminate=false)
+    self.split(//).map { |c| c[0] }.pack("v*") +
+      (terminate ? "\0\0" : "")
+  end
+
+  def from_utf16
+    result = ""
+    length.times do |i|
+      result << self[i,1] if i % 2 == 0 && self[i] != 0
+    end
+    result
   end
 end

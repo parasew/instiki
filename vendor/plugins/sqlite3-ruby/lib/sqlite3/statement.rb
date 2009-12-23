@@ -31,6 +31,7 @@ module SQLite3
     # statement (i.e., separated by semicolons), then the #remainder property
     # will be set to the trailing text.
     def initialize( db, sql, utf16=false )
+      raise ArgumentError, "nil argument passed as sql text" unless sql
       @db = db
       @driver = @db.driver
       @closed = false
@@ -193,8 +194,8 @@ module SQLite3
     # that this may execute the statement in order to obtain the metadata; this
     # makes it a (potentially) expensive operation.
     def types
-      get_metadata unless @types
-      return @types
+      get_metadata unless defined?(@types)
+      @types
     end
 
     # A convenience method for obtaining the metadata about the query. Note
