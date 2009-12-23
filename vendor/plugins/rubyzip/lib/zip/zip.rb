@@ -1,4 +1,5 @@
 require 'delegate'
+require 'iconv'
 require 'singleton'
 require 'tempfile'
 require 'fileutils'
@@ -20,7 +21,7 @@ end
 
 module Zip
 
-  VERSION = '0.9.1'
+  VERSION = '0.9.3'
 
   RUBY_MINOR_VERSION = RUBY_VERSION.split(".")[1].to_i
 
@@ -349,6 +350,21 @@ module Zip
 
     attr_reader :ftype, :filepath # :nodoc:
     
+    # Returns the character encoding used for name and comment
+    def name_encoding
+      (@gp_flags & 0b100000000000) != 0 ? "utf8" : "CP437//"
+    end
+
+    # Returns the name in the encoding specified by enc
+    def name_in(enc)
+      Iconv.conv(enc, name_encoding, @name)
+    end
+
+    # Returns the name in the encoding specified by enc
+    def comment_in(enc)
+      Iconv.conv(enc, name_encoding, @name)
+    end
+
     def initialize(zipfile = "", name = "", comment = "", extra = "", 
                    compressed_size = 0, crc = 0, 
 		   compression_method = ZipEntry::DEFLATED, size = 0,
@@ -358,6 +374,7 @@ module Zip
 	raise ZipEntryNameError, "Illegal ZipEntry name '#{name}', name must not start with /" 
       end
       @localHeaderOffset = 0
+      @local_header_size = 0
       @internalFileAttributes = 1
       @externalFileAttributes = 0
       @version = 52 # this library's version
@@ -432,7 +449,7 @@ module Zip
     # Returns +true+ if the entry is a symlink.
     def symlink?
       raise ZipInternalError, "current filetype is unknown: #{self.inspect}" unless @ftype
-      @ftype == :link
+      @ftype == :symlink
     end
 
     def name_is_directory?  #:nodoc:all
@@ -440,10 +457,10 @@ module Zip
     end
 
     def local_entry_offset  #:nodoc:all
-      localHeaderOffset + local_header_size
+      localHeaderOffset + @local_header_size
     end
     
-    def local_header_size  #:nodoc:all
+    def calculate_local_header_size  #:nodoc:all
       LOCAL_ENTRY_STATIC_HEADER_LENGTH + (@name ?  @name.size : 0) + (@extra ? @extra.local_size : 0)
     end
 
@@ -491,7 +508,8 @@ module Zip
     LOCAL_ENTRY_SIGNATURE = 0x04034b50
     LOCAL_ENTRY_STATIC_HEADER_LENGTH = 30
     LOCAL_ENTRY_TRAILING_DESCRIPTOR_LENGTH = 4+4+4
-    
+    VERSION_NEEDED_TO_EXTRACT = 10
+
     def read_local_entry(io)  #:nodoc:all
       @localHeaderOffset = io.tell
       staticSizedFieldsBuf = io.read(LOCAL_ENTRY_STATIC_HEADER_LENGTH)
@@ -516,6 +534,7 @@ module Zip
 	raise ZipError, "Zip local header magic not found at location '#{localHeaderOffset}'"
       end
       set_time(lastModDate, lastModTime)
+
       
       @name              = io.read(nameLength)
       extra              = io.read(extraLength)
@@ -529,6 +548,7 @@ module Zip
           @extra = ZipExtraField.new(extra)
         end
       end
+      @local_header_size = calculate_local_header_size
     end
     
     def ZipEntry.read_local_entry(io)
@@ -544,7 +564,7 @@ module Zip
       
       io << 
 	[LOCAL_ENTRY_SIGNATURE    ,
-	0                  ,
+	VERSION_NEEDED_TO_EXTRACT , # version needed to extract
 	0                         , # @gp_flags                  ,
 	@compression_method        ,
 	@time.to_binary_dos_time     , # @lastModTime              ,
@@ -615,7 +635,7 @@ module Zip
         when 010
           @ftype = :file
         when 012
-          @ftype = :link
+          @ftype = :symlink
         else
           raise ZipInternalError, "unknown file type #{'0%o' % (@externalFileAttributes >> 28)}"
         end
@@ -626,6 +646,7 @@ module Zip
           @ftype = :file
         end
       end
+      @local_header_size = calculate_local_header_size
     end
     
     def ZipEntry.read_c_dir_entry(io)  #:nodoc:all
@@ -662,8 +683,8 @@ module Zip
         # ignore setuid/setgid bits by default.  honor if @restore_ownership
         unix_perms_mask = 01777
         unix_perms_mask = 07777 if (@restore_ownership)
-      	File::chmod(@unix_perms & unix_perms_mask, destPath) if (@restore_permissions && @unix_perms)
-        File::chown(@unix_uid, @unix_gid, destPath) if (@restore_ownership && @unix_uid && @unix_gid && Process::egid == 0)
+        FileUtils::chmod(@unix_perms & unix_perms_mask, destPath) if (@restore_permissions && @unix_perms)
+        FileUtils::chown(@unix_uid, @unix_gid, destPath) if (@restore_ownership && @unix_uid && @unix_gid && Process::egid == 0)
         # File::utimes()
       end
     end
@@ -693,7 +714,7 @@ module Zip
 	[CENTRAL_DIRECTORY_ENTRY_SIGNATURE,
         @version                          , # version of encoding software
 	@fstype                           , # filesystem type
-	0                                 , # @versionNeededToExtract           ,
+	VERSION_NEEDED_TO_EXTRACT         , # @versionNeededToExtract           ,
 	0                                 , # @gp_flags                          ,
 	@compression_method                ,
         @time.to_binary_dos_time             , # @lastModTime                      ,
@@ -849,7 +870,7 @@ module Zip
 	return
       elsif File.exists? destPath
 	if block_given? && yield(self, destPath)
-	  File.rm_f destPath
+	  FileUtils::rm_f destPath
 	else
 	  raise ZipDestinationFileExistsError,
 	    "Cannot create directory '#{destPath}'. "+
@@ -967,10 +988,10 @@ module Zip
       src_pos = entry.local_entry_offset
       entry.write_local_entry(@outputStream)
       @compressor = NullCompressor.instance
-      @outputStream << entry.get_raw_input_stream { 
+      entry.get_raw_input_stream { 
 	|is| 
 	is.seek(src_pos, IO::SEEK_SET)
-	is.read(entry.compressed_size)
+        IOExtras.copy_stream_n(@outputStream, is, entry.compressed_size)
       }
       @compressor = NullCompressor.instance
       @currentEntry = nil
@@ -981,7 +1002,7 @@ module Zip
       return unless @currentEntry
       finish
       @currentEntry.compressed_size = @outputStream.tell - @currentEntry.localHeaderOffset - 
-	@currentEntry.local_header_size
+	@currentEntry.calculate_local_header_size
       @currentEntry.size = @compressor.size
       @currentEntry.crc = @compressor.crc
       @currentEntry = nil
@@ -1453,7 +1474,9 @@ module Zip
     def rename(entry, newName, &continueOnExistsProc)
       foundEntry = get_entry(entry)
       check_entry_exists(newName, continueOnExistsProc, "rename")
-      foundEntry.name=newName
+      @entrySet.delete(foundEntry)
+      foundEntry.name = newName
+      @entrySet << foundEntry
     end
 
     # Replaces the specified entry with the contents of srcPath (from 
@@ -1566,7 +1589,7 @@ module Zip
       tmpFilename = tmpfile.path
       tmpfile.close
       if yield tmpFilename
-	File.move(tmpFilename, name)
+	File.rename(tmpFilename, name)
       end
     end
     
