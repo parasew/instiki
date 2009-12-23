@@ -1,9 +1,4 @@
-$:.unshift "../lib"
-
-require 'sqlite3/database'
-require 'test/unit'
-
-require 'mocks'
+require File.join(File.dirname(__FILE__), 'helper')
 
 class TC_Database_Init < Test::Unit::TestCase
   def test_new
@@ -16,6 +11,18 @@ class TC_Database_Init < Test::Unit::TestCase
     assert !db.results_as_hash
     assert !db.type_translation
   end
+  
+  def test_new_with_block
+    driver = Driver.new
+    driver.expects(:open).once.with('foo.db', false).returns([0, 'cookie'])
+    Driver.stubs(:new).returns(driver)
+    returned_db = SQLite3::Database.new( "foo.db", :driver => Driver ) do |db|
+      assert !db.closed?
+      assert !db.results_as_hash
+      assert !db.type_translation
+    end
+    assert returned_db.closed?
+  end
 
   def test_open
     driver = Driver.new
@@ -25,6 +32,18 @@ class TC_Database_Init < Test::Unit::TestCase
     assert !db.closed?
     assert !db.results_as_hash
     assert !db.type_translation
+  end
+  
+  def test_open_with_block
+    driver = Driver.new
+    driver.expects(:open).once.with('foo.db', false).returns([0, 'cookie'])
+    Driver.stubs(:new).returns(driver)
+    returned_db = SQLite3::Database.open( "foo.db", :driver => Driver ) do |db|
+      assert !db.closed?
+      assert !db.results_as_hash
+      assert !db.type_translation
+    end
+    assert returned_db.closed?
   end
   
   def test_with_type_translation
