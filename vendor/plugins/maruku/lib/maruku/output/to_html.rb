@@ -550,6 +550,7 @@ and
 		lang = self.attributes[:lang] || @doc.attributes[:code_lang] 
 
 		lang = 'xml' if lang=='html'
+		lang = 'css21' if lang == 'css'
 
 		use_syntax = get_setting :html_use_syntax
 		
