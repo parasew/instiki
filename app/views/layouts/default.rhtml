@@ -21,8 +21,10 @@
       color: #<%= @web ? @web.color : "393" %>; 
     }
     <%= Rails.root.join('public', 'stylesheets', 'instiki.css').read if @inline_style %>
+    <%= Rails.root.join('public', 'stylesheets', 'syntax.css').read if @inline_style %>
   </style>
   <%= stylesheet_link_tag 'instiki', :media => 'all'  unless @inline_style %>
+  <%= stylesheet_link_tag 'syntax', :media => 'all'  unless @inline_style %>
   <%= "<style type='text/css'>#{@style_additions}</style>" if @style_additions %>
   <style type="text/css"><!--/*--><![CDATA[/*><!--*/    
     <%= @web ? @web.additional_style : '' %>

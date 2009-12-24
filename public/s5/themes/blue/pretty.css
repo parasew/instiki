@@ -102,4 +102,11 @@ li:after {content:" [" attr(class) "]";color:#F88}
 */
 pre.ruby span.ident { color: #AAF; }
 pre.ruby span.punct { color: #9C8CFF; }
-pre.xml .punct { color: #8DF; font-weight: bold; }
+pre.yaml span.punct { color: #99F; font-weight: bold; }
+pre.ansic span.other, pre.ansic span.ident { color: #FFF; }
+pre.sqlite span.other, pre.sqlite span.ident { color: #FFF; }
+pre.javascript span.ident { color: #FFF; }
+pre.javascript .other { color: #F0F; }
+pre.css21 span.ident { color: #FFF; }
+pre.javascript span.comment { color: #88F; }
+pre.xml span.punct { color: #8DF; font-weight: bold; }
