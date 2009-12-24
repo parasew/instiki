@@ -13,6 +13,7 @@
 <meta name="defaultView" content="slideshow" />
 <meta name="controlVis" content="hidden" />
 <!-- style sheet links -->
+<%= stylesheet_link_tag "/stylesheets/syntax.css", :media => 'all', :id => 'syntaxStyle' %>
 <%= stylesheet_link_tag "/s5/ui/core/outline.css", :media => 'screen', :id => 'outlineStyle' %>
 <%= stylesheet_link_tag "/s5/ui/core/print.css", :media => 'print', :id => 'slidePrint' %>
 <%= stylesheet_link_tag "/s5/ui/core/opera.css", :media => 'projection', :id =>  'operaFix' %>
@@ -20,8 +21,8 @@
 <%= stylesheet_link_tag "/s5/themes/#{@s5_theme}/slides.css", :media => 'projection', :id =>  'slideProj' %>
 
 <!-- S5 JS -->
-<%= javascript_include_tag "/s5/ui/core/slides.js" %>
 <%= javascript_include_tag 'prototype' %>
+<%= javascript_include_tag "/s5/ui/core/slides.js" %>
 </head>
 <body>
 
