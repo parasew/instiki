@@ -1,4 +1,5 @@
 require 'syntax'
+require 'stringsupport'
 
 module Syntax
 
@@ -77,7 +78,7 @@ module Syntax
 
       # http://www.w3.org/TR/CSS21/syndata.html
       macro(:h, /([0-9a-fA-F])/ ) # uppercase A-Z added?
-      macro(:nonascii, /([\200-\377])/ )
+      macro(:nonascii, /([^\000-\177])/ )
       macro(:nl, /(\n|\r\n|\r|\f)/ )
       macro(:unicode, /(\\#{m(:h)}{1,6}(\r\n|[ \t\r\n\f])?)/ )
       macro(:escape, /(#{m(:unicode)}|\\[^\r\n\f0-9a-f])/ )
@@ -208,7 +209,8 @@ module Syntax
         end
 
       # scanning declarations only
-      when !@selector && scan(@tokens[:RBRACE]): @selector = true
+      when !@selector && scan(@tokens[:RBRACE])
+        @selector = true
         start_group :normal, matched
       when !@selector && scan(@tokens[:FUNCTION])
         start_group :function, matched
