@@ -67,8 +67,9 @@ module Syntax
       nav noscript object ol optgroup option output p param pre
       progress q rp rt ruby samp script section select small
       source span strong style sub sup table tbody td textarea
-      tfoot th thead time title tr ul var
-      video} unless const_defined?(:HTML_TAGS)
+      tfoot th thead time title tr ul var video
+      acronym applet big center frame frameset isindex marquee
+      noframes s tt u} unless const_defined?(:HTML_TAGS)
 
     MATHML_TAGS = Set.new %w{annotation annotation-xml maction
       malign maligngroup malignmark malignscope math menclose
