@@ -1,11 +1,10 @@
 require 'syntax'
-require 'stringsupport'
 
 module Syntax
 
   class CSS21 < Tokenizer
 
-    CSS21_PROPERTIES = %w{font-family font-style font-variant font-weight
+    CSS21_PROPERTIES = Set.new %w{font-family font-style font-variant font-weight
       font-size font background-color background-image
       background-repeat background-attachment background-position
       color background word-spacing letter-spacing
@@ -36,7 +35,7 @@ module Syntax
       page-break-before page-break-after page-break-inside
       orphans widows} unless const_defined?(:CSS21_PROPERTIES)
 
-    CSS21_KEYWORDS = %w{maroon red orange yellow olive purple
+    CSS21_KEYWORDS = Set.new %w{maroon red orange yellow olive purple
       fuchsia white lime green navy blue aqua teal black silver gray
       scroll fixed transparent none top center bottom
       left right repeat repeat-x repeat-y no-repeat
@@ -59,17 +58,41 @@ module Syntax
       serif sans-serif monospace cursive
       fantasy, always} unless const_defined?(:CSS21_KEYWORDS)
 
-    HTML401_TAGS = %w{a abbr acronym address area b base bdo
-      big blockquote body br button caption cite code
-      col colgroup dd del dfn div dl DOCTYPE
-      dt em fieldset form h1 h2 h3 h4 h5 h6 head html hr
-      i img input ins kbd label legend li
-      link visited hover before after
-      map meta noscript object ol optgroup option
-      p param pre q samp script select small
-      span strong style sub sup table tbody td
-      textarea tfoot th thead title tr tt ul
-      var} unless const_defined?(:HTML401_TAGS)
+    HTML_TAGS = Set.new %w{a abbr address area article aside
+      audio b base bdo blockquote body br button canvas caption
+      cite code col colgroup command datalist dd del details dfn
+      div dl dt em embed fieldset figure footer form h1 h2 h3
+      h4 h5 h6 head header hgroup hr html i iframe img input ins
+      kbd keygen label legend li link map mark menu meta meter
+      nav noscript object ol optgroup option output p param pre
+      progress q rp rt ruby samp script section select small
+      source span strong style sub sup table tbody td textarea
+      tfoot th thead time title tr ul var
+      video} unless const_defined?(:HTML_TAGS)
+
+    MATHML_TAGS = Set.new %w{annotation annotation-xml maction
+      malign maligngroup malignmark malignscope math menclose
+      merror mfenced mfrac mglyph mi mlabeledtr mlongdiv mmultiscripts
+      mn mo mover mpadded mphantom mprescripts mroot mrow ms mscarries
+      mscarry msgroup msline mspace msqrt msrow mstack mstyle msub
+      msubsup msup mtable mtd mtext mtr munder munderover none
+      semantics} unless const_defined?(:MATHML_TAGS)
+
+    SVG_TAGS = Set.new %w{a altGlyph altGlyphDef altGlyphItem animate
+      animateColor animateMotion animateTransform circle clipPath
+      color-profile cursor definition-src defs desc ellipse feBlend
+      feColorMatrix feComponentTransfer feComposite feConvolveMatrix
+      feDiffuseLighting feDisplacementMap feDistantLight feFlood feFuncA
+      feFuncB feFuncG feFuncR feGaussianBlur feImage feMerge feMergeNode
+      feMorphology feOffset fePointLight feSpecularLighting feSpotLight
+      feTile feTurbulence filter font font-face font-face-format
+      font-face-name font-face-src font-face-uri foreignObject g glyph
+      glyphRef hkern image line linearGradient marker mask metadata
+      missing-glyph mpath path pattern polygon polyline radialGradient
+      rect script set stop style svg switch symbol text textPath title
+      tref tspan use view vkern} unless const_defined?(:SVG_TAGS)
+      
+    MY_TAGS = HTML_TAGS + MATHML_TAGS + SVG_TAGS unless const_defined?(:MY_TAGS)
 
     def setup
       @selector = true
@@ -202,7 +225,7 @@ module Syntax
         start_group :uri, matched
 
       when @selector && scan(@tokens[:IDENT])
-        if HTML401_TAGS.include?( matched )
+        if MY_TAGS.include?( matched )
           start_group :tag, matched
         else
           start_group :ident, matched
