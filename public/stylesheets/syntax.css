@@ -19,7 +19,7 @@ pre.css21 .cdc { color: #666; }
 pre.css21 .string { color: #494; }
 pre.css21 .invalid { color: #FF0000; }
 pre.css21 .keyword { color: #BB0000; }
-pre.css21 .property { color:  #ff4500; }
+pre.css21 .property {font-size: 1em; color:  #ff4500; }
 pre.css21 .ident { color: #000080; }
 pre.css21 .id { color: #0000FF; }
 pre.css21 .important { color: #EE0000; background: #ffd700;}
