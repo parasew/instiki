@@ -33,10 +33,10 @@ module Rack
         env.delete "HTTP_CONTENT_LENGTH"
 
         env["SCRIPT_NAME"] = ""  if env["SCRIPT_NAME"] == "/"
-        
+
         rack_input = RewindableInput.new(request.in)
 
-        env.update({"rack.version" => [1,0],
+        env.update({"rack.version" => [1,1],
                      "rack.input" => rack_input,
                      "rack.errors" => request.err,
 
@@ -50,7 +50,6 @@ module Rack
         env["QUERY_STRING"] ||= ""
         env["HTTP_VERSION"] ||= env["SERVER_PROTOCOL"]
         env["REQUEST_PATH"] ||= "/"
-        env.delete "PATH_INFO"  if env["PATH_INFO"] == ""
         env.delete "CONTENT_TYPE"  if env["CONTENT_TYPE"] == ""
         env.delete "CONTENT_LENGTH"  if env["CONTENT_LENGTH"] == ""
 

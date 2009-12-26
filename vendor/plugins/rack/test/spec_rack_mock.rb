@@ -93,6 +93,92 @@ context "Rack::MockRequest" do
     env["rack.url_scheme"].should.equal "https"
   end
 
+  specify "should set SSL port and HTTP flag on when using https" do
+    res = Rack::MockRequest.new(app).
+      get("https://example.org/foo")
+    res.should.be.kind_of Rack::MockResponse
+
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "GET"
+    env["SERVER_NAME"].should.equal "example.org"
+    env["SERVER_PORT"].should.equal "443"
+    env["QUERY_STRING"].should.equal ""
+    env["PATH_INFO"].should.equal "/foo"
+    env["rack.url_scheme"].should.equal "https"
+    env["HTTPS"].should.equal "on"
+  end
+
+  specify "should prepend slash to uri path" do
+    res = Rack::MockRequest.new(app).
+      get("foo")
+    res.should.be.kind_of Rack::MockResponse
+
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "GET"
+    env["SERVER_NAME"].should.equal "example.org"
+    env["SERVER_PORT"].should.equal "80"
+    env["QUERY_STRING"].should.equal ""
+    env["PATH_INFO"].should.equal "/foo"
+    env["rack.url_scheme"].should.equal "http"
+  end
+
+  specify "should properly convert method name to an uppercase string" do
+    res = Rack::MockRequest.new(app).request(:get)
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "GET"
+  end
+
+  specify "should accept params and build query string for GET requests" do
+    res = Rack::MockRequest.new(app).get("/foo?baz=2", :params => {:foo => {:bar => "1"}})
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "GET"
+    env["QUERY_STRING"].should.match "baz=2"
+    env["QUERY_STRING"].should.match "foo[bar]=1"
+    env["PATH_INFO"].should.equal "/foo"
+    env["mock.postdata"].should.equal ""
+  end
+
+  specify "should accept raw input in params for GET requests" do
+    res = Rack::MockRequest.new(app).get("/foo?baz=2", :params => "foo[bar]=1")
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "GET"
+    env["QUERY_STRING"].should.match "baz=2"
+    env["QUERY_STRING"].should.match "foo[bar]=1"
+    env["PATH_INFO"].should.equal "/foo"
+    env["mock.postdata"].should.equal ""
+  end
+
+  specify "should accept params and build url encoded params for POST requests" do
+    res = Rack::MockRequest.new(app).post("/foo", :params => {:foo => {:bar => "1"}})
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "POST"
+    env["QUERY_STRING"].should.equal ""
+    env["PATH_INFO"].should.equal "/foo"
+    env["CONTENT_TYPE"].should.equal "application/x-www-form-urlencoded"
+    env["mock.postdata"].should.equal "foo[bar]=1"
+  end
+
+  specify "should accept raw input in params for POST requests" do
+    res = Rack::MockRequest.new(app).post("/foo", :params => "foo[bar]=1")
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "POST"
+    env["QUERY_STRING"].should.equal ""
+    env["PATH_INFO"].should.equal "/foo"
+    env["CONTENT_TYPE"].should.equal "application/x-www-form-urlencoded"
+    env["mock.postdata"].should.equal "foo[bar]=1"
+  end
+
+  specify "should accept params and build multipart encoded params for POST requests" do
+    files = Rack::Utils::Multipart::UploadedFile.new(File.join(File.dirname(__FILE__), "multipart", "file1.txt"))
+    res = Rack::MockRequest.new(app).post("/foo", :params => { "submit-name" => "Larry", "files" => files })
+    env = YAML.load(res.body)
+    env["REQUEST_METHOD"].should.equal "POST"
+    env["QUERY_STRING"].should.equal ""
+    env["PATH_INFO"].should.equal "/foo"
+    env["CONTENT_TYPE"].should.equal "multipart/form-data; boundary=AaB03x"
+    env["mock.postdata"].length.should.equal 206
+  end
+
   specify "should behave valid according to the Rack spec" do
     lambda {
       res = Rack::MockRequest.new(app).
@@ -130,7 +216,7 @@ context "Rack::MockResponse" do
     res.original_headers["Content-Type"].should.equal "text/yaml"
     res["Content-Type"].should.equal "text/yaml"
     res.content_type.should.equal "text/yaml"
-    res.content_length.should.be 401  # needs change often.
+    res.content_length.should.be 414  # needs change often.
     res.location.should.be.nil
   end
 

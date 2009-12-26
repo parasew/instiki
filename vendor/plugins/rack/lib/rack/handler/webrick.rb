@@ -27,7 +27,7 @@ module Rack
         rack_input = StringIO.new(req.body.to_s)
         rack_input.set_encoding(Encoding::BINARY) if rack_input.respond_to?(:set_encoding)
 
-        env.update({"rack.version" => [1,0],
+        env.update({"rack.version" => [1,1],
                      "rack.input" => rack_input,
                      "rack.errors" => $stderr,
 
@@ -41,9 +41,7 @@ module Rack
         env["HTTP_VERSION"] ||= env["SERVER_PROTOCOL"]
         env["QUERY_STRING"] ||= ""
         env["REQUEST_PATH"] ||= "/"
-        if env["PATH_INFO"] == ""
-          env.delete "PATH_INFO"
-        else
+        unless env["PATH_INFO"] == ""
           path, n = req.request_uri.path, env["SCRIPT_NAME"].length
           env["PATH_INFO"] = path[n, path.length-n]
         end

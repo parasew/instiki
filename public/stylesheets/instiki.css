@@ -61,13 +61,6 @@ margin:0.2em 0 0.2em 0;
 padding:0;
 }
 
-h1#pageName small {
-color:#444;
-font-size:35%;
-line-height:1em;
-padding:0;
-}
-
 #svg_logo {
 float:left;
 margin:.5em .25em 0 -.625em;
