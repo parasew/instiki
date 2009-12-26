@@ -30,7 +30,10 @@ context "Rack::Utils" do
   end
 
   specify "should parse query strings correctly" do
-    Rack::Utils.parse_query("foo=bar").should.equal "foo" => "bar"
+    Rack::Utils.parse_query("foo=bar").
+      should.equal "foo" => "bar"
+    Rack::Utils.parse_query("foo=\"bar\"").
+      should.equal "foo" => "bar"
     Rack::Utils.parse_query("foo=bar&foo=quux").
       should.equal "foo" => ["bar", "quux"]
     Rack::Utils.parse_query("foo=1&bar=2").
@@ -46,6 +49,8 @@ context "Rack::Utils" do
     Rack::Utils.parse_nested_query("foo=").
       should.equal "foo" => ""
     Rack::Utils.parse_nested_query("foo=bar").
+      should.equal "foo" => "bar"
+    Rack::Utils.parse_nested_query("foo=\"bar\"").
       should.equal "foo" => "bar"
 
     Rack::Utils.parse_nested_query("foo=bar&foo=quux").
@@ -126,6 +131,53 @@ context "Rack::Utils" do
       should.equal "my+weird+field=q1%212%22%27w%245%267%2Fz8%29%3F"
   end
 
+  specify "should build nested query strings correctly" do
+    Rack::Utils.build_nested_query("foo" => nil).should.equal "foo"
+    Rack::Utils.build_nested_query("foo" => "").should.equal "foo="
+    Rack::Utils.build_nested_query("foo" => "bar").should.equal "foo=bar"
+
+    Rack::Utils.build_nested_query("foo" => "1", "bar" => "2").
+      should.equal "foo=1&bar=2"
+    Rack::Utils.build_nested_query("my weird field" => "q1!2\"'w$5&7/z8)?").
+      should.equal "my+weird+field=q1%212%22%27w%245%267%2Fz8%29%3F"
+
+    Rack::Utils.build_nested_query("foo" => [nil]).
+      should.equal "foo[]"
+    Rack::Utils.build_nested_query("foo" => [""]).
+      should.equal "foo[]="
+    Rack::Utils.build_nested_query("foo" => ["bar"]).
+      should.equal "foo[]=bar"
+
+    # The ordering of the output query string is unpredictable with 1.8's
+    # unordered hash. Test that build_nested_query performs the inverse
+    # function of parse_nested_query.
+    [{"foo" => nil, "bar" => ""},
+     {"foo" => "bar", "baz" => ""},
+     {"foo" => ["1", "2"]},
+     {"foo" => "bar", "baz" => ["1", "2", "3"]},
+     {"foo" => ["bar"], "baz" => ["1", "2", "3"]},
+     {"foo" => ["1", "2"]},
+     {"foo" => "bar", "baz" => ["1", "2", "3"]},
+     {"x" => {"y" => {"z" => "1"}}},
+     {"x" => {"y" => {"z" => ["1"]}}},
+     {"x" => {"y" => {"z" => ["1", "2"]}}},
+     {"x" => {"y" => [{"z" => "1"}]}},
+     {"x" => {"y" => [{"z" => ["1"]}]}},
+     {"x" => {"y" => [{"z" => "1", "w" => "2"}]}},
+     {"x" => {"y" => [{"v" => {"w" => "1"}}]}},
+     {"x" => {"y" => [{"z" => "1", "v" => {"w" => "2"}}]}},
+     {"x" => {"y" => [{"z" => "1"}, {"z" => "2"}]}},
+     {"x" => {"y" => [{"z" => "1", "w" => "a"}, {"z" => "2", "w" => "3"}]}}
+    ].each { |params|
+      qs = Rack::Utils.build_nested_query(params)
+      Rack::Utils.parse_nested_query(qs).should.equal params
+    }
+
+    lambda { Rack::Utils.build_nested_query("foo=bar") }.
+      should.raise(ArgumentError).
+      message.should.equal "value must be a Hash"
+  end
+
   specify "should figure out which encodings are acceptable" do
     helper = lambda do |a, b|
       request = Rack::Request.new(Rack::MockRequest.env_for("", "HTTP_ACCEPT_ENCODING" => a))
@@ -151,6 +203,18 @@ context "Rack::Utils" do
 
   specify "should return the bytesize of String" do
     Rack::Utils.bytesize("FOO\xE2\x82\xAC").should.equal 6
+  end
+
+  specify "should return status code for integer" do
+    Rack::Utils.status_code(200).should.equal 200
+  end
+
+  specify "should return status code for string" do
+    Rack::Utils.status_code("200").should.equal 200
+  end
+
+  specify "should return status code for symbol" do
+    Rack::Utils.status_code(:ok).should.equal 200
   end
 end
 
@@ -190,30 +254,53 @@ context "Rack::Utils::HeaderHash" do
     h = Rack::Utils::HeaderHash.new("foo" => ["bar", "baz"])
     h.to_hash.should.equal({ "foo" => "bar\nbaz" })
   end
-  
+
+  specify "should replace hashes correctly" do
+    h = Rack::Utils::HeaderHash.new("Foo-Bar" => "baz")
+    j = {"foo" => "bar"}
+    h.replace(j)
+    h["foo"].should.equal "bar"
+  end
+
   specify "should be able to delete the given key case-sensitively" do
     h = Rack::Utils::HeaderHash.new("foo" => "bar")
     h.delete("foo")
     h["foo"].should.be.nil
     h["FOO"].should.be.nil
   end
-  
+
   specify "should be able to delete the given key case-insensitively" do
     h = Rack::Utils::HeaderHash.new("foo" => "bar")
     h.delete("FOO")
     h["foo"].should.be.nil
     h["FOO"].should.be.nil
   end
-  
+
   specify "should return the deleted value when #delete is called on an existing key" do
     h = Rack::Utils::HeaderHash.new("foo" => "bar")
     h.delete("Foo").should.equal("bar")
   end
-  
+
   specify "should return nil when #delete is called on a non-existant key" do
     h = Rack::Utils::HeaderHash.new("foo" => "bar")
     h.delete("Hello").should.be.nil
   end
+
+  specify "should avoid unnecessary object creation if possible" do
+    a = Rack::Utils::HeaderHash.new("foo" => "bar")
+    b = Rack::Utils::HeaderHash.new(a)
+    b.object_id.should.equal(a.object_id)
+    b.should.equal(a)
+  end
+
+  specify "should convert Array values to Strings when responding to #each" do
+    h = Rack::Utils::HeaderHash.new("foo" => ["bar", "baz"])
+    h.each do |k,v|
+      k.should.equal("foo")
+      v.should.equal("bar\nbaz")
+    end
+  end
+
 end
 
 context "Rack::Utils::Context" do
@@ -372,9 +459,83 @@ context "Rack::Utils::Multipart" do
     input.read.length.should.equal 197
   end
 
+  specify "builds multipart body" do
+    files = Rack::Utils::Multipart::UploadedFile.new(multipart_file("file1.txt"))
+    data  = Rack::Utils::Multipart.build_multipart("submit-name" => "Larry", "files" => files)
+
+    options = {
+      "CONTENT_TYPE" => "multipart/form-data; boundary=AaB03x",
+      "CONTENT_LENGTH" => data.length.to_s,
+      :input => StringIO.new(data)
+    }
+    env = Rack::MockRequest.env_for("/", options)
+    params = Rack::Utils::Multipart.parse_multipart(env)
+    params["submit-name"].should.equal "Larry"
+    params["files"][:filename].should.equal "file1.txt"
+    params["files"][:tempfile].read.should.equal "contents"
+  end
+
+  specify "builds nested multipart body" do
+    files = Rack::Utils::Multipart::UploadedFile.new(multipart_file("file1.txt"))
+    data  = Rack::Utils::Multipart.build_multipart("people" => [{"submit-name" => "Larry", "files" => files}])
+
+    options = {
+      "CONTENT_TYPE" => "multipart/form-data; boundary=AaB03x",
+      "CONTENT_LENGTH" => data.length.to_s,
+      :input => StringIO.new(data)
+    }
+    env = Rack::MockRequest.env_for("/", options)
+    params = Rack::Utils::Multipart.parse_multipart(env)
+    params["people"][0]["submit-name"].should.equal "Larry"
+    params["people"][0]["files"][:filename].should.equal "file1.txt"
+    params["people"][0]["files"][:tempfile].read.should.equal "contents"
+  end
+
+  specify "can parse fields that end at the end of the buffer" do
+    input = File.read(multipart_file("bad_robots"))
+
+    req = Rack::Request.new Rack::MockRequest.env_for("/",
+                      "CONTENT_TYPE" => "multipart/form-data, boundary=1yy3laWhgX31qpiHinh67wJXqKalukEUTvqTzmon",
+                      "CONTENT_LENGTH" => input.size,
+                      :input => input)
+
+    req.POST['file.path'].should.equal "/var/tmp/uploads/4/0001728414"
+    req.POST['addresses'].should.not.equal nil
+  end
+
+  specify "builds complete params with the chunk size of 16384 slicing exactly on boundary" do
+    data = File.open(multipart_file("fail_16384_nofile")) { |f| f.read }.gsub(/\n/, "\r\n")
+    options = {
+      "CONTENT_TYPE" => "multipart/form-data; boundary=----WebKitFormBoundaryWsY0GnpbI5U7ztzo",
+      "CONTENT_LENGTH" => data.length.to_s,
+      :input => StringIO.new(data)
+    }
+    env = Rack::MockRequest.env_for("/", options)
+    params = Rack::Utils::Multipart.parse_multipart(env)
+
+    params.should.not.equal nil
+    params.keys.should.include "AAAAAAAAAAAAAAAAAAA"
+    params["AAAAAAAAAAAAAAAAAAA"].keys.should.include "PLAPLAPLA_MEMMEMMEMM_ATTRATTRER"
+    params["AAAAAAAAAAAAAAAAAAA"]["PLAPLAPLA_MEMMEMMEMM_ATTRATTRER"].keys.should.include "new"
+    params["AAAAAAAAAAAAAAAAAAA"]["PLAPLAPLA_MEMMEMMEMM_ATTRATTRER"]["new"].keys.should.include "-2"
+    params["AAAAAAAAAAAAAAAAAAA"]["PLAPLAPLA_MEMMEMMEMM_ATTRATTRER"]["new"]["-2"].keys.should.include "ba_unit_id"
+    params["AAAAAAAAAAAAAAAAAAA"]["PLAPLAPLA_MEMMEMMEMM_ATTRATTRER"]["new"]["-2"]["ba_unit_id"].should.equal "1017"
+  end
+
+  specify "should return nil if no UploadedFiles were used" do
+    data = Rack::Utils::Multipart.build_multipart("people" => [{"submit-name" => "Larry", "files" => "contents"}])
+    data.should.equal nil
+  end
+
+  specify "should raise ArgumentError if params is not a Hash" do
+    lambda { Rack::Utils::Multipart.build_multipart("foo=bar") }.
+      should.raise(ArgumentError).
+      message.should.equal "value must be a Hash"
+  end
+
   private
     def multipart_fixture(name)
-      file = File.join(File.dirname(__FILE__), "multipart", name.to_s)
+      file = multipart_file(name)
       data = File.open(file, 'rb') { |io| io.read }
 
       type = "multipart/form-data; boundary=AaB03x"
@@ -383,5 +544,9 @@ context "Rack::Utils::Multipart" do
       { "CONTENT_TYPE" => type,
         "CONTENT_LENGTH" => length.to_s,
         :input => StringIO.new(data) }
+    end
+
+    def multipart_file(name)
+      File.join(File.dirname(__FILE__), "multipart", name.to_s)
     end
 end

@@ -27,7 +27,7 @@ module Rack
     module_function :unescape
 
     DEFAULT_SEP = /[&;] */n
-    
+
     # Stolen from Mongrel, with some small modifications:
     # Parses a query string by breaking it up at the '&'
     # and ';' characters.  You can also use this to parse
@@ -38,7 +38,9 @@ module Rack
 
       (qs || '').split(d ? /[#{d}] */n : DEFAULT_SEP).each do |p|
         k, v = p.split('=', 2).map { |x| unescape(x) }
-
+        if v =~ /^("|')(.*)\1$/
+          v = $2.gsub('\\'+$1, $1)
+        end
         if cur = params[k]
           if cur.class == Array
             params[k] << v
@@ -67,6 +69,9 @@ module Rack
     module_function :parse_nested_query
 
     def normalize_params(params, name, v = nil)
+      if v and v =~ /^("|')(.*)\1$/
+        v = $2.gsub('\\'+$1, $1)
+      end
       name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
       k = $1 || ''
       after = $' || ''
@@ -109,6 +114,25 @@ module Rack
     end
     module_function :build_query
 
+    def build_nested_query(value, prefix = nil)
+      case value
+      when Array
+        value.map { |v|
+          build_nested_query(v, "#{prefix}[]")
+        }.join("&")
+      when Hash
+        value.map { |k, v|
+          build_nested_query(v, prefix ? "#{prefix}[#{escape(k)}]" : escape(k))
+        }.join("&")
+      when String
+        raise ArgumentError, "value must be a Hash" if prefix.nil?
+        "#{prefix}=#{escape(value)}"
+      else
+        prefix
+      end
+    end
+    module_function :build_nested_query
+
     # Escape ampersands, brackets and quotes to their HTML/XML entities.
     def escape_html(string)
       string.to_s.gsub("&", "&amp;").
@@ -148,6 +172,54 @@ module Rack
       return (encoding_candidates & available_encodings)[0]
     end
     module_function :select_best_encoding
+
+    def set_cookie_header!(header, key, value)
+      case value
+      when Hash
+        domain  = "; domain="  + value[:domain] if value[:domain]
+        path    = "; path="    + value[:path]   if value[:path]
+        # According to RFC 2109, we need dashes here.
+        # N.B.: cgi.rb uses spaces...
+        expires = "; expires=" + value[:expires].clone.gmtime.
+          strftime("%a, %d-%b-%Y %H:%M:%S GMT") if value[:expires]
+        secure = "; secure"  if value[:secure]
+        httponly = "; HttpOnly" if value[:httponly]
+        value = value[:value]
+      end
+      value = [value] unless Array === value
+      cookie = escape(key) + "=" +
+        value.map { |v| escape v }.join("&") +
+        "#{domain}#{path}#{expires}#{secure}#{httponly}"
+
+      case header["Set-Cookie"]
+      when Array
+        header["Set-Cookie"] << cookie
+      when String
+        header["Set-Cookie"] = [header["Set-Cookie"], cookie]
+      when nil
+        header["Set-Cookie"] = cookie
+      end
+
+      nil
+    end
+    module_function :set_cookie_header!
+
+    def delete_cookie_header!(header, key, value = {})
+      unless Array === header["Set-Cookie"]
+        header["Set-Cookie"] = [header["Set-Cookie"]].compact
+      end
+
+      header["Set-Cookie"].reject! { |cookie|
+        cookie =~ /\A#{escape(key)}=/
+      }
+
+      set_cookie_header!(header, key,
+                 {:value => '', :path => nil, :domain => nil,
+                   :expires => Time.at(0) }.merge(value))
+
+      nil
+    end
+    module_function :delete_cookie_header!
 
     # Return the bytesize of String; uses String#length under Ruby 1.8 and
     # String#bytesize under 1.9.
@@ -191,9 +263,20 @@ module Rack
     # A case-insensitive Hash that preserves the original case of a
     # header when set.
     class HeaderHash < Hash
+      def self.new(hash={})
+        HeaderHash === hash ? hash : super(hash)
+      end
+
       def initialize(hash={})
+        super()
         @names = {}
         hash.each { |k, v| self[k] = v }
+      end
+
+      def each
+        super do |k, v|
+          yield(k, v.respond_to?(:to_ary) ? v.to_ary.join("\n") : v)
+        end
       end
 
       def to_hash
@@ -208,21 +291,24 @@ module Rack
       end
 
       def [](k)
-        super @names[k.downcase]
+        super(@names[k] ||= @names[k.downcase])
       end
 
       def []=(k, v)
         delete k
-        @names[k.downcase] = k
+        @names[k] = @names[k.downcase] = k
         super k, v
       end
 
       def delete(k)
-        super @names.delete(k.downcase)
+        canonical = k.downcase
+        result = super @names.delete(canonical)
+        @names.delete_if { |name,| name.downcase == canonical }
+        result
       end
 
       def include?(k)
-        @names.has_key? k.downcase
+        @names.include?(k) || @names.include?(k.downcase)
       end
 
       alias_method :has_key?, :include?
@@ -238,13 +324,23 @@ module Rack
         hash = dup
         hash.merge! other
       end
+
+      def replace(other)
+        clear
+        other.each { |k, v| self[k] = v }
+        self
+      end
     end
 
     # Every standard HTTP code mapped to the appropriate message.
-    # Stolen from Mongrel.
+    # Generated with:
+    #   curl -s http://www.iana.org/assignments/http-status-codes | \
+    #     ruby -ane 'm = /^(\d{3}) +(\S[^\[(]+)/.match($_) and
+    #                puts "      #{m[1]}  => \x27#{m[2].strip}x27,"'
     HTTP_STATUS_CODES = {
       100  => 'Continue',
       101  => 'Switching Protocols',
+      102  => 'Processing',
       200  => 'OK',
       201  => 'Created',
       202  => 'Accepted',
@@ -252,12 +348,15 @@ module Rack
       204  => 'No Content',
       205  => 'Reset Content',
       206  => 'Partial Content',
+      207  => 'Multi-Status',
+      226  => 'IM Used',
       300  => 'Multiple Choices',
       301  => 'Moved Permanently',
       302  => 'Found',
       303  => 'See Other',
       304  => 'Not Modified',
       305  => 'Use Proxy',
+      306  => 'Reserved',
       307  => 'Temporary Redirect',
       400  => 'Bad Request',
       401  => 'Unauthorized',
@@ -273,27 +372,76 @@ module Rack
       411  => 'Length Required',
       412  => 'Precondition Failed',
       413  => 'Request Entity Too Large',
-      414  => 'Request-URI Too Large',
+      414  => 'Request-URI Too Long',
       415  => 'Unsupported Media Type',
       416  => 'Requested Range Not Satisfiable',
       417  => 'Expectation Failed',
+      422  => 'Unprocessable Entity',
+      423  => 'Locked',
+      424  => 'Failed Dependency',
+      426  => 'Upgrade Required',
       500  => 'Internal Server Error',
       501  => 'Not Implemented',
       502  => 'Bad Gateway',
       503  => 'Service Unavailable',
       504  => 'Gateway Timeout',
-      505  => 'HTTP Version Not Supported'
+      505  => 'HTTP Version Not Supported',
+      506  => 'Variant Also Negotiates',
+      507  => 'Insufficient Storage',
+      510  => 'Not Extended',
     }
 
     # Responses with HTTP status codes that should not have an entity body
     STATUS_WITH_NO_ENTITY_BODY = Set.new((100..199).to_a << 204 << 304)
+
+    SYMBOL_TO_STATUS_CODE = HTTP_STATUS_CODES.inject({}) { |hash, (code, message)|
+      hash[message.downcase.gsub(/\s|-/, '_').to_sym] = code
+      hash
+    }
+
+    def status_code(status)
+      if status.is_a?(Symbol)
+        SYMBOL_TO_STATUS_CODE[status] || 500
+      else
+        status.to_i
+      end
+    end
+    module_function :status_code
 
     # A multipart form data parser, adapted from IOWA.
     #
     # Usually, Rack::Request#POST takes care of calling this.
 
     module Multipart
+      class UploadedFile
+        # The filename, *not* including the path, of the "uploaded" file
+        attr_reader :original_filename
+
+        # The content type of the "uploaded" file
+        attr_accessor :content_type
+
+        def initialize(path, content_type = "text/plain", binary = false)
+          raise "#{path} file does not exist" unless ::File.exist?(path)
+          @content_type = content_type
+          @original_filename = ::File.basename(path)
+          @tempfile = Tempfile.new(@original_filename)
+          @tempfile.set_encoding(Encoding::BINARY) if @tempfile.respond_to?(:set_encoding)
+          @tempfile.binmode if binary
+          FileUtils.copy_file(path, @tempfile.path)
+        end
+
+        def path
+          @tempfile.path
+        end
+        alias_method :local_path, :path
+
+        def method_missing(method_name, *args, &block) #:nodoc:
+          @tempfile.__send__(method_name, *args, &block)
+        end
+      end
+
       EOL = "\r\n"
+      MULTIPART_BOUNDARY = "AaB03x"
 
       def self.parse_multipart(env)
         unless env['CONTENT_TYPE'] =~
@@ -378,7 +526,7 @@ module Rack
                       :name => name, :tempfile => body, :head => head}
             elsif !filename && content_type
               body.rewind
-              
+
               # Generic multipart cases, not coming from a form
               data = {:type => content_type,
                       :name => name, :tempfile => body, :head => head}
@@ -388,12 +536,83 @@ module Rack
 
             Utils.normalize_params(params, name, data) unless data.nil?
 
-            break  if buf.empty? || content_length == -1
+            # break if we're at the end of a buffer, but not if it is the end of a field
+            break if (buf.empty? && $1 != EOL) || content_length == -1
           }
 
           input.rewind
 
           params
+        end
+      end
+
+      def self.build_multipart(params, first = true)
+        if first
+          unless params.is_a?(Hash)
+            raise ArgumentError, "value must be a Hash"
+          end
+
+          multipart = false
+          query = lambda { |value|
+            case value
+            when Array
+              value.each(&query)
+            when Hash
+              value.values.each(&query)
+            when UploadedFile
+              multipart = true
+            end
+          }
+          params.values.each(&query)
+          return nil unless multipart
+        end
+
+        flattened_params = Hash.new
+
+        params.each do |key, value|
+          k = first ? key.to_s : "[#{key}]"
+
+          case value
+          when Array
+            value.map { |v|
+              build_multipart(v, false).each { |subkey, subvalue|
+                flattened_params["#{k}[]#{subkey}"] = subvalue
+              }
+            }
+          when Hash
+            build_multipart(value, false).each { |subkey, subvalue|
+              flattened_params[k + subkey] = subvalue
+            }
+          else
+            flattened_params[k] = value
+          end
+        end
+
+        if first
+          flattened_params.map { |name, file|
+            if file.respond_to?(:original_filename)
+              ::File.open(file.path, "rb") do |f|
+                f.set_encoding(Encoding::BINARY) if f.respond_to?(:set_encoding)
+<<-EOF
+--#{MULTIPART_BOUNDARY}\r
+Content-Disposition: form-data; name="#{name}"; filename="#{Utils.escape(file.original_filename)}"\r
+Content-Type: #{file.content_type}\r
+Content-Length: #{::File.stat(file.path).size}\r
+\r
+#{f.read}\r
+EOF
+              end
+            else
+<<-EOF
+--#{MULTIPART_BOUNDARY}\r
+Content-Disposition: form-data; name="#{name}"\r
+\r
+#{file}\r
+EOF
+            end
+          }.join + "--#{MULTIPART_BOUNDARY}--\r"
+        else
+          flattened_params
         end
       end
     end

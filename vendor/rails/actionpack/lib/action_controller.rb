@@ -32,7 +32,7 @@ rescue LoadError
 end
 
 begin
-  gem 'rack', '~> 1.1.0'
+  gem 'rack', '~> 1.1.1'
   require 'rack'
 rescue Gem::LoadError
   $:.unshift "#{File.dirname(__FILE__)}/../../../plugins/rack/lib"

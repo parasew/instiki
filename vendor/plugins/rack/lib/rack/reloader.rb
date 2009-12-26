@@ -1,5 +1,6 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
-# All files in this distribution are subject to the terms of the Ruby license.
+#       Rack::Reloader is subject to the terms of an MIT-style license.
+#      See COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 require 'pathname'
 
@@ -92,6 +93,8 @@ module Rack
           found, stat = safe_stat(path)
           return ::File.expand_path(found), stat if found
         end
+
+        return false, false
       end
 
       def safe_stat(file)

@@ -1,5 +1,6 @@
 require 'lsapi'
 require 'rack/content_length'
+require 'rack/rewindable_input'
 
 module Rack
   module Handler
@@ -19,7 +20,7 @@ module Rack
         rack_input = RewindableInput.new($stdin.read.to_s)
 
         env.update(
-          "rack.version" => [1,0],
+          "rack.version" => [1,1],
           "rack.input" => rack_input,
           "rack.errors" => $stderr,
           "rack.multithread" => false,
@@ -38,6 +39,8 @@ module Rack
         ensure
           body.close if body.respond_to? :close
         end
+      ensure
+        rack_input.close
       end
       def self.send_headers(status, headers)
         print "Status: #{status}\r\n"
