@@ -27,14 +27,28 @@ class Wiki
     if not (web = Web.find_by_address(old_address))
       raise Instiki::ValidationError.new("Web with address '#{old_address}' does not exist")
     end
-
+    old_files_path = web.files_path
+    
     web.update_attributes(:address => new_address, :name => name, :markup => markup, :color => color, 
       :additional_style => additional_style, :safe_mode => safe_mode, :password => password, :published => published,
       :brackets_only => brackets_only, :count_pages => count_pages, :allow_uploads => allow_uploads, :max_upload_size => max_upload_size)
     @webs = nil
     raise Instiki::ValidationError.new("There is already a web with address '#{new_address}'") unless web.errors.on(:address).nil?
     web
+    move_files(old_files_path, web.files_path)
   end
+  
+  def move_files(old_path, new_path)
+    return if new_path == old_path
+    default_path = Rails.root.join("webs", "files")
+    FileUtils.rmdir(new_path)
+    if [old_path, new_path].include? default_path
+      File.rename(old_path, new_path)
+      FileUtils.rmdir(old_path.parent) unless old_path == default_path
+    else
+      File.rename(old_path.parent, new_path.parent)
+    end
+   end
 
   def read_page(web_address, page_name)
     ApplicationController.logger.debug "Reading page '#{page_name}' from web '#{web_address}'"

@@ -71,7 +71,8 @@
     Stylesheet tweaks &gt;&gt;</a>
     <em>
     - add or change styles used by this web; styles defined here take precedence over 
-    instiki.css. Hint: View HTML source of a page you want to style to find ID names on individual 
+    instiki.css.<br/>
+    Hint: View HTML source of a page you want to style to find ID names on individual 
     tags.</em>
     <br/>
     <textarea id="additionalStyle" class="disableAutoComplete" cols="50" rows="20"
@@ -96,7 +97,7 @@
   <div class="help">
     You can turn on a read-only version of this web that's accessible even when the regular web 
     is password protected.
-    The published version is accessible through URLs like /wiki/published/HomePage.
+    The published version is accessible through URLs like /<%= @web.address %>/published/HomePage.
   </div>
   <div class="inputBox">
     <input type="checkbox" id="published" name="published" class="disableAutoComplete" <%= 'checked="checked"' if @web.published? %> /> 
