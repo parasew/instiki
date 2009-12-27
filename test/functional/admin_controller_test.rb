@@ -140,6 +140,7 @@ class AdminControllerTest < ActionController::TestCase
     assert @web.allow_uploads?
     assert_equal 300, @web.max_upload_size
     assert File.directory? Rails.root.join("webs", "renamed_wiki1", "files")
+    assert !File.exist?(Rails.root.join("webs", "renamed_wiki1", "wiki1"))
     assert !File.exist?(Rails.root.join("webs", "wiki1"))
   end
 
@@ -157,6 +158,7 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :success
     assert @response.has_template_object?('error')
     assert File.directory? Rails.root.join("webs", "wiki1", "files")
+    assert !File.exist?(Rails.root.join("webs", "renamed_wiki1", "wiki1"))
     assert !File.exist?(Rails.root.join("webs", "renamed_wiki1"))
   end
 
@@ -179,6 +181,7 @@ class AdminControllerTest < ActionController::TestCase
     assert !@web.count_pages?
     assert !@web.allow_uploads?
     assert File.directory? Rails.root.join("webs", "renamed_wiki1", "files")
+    assert !File.exist?(Rails.root.join("webs", "renamed_wiki1", "wiki1"))
     assert !File.exist?(Rails.root.join("webs", "wiki1"))
   end
 
