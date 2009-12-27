@@ -25,6 +25,7 @@ class AdminControllerTest < ActionController::TestCase
     @elephant = pages(:elephant)
     @web = webs(:test_wiki)
     @home = @page = pages(:home_page)
+    FileUtils.rm_rf("#{RAILS_ROOT}/webs/renamed_wiki1")
   end
 
   def test_create_system_form_displayed
@@ -116,7 +117,8 @@ class AdminControllerTest < ActionController::TestCase
 
   def test_edit_web_form_submitted
     @wiki.system.update_attribute(:password, 'pswd')
-  
+    @web.save
+
     process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
@@ -137,11 +139,14 @@ class AdminControllerTest < ActionController::TestCase
     assert @web.count_pages?
     assert @web.allow_uploads?
     assert_equal 300, @web.max_upload_size
+    assert File.directory? Rails.root.join("webs", "renamed_wiki1", "files")
+    assert !File.exist?(Rails.root.join("webs", "wiki1"))
   end
 
   def test_edit_web_web_password_mismatch
     @wiki.system.update_attribute(:password, 'pswd')
-  
+    @web.save
+
     process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
@@ -151,10 +156,13 @@ class AdminControllerTest < ActionController::TestCase
 
     assert_response :success
     assert @response.has_template_object?('error')
+    assert File.directory? Rails.root.join("webs", "wiki1", "files")
+    assert !File.exist?(Rails.root.join("webs", "renamed_wiki1"))
   end
 
   def test_edit_web_opposite_values
     @wiki.system.update_attribute(:password, 'pswd')
+    @web.save
   
     process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
@@ -170,6 +178,8 @@ class AdminControllerTest < ActionController::TestCase
     assert !@web.brackets_only?
     assert !@web.count_pages?
     assert !@web.allow_uploads?
+    assert File.directory? Rails.root.join("webs", "renamed_wiki1", "files")
+    assert !File.exist?(Rails.root.join("webs", "wiki1"))
   end
 
   def test_edit_web_wrong_password
