@@ -5,6 +5,35 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.18
+
+New Features:
+
+* Syntax colouring: 'ansic', 'javascript', 'sqlite', 'yaml' and 'css' modes,
+  in addition to the existing 'html', 'xml', and 'ruby' modes,
+* Source view [suggested by Andrew Stacey]
+* Auto-resizing Textareas scale to fit viewing area.
+* Instiki upgraded to Rails 2.3.5 and Rack 1.1.
+* Now runs on Ruby 1.9. (If you're a Passenger user, you may need to upgrade to Passenger
+  2.2.8, which works around some bugs in Ruby 1.9.1.) 
+* Upgraded for itex2MML 1.3.19 (which works under Ruby 1.9, and has several new feautures,
+  relative to 1.3.15).
+
+Bugs Fixed:
+
+* Fixed a CSS bug, which screwed up printing (unless you used the "Print" view).
+* Fixed a well-formedness bug in the page-name truncation algorithm [reported by Toby Bartels]
+* Fixed a cache-sweeping bug [reported by Toby Bartels]
+* Better accessibility.
+* Improved log rotation under Passenger.
+* Omit a (seemingly superfluous) javascript hack which causes Gecko-based browsers to request
+     /my_wiki/s5/null
+  when they load an s5 slideshow.
+* Upgraded vendored sqlite3-ruby and rubyzip
+* Move files when renaming a web (so that links to uploaded files don't break).
+* Many Ruby 1.9 fixes, including removing the html5lib Sanitizer.
+
+------------------------------------------------------------------------------
 * 0.17.3
 
 The most important facet of this release is a small change in the database
