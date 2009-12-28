@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/../config/boot'
+require File.join(File.dirname(__FILE__), '..', 'config', 'boot')
 # Don't do this. Instead, put it here, where we can customize it.
 #require 'commands/server'
 
@@ -20,7 +20,7 @@ options = {
   :Port        => 2500,
   :Host        => "0.0.0.0",
   :environment => (ENV['RAILS_ENV'] || "production").dup,
-  :config      => RAILS_ROOT + "/config.ru",
+  :config      => Rails.root.join('config.ru'),
   :detach      => false,
   :debugger    => false
 }
@@ -64,7 +64,7 @@ end
 
 if options[:detach]
   Process.daemon
-  pid = "#{RAILS_ROOT}/tmp/pids/server.pid"
+  pid = Rails.root.join('tmp', 'pids', 'server.pid')
   File.open(pid, 'w'){ |f| f.write(Process.pid) }
   at_exit { File.delete(pid) if File.exist?(pid) }
 end
@@ -85,7 +85,7 @@ if File.exist?(options[:config])
     inner_app = Object.const_get(File.basename(config, '.rb').capitalize)
   end
 else
-  require RAILS_ROOT + "/config/environment"
+  require Rails.root.join('config', 'environment')
   inner_app = ActionController::Dispatcher.new
 end
 
