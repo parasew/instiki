@@ -43,7 +43,7 @@ Globals = {
 	:html_png_url => 'pngs/',
 	:html_png_resolution => 200,
 	
-	:html_use_syntax => false,
+	:html_use_syntax => true,
 	
 	:latex_use_listings => false,
 	:latex_cjk => false,
