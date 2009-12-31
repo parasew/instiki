@@ -1,7 +1,7 @@
 pre.ansic .normal {}
 pre.ansic .comment { color: #00F; }
 pre.ansic .keyword { color: #A00; }
-pre.ansic .predefined_types { color: #DD0000; }
+pre.ansic .predefined_types { color: #D00; }
 pre.ansic .char { color: #F07; }
 pre.ansic .ident { color: #004; }
 pre.ansic .hex { color: #F99; }
@@ -9,8 +9,17 @@ pre.ansic .oct { color: #F99; }
 pre.ansic .integer { color: #F99; }
 pre.ansic .float { color: #F99; }
 pre.ansic .string { color: #494; }
-pre.ansic .preprocessor { color: #FF00FF; }
+pre.ansic .preprocessor { color: #D0D; }
 pre.ansic .other { color: black; }
+
+pre.fortran .normal {}
+pre.fortran .string { color: #494; }
+pre.fortran .number { color: #D0D; }
+pre.fortran .comment { color: #00F; }
+pre.fortran .keyword { color: #A00; }
+pre.fortran .type { color: #D00; }
+pre.fortran .symbol { color: #008B8B; }
+pre.fortran .function { color: #F07; }
 
 pre.css21 .normal {}
 pre.css21 .comment { color: #888; }

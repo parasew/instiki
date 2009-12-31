@@ -99,5 +99,5 @@ pre.ruby span.ident { color: #229; }
 pre.ruby span.punct { color: #4838AB; }
 pre.yaml .key { color: #833; }
 pre.ansic .preprocessor { color: #808; }
-pre.javascript .other { color: #F0F; }
+pre.fortran .number { color: #808; }
 pre.xml .punct { color: #059; font-weight: bold; }

@@ -113,6 +113,8 @@ require 'maruku/toc'
 
 # Support for div Markdown extension
 require 'maruku/ext/div'
+# Support for fenced codeblocks extension
+require 'maruku/ext/fenced_code'
 
 # Version and URL
 require 'maruku/version'

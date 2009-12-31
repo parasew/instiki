@@ -77,58 +77,6 @@ end
 
 module MaRuKu; module In; module Markdown; module SpanLevelParser
 	
-	def unit_tests_for_attribute_lists
-		[
-			[ "",     [], "Empty lists are allowed" ], 
-			[ "=",    :throw, "Bad char to begin a list with." ], 
-			[ "a =b", :throw, "No whitespace before `=`." ], 
-			[ "a= b", :throw, "No whitespace after `=`." ], 
-
-			[ "a b", [[:ref, 'a'],[:ref, 'b']], "More than one ref" ], 
-			[ "a b c", [[:ref, 'a'],[:ref, 'b'],[:ref, 'c']], "More than one ref" ], 
-			[ "hello notfound", [[:ref, 'hello'],[:ref, 'notfound']]], 
-
-			[ "'a'",  [[:ref, 'a']], "Quoted value." ], 
-			[ '"a"'   ], 
-
-			[ "a=b",  [['a','b']], "Simple key/val" ], 
-			[ "'a'=b"   ], 
-			[ "'a'='b'" ], 
-			[ "a='b'"   ], 
-
-			[ 'a="b\'"',  [['a',"b\'"]], "Key/val with quotes" ],
-			[ 'a=b\''],
-			[ 'a="\\\'b\'"',  [['a',"\'b\'"]], "Key/val with quotes" ], 
-			
-			['"', :throw, "Unclosed quotes"],
-			["'"],
-			["'a "],
-			['"a '],
-			
-			[ "#a",  [[:id, 'a']], "Simple ID" ], 
-			[ "#'a'" ], 
-			[ '#"a"' ], 
-
-			[ "#",  :throw, "Unfinished '#'." ], 
-			[ ".",  :throw, "Unfinished '.'." ], 
-			[ "# a",  :throw, "No white-space after '#'." ], 
-			[ ". a",  :throw, "No white-space after '.' ." ], 
-			
-			[ "a=b c=d",  [['a','b'],['c','d']], "Tabbing" ], 
-			[ " \ta=b \tc='d' "],
-			[ "\t a=b\t c='d'\t\t"],
-			
-			[ ".\"a'",  :throw, "Mixing quotes is bad." ], 
-			
-		].map { |s, expected, comment| 
-			@expected = (expected ||= @expected)
-			@comment  = (comment  ||= (last=@comment) )
-			(comment == last && (comment += (@count+=1).to_s)) || @count = 1
-			expected = [md_ial(expected)] if expected.kind_of? Array
-			["{#{MagicChar}#{s}}", expected, "Attributes: #{comment}"]
-		}
-	end
-	
 	def md_al(s=[]); AttributeList.new(s) end
 
 	# returns nil or an AttributeList
