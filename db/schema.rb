@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091021024908) do
+ActiveRecord::Schema.define(:version => 20100101192755) do
 
   create_table "pages", :force => true do |t|
     t.datetime "created_at",                              :null => false
@@ -21,11 +21,11 @@ ActiveRecord::Schema.define(:version => 20091021024908) do
   end
 
   create_table "revisions", :force => true do |t|
-    t.datetime "created_at",                                    :null => false
-    t.datetime "updated_at",                                    :null => false
-    t.datetime "revised_at",                                    :null => false
-    t.integer  "page_id",                        :default => 0, :null => false
-    t.text     "content",    :limit => 16777215
+    t.datetime "created_at",                                     :null => false
+    t.datetime "updated_at",                                     :null => false
+    t.datetime "revised_at",                                     :null => false
+    t.integer  "page_id",                        :default => 0,  :null => false
+    t.text     "content",    :limit => 16777215, :default => "", :null => false
     t.string   "author",     :limit => 60
     t.string   "ip",         :limit => 60
   end
@@ -47,20 +47,20 @@ ActiveRecord::Schema.define(:version => 20091021024908) do
   end
 
   create_table "webs", :force => true do |t|
-    t.datetime "created_at",                                                :null => false
-    t.datetime "updated_at",                                                :null => false
-    t.string   "name",             :limit => 60, :default => "",            :null => false
-    t.string   "address",          :limit => 60, :default => "",            :null => false
+    t.datetime "created_at",                                                 :null => false
+    t.datetime "updated_at",                                                 :null => false
+    t.string   "name",             :limit => 60,  :default => "",            :null => false
+    t.string   "address",          :limit => 60,  :default => "",            :null => false
     t.string   "password",         :limit => 60
-    t.text     "additional_style"
-    t.integer  "allow_uploads",                  :default => 1
-    t.integer  "published",                      :default => 0
-    t.integer  "count_pages",                    :default => 0
-    t.string   "markup",           :limit => 50, :default => "markdownMML"
-    t.string   "color",            :limit => 6,  :default => "008B26"
-    t.integer  "max_upload_size",                :default => 100
-    t.integer  "safe_mode",                      :default => 0
-    t.integer  "brackets_only",                  :default => 0
+    t.text     "additional_style", :limit => 255
+    t.integer  "allow_uploads",                   :default => 1
+    t.integer  "published",                       :default => 0
+    t.integer  "count_pages",                     :default => 0
+    t.string   "markup",           :limit => 50,  :default => "markdownMML"
+    t.string   "color",            :limit => 6,   :default => "008B26"
+    t.integer  "max_upload_size",                 :default => 100
+    t.integer  "safe_mode",                       :default => 0
+    t.integer  "brackets_only",                   :default => 0
   end
 
   create_table "wiki_files", :force => true do |t|
