@@ -8,8 +8,8 @@ module Syntax
       SQLite_PREDEFINED_FUNCTIONS << name
     end
 
-    SQLite_PREDEFINED_FUNCTIONS = %w{abs avg coalesce count glob hex ifnull
-      last_insert_rowid length like load_extension lower 
+    SQLite_PREDEFINED_FUNCTIONS = Set.new %w{abs avg coalesce count glob
+      hex ifnull last_insert_rowid length like load_extension lower 
       ltrim max min sum nullif
       quote random randomblob replace round
       rtrim soundex sqlite_version substr total
@@ -17,27 +17,27 @@ module Syntax
       date time datetime julianday
       strftime over} unless const_defined?(:SQLite_PREDEFINED_FUNCTIONS)
 
-    SQLite_KEYWORDS = %w{abort add after all alter analyze
-      asc attach autoincrement before by cascade
-      check commit conflict constraint create cross
+    SQLite_KEYWORDS = Set.new %w{abort add after all alter analyze
+      asc attach autoincrement before by cascade change character
+      check commit conflict constraint create cross  collate
       current_date current_time current_timestamp database default
       deferrable deferred delete desc detach distinct drop each
       escape except exclusive explain fail for foreign from
       full group having if ignore immediate
       index initially inner insert instead intersect into is
-      join key left limit natural of offset on or order
+      join key left limit modify natural of offset on or order
       outer plan pragma primary query raise references reindex
       rename replace restrict right rollback row select set
       table temp temporary to transaction trigger union
       unique update using vacuum values view virtual
       where partition} unless const_defined?(:SQLite_KEYWORDS)
 
-    SQLite_DATATYPES = %w{null none text numeric integer text blob
-     int varchar char real float
-     double} unless const_defined?(:SQLite_DATATYPES)
+    SQLite_DATATYPES = Set.new %w{null none text numeric integer
+      text blob int varchar char real float
+      double} unless const_defined?(:SQLite_DATATYPES)
 
-    SQLite_OPERATORS = %w{not escape isnull notnull between and
-      in exists case when then else begin end cast as collate
+    SQLite_OPERATORS = Set.new %w{not escape isnull notnull between and
+      in exists case when then else begin end cast as
       like glob regexp < >  || * / % + - << >>
       & | <= >= = == != <>
       match} unless const_defined?(:SQLite_OPERATORS)
