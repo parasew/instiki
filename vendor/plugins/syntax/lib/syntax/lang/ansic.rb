@@ -9,12 +9,12 @@ module Syntax
     end
     
     ANSIC_KEYWORDS =
-      %w{asm break case continue default do else for goto if return
+      Set.new %w{asm break case continue default do else for goto if return
          switch while struct union enum typedef static register
          auto extern sizeof volatile const inline restrict} unless const_defined?(:ANSIC_KEYWORDS)
 
     ANSIC_PREDEFINED_TYPES =
-      %w{int long short char void signed unsigned 
+      Set.new %w{int long short char void signed unsigned 
          float double bool complex} unless const_defined?(:ANSIC_PREDEFINED_TYPES)
 
     ANSIC_PREDEFINED_CONSTANTS =
