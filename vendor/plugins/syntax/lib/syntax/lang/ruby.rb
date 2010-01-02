@@ -9,7 +9,7 @@ module Syntax
 
     # The list of all identifiers recognized as keywords.
     KEYWORDS =
-      %w{if then elsif else end begin do rescue ensure while for
+      Set.new %w{if then elsif else end begin do rescue ensure while for
          class module def yield raise until unless and or not when
          case super undef break next redo retry in return alias
          defined?}

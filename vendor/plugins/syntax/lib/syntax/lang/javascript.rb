@@ -5,7 +5,7 @@ module Syntax
   class Javascript < Tokenizer
     
     JAVASCRIPT_KEYWORDS =
-      %w{abstract break case catch class const continue
+      Set.new %w{abstract break case catch class const continue
          debugger default delete do else enum export extends
          final finally for function goto if implements
          import in instanceof interface native new
@@ -15,7 +15,7 @@ module Syntax
          var void volatile while with} unless const_defined?(:JAVASCRIPT_KEYWORDS)
 
     JAVASCRIPT_PREDEFINED_TYPES =
-      %w{boolean byte char double float int long short} unless const_defined?(:JAVASCRIPT_PREDEFINED_TYPES)
+      Set.new %w{boolean byte char double float int long short} unless const_defined?(:JAVASCRIPT_PREDEFINED_TYPES)
 
     JAVASCRIPT_PREDEFINED_CONSTANTS =
       %w{null true false} unless const_defined?(:JAVASCRIPT_PREDEFINED_CONSTANTS)
