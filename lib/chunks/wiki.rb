@@ -155,6 +155,7 @@ module WikiChunk
       if web_match
         @web_name = normalize_whitespace(web_match[1])
         @page_name = web_match[2]
+        @link_text = @page_name if @link_text == web_match[0]
       end
     end
 

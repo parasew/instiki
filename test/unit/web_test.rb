@@ -14,7 +14,7 @@ class WebTest < ActiveSupport::TestCase
   
   def test_pages_by_match
     add_sample_pages
-    assert_equal 2, @web.select { |page| page.content =~ /me/i }.length
+    assert_equal 3, @web.select { |page| page.content =~ /me/i }.length
     assert_equal 1, @web.select { |page| page.content =~ /Who/i }.length
     assert_equal 0, @web.select { |page| page.content =~ /none/i }.length
   end
@@ -27,9 +27,9 @@ class WebTest < ActiveSupport::TestCase
   
   def test_delete
     add_sample_pages
-    assert_equal 2, @web.pages.length
+    assert_equal 3, @web.pages.length
     @web.remove_pages([ @web.page('EverBeenInLove') ])
-    assert_equal 1, @web.pages(true).length
+    assert_equal 2, @web.pages(true).length
   end
   
   def test_initialize  

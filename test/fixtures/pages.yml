@@ -60,4 +60,10 @@ liquor:
   updated_at: <%= 40.minutes.ago.to_formatted_s(:db) %>
   web_id: 1
   name: liquor
-  
+
+instiki_page:
+  id: 10
+  created_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
+  updated_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
+  web_id: 2
+  name: HomePage

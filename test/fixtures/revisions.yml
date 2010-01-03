@@ -91,3 +91,13 @@ liquor_first_revision:
   content: "[[!redirects booze]]\n Drinky-poo.  [[Instiki:HomePage|go there]]"
   author: Guest
   ip: 127.0.0.2
+
+instiki_home_page_first_revision:
+  id: 11
+  created_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
+  updated_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
+  revised_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
+  page_id: 10
+  content: First revision of the HomePage end
+  author: AnAuthor
+  ip: 127.0.0.1
