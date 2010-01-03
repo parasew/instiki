@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
+require Rails.root.join('test', 'test_helper')
 
 class PageRendererTest < ActiveSupport::TestCase
   fixtures :webs, :pages, :revisions, :system, :wiki_references
@@ -662,10 +662,16 @@ END_THM
   
   def test_wiki_link_with_colon
   	assert_markup_parsed_as(
-  	  "<p><span class='newWikiWord'>Instiki:Colon<a href='../../instiki/show/Colon'>?</a></span></p>",
-  	  '[[Instiki:Colon]]')
+  	  "<p><a class='existingWikiWord' href='../show/HomePage'>HomePage</a></p>",
+  	  '[[wiki1:HomePage]]')
   end
   
+  def test_wiki_link_with_colon_interwiki
+  	assert_markup_parsed_as(
+  	  "<p><a class='existingWikiWord' href='../../instiki/show/HomePage' title='instiki'>HomePage</a></p>",
+  	  '[[instiki:HomePage]]')
+  end
+
   def test_list_with_tildas
     list_with_tildas = <<-EOL
 * [a](~b)

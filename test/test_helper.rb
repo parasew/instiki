@@ -2,7 +2,7 @@ ENV['RAILS_ENV'] = 'test'
 
 # Expand the path to environment so that Ruby does not load it multiple times
 # File.expand_path can be removed if Ruby 1.9 is in use.
-require File.expand_path(File.dirname(__FILE__) + '/../config/environment')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
 
 require 'test_help'
 require 'wiki_content'
@@ -20,7 +20,7 @@ class  ActiveSupport::TestCase
   self.pre_loaded_fixtures = false
   self.use_transactional_fixtures = true
   self.use_instantiated_fixtures = false
-  self.fixture_path = File.dirname(__FILE__) + "/fixtures/"
+  self.fixture_path = Rails.root.join('test', 'fixtures', '')
 end
 
 # activate PageObserver
@@ -28,7 +28,7 @@ PageObserver.instance
 
 class Test::Unit::TestCase
   def create_fixtures(*table_names)
-    Fixtures.create_fixtures(File.dirname(__FILE__) + "/fixtures", table_names)
+    Fixtures.create_fixtures(Rails.root.join('test', 'fixtures'), table_names)
   end
 
   # Add more helper methods to be used by all tests here...
@@ -128,16 +128,21 @@ class StubUrlGenerator < AbstractUrlGenerator
   def page_link(mode, name, text, web_address, known_page)
     link = CGI.escape(name)
     return %{<span class='wikilink-error'><b>Illegal link (target contains a '.'):</b> #{name}</span>} if name.include?('.')
+    title = web_address == 'wiki1' ? '' : " title='#{web_address}'"
     case mode
     when :export
       if known_page then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
       else %{<span class="newWikiWord">#{text}</span>} end
     when :publish
-      if known_page then %{<a class="existingWikiWord" href="../published/#{link}">#{text}</a>}
+      if known_page then %{<a class="existingWikiWord" href="../published/#{link}"#{title}>#{text}</a>}
       else %{<span class="newWikiWord">#{text}</span>} end
     else 
       if known_page
-        %{<a class="existingWikiWord" href="../show/#{link}">#{text}</a>}
+        if web_address == 'instiki'
+          %{<a class="existingWikiWord" href="../../#{web_address}/show/#{link}"#{title}>#{text}</a>}
+        else
+          %{<a class="existingWikiWord" href="../show/#{link}"#{title}>#{text}</a>}        
+        end
       else 
         if web_address == 'instiki'
            %{<span class="newWikiWord">#{text}<a href="../../#{web_address}/show/#{link}">?</a></span>}

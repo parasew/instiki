@@ -4,7 +4,7 @@
 # commiting to SVN
 # $INSTIKI_TEST_PDFLATEX = true
 
-require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
+require Rails.root.join('test', 'test_helper')
 require 'wiki_controller'
 require 'rexml/document'
 require 'tempfile'
@@ -361,13 +361,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage'>go there<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body
 
     r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage'>go there<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body
 
     Web.find_by_address('instiki').update_attribute(:published, true)
 
@@ -375,13 +375,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage'>go there<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body
 
     r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage'>go there<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body
 
     set_web_property :published, false
 
@@ -389,7 +389,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage'>go there<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body
 
     Web.find_by_address('instiki').update_attribute(:published, false)
 
@@ -397,7 +397,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage'>go there<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body
   end
 
 

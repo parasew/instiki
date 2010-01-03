@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require File.expand_path(File.dirname(__FILE__) + '/../../test_helper')
+require Rails.root.join('test', 'test_helper')
 require 'chunks/wiki'
 
 class WikiTest < Test::Unit::TestCase
@@ -115,7 +115,7 @@ class WikiTest < Test::Unit::TestCase
     # empty link type
     assert_link_parsed_as 'page name', 'link?:', :show, '[[page name|link?:]]'
     # unknown link type
-    assert_link_parsed_as 'create_system', 'page name:create_system', :show, 
+    assert_link_parsed_as 'create_system', 'create_system', :show, 
         '[[page name:create_system]]'
   end
 

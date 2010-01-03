@@ -180,7 +180,8 @@ class UrlGenerator < AbstractUrlGenerator
       action = web.published? && (web != @web || [:publish, :s5].include?(mode) ) ? 'published' : 'show'
       href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
             :id => name, :only_path => true
-      %{<a class="existingWikiWord" href="#{href}">#{text}</a>}
+      title = web == @web ? '' : %{ title="#{web_address}"}
+      %{<a class="existingWikiWord" href="#{href}"#{title}>#{text}</a>}
     end
     
     def html_ext
