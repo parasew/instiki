@@ -683,7 +683,9 @@ class WikiControllerTest < ActionController::TestCase
     assert_match @eternity, r.headers["Set-Cookie"][0]
     new_page = @wiki.read_page('wiki1', 'NewPage')
     assert_equal "Double-struck A: \360\235\224\270", new_page.content
-    assert_equal "\360\235\224\270\303\274thorOfNewPage", new_page.author
+    a = ''.respond_to?(:force_encoding) ? "\u{1D538}\u00FCthorOfNewPage" :
+                                          "\360\235\224\270\303\274thorOfNewPage"
+    assert_equal a, new_page.author
     assert_equal "\360\235\224\270\303\274thorOfNewPage", r.cookies['author']
   end
 
