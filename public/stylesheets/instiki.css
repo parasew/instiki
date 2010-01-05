@@ -384,6 +384,10 @@ a.existingWikiWord[title]{
 border: 1px dashed #000;
 }
 
+.byline a.existingWikiWord[title]{
+border: none;
+}
+
 a:hover,a.nav:hover, a:hover math {
 background-color:#000;
 color:#FFF;
