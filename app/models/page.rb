@@ -65,7 +65,7 @@ class Page < ActiveRecord::Base
   end
 
   def wiki_words
-    wiki_references.select { |ref| ref.wiki_word? }.map { |ref| ref.referenced_name }
+    wiki_references.select { |ref| ref.wiki_word? }.map { |ref| ref.referenced_name.as_utf8 }
   end
 
   def linked_from
@@ -73,7 +73,7 @@ class Page < ActiveRecord::Base
   end
 
   def redirects
-    wiki_references.select { |ref| ref.redirected_page? }.map { |ref| ref.referenced_name }
+    wiki_references.select { |ref| ref.redirected_page? }.map { |ref| ref.referenced_name.as_utf8 }
   end  
 
   def included_from

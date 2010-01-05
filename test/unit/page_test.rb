@@ -127,23 +127,24 @@ class PageTest < ActiveSupport::TestCase
   def test_revise_changes_references_from_wanted_to_linked_for_redirected_pages
     web = Web.find(1)
     new_page = Page.new(:web => web, :name => 'NewPage')
-    new_page.revise('Reference to HappyPage, and to WantedPage2', 'NewPage', Time.local(2004, 4, 5, 17, 56), 'AlexeyVerkhovsky', 
+    new_page.revise("Reference to H\xC3\xA1ppyPage, and to WantedPage2", 'NewPage', Time.local(2004, 4, 5, 17, 56), 'AlexeyVerkhovsky', 
         x_test_renderer)
     
     references = new_page.wiki_references(true)
     assert_equal 2, references.size
-    assert_equal 'HappyPage', references[0].referenced_name
+    assert_equal "H\xC3\xA1ppyPage", references[0].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
     wanted_pages = web.select.wanted_pages
-    assert_equal ["HappyPage", "HisWay", "OverThere", "WantedPage2"], wanted_pages
+    a = ''.respond_to?(:force_encoding) ? ["HisWay", "H\u00E1ppyPage", "OverThere", "WantedPage2"] : ["HisWay", "H\303\241ppyPage", "OverThere", "WantedPage2"]
+    assert_equal a, wanted_pages
 
     my_page = Page.new(:web => web, :name => 'MyPage')
-    my_page.revise("[[!redirects HappyPage]]\nAnd here it is!", 'MyPage', Time.now, 'AlexeyVerkhovsky', x_test_renderer)
+    my_page.revise("[[!redirects H\xC3\xA1ppyPage]]\nAnd here it is!", 'MyPage', Time.now, 'AlexeyVerkhovsky', x_test_renderer)
     my_references = my_page.wiki_references(true)
     assert_equal 1, my_references.size
-    assert_equal 'HappyPage', my_references[0].referenced_name
+    assert_equal "H\xC3\xA1ppyPage", my_references[0].referenced_name
     assert_equal WikiReference::REDIRECTED_PAGE, my_references[0].link_type
     wanted_pages = web.select.wanted_pages
     assert_equal ["HisWay", "OverThere", "WantedPage2"], wanted_pages
@@ -151,10 +152,12 @@ class PageTest < ActiveSupport::TestCase
     # link type stored for NewPage -> HappyPage reference should change from WANTED to LINKED
     # reference NewPage -> WantedPage2 should remain the same
     references = new_page.wiki_references #(true)
-    assert_match( "Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>Happy Page</a>",
+    s = ''.respond_to?(:force_encoding) ? "Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>H\u00E1ppy Page</a>" :
+       "Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>H\303\241ppy Page</a>"
+    assert_match( s,
          x_test_renderer(new_page.revisions.last).display_content(true) )
     assert_equal 2, references.size
-    assert_equal 'HappyPage', references[0].referenced_name
+    assert_equal "H\xC3\xA1ppyPage", references[0].referenced_name
 #   Doesn't work, since picking up the change in wiki_references requires a database query.
 #    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
@@ -162,16 +165,18 @@ class PageTest < ActiveSupport::TestCase
     wanted_pages = web.select.wanted_pages
     assert_equal ["HisWay", "OverThere", "WantedPage2"], wanted_pages
     
-    new_page.revise('Reference to HappyPage and to WantedPage2.pdf and [[foo.pdf]]', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
+    new_page.revise("Reference to H\xC3\xA1ppyPage and to WantedPage2.pdf and [[foo.pdf]]", 'NewPage', Time.now, 'AlexeyVerkhovsky', 
         x_test_renderer)
     references = new_page.wiki_references(true)
-    assert_equal( "<p>Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>Happy Page</a>" +
+    s = ''.respond_to?(:force_encoding) ? "<p>Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>H\u00E1ppy Page</a>" :
+        "<p>Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>H\303\241ppy Page</a>"
+    assert_equal( s +
       " and to <span class='newWikiWord'>Wanted Page2<a href='../show/WantedPage2'>?</a></span>.pdf " +
       "and <span class='wikilink-error'><b>Illegal link (target contains a &#39;.&#39;):</b> foo.pdf</span></p>",
          x_test_renderer(new_page.revisions.last).display_content(true) )
     assert_equal 3, references.size
 #   now it works.
-    assert_equal 'HappyPage', references[0].referenced_name
+    assert_equal "H\xC3\xA1ppyPage", references[0].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
