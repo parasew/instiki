@@ -3,7 +3,7 @@ class Author < String
   attr_reader :name
   def initialize(name, ip = nil) 
     @ip = ip
-    super(name)
+    super(name.as_utf8)
   end
 
   def name=(value)
