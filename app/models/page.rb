@@ -4,6 +4,10 @@ class Page < ActiveRecord::Base
   has_many :wiki_references, :order => 'referenced_name'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
 
+  def name
+    read_attribute(:name).as_utf8
+  end
+
   def revise(content, name, time, author, renderer)
     revisions_size = new_record? ? 0 : revisions.size
     if (revisions_size > 0) and content == current_revision.content and name == self.name
@@ -65,7 +69,7 @@ class Page < ActiveRecord::Base
   end
 
   def wiki_words
-    wiki_references.select { |ref| ref.wiki_word? }.map { |ref| ref.referenced_name.as_utf8 }
+    wiki_references.select { |ref| ref.wiki_word? }.map { |ref| ref.referenced_name }
   end
 
   def linked_from
@@ -73,7 +77,7 @@ class Page < ActiveRecord::Base
   end
 
   def redirects
-    wiki_references.select { |ref| ref.redirected_page? }.map { |ref| ref.referenced_name.as_utf8 }
+    wiki_references.select { |ref| ref.redirected_page? }.map { |ref| ref.referenced_name }
   end  
 
   def included_from
@@ -82,7 +86,7 @@ class Page < ActiveRecord::Base
 
   # Returns the original wiki-word name as separate words, so "MyPage" becomes "My Page".
   def plain_name
-    web.brackets_only? ? CGI.escapeHTML(name) : CGI.escapeHTML(WikiWords.separate(name))
+    web.brackets_only? ? name.escapeHTML : WikiWords.separate(name).escapeHTML
   end
 
   LOCKING_PERIOD = 30.minutes

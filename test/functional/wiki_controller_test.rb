@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+#coding: utf-8
 
 # Uncomment the line below to enable pdflatex tests; don't forget to comment them again 
 # commiting to SVN
@@ -442,15 +443,16 @@ class WikiControllerTest < ActionController::TestCase
   end
   
   def test_recently_revised_with_categorized_page
-    page2 = @wiki.write_page('wiki1', 'Page2',
+    page2 = @wiki.write_page('wiki1', "Pagé",
         "Page2 contents.\n" +
-        "category: categorized", 
-        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+        "category: categorizé", 
+        Time.now, Author.new("André Auteur", '127.0.0.2'), x_test_renderer)
       
     r = process('recently_revised', 'web' => 'wiki1')
     assert_response(:success)
     
-    assert_equal %w(animals categorized trees), r.template_objects['categories']
+    c = ''.respond_to?(:force_encoding) ? "categoriz\u00E9" : "categoriz\303\251"
+    assert_equal ['animals',  c,  'trees'], r.template_objects['categories']
     # no category is specified in params
     assert_nil r.template_objects['category']
     assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, page2, pages(:smart_engine), pages(:that_way), @liquor], r.template_objects['pages_in_category'],
@@ -676,7 +678,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_astral_plane_characters
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Double-struck A: \xF0\x9D\x94\xB8", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Double-struck A: \360\235\224\270", 
       'author' => "\xF0\x9D\x94\xB8\xC3\xBCthorOfNewPage"
     
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
@@ -686,7 +688,7 @@ class WikiControllerTest < ActionController::TestCase
     a = ''.respond_to?(:force_encoding) ? "\u{1D538}\u00FCthorOfNewPage" :
                                           "\360\235\224\270\303\274thorOfNewPage"
     assert_equal a, new_page.author
-    assert_equal "\360\235\224\270\303\274thorOfNewPage", r.cookies['author']
+    assert_equal "\xF0\x9D\x94\xB8\xC3\xBCthorOfNewPage".as_bytes, r.cookies['author']
   end
 
   def test_save_not_utf8
@@ -972,7 +974,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body.as_bytes
+    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
   end
 
   def test_recursive_include_II
@@ -984,7 +986,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body.as_bytes
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body
   end
   
   def test_recursive_include_III
@@ -998,7 +1000,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body.as_bytes
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body
   end
 
   def test_nonrecursive_include

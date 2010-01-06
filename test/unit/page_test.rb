@@ -132,19 +132,19 @@ class PageTest < ActiveSupport::TestCase
     
     references = new_page.wiki_references(true)
     assert_equal 2, references.size
-    assert_equal "H\xC3\xA1ppyPage", references[0].referenced_name
+    p = ''.respond_to?(:force_encoding) ? "H\u00E1ppyPage" : "H\303\241ppyPage"
+    assert_equal p, references[0].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
     wanted_pages = web.select.wanted_pages
-    a = ''.respond_to?(:force_encoding) ? ["HisWay", "H\u00E1ppyPage", "OverThere", "WantedPage2"] : ["HisWay", "H\303\241ppyPage", "OverThere", "WantedPage2"]
-    assert_equal a, wanted_pages
+    assert_equal ["HisWay", p, "OverThere", "WantedPage2"], wanted_pages
 
     my_page = Page.new(:web => web, :name => 'MyPage')
     my_page.revise("[[!redirects H\xC3\xA1ppyPage]]\nAnd here it is!", 'MyPage', Time.now, 'AlexeyVerkhovsky', x_test_renderer)
     my_references = my_page.wiki_references(true)
     assert_equal 1, my_references.size
-    assert_equal "H\xC3\xA1ppyPage", my_references[0].referenced_name
+    assert_equal p, my_references[0].referenced_name
     assert_equal WikiReference::REDIRECTED_PAGE, my_references[0].link_type
     wanted_pages = web.select.wanted_pages
     assert_equal ["HisWay", "OverThere", "WantedPage2"], wanted_pages
@@ -157,7 +157,7 @@ class PageTest < ActiveSupport::TestCase
     assert_match( s,
          x_test_renderer(new_page.revisions.last).display_content(true) )
     assert_equal 2, references.size
-    assert_equal "H\xC3\xA1ppyPage", references[0].referenced_name
+    assert_equal p, references[0].referenced_name
 #   Doesn't work, since picking up the change in wiki_references requires a database query.
 #    assert_equal WikiReference::LINKED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
@@ -176,7 +176,7 @@ class PageTest < ActiveSupport::TestCase
          x_test_renderer(new_page.revisions.last).display_content(true) )
     assert_equal 3, references.size
 #   now it works.
-    assert_equal "H\xC3\xA1ppyPage", references[0].referenced_name
+    assert_equal p, references[0].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
     assert_equal 'WantedPage2', references[1].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[1].link_type
