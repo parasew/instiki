@@ -12,6 +12,10 @@ class WikiReference < ActiveRecord::Base
   belongs_to :page
   validates_inclusion_of :link_type, :in => [LINKED_PAGE, WANTED_PAGE, REDIRECTED_PAGE, INCLUDED_PAGE, CATEGORY, AUTHOR, FILE, WANTED_FILE]
 
+  def referenced_name
+    read_attribute(:referenced_name).as_utf8
+  end
+
   def self.link_type(web, page_name)
     if web.has_page?(page_name) || self.page_that_redirects_for(web, page_name)
       LINKED_PAGE
@@ -93,7 +97,7 @@ class WikiReference < ActiveRecord::Base
       "ON wiki_references.page_id = pages.id " +
       "WHERE wiki_references.link_type = '#{CATEGORY}' " +
       "AND pages.web_id = '#{web.id}'"
-    connection.select_all(query).map { |row| row['referenced_name'] }
+    connection.select_all(query).map { |row| row['referenced_name'].as_utf8 }
   end
 
   def wiki_word?

@@ -389,7 +389,6 @@ class WikiController < ApplicationController
   def load_page
     @page_name = params['id'] ? params['id'].purify : nil
     @page = @wiki.read_page(@web_name, @page_name) if @page_name
-    @page.name.as_utf8 if @page
   end
 
   private
