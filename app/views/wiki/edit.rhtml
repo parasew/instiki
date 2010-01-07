@@ -55,7 +55,8 @@ function toggleVisibility() {
 }
 
 function addRedirect(){
-  if (document.getElementById('new_name').value != "<%= escape_javascript(@page.name) %>" ) {
+  var e = document.getElementById('new_name').value;
+  if ( e != "<%= escape_javascript(@page.name) %>" && e != '') {
     var content = document.getElementById('content');
     content.value = '[[!redirects <%= escape_javascript(@page.name) %>]]\n' + content.value
     }
