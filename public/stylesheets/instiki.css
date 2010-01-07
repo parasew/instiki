@@ -384,7 +384,7 @@ a.existingWikiWord[title]{
 border: 1px dashed #000;
 }
 
-.web_protected a.existingWikiWord[t, .web_normal a.existingWikiWord[title]{
+.web_protected a.existingWikiWord[title], .web_normal a.existingWikiWord[title]{
 border: none;
 }
 

@@ -5,6 +5,23 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.18.1
+
+New Features:
+
+* (Markdown-Extra syle) fenced codeblocks. [From Jason Blevins]
+* Fortran syntax colouring. [From Jason Blevins]
+
+Bugs Fixed:
+
+* Fixed some Ruby 1.9 encoding issues, with unicode page names,
+  author names and categories.
+* Better display of inter-web wikilinks
+* various syntax-colouring fixes
+* Corrected length of wiki_references referenced_name (affects
+  MySQL users)
+
+------------------------------------------------------------------------------
 * 0.18
 
 New Features:
