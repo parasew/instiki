@@ -273,6 +273,7 @@ class WikiController < ApplicationController
       cookies['author'] = { :value => author_name.dup.as_bytes, :expires => Time.utc(2030) }
       if @page
         new_name = params['new_name'] ? params['new_name'].purify : @page_name
+        new_name = @page_name if new_name.empty?
         prev_content = @page.current_revision.content
         raise Instiki::ValidationError.new('Your new title cannot contain a "."') if new_name.include? '.'
         raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if
