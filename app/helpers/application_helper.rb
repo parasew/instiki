@@ -127,4 +127,9 @@ require 'stringsupport'
     end
   end
 
+  def darken(s)
+     n=s.length/3
+     s.scan( %r(\w{#{n},#{n}}) ).collect {|a| (a.hex * 2/3).to_s(16).rjust(n,'0')}.join
+  end
+
 end
