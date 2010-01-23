@@ -27,7 +27,7 @@ max-width:55em;
 }
 
 a:visited {
-color:#555;
+color:#666;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -68,7 +68,7 @@ width:1.5em;
 height:1.625em;
 }
 
-a.nav,a.nav:link,a.nav:visited {
+a.nav,a:link.nav, a:visited.nav {
 background-color:#FFF;
 color:#000;
 }
@@ -381,14 +381,27 @@ color:#000;
 }
 
 a.existingWikiWord[title]{
-border: 1px dashed #000;
+//border: 1px dashed #BBB;
 }
 
-.web_protected a.existingWikiWord[title], .web_normal a.existingWikiWord[title]{
-border: none;
+.web_protected a.existingWikiWord[title], .web_normal a.existingWikiWord[title] {
+// border: none;
 }
 
-a:hover,a.nav:hover, a:hover math {
+a:hover, a.nav:hover, a:hover math {
+background-color:#000;
+color:#FFF;
+}
+
+a:hover.existingWikiWord, a:visited:hover.existingWikiWord {
+background-color:#008;
+color:#FFF;
+}
+a:hover.existingWikiWord[title] {
+background-color:#707;
+color:#FFF;
+}
+.web_protected a:hover.existingWikiWord[title], .web_normal a:hover.existingWikiWord[title] {
 background-color:#000;
 color:#FFF;
 }
