@@ -459,7 +459,7 @@ EOL
         end
         dir = Rails.root.join('public')
         Dir["#{dir}/**/*"].each do |f|
-          zip_out.add "public#{f.sub(dir,'')}", f
+          zip_out.add "public#{f.sub(dir.to_s,'')}", f
         end
       end
       files = @web.files_path
