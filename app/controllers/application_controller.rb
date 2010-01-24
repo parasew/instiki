@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
     Wiki.new
   end
 
-  helper_method :xhtml_enabled?, :html_ext
+  helper_method :xhtml_enabled?, :html_ext, :darken
 
   protected
 
@@ -34,6 +34,11 @@ class ApplicationController < ActionController::Base
     else
       'html'
     end       
+  end
+
+  def darken(s)
+     n=s.length/3
+     s.scan( %r(\w{#{n},#{n}}) ).collect {|a| (a.hex * 2/3).to_s(16).rjust(n,'0')}.join
   end
 
   def check_authorization

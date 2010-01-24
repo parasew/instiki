@@ -152,7 +152,7 @@ class WikiControllerTest < ActionController::TestCase
             zip.file.read('Oak.xhtml').gsub(/\s+/, ' ')
         assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
             zip.file.read('HomePage.xhtml').gsub(/\s+/, ' ')
-        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.xhtml"></head></html> ', zip.file.read('index.xhtml').gsub(/\s+/, ' ')
+        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.xhtml" /></head></html> ', zip.file.read('index.xhtml').gsub(/\s+/, ' ')
       end
     ensure
       File.delete(@tempfile_path) if File.exist?(@tempfile_path)
@@ -183,7 +183,7 @@ class WikiControllerTest < ActionController::TestCase
             zip.file.read('Oak.html').gsub(/\s+/, ' ')
         assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
             zip.file.read('HomePage.html').gsub(/\s+/, ' ')
-        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.html"></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
+        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.html" /></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
       end
     ensure
       File.delete(@tempfile_path) if File.exist?(@tempfile_path)
