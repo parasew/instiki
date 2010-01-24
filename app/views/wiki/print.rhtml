@@ -4,7 +4,7 @@
   @style_additions = ".newWikiWord { background-color: white; font-style: italic; }"
 -%>
 
-<%= @renderer.display_content_for_export %>
+<%= @renderer.display_content %>
 
 <div class="byline">
   <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 

@@ -64,7 +64,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_file
-        %{<a class="existingWikiWord" title="#{description}" href="#{CGI.escape(name)}.#{html_ext}">#{text}</a>}
+        %{<a class="existingWikiWord" title="#{description}" href="files/#{CGI.escape(name)}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>}
       end
@@ -119,7 +119,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_pic 
-        %{<img alt="#{text}" src="#{CGI.escape(name)}" />}
+        %{<img alt="#{text}" src="files/#{CGI.escape(name)}" />}
       else 
         %{<img alt="#{text}" src="no image" />}
       end
@@ -144,7 +144,7 @@ class UrlGenerator < AbstractUrlGenerator
     case mode
     when :export
       if known_media 
-        %{<#{media_type} src="#{CGI.escape(name)}" controls="controls">#{text}</#{media_type}>}
+        %{<#{media_type} src="files/#{CGI.escape(name)}" controls="controls">#{text}</#{media_type}>}
       else 
         text
       end

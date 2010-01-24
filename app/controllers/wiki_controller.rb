@@ -74,36 +74,61 @@ class WikiController < ApplicationController
       renderer = PageRenderer.new(page.revisions.last)
       rendered_page = <<-EOL
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg-flat.dtd" >
-        <html xmlns="http://www.w3.org/1999/xhtml">
-        <head>
-          <title>#{page.plain_name} in #{@web.name}</title>
-          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>#{page.plain_name} in #{@web.name}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   
-          <style type="text/css">
-            h1#pageName, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover { 
-              color: ##{@web ? @web.color : "393" }; 
-            }
-            .newWikiWord { background-color: white; font-style: italic; }
-            #{stylesheet}
-          </style>
-          <style type="text/css">
-            #{@web.additional_style}
-          </style>
-        </head>
-        <body>
-          <h1 id="pageName">
-            <span class="webName">#{@web.name}</span><br />
-            #{page.plain_name}    
-          </h1>
-          #{renderer.display_content_for_export}
-          <div class="byline">
-            #{page.revisions? ? "Revised" : "Created" } on #{ page.revised_at.strftime('%B %d, %Y %H:%M:%S') }
-            by
-            #{ UrlGenerator.new(self).make_link(@web, page.author.name, @web, nil, { :mode => :export }) }
-          </div>
-        </body>
-        </html>
-      EOL
+  <script src="public/javascripts/page_helper.js" type="text/javascript"></script> 
+  <link href="public/stylesheets/instiki.css" media="all" rel="stylesheet" type="text/css" />
+  <link href="public/stylesheets/syntax.css" media="all" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+    h1#pageName, div.info, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, [actiontype="toggle"]:hover, #TextileHelp h3 { 
+      color: ##{@web ? @web.color : "393"}; 
+    }
+    a:visited.existingWikiWord {
+      color: ##{darken(@web ? @web.color : "393")};
+    }   
+  </style>
+  
+  <style type="text/css"><!--/*--><![CDATA[/*><!--*/    
+    #{@web ? @web.additional_style : ''}
+  /*]]>*/--></style>
+  <script src="public/javascripts/prototype.js" type="text/javascript"></script>
+  <script src="public/javascripts/effects.js" type="text/javascript"></script>
+  <script src="public/javascripts/dragdrop.js" type="text/javascript"></script>
+  <script src="public/javascripts/controls.js" type="text/javascript"></script>
+  <script src="public/javascripts/application.js" type="text/javascript"></script>
+
+</head>
+<body>
+ <div id="Container">
+  <div id="Content">
+  <h1 id="pageName">
+  #{xhtml_enabled? ? %{<span id="svg_logo"><svg version="1.1" width="100%" height="100%" viewBox='0 -1 180 198' xmlns='http://www.w3.org/2000/svg'>
+      <path id="svg_logo_path" fill="##{@web ? @web.color : "393"}" stroke-width='0.5' stroke='#000' d='
+        M170,60c4,11-1,20-12,25c-9,4-25,3-20,15c5,5,15,0,24,1c11,1,21,11,14,21c-10,15-35,6-48-1c-5-3-27-23-32-10c-1,13,15,10,22,16
+        c11,4,24,14,34,20c12,10,7,25-9,23c-11-1-22-9-30-16c-5-5-13-18-21-9c-2,6,2,11,5,14c9,9,22,14,22,31c-2,8-12,8-18,4c-4-3-9-8-11-13
+        c-3-6-5-18-12-18c-14-1-5,28-18,30c-9,2-13-9-12-16c1-14,12-24,21-31c5-4,17-13,10-20c-9-10-19,12-23,16c-7,7-17,16-31,15
+        c-9-1-18-9-11-17c5-7,14-4,23-6c6-1,15-8,8-15c-5-6-57,2-42-24c7-12,51,4,61,6c6,1,17,4,18-4c2-11-12-7-21-8c-21-2-49-14-49-34
+        c0-5,3-11,8-11C31,42,34,65,42,67c6,1,9-3,8-9C49,49,38,40,40,25c1-5,4-15,13-14c10,2,11,18,13,29c1,8,0,24,7,28c15,0,5-22,4-30
+        C74,23,78,7,87,1c8-4,14,1,16,9c2,11-8,21-2,30c8,2,11-6,14-12c9-14,36-18,30,5c-3,9-12,19-21,24c-6,4-22,10-23,19c-2,14,15,2,18-2
+        c9-9,20-18,33-22C159,52,166,54,170,60' />
+    </svg></span>} : ''}
+  <span class="webName">#{@web.name}</span><br />
+  #{page.plain_name}    
+  </h1>
+#{renderer.display_content_for_export}
+  <div class="byline">
+  #{page.revisions? ? "Revised" : "Created" } on #{ page.revised_at.strftime('%B %d, %Y %H:%M:%S') }
+  by
+  #{ UrlGenerator.new(self).make_link(@web, page.author.name, @web, nil, { :mode => :export }) }
+  </div>
+  </div>
+ </div>
+</body>
+</html>
+EOL
       rendered_page
     end
   end
@@ -422,16 +447,27 @@ class WikiController < ApplicationController
     file_path = @wiki.storage_path.join(file_prefix + timestamp + '.zip')
     tmp_path = "#{file_path}.tmp"
 
-    Zip::ZipOutputStream.open(tmp_path) do |zip_out|
+    Zip::ZipFile.open(tmp_path, Zip::ZipFile::CREATE) do |zip_out|
       @web.select.by_name.each do |page|
-        zip_out.put_next_entry("#{CGI.escape(page.name)}.#{file_type}")
-        zip_out.puts(block.call(page))
+        zip_out.get_output_stream("#{CGI.escape(page.name)}.#{file_type}") do |f|
+          f.puts(block.call(page))
+        end
       end
-      # add an index file, if exporting to HTML
+      # add an index file, and the stylesheet and javascript directories, if exporting to HTML
       if file_type.to_s.downcase == html_ext
-        zip_out.put_next_entry "index.#{html_ext}"
-        zip_out.puts "<html xmlns='http://www.w3.org/1999/xhtml'><head>" +
-            "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL=HomePage.#{file_type}\"></head></html>"
+        zip_out.get_output_stream("index.#{html_ext}") do |f|
+          f.puts "<html xmlns='http://www.w3.org/1999/xhtml'><head>" +
+            "<meta http-equiv=\"Refresh\" content=\"0;URL=HomePage.#{html_ext}\" /></head></html>"
+        end
+        dir = Rails.root.join('public')
+        Dir["#{dir}/**/*"].each do |f|
+          zip_out.add "public#{f.sub(dir,'')}", f
+        end
+      end
+      files = @web.files_path
+      Dir.foreach(files) do |f|
+        next if ['.', '..'].include?(f)
+        zip_out.add "files/#{f}", File.join(files, f)
       end
     end
     FileUtils.rm_rf(Dir[@wiki.storage_path.join(file_prefix + '*.zip').to_s])
