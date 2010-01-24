@@ -108,7 +108,7 @@ class Page < ActiveRecord::Base
   end
 
   def to_param
-    name
+    name.as_utf8
   end
 
   private
