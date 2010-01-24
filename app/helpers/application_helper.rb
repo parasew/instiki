@@ -96,7 +96,7 @@ require 'stringsupport'
 
   # Performs HTML escaping on text, but keeps linefeeds intact (by replacing them with <br/>)
   def escape_preserving_linefeeds(text)
-    h(text).gsub(/\n/, '<br/>')
+    h(text).gsub(/\n/, '<br/>').as_utf8
   end
 
   def format_date(date, include_time = true)
