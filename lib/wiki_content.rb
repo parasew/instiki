@@ -143,6 +143,12 @@ class WikiContent < String
     @options[:active_chunks] = (ACTIVE_CHUNKS - [WikiChunk::Word] ) if @web.brackets_only?
     @options[:hide_chunks] = (HIDE_CHUNKS - [Literal::Math] ) unless
                   [Engines::MarkdownMML, Engines::MarkdownPNG].include?(@options[:engine])
+    if @options[:engine] == Engines::MarkdownPNG
+      @options[:png_url] =
+         @options[:mode] == :export ? 'files/pngs/' :
+           (@url_generator.controller.url_for :controller => 'file', :web => @web.address, 
+           :action => 'file', :id => 'pngs', :only_path => true) + '/'
+    end
 
     @not_rendered = @pre_rendered = nil
 
