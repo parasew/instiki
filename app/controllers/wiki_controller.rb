@@ -463,9 +463,8 @@ EOL
         end
       end
       files = @web.files_path
-      Dir.foreach(files) do |f|
-        next if ['.', '..'].include?(f)
-        zip_out.add "files/#{f}", File.join(files, f)
+      Dir["#{files}/**/*"].each do |f|
+        zip_out.add "files#{f.sub(files.to_s,'')}", f
       end
     end
     FileUtils.rm_rf(Dir[@wiki.storage_path.join(file_prefix + '*.zip').to_s])
