@@ -833,37 +833,19 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'AnonymousCoward', another_page.author
   end
   
-  def test_save_revised_content_invalid_author_name
+  def test_save_revised_content_author_name_with_period
     r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Contents of a very new page',
           'author' => 'foo.bar'
-    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage',
-      :content => 'Contents of a very new page'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
-
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'a'*10184,
-          'author' => 'foo.bar'
-    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
-    
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
-          'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage',
-      :content => 'Contents of a new page'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage'
+    assert_equal 'foo.bar', @wiki.read_page('wiki1', 'HomePage').author
 
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'a'*10184,
           'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'    
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
+    assert_equal 'foo.bar', @wiki.read_page('wiki1', 'NewPage').author
   end
 
   def test_save_invalid_author_name
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
-      'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage',
-      :content => 'Contents of a new page'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
-
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => "Fu\000Manchu"
 

@@ -292,13 +292,11 @@ EOL
       the_content = params['content'].purify
       prev_content = ''
       filter_spam(the_content)
-      raise Instiki::ValidationError.new('Your name cannot contain a "."') if author_name.include? '.'
       cookies['author'] = { :value => author_name.dup.as_bytes, :expires => Time.utc(2030) }
       if @page
         new_name = params['new_name'] ? params['new_name'].purify : @page_name
         new_name = @page_name if new_name.empty?
         prev_content = @page.current_revision.content
-        raise Instiki::ValidationError.new('Your new title cannot contain a "."') if new_name.include? '.'
         raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if
             @page_name != new_name && @web.has_page?(new_name)
         wiki.revise_page(@web_name, @page_name, new_name, the_content, Time.now, 
