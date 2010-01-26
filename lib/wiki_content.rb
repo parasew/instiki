@@ -146,8 +146,8 @@ class WikiContent < String
     if @options[:engine] == Engines::MarkdownPNG
       @options[:png_url] =
          @options[:mode] == :export ? 'files/pngs/' :
-           (@url_generator.controller.url_for :controller => 'file', :web => @web.address, 
-           :action => 'file', :id => 'pngs', :only_path => true) + '/'
+           (@url_generator.url_for :controller => 'file', :web => @web.address, 
+             :action => 'file', :id => 'pngs', :only_path => true) + '/'
     end
 
     @not_rendered = @pre_rendered = nil

@@ -104,13 +104,13 @@ end
 class StubUrlGenerator < AbstractUrlGenerator
 
   def initialize
-    controller = Object.new
-    def controller.url_for(options = {})
-        '../files/pngs'
-    end
-    super(controller)
+    super(:doesnt_need_controller)
   end
-  
+
+  def url_for(hash = {})
+    '../files/pngs'
+  end
+
   def file_link(mode, name, text, web_name, known_file, description)
     link = CGI.escape(name)
     case mode
