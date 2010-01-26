@@ -8,7 +8,7 @@ module CachingStuff
     module Caching
       module Fragments
         def fragment_cache_key(key)
-          ActiveSupport::Cache.expand_cache_key(key.is_a?(Hash) ? url_for(key.merge(:host=>"")).split(":///").last : key.split('/')[1..-1].join('/'), :views)
+          ActiveSupport::Cache.expand_cache_key(key.is_a?(Hash) ? url_for(key.merge(:host=>"")).split(":///").last : key.split('/')[1..-1].join('/').gsub(/\?format=.*/,''), :views)
         end
       end
     end
