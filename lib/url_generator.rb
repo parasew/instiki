@@ -7,8 +7,6 @@ class AbstractUrlGenerator
     @controller = controller
   end
 
-  attr :controller
-
   # Create a link for the given page (or file) name and link text based
   # on the render mode in options and whether the page (file) exists
   # in the web.
@@ -55,7 +53,10 @@ class AbstractUrlGenerator
       raise "Unknown link type: #{link_type}"
     end
   end
-  
+
+  def url_for(hash = {})
+    @controller.url_for hash
+  end  
 end
 
 class UrlGenerator < AbstractUrlGenerator
