@@ -30,7 +30,7 @@ ActionController::Routing::Routes.draw do |map|
   connect_to_web map, ':web/revision/:id/:rev', :controller => 'wiki', :action => 'revision', :requirements => { :rev => /\d*/}
   connect_to_web map, ':web/list/:category', :controller => 'wiki', :action => 'list', :requirements => { :category => /.*/}, :category => nil
   connect_to_web map, ':web/recently_revised/:category', :controller => 'wiki', :action => 'recently_revised', :requirements => { :category => /.*/}, :category => nil
-  connect_to_web map, ':web/:action/:id', :controller => 'wiki'
+  connect_to_web map, ':web/:action/:id', :controller => 'wiki', :requirements => {:id => /.*/}
   connect_to_web map, ':web/:action', :controller => 'wiki'
   connect_to_web map, ':web', :controller => 'wiki', :action => 'index'
 

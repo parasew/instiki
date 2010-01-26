@@ -412,16 +412,6 @@ margin:0;
 padding:0;
 }
 
-span.wikilink-error {
- border: solid 2px red;
- background-color: pink;
-}
-
-span.wikilink-error b {
- font-size: 80%;
- color: #009;
-}
-
 textarea#content {
 font-size: 1em;
 line-height: 1.125;

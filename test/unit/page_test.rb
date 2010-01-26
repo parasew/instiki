@@ -172,7 +172,7 @@ class PageTest < ActiveSupport::TestCase
         "<p>Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>H\303\241ppy Page</a>"
     assert_equal( s +
       " and to <span class='newWikiWord'>Wanted Page2<a href='../show/WantedPage2'>?</a></span>.pdf " +
-      "and <span class='wikilink-error'><b>Illegal link (target contains a &#39;.&#39;):</b> foo.pdf</span></p>",
+      "and <span class='newWikiWord'>foo.pdf<a href='../show/foo.pdf'>?</a></span></p>",
          x_test_renderer(new_page.revisions.last).display_content(true) )
     assert_equal 3, references.size
 #   now it works.
