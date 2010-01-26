@@ -90,7 +90,7 @@ module Engines
                             :html_math_output_png => true,
                             :html_png_engine => 'blahtex',
                             :html_png_dir => @content.web.files_path.join('pngs').to_s,
-                            :html_png_url => '../files/pngs/',
+                            :html_png_url => @content.options[:png_url],
                             :content_only => true,
                             :author => @content.options[:engine_opts][:author],
                             :title => @content.options[:engine_opts][:title]})
@@ -104,7 +104,7 @@ module Engines
               :html_math_output_png => true,
               :html_png_engine => 'blahtex',
               :html_png_dir => @content.web.files_path.join('pngs').to_s,
-              :html_png_url => '../files/pngs/'}).to_html
+              :html_png_url => @content.options[:png_url]}).to_html
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
     end
