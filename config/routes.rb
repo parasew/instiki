@@ -8,6 +8,9 @@ def connect_to_web(map, generic_path, generic_routing_options)
   map.connect(generic_path, generic_routing_options)
 end
 
+# :id's can be arbitrary junk
+  id_regexp = /.+/
+
 ActionController::Routing::Routes.draw do |map|
   map.connect 'create_system', :controller => 'admin', :action => 'create_system'
   map.connect 'create_web', :controller => 'admin', :action => 'create_web'
@@ -25,13 +28,13 @@ ActionController::Routing::Routes.draw do |map|
   connect_to_web map, ':web/import/:id', :controller => 'file', :action => 'import'
   connect_to_web map, ':web/login', :controller => 'wiki', :action => 'login'
   connect_to_web map, ':web/web_list', :controller => 'wiki', :action => 'web_list'
-  connect_to_web map, ':web/show/diff/:id', :controller => 'wiki', :action => 'show', :mode => 'diff', :requirements => {:id => /[^\/]*/}
+  connect_to_web map, ':web/show/diff/:id', :controller => 'wiki', :action => 'show', :mode => 'diff', :requirements => {:id => id_regexp}
   connect_to_web map, ':web/revision/diff/:id/:rev', :controller => 'wiki', :action => 'revision', :mode => 'diff',
-       :requirements => { :rev => /\d*/, :id => /[^\/]*/}
-  connect_to_web map, ':web/revision/:id/:rev', :controller => 'wiki', :action => 'revision', :requirements => { :rev => /\d*/, :id => /[^\/]*/}
+       :requirements => { :rev => /\d+/, :id => id_regexp}
+  connect_to_web map, ':web/revision/:id/:rev', :controller => 'wiki', :action => 'revision', :requirements => { :rev => /\d+/, :id => id_regexp}
   connect_to_web map, ':web/list/:category', :controller => 'wiki', :action => 'list', :requirements => { :category => /.*/}, :category => nil
   connect_to_web map, ':web/recently_revised/:category', :controller => 'wiki', :action => 'recently_revised', :requirements => { :category => /.*/}, :category => nil
-  connect_to_web map, ':web/:action/:id', :controller => 'wiki', :requirements => {:id => /.*/}
+  connect_to_web map, ':web/:action/:id', :controller => 'wiki', :requirements => {:id => id_regexp}
   connect_to_web map, ':web/:action', :controller => 'wiki'
   connect_to_web map, ':web', :controller => 'wiki', :action => 'index'
 
