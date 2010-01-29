@@ -31,4 +31,7 @@ function cleanAuthorName() {
   }
 }
 document.forms["editForm"].elements["content"].focus();
+<%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) -%>
+addS5button('<%= CGI.escapeHTML(@page_name) %>');
+<%- end -%>
 </script>

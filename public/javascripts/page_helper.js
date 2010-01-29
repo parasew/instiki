@@ -53,6 +53,24 @@ function mactionWorkarounds() {
      });
 }
 
+function addS5button(page_name) {
+  var f = $('MarkupHelp');
+  if (f) {
+    var s5button = new Element('input', {id:'S5button', type:'button', value: 'Make this page an S5 slideshow'});
+    f.insert({top: s5button});
+    Event.observe(s5button, 'click', function(){
+      var preamble = "author: " + document.getElementById('author').value +
+        "\ncompany: \ntitle: " + page_name +
+        "\nsubtitle: \nslide_theme: default\nslide_footer: \nslide_subfooter: " +
+        "\n\n:category: S5-slideshow\n\n" + page_name +
+        "\n==============\n\nMy First Slide\n-----------------\n\n";
+      var content = document.getElementById('content');
+      content.value = preamble + content.value;
+      document.getElementById('S5button').hide();
+    });
+  }
+}
+
 function updateSize(elt, w, h) {
    // adjust to the size of the user's browser area.
    // w and h are the original, unadjusted, width and height per row/column
