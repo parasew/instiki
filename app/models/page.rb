@@ -72,6 +72,10 @@ class Page < ActiveRecord::Base
     wiki_references.select { |ref| ref.wiki_word? }.map { |ref| ref.referenced_name }
   end
 
+  def categories
+    wiki_references.select { |ref| ref.category? }.map { |ref| ref.referenced_name }
+  end
+
   def linked_from
     web.select.pages_that_link_to(name)
   end

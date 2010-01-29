@@ -69,8 +69,7 @@ function cleanAuthorName() {
 }
 
 document.forms["editForm"].elements["content"].focus();
-<%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) and 
-    !WikiReference.page_categories(@web, @page.name).include?('S5-slideshow') -%>
+<%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) and !@page.categories.include?('S5-slideshow') -%>
 addS5button('<%= CGI.escapeHTML(@page.name) %>');
 <%- end -%>
 //--><!]]>

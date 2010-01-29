@@ -81,16 +81,6 @@ class WikiReference < ActiveRecord::Base
     row['name'].as_utf8 if row
   end
 
-  def self.page_categories(web, page_name)
-    query =
-      "SELECT referenced_name FROM wiki_references JOIN pages " +
-      "ON wiki_references.page_id = pages.id " +
-      "WHERE pages.name = ? " +
-      "AND wiki_references.link_type = '#{CATEGORY}' " +
-      "AND pages.web_id = '#{web.id}'"
-    names = connection.select_all(sanitize_sql([query, page_name])).map { |row| row['referenced_name'].as_utf8 }
-  end
-
   def self.pages_in_category(web, category)
     query = 
       "SELECT name FROM pages JOIN wiki_references " +
@@ -140,6 +130,10 @@ class WikiReference < ActiveRecord::Base
   
   def wanted_file?
     link_type == WANTED_FILE
+  end
+
+  def category?
+    link_type == CATEGORY
   end
 
 end
