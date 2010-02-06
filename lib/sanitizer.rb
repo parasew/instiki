@@ -37,13 +37,13 @@ module Sanitizer
       selected shape size span src start style summary tabindex target title
       type usemap valign value vspace width xml:lang]
 
-  mathml_attributes = Set.new %w[actiontype align close columnalign columnalign
+  mathml_attributes = Set.new %w[actiontype align close
       columnalign columnlines columnspacing columnspan depth display
       displaystyle encoding equalcolumns equalrows fence fontstyle fontweight
       frame height linethickness lspace mathbackground mathcolor mathvariant
-      mathvariant maxsize minsize open other rowalign rowalign rowalign
+      maxsize minsize open other rowalign
       rowlines rowspacing rowspan rspace scriptlevel selection separator
-      separators stretchy width width xlink:href xlink:show xlink:type xmlns
+      separators stretchy width xlink:href xlink:show xlink:type xmlns
       xmlns:xlink]
 
   svg_attributes = Set.new %w[accent-height accumulate additive alphabetic
