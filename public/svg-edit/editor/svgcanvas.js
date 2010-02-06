@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -36,6 +36,7 @@ var isOpera = !!window.opera,
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["class", "id", "requiredFeatures", "stdDeviation"],
 	"filter": ["class", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
+	"foreignObject": ["height", "width", "x", "y"],
 	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
@@ -57,7 +58,36 @@ var isOpera = !!window.opera,
 	"textPath": ["class", "id", "method", "requiredFeatures", "spacing", "startOffset", "style", "systemLanguage", "transform", "xlink:href"],
 	"title": [],
 	"tspan": ["class", "clip-path", "clip-rule", "dx", "dy", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "rotate", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "textLength", "transform", "x", "xml:space", "y"],
-	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"]
+	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"],
+	"annotation-xml": ["encoding"],
+	"maction": ["actiontype", "other", "selection"],
+	"math": ["class", "id", "display", "xmlns"],
+	"merror": [],
+	"mfrac": ["linethickness"],
+	"mi": ["mathvariant"],
+	"mmultiscripts": [],
+	"mn": [],
+	"mo": ["fence", "lspace", "maxsize", "minsize", "rspace", "stretchy"],
+	"mover": [],
+	"mpadded": ["lspace", "width"],
+	"mphantom": [],
+	"mprescripts": [],
+	"mroot": [],
+	"mrow": ["xlink:href", "xlink:type", "xmlns:xlink"],
+	"mspace": ["depth", "height", "width"],
+	"msqrt": [],
+	"mstyle": ["displaystyle", "mathbackground", "mathcolor", "mathvariant", "scriptlevel"],
+	"msub": [],
+	"msubsup": [],
+	"msup": [],
+	"mtable": ["align", "columnalign", "columnlines", "columnspacing", "displaystyle", "equalcolumns", "equalrows", "frame", "rowalign", "rowlines", "rowspacing", "width"],
+	"mtd": ["columnalign", "columnspan", "rowalign", "rowspan"],
+	"mtext": [],
+	"mtr": ["columnalign", "rowalign"],
+	"munder": [],
+	"munderover": [],
+	"none": [],
+	"semantics": []
 	},
 
 
