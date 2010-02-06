@@ -87,6 +87,7 @@ function setupSVGedit(path){
       } else {
          var editor = window.open(path, 'Spoons!');      
       }
+      editor.focus();
     });
   }   
   var t = $('content');
@@ -131,6 +132,9 @@ function setupSVGedit(path){
   Event.observe(window, "message", function(event){
     if(event.origin !== my_loc) { return;}
     t.value = before + event.data + after;
+    t.focus();
+    SVGeditButton.disabled = true;
+    SVGeditButton.value = 'Create SVG graphic';      
   });  
 }
 

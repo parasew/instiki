@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -5223,9 +5223,8 @@ function BatchCommand(text) {
 		if(opts) $.extend(save_options, opts);
 		save_options.apply = true;
 		
-		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
 		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
-		str += svgCanvasToString();
+		var str = svgCanvasToString();
 		call("saved", str);
 	};
 
