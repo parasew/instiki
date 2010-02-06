@@ -1,0 +1,170 @@
+<html>  
+<head>  
+  <link rel="stylesheet" href="qunit/qunit.css" type="text/css"/>  
+  <script src="../editor/jquery.js"> </script>  
+  <script type="text/javascript" src="../editor/svgicons/jquery.svgicons.js"></script>
+  <script type="text/javascript" src="../editor/locale/locale.js"></script>
+  <script type="text/javascript" src="../editor/svgcanvas.js"></script>
+  <script type="text/javascript" src="qunit/qunit.js"></script>  
+  <script type="text/javascript">
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+	
+	// helper functions
+	var isIdentity = function(m) {
+		return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
+	};
+	var matrixString = function(m) {
+		return [m.a,m.b,m.c,m.d,m.e,m.f].join(',');
+	}
+
+  	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas")),
+  		svgroot = document.getElementById("svgroot"),
+  		svgdoc = svgroot.documentElement,
+  		svgns = "http://www.w3.org/2000/svg",
+  		xlinkns = "http://www.w3.org/1999/xlink";
+
+	module("Basic Module");
+
+	test("Test existence of SvgCanvas object", function() {
+		expect(1);
+		equals(typeof {}, typeof svgCanvas);
+	});
+	
+	module("Path Module");
+	
+	test("Test path conversion from absolute to relative", function() {
+		expect(6);
+		var convert = svgCanvas.pathActions.convertPath;
+
+		// TODO: Test these paths:
+		// "m400.00491,625.01379a1.78688,1.78688 0 1 1-3.57373,0a1.78688,1.78688 0 1 13.57373,0z"
+		// "m36.812,15.8566c-28.03099,0 -26.28099,12.15601 -26.28099,12.15601l0.03099,12.59399h26.75v3.781h-37.37399c0,0 -17.938,-2.034 -133.00001,26.25c115.06201,28.284 130.71801,27.281 130.71801,27.281h9.34399v-13.125c0,0 -0.504,-15.656 15.40601,-15.656h26.532c0,0 14.90599,0.241 14.90599,-14.406v-24.219c0,0 2.263,-14.65601 -27.032,-14.65601zm-14.75,8.4684c2.662,0 4.813,2.151 4.813,4.813c0,2.661 -2.151,4.812 -4.813,4.812c-2.661,0 -4.812,-2.151 -4.812,-4.812c0,-2.662 2.151,-4.813 4.812,-4.813z"
+	
+		svgCanvas.setSvgString("<svg xmlns='http://www.w3.org/2000/svg' width='400' x='300'>" +
+								  "<path id='p1' d='M100,100 L200,100 Z'/>" +
+								  "<path id='p2' d='M100,100 L200,100 Z'/>" +
+								"</svg>");
+		
+		var p1 = document.getElementById("p1"),
+			p2 = document.getElementById("p2"),
+			d_abs = p1.getAttribute("d"),
+			seglist = p1.pathSegList,
+			curseg = null;
+			
+		equals(p1.nodeName, "path", "Expected 'path', got");
+		
+		equals(seglist.numberOfItems, 3, "Number of segments before conversion");
+		
+		// verify segments before conversion
+		curseg = seglist.getItem(0);
+		equals(curseg.pathSegTypeAsLetter, "M", "Before conversion, segment #1 type");
+		curseg = seglist.getItem(1);
+		equals(curseg.pathSegTypeAsLetter, "L", "Before conversion, segment #2 type");
+		curseg = seglist.getItem(2);
+		equals(curseg.pathSegType, 1, "Before conversion, segment #3 type");
+		
+		// convert and verify segments
+		var d = convert(p1, true);
+		equals(d, "m100,100l100,0z", "Converted path to relative string");
+	});
+	
+	module("Transform Module");
+
+	test("Test matrixMultiply", function() {
+		expect(5);
+
+		// translate there and back
+		var tr_1 = svgroot.createSVGMatrix().translate(100,50),
+			tr_2 = svgroot.createSVGMatrix().translate(-90,0),
+			tr_3 = svgroot.createSVGMatrix().translate(-10,-50),
+			I = svgCanvas.matrixMultiply(tr_1,tr_2,tr_3);
+		equals(true, isIdentity(I),
+			"Expected identity matrix when translating there and back, got " + matrixString(I));
+
+		// rotate there and back
+		// TODO: currently Mozilla fails this when rotating back at -50 and then -40 degrees
+		// (b and c are *almost* zero, but not zero)
+		var rot_there = svgroot.createSVGMatrix().rotate(90),
+			rot_back = svgroot.createSVGMatrix().rotate(-90); // TODO: set this to -50
+			rot_back_more = svgroot.createSVGMatrix().rotate(0); // TODO: set this to -40
+		I = svgCanvas.matrixMultiply(rot_there, rot_back, rot_back_more);
+		equals(true, isIdentity(I),
+			"Expected identity matrix when rotating there and back, got " + matrixString(I));
+
+		// scale up and down
+		var scale_up = svgroot.createSVGMatrix().scale(4),
+			scale_down = svgroot.createSVGMatrix().scaleNonUniform(0.25,1);
+			scale_down_more = svgroot.createSVGMatrix().scaleNonUniform(1,0.25);
+		I = svgCanvas.matrixMultiply(scale_up, scale_down, scale_down_more);
+		equals(true, isIdentity(I),
+			"Expected identity matrix when scaling up and down, got " + matrixString(I));
+
+		// test multiplication with its inverse 
+		I = svgCanvas.matrixMultiply(rot_there, rot_there.inverse());
+		equals(true, isIdentity(I),
+			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
+		I = svgCanvas.matrixMultiply(rot_there.inverse(), rot_there);
+		equals(true, isIdentity(I),
+			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
+	});
+	
+	module("Import Module");
+	
+	test("Test import use", function() {
+		expect(2);
+		
+		svgCanvas.setSvgString("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='400' x='300'>" +
+								"<rect id='the-rect' width='200' height='200'/>" +
+								"<use id='the-use' xlink:href='#the-rect'/>" +
+								"<use id='foreign-use' xlink:href='somefile.svg#the-rect'/>" +
+								"</svg>");
+		
+		var u = document.getElementById("the-use"),
+			fu = document.getElementById("foreign-use");
+		
+		equals((u && u.nodeName == "use"), true, "Did not import <use> element");
+		equals((fu && !fu.getAttributeNS(xlinkns,"href")), true, "Did not remove reference to foreign element in <use>");
+	});
+	
+	test("Test getUrlFromAttr", function() {
+		expect(4);
+		
+		equals(svgCanvas.getUrlFromAttr("url(#foo)"), "#foo");
+		equals(svgCanvas.getUrlFromAttr("url(somefile.svg#foo)"), "somefile.svg#foo");
+		equals(svgCanvas.getUrlFromAttr("url('#foo')"), "#foo");
+		equals(svgCanvas.getUrlFromAttr('url("#foo")'), "#foo");
+	});
+	
+	// This test shows that an element with an invalid attribute is still parsed in properly
+	// and only the attribute is not imported
+	test("Test invalid attribute", function() {
+		expect(2);
+		
+		svgCanvas.setSvgString('<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">'+
+				'<text x="182.75" y="173.5" id="the-text" fill="#008000" font-size="150" font-family="serif" text-anchor="middle" d="M116,222 L110,108">words</text>' +
+				'</svg>');
+		
+		var t = document.getElementById("the-text");
+		
+		equals(true, (t && t.nodeName == "text"), "Did not import <text> element");
+		equals(null, t.getAttribute("d"), "Imported a <text> with a d attribute");
+	});
+	
+  }); 
+  </script>  
+</head>  
+<body>  
+  <h1 id="qunit-header">Unit Tests for SvgCanvas</h1>
+  <h2 id="qunit-banner"></h2>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests">
+  </ol>
+  <div id="svgcanvas" style="visibility:hidden"></div>
+</body>  
+</html> 
