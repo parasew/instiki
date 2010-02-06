@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-<link rel="icon" type="image/png" href="images/logo.png">
+<link rel="icon" type="image/png" href="images/logo.png"/>
 <link rel="stylesheet" href="jgraduate/css/jPicker-1.0.12.css" type="text/css"/>
 <link rel="stylesheet" href="jgraduate/css/jGraduate-0.2.0.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
@@ -73,7 +73,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<option selected="selected" value="layer1">Layer 1</option>
 		</select>
 	</div>
-	<div id="sidepanel_handle" onselectstart="return false;" title="Drag left/right to resize side panel [X]">L a y e r s</div>
+	<div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s</div>
 </div>
 
 <div id="main_button">
@@ -231,7 +231,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<div id="image_panel">
 	<div class="toolset">
-		<label id="iwidthLabel"><span id="iwidthLabel">width:</span>
+		<label><span id="iwidthLabel">width:</span>
 		<input id="image_width" class="attr_changer" title="Change image width" size="3" data-attr="width"/>
 		</label>
 		<label><span id="iheightLabel">height:</span>
@@ -241,23 +241,25 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div class="toolset">
 		<label id="tool_image_url">url:
 			<input id="image_url" type="text" title="Change URL" size="35"/>
+		</label>
+		<label id="tool_change_image">
 			<button id="change_image_url" style="display:none;">Change Image</button>
-			<div id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></div>
+			<span id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></span>
 		</label>
 	</div>
   </div>
 
 	<div id="circle_panel">
 		<div class="toolset">
-			<label id="tool_ellipse_cx">cx:
+			<label id="tool_circle_cx">cx:
 			<input id="circle_cx" class="attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
 			</label>
-			<label id="tool_ellipse_cy">cy:
+			<label id="tool_circle_cy">cy:
 			<input id="circle_cy" class="attr_changer" title="Change circle's cy coordinate" size="3" data-attr="cy"/>
 			</label>
 		</div>
 		<div class="toolset">
-			<label id="tool_ellipse_r">r:
+			<label id="tool_circle_r">r:
 			<input id="circle_r" class="attr_changer" title="Change circle's radius" size="3" data-attr="r"/>
 			</label>
 		</div>
@@ -335,7 +337,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<label id="tool_node_x">x:
 			<input id="path_node_x" class="attr_changer" title="Change node's x coordinate" size="3" data-attr="x"/>
 		</label>
-		<label id="tool_node_y">y:</label>
+		<label id="tool_node_y">y:
 			<input id="path_node_y" class="attr_changer" title="Change node's y coordinate" size="3" data-attr="y"/>
 		</label>
 		<select id="seg_type" title="Change Segment type">
@@ -476,15 +478,15 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<legend id="svginfo_image_props">Image Properties</legend>
 			<label>
 				<span id="svginfo_title">Title:</span>
-				<input type="text" id="canvas_title" size="24">
+				<input type="text" id="canvas_title" size="24"/>
 			</label>			
 	
 			<fieldset id="change_resolution">
 				<legend id="svginfo_dim">Canvas Dimensions</legend>
 
-				<label><span id="svginfo_width">Width:</span> <input type="text" id="canvas_width" size="6"></label>
+				<label><span id="svginfo_width">Width:</span> <input type="text" id="canvas_width" size="6"/></label>
 					
-				<label><span id="svginfo_height">Height:</span> <input type="text" id="canvas_height" size="6"></label>
+				<label><span id="svginfo_height">Height:</span> <input type="text" id="canvas_height" size="6"/></label>
 				
 				<label>
 					<select id="resolution">
@@ -525,7 +527,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 					<option id="lang_hi" value="hi">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;, &#2361;&#2367;&#2306;&#2342;&#2368;</option>
 					<option id="lang_nl" value="nl">Nederlands</option>
 					<option id="lang_ro" value="ro">Româneşte</option>
-					<option id="lang_ro" value="ru">Русский</option>
+					<option id="lang_ru" value="ru">Русский</option>
 					<option id="lang_sk" value="sk">Slovenčina</option>
 					<option id="lang_zh-TW" value="zh-TW">繁體中文</option>
 				</select>
@@ -543,7 +545,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<fieldset id="change_background">
 				<legend id="svginfo_change_background">Editor Background</legend>
 				<div id="bg_blocks"></div>
-				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url" size="21"></label>
+				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url" size="21"/></label>
 				<p id="svginfo_bg_note">Note: Background will not be saved with image.</p>
 			</fieldset>
 			
