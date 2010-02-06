@@ -179,7 +179,6 @@ function svg_edit_setup() {
 	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
 	var saveHandler = function(window,svg) {
 	    window.opener.postMessage(svg, window.location.protocol + '//' + window.location.host);
-//		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	};
 	
 	// called when we've selected a different element
@@ -383,12 +382,23 @@ function svg_edit_setup() {
 	}
 	
 	var extAdded = function(window, ext) {
-		if("buttons" in ext) {
+
+		var cb_called = false;
+		
+		var runCallback = function() {
+			if(ext.callback && !cb_called) {
+				cb_called = true;
+				ext.callback();
+			}
+		}
+	
+		if(ext.buttons) {
 			var fallback_obj = {},
 				placement_obj = {},
 				svgicons = ext.svgicons;
 		
 			var holders = {};
+			
 		
 			// Add buttons given by extension
 			$.each(ext.buttons, function(i, btn) {
@@ -515,10 +525,70 @@ function svg_edit_setup() {
 					 	setIconSize('m');
 					 	setIconSize(old);
 					}
+					runCallback();
 				}
 		
 			});
 		}
+		if(ext.context_tools) {
+			$.each(ext.context_tools, function(i, tool) {
+				// Add select tool
+				var cont_id = tool.container_id?(' id="' + tool.container_id + '"'):"";
+				
+				var panel = $('#' + tool.panel);
+				
+				if(!panel.length) {
+					panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
+				}
+				
+				// TODO: Allow support for other types, or adding to existing tool
+				switch (tool.type) {
+				case 'select':
+					var html = '<label' + cont_id + '>'
+						+ '<select id="' + tool.id + '">';
+					$.each(tool.options, function(val, text) {
+						var sel = (val == tool.defval) ? " selected":"";
+						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
+					});
+					html += "</select></label>";
+					// Creates the tool, hides & adds it, returns the select element
+					var sel = $(html).appendTo(panel).find('select');
+					
+					$.each(tool.events, function(evt, func) {
+						$(sel).bind(evt, func);
+					});
+					break;
+				
+				case 'input':
+					var html = '<label' + cont_id + '">'
+						+ '<span id="' + tool.id + '_label">' 
+						+ tool.label + ':</span>'
+						+ '<input id="' + tool.id + '" title="' + tool.title
+						+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>'
+						
+					// Creates the tool, hides & adds it, returns the select element
+					
+					// Add to given tool.panel
+					var inp = $(html).appendTo(panel).find('input');
+					
+					if(tool.spindata) {
+						inp.SpinButton(tool.spindata);
+					}
+					
+					if(tool.events) {
+						$.each(tool.events, function(evt, func) {
+							$(sel).bind(evt, func);
+						});
+					}
+					break;
+					
+				default:
+					break;
+				}
+			});
+		}
+		
+		runCallback();
 	};
 	
 	var getPaint = function(color, opac) {
@@ -1865,7 +1935,7 @@ function svg_edit_setup() {
 		var bNoFill = (svgCanvas.getFillColor() == 'none');
 		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
 		var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
-		var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text' ];
+		var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 		if (bNoStroke) {
 			for (index in buttonsNeedingStroke) {
 				var button = buttonsNeedingStroke[index];
@@ -2634,7 +2704,7 @@ function svg_edit_setup() {
 		updateCanvas(true);
 	});
 	
-//	var revnums = "svg-editor.js ($Rev: 1342 $) ";
+//	var revnums = "svg-editor.js ($Rev: 1347 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	return svgCanvas;

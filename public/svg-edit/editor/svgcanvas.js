@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -984,27 +984,6 @@ function BatchCommand(text) {
 		return result;
 	}
 	
-	this.addExtension = function(name, ext_func) {
-		if(!(name in extensions)) {
-			// Provide constants here (or should these be accessed through getSomething()?
-			var ext = ext_func({
-				content: svgcontent,
-				root: svgroot,
-				call: call,
-				getNextId: getNextId,
-				getElem: getElem,
-				addSvgElementFromJson: addSvgElementFromJson,
-				selectorManager: selectorManager,
-				findDefs: findDefs,
-				recalculateDimensions: recalculateDimensions
-			});
-			extensions[name] = ext;
-			call("extension_added", ext);
-		} else {
-			console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
-		}
-	};
-
 	// This method rounds the incoming value to the nearest value based on the current_zoom
 	var round = function(val){
 		return parseInt(val*current_zoom)/current_zoom;
@@ -2322,6 +2301,51 @@ function BatchCommand(text) {
 		return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
 	}
 	
+	// expects three points to be sent, each point must have an x,y field
+	// returns an array of two points that are the smoothed
+	this.smoothControlPoints = function(ct1, ct2, pt) {
+		// each point must not be the origin
+		var x1 = ct1.x - pt.x,
+			y1 = ct1.y - pt.y,
+			x2 = ct2.x - pt.x,
+			y2 = ct2.y - pt.y;
+			
+		if ( (x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0) ) {
+			var anglea = Math.atan2(y1,x1),
+				angleb = Math.atan2(y2,x2),
+				r1 = Math.sqrt(x1*x1+y1*y1),
+				r2 = Math.sqrt(x2*x2+y2*y2),
+				nct1 = svgroot.createSVGPoint(),
+				nct2 = svgroot.createSVGPoint();				
+			if (anglea < 0) { anglea += 2*Math.PI; }
+			if (angleb < 0) { angleb += 2*Math.PI; }
+			
+			var angleBetween = Math.abs(anglea - angleb),
+				angleDiff = Math.abs(Math.PI - angleBetween)/2;
+			
+			var new_anglea, new_angleb;
+			if (anglea - angleb > 0) {
+				new_anglea = angleBetween < Math.PI ? (anglea + angleDiff) : (anglea - angleDiff);
+				new_angleb = angleBetween < Math.PI ? (angleb - angleDiff) : (angleb + angleDiff);
+			}
+			else {
+				new_anglea = angleBetween < Math.PI ? (anglea - angleDiff) : (anglea + angleDiff);
+				new_angleb = angleBetween < Math.PI ? (angleb + angleDiff) : (angleb - angleDiff);
+			}
+			
+			// rotate the points
+			nct1.x = r1 * Math.cos(new_anglea) + pt.x;
+			nct1.y = r1 * Math.sin(new_anglea) + pt.y;
+			nct2.x = r2 * Math.cos(new_angleb) + pt.x;
+			nct2.y = r2 * Math.sin(new_angleb) + pt.y;
+			
+			return [nct1, nct2];
+		}
+		return undefined;
+	};
+	var smoothControlPoints = this.smoothControlPoints;
+		
+
 	// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
 	// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
 	// This function tries to return a SVGMatrix that is the multiplication m1*m2.
@@ -3521,6 +3545,18 @@ function BatchCommand(text) {
 			var N = points.numberOfItems;
 			if (N >= 4) {
 				// loop through every 3 points and convert to a cubic bezier curve segment
+				// 
+				// NOTE: this is cheating, it means that every 3 points has the potential to 
+				// be a corner instead of treating each point in an equal manner.  In general,
+				// this technique does not look that good.
+				// 
+				// I am open to better ideas!
+				// 
+				// Reading:
+				// - http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
+				// - http://www.codeproject.com/KB/graphics/BezierSpline.aspx?msg=2956963
+				// - http://www.ian-ko.com/ET_GeoWizards/UserGuide/smooth.htm
+				// - http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
 				var curpos = points.getItem(0), prevCtlPt = null;
 				var d = [];
 				d.push(["M",curpos.x,",",curpos.y," C"].join(""));
@@ -3532,7 +3568,14 @@ function BatchCommand(text) {
 					// if the previous segment had a control point, we want to smooth out
 					// the control points on both sides
 					if (prevCtlPt) {
-						// TODO: fancy processing here :)
+						var newpts = smoothControlPoints( prevCtlPt, ct1, curpos );
+						if (newpts && newpts.length == 2) {
+							var prevArr = d[d.length-1].split(',');
+							prevArr[2] = newpts[0].x;
+							prevArr[3] = newpts[0].y;
+							d[d.length-1] = prevArr.join(',');
+							ct1 = newpts[1];
+						}
 					}
 					
 					d.push([ct1.x,ct1.y,ct2.x,ct2.y,end.x,end.y].join(','));
@@ -6549,6 +6592,9 @@ function BatchCommand(text) {
 				// selector if the element is in that array
 				if ($.inArray(elem, selectedElements) != -1) {
 					setTimeout(function() {
+						// Due to element replacement, this element may no longer
+						// be part of the DOM
+						if(!elem.parentNode) return;
 						selectorManager.requestSelector(elem).resize();
 					},0);
 				}
@@ -7391,7 +7437,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1341 $)";
+		return "svgcanvas.js ($Rev: 1349 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
@@ -7425,6 +7471,78 @@ function BatchCommand(text) {
 		// getElementById lookup: includes icons, not good
 		// return svgdoc.getElementById(id);
 	}
+	
+	// Being able to access private methods publicly seems wrong somehow,
+	// but currently appears to be the best way to allow testing and provide
+	// access to them to plugins.
+	this.getPrivateMethods = function() {
+		return {
+			addCommandToHistory: addCommandToHistory,
+			addGradient: addGradient,
+			addSvgElementFromJson: addSvgElementFromJson,
+			assignAttributes: assignAttributes,
+			BatchCommand: BatchCommand,
+			call: call,
+			ChangeElementCommand: ChangeElementCommand,
+			cleanupElement: cleanupElement,
+			copyElem: copyElem,
+			ffClone: ffClone,
+			findDefs: findDefs,
+			findDuplicateGradient: findDuplicateGradient,
+			fromXml: fromXml,
+			getElem: getElem,
+			getId: getId,
+			getIntersectionList: getIntersectionList,
+			getNextId: getNextId,
+			getPathBBox: getPathBBox,
+			getUrlFromAttr: getUrlFromAttr,
+			hasMatrixTransform: hasMatrixTransform,
+			identifyLayers: identifyLayers,
+			InsertElementCommand: InsertElementCommand,
+			isIdentity: isIdentity,
+			logMatrix: logMatrix,
+			matrixMultiply: matrixMultiply,
+			MoveElementCommand: MoveElementCommand,
+			preventClickDefault: preventClickDefault,
+			recalculateAllSelectedDimensions: recalculateAllSelectedDimensions,
+			recalculateDimensions: recalculateDimensions,
+			remapElement: remapElement,
+			RemoveElementCommand: RemoveElementCommand,
+			removeUnusedGrads: removeUnusedGrads,
+			resetUndoStack: resetUndoStack,
+			round: round,
+			runExtensions: runExtensions,
+			sanitizeSvg: sanitizeSvg,
+			Selector: Selector,
+			SelectorManager: SelectorManager,
+			shortFloat: shortFloat,
+			svgCanvasToString: svgCanvasToString,
+			SVGEditTransformList: SVGEditTransformList,
+			svgToString: svgToString,
+			toString: toString,
+			toXml: toXml,
+			transformBox: transformBox,
+			transformListToTransform: transformListToTransform,
+			transformPoint: transformPoint,
+			transformToObj: transformToObj,
+			walkTree: walkTree
+		}
+	}
+	
+	this.addExtension = function(name, ext_func) {
+		if(!(name in extensions)) {
+			// Provide private vars/funcs here. Is there a better way to do this?
+			var ext = ext_func($.extend(canvas.getPrivateMethods(), {
+				svgroot: svgroot,
+				svgcontent: svgcontent,
+				selectorManager: selectorManager
+			}));
+			extensions[name] = ext;
+			call("extension_added", ext);
+		} else {
+			console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
+		}
+	};
 	
 	// Test support for features/bugs
 	(function() {
