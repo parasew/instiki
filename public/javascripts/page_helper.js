@@ -83,10 +83,13 @@ function setupSVGedit(path){
     SVGeditButton.disabled = true;
     Event.observe(SVGeditButton, 'click', function(){
       if (selected) {
-         var editor = window.open(path +'?source=data:image/svg+xml;base64,' + window.btoa(selected), 'Spoons!');
+         var editor = window.open(path +'?source=data:image/svg+xml;base64,' + window.btoa(selected),
+            'Editing Existing SVG Graphic');
       } else {
-         var editor = window.open(path, 'Spoons!');      
+         var editor = window.open(path, 'Creating New SVG graphic');      
       }
+      SVGeditButton.disabled = true;
+      SVGeditButton.value = 'Create SVG graphic';      
       editor.focus();
     });
   }   
