@@ -20,6 +20,68 @@ if(window.opera) {
 	window.console.dir = function(str) {};
 }
 
+(function() {
+
+	// This fixes $(...).attr() to work as expected with SVG elements.
+	// Does not currently use *AttributeNS() since we rarely need that.
+	
+	// See http://api.jquery.com/attr/ for basic documentation of .attr()
+	
+	// Additional functionality: 
+	// - When getting attributes, a string that's a number is return as type number.
+	// - If an array is supplied as first parameter, multiple values are returned
+	// as an object with values for each given attributes
+	
+	var proxied = jQuery.fn.attr, svgns = "http://www.w3.org/2000/svg";
+	jQuery.fn.attr = function(key, value) {
+		var len = this.length;
+		if(!len) return this;
+		for(var i=0; i<len; i++) {
+			var elem = this[i];
+			// set/get SVG attribute
+			if(elem.namespaceURI === svgns) {
+				// Setting attribute
+				if(value !== undefined) {
+					elem.setAttribute(key, value);
+				} else if($.isArray(key)) {
+					// Getting attributes from array
+					var j = key.length, obj = {};
+
+					while(j--) {
+						var aname = key[j];
+						var attr = elem.getAttribute(aname);
+						// This returns a number when appropriate
+						if(attr || attr === "0") {
+							attr = isNaN(attr)?attr:attr-0;
+						}
+						obj[aname] = attr;
+					}
+					return obj;
+				
+				} else if(typeof key === "object") {
+					// Setting attributes form object
+					for(v in key) {
+						elem.setAttribute(v, key[v]);
+					}
+				// Getting attribute
+				} else {
+					var attr = elem.getAttribute(key);
+					if(attr || attr === "0") {
+						attr = isNaN(attr)?attr:attr-0;
+					}
+
+					return attr;
+				}
+			} else {
+				return proxied.apply(this, arguments);
+			}
+		}
+		return this;
+	};
+
+}());
+
+
 function SvgCanvas(container)
 {
 var isOpera = !!window.opera,
@@ -36,7 +98,7 @@ var isOpera = !!window.opera,
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["class", "id", "requiredFeatures", "stdDeviation"],
 	"filter": ["class", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"foreignObject": ["class", "height", "id", "markdown", "requiredFeatures", "style", "width", "x", "y"],
+	"foreignObject": ["class", "font-size", "height", "id", "markdown", "opacity", "requiredFeatures", "style", "width", "x", "y"],
 	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
@@ -911,26 +973,27 @@ function BatchCommand(text) {
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
 		svgroot = svgdoc.createElementNS(svgns, "svg");
-	svgroot.setAttribute("width", 640);
-	svgroot.setAttribute("height", 480);
-	svgroot.setAttribute("id", "svgroot");
-	svgroot.setAttribute("xmlns", svgns);
-	svgroot.setAttribute("xmlns:xlink", xlinkns);
-	container.appendChild(svgroot);
+
+	$(svgroot).attr({
+		width: 640,
+		height: 480,
+		id: "svgroot",
+		xmlns: svgns,
+		"xmlns:xlink": xlinkns
+	}).appendTo(container);
+	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
-	svgcontent.setAttribute('id', 'svgcontent');
-// 	svgcontent.setAttribute('viewBox', '0 0 640 480');
-	svgcontent.setAttribute('width', '640');
-	svgcontent.setAttribute('height', '480');
-	svgcontent.setAttribute('x', '640');
-	svgcontent.setAttribute('y', '480');
-	svgcontent.setAttribute('overflow', 'visible');
-	
-	
-	svgcontent.setAttribute("xmlns", svgns);
-	svgcontent.setAttribute("xmlns:xlink", xlinkns);
-	svgroot.appendChild(svgcontent);
-	
+	$(svgcontent).attr({
+		id: 'svgcontent',
+		width: 640,
+		height: 480,
+		x: 640,
+		y: 480,
+		overflow: 'visible',
+		xmlns: svgns,
+		"xmlns:xlink": xlinkns
+	}).appendTo(svgroot);
+
 	(function() {
 		// TODO: make this string optional and set by the client
 		var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
@@ -1518,6 +1581,7 @@ function BatchCommand(text) {
 				changes["rx"] = scalew(changes["rx"]);
 				changes["ry"] = scaleh(changes["ry"]);
 				break;
+			case "foreignObject":
 			case "rect":
 			case "image":
 				var pt1 = remap(changes["x"],changes["y"]);
@@ -1631,6 +1695,7 @@ function BatchCommand(text) {
 		// TODO: merge this switch with the above one and optimize
 		switch (selected.tagName)
 		{
+			case "foreignObject":
 			case "rect":
 			case "image":
 				changes.x = changes.x-0 + Math.min(0,changes.width);
@@ -1771,6 +1836,7 @@ function BatchCommand(text) {
 				changes["rx"] = selected.getAttribute("rx");
 				changes["ry"] = selected.getAttribute("ry");
 				break;
+			case "foreignObject":
 			case "rect":
 			case "image":
 				changes["width"] = selected.getAttribute("width");
@@ -3066,6 +3132,8 @@ function BatchCommand(text) {
 					shape.setAttributeNS(null, "y2", y);
 					if (!window.opera) svgroot.unsuspendRedraw(handle);
 					break;
+				case "foreignObject":
+					// fall through
 				case "square":
 					// fall through
 				case "rect":
@@ -3274,6 +3342,7 @@ function BatchCommand(text) {
 // 							element.y1.baseVal.value != element.y2.baseVal.value);
 					keep = (element.getAttribute('x1') != element.getAttribute('x2') || element.getAttribute('y1') != element.getAttribute('y2'));
 					break;
+				case "foreignObject":
 				case "square":
 				case "rect":
 					// keep = (element.width.baseVal.value && element.height.baseVal.value);
@@ -5372,6 +5441,7 @@ function BatchCommand(text) {
 			
 			// determine proper size
 			var w, h;
+			var min_x = min_y = 0;
 			if (svgcontent.getAttribute("viewBox")) {
 				var vb = svgcontent.getAttribute("viewBox").split(' ');
 				w = vb[2];
@@ -6053,9 +6123,10 @@ function BatchCommand(text) {
 		}
 
 		if (elems.length > 0) {
-			if (!preventUndo) 
+			if (!preventUndo) {
 				this.changeSelectedAttribute("stroke", val, elems);
-			else 
+				call("changed", elems);
+			} else 
 				this.changeSelectedAttributeNoUndo("stroke", val, elems);
 		}
 	};
@@ -6081,9 +6152,10 @@ function BatchCommand(text) {
 			}
 		}
 		if (elems.length > 0) {
-			if (!preventUndo) 
+			if (!preventUndo) {
 				this.changeSelectedAttribute("fill", val, elems);
-			else
+				call("changed", elems);
+			} else
 				this.changeSelectedAttributeNoUndo("fill", val, elems);
 		}
 	};
@@ -7467,7 +7539,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1352 $)";
+		return "svgcanvas.js ($Rev: 1355 $)";
 	};
 	
 	this.setUiStrings = function(strs) {

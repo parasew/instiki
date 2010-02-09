@@ -6,6 +6,7 @@
  * Copyright(c) 2010 Alexis Deveria
  *
  */
+
  
 $(function() {
 	svgCanvas.addExtension("Arrows", function(S) {
@@ -22,7 +23,20 @@ $(function() {
 			]
 		};
 		
-	
+		var pathdata = {
+			fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:8, id:"se_arrow_fw"},
+			bk: {d:"m10,0l-10,5l10,5l-5,-5l5,-5z", refx:2, id:"se_arrow_bk"}
+		}
+		function getLinked(elem, attr) {
+			var str = elem.getAttribute(attr);
+			if(!str) return null;
+			var m = str.match(/\(\#(.*)\)/);
+			if(!m || m.length !== 2) {
+				return null;
+			}
+			return S.getElem(m[1]);
+		}
+		
 		function showPanel(on) {
 			$('#arrow_panel').toggle(on);
 			
@@ -61,16 +75,13 @@ $(function() {
 			el.removeAttribute("marker-end");
 		}
 		
-		function addMarker(id, type) {
+		function addMarker(dir, type, id) {
 			// TODO: Make marker (or use?) per arrow type, since refX can be different
+			id = id || 'se_arrow_' + dir;
+			
 			var marker = S.getElem(id);
 
-			var pathdata = {
-				se_arrow_fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:8},
-				se_arrow_bk: {d:"m10,0l-10,5l10,5l-5,-5l5,-5z", refx:2}
-			}
-			
-			var data = pathdata[id];
+			var data = pathdata[dir];
 			
 			if(type == "mid") {
 				data.refx = 5;
@@ -86,14 +97,15 @@ $(function() {
 						"markerUnits": "strokeWidth",
 						"markerWidth": 5,
 						"markerHeight": 5,
-						"orient": "auto"
+						"orient": "auto",
+						"style": "pointer-events:none" // Currently needed for Opera
 					}
 				});
 				var arrow = addElem({
 					"element": "path",
 					"attr": {
 						"d": data.d,
-						"fill": "#000"
+						"fill": "#000000"
 					}
 				});
 				marker.appendChild(arrow);
@@ -101,6 +113,8 @@ $(function() {
 			} 
 			
 			marker.setAttribute('refX', data.refx);
+			
+			return marker;
 		}
 		
 		function setArrow() {
@@ -111,26 +125,81 @@ $(function() {
 				return;
 			}
 		
-			var fw_id = "se_arrow_fw";
-			var bk_id = "se_arrow_bk";
-			
 			// Set marker on element
-			var id = fw_id;
+			var dir = "fw";
 			if(type == "mid_bk") {
 				type = "mid";
-				id = bk_id;
+				dir = "bk";
 			} else if(type == "both") {
-				addMarker(bk_id, type);
-				svgCanvas.changeSelectedAttribute("marker-start", "url(#" + bk_id + ")");
+				addMarker("bk", type);
+				svgCanvas.changeSelectedAttribute("marker-start", "url(#" + pathdata.bk.id + ")");
 				type = "end";
-				id = fw_id;
+				dir = "fw";
 			} else if (type == "start") {
-				id = bk_id;
+				dir = "bk";
 			}
 			
-			addMarker(id, type);
-			svgCanvas.changeSelectedAttribute("marker-"+type, "url(#" + id + ")");
+			addMarker(dir, type);
+			svgCanvas.changeSelectedAttribute("marker-"+type, "url(#" + pathdata[dir].id + ")");
 			S.call("changed", selElems);
+		}
+		
+		function colorChanged(elem) {
+			var color = elem.getAttribute('stroke');
+			
+			var mtypes = ['start','mid','end'];
+			var defs = S.findDefs();
+			
+			$.each(mtypes, function(i, type) {
+				var marker = getLinked(elem, 'marker-'+type);
+				if(!marker) return;
+				
+				var cur_color = $(marker).children().attr('fill');
+				var cur_d = $(marker).children().attr('d');
+				var new_marker = null;
+				if(cur_color === color) return;
+				
+				var all_markers = $(defs).find('marker');
+				// Different color, check if already made
+				all_markers.each(function() {
+					var attrs = $(this).children().attr(['fill', 'd']);
+					if(attrs.fill === color && attrs.d === cur_d) {
+						// Found another marker with this color and this path
+						new_marker = this;
+					}
+				});
+				
+				if(!new_marker) {
+					// Create a new marker with this color
+					var last_id = marker.id;
+					var dir = last_id.indexOf('_fw') !== -1?'fw':'bk';
+					
+					new_marker = addMarker(dir, type, 'se_arrow_' + dir + all_markers.length);
+
+					$(new_marker).children().attr('fill', color);
+				}
+				
+				$(elem).attr('marker-'+type, "url(#" + new_marker.id + ")");
+				
+				// Check if last marker can be removed
+				var remove = true;
+				$(S.svgcontent).find('line, polyline, path, polygon').each(function() {
+					var elem = this;
+					$.each(mtypes, function(j, mtype) {
+						if($(elem).attr('marker-' + mtype) === "url(#" + marker.id + ")") {
+							return remove = false;
+						}
+					});
+					if(!remove) return false;
+				});
+				
+				// Not found, so can safely remove
+				if(remove) {
+					$(marker).remove();
+				}
+
+			});
+			
 		}
 		
 		return {
@@ -181,6 +250,21 @@ $(function() {
 						showPanel(false);
 					}
 				}
+			},
+			elementChanged: function(opts) {
+				var elem = opts.elems[0];
+				if(elem && (
+					elem.getAttribute("marker-start") ||
+					elem.getAttribute("marker-mid") ||
+					elem.getAttribute("marker-end")
+				)) {
+	// 								var start = elem.getAttribute("marker-start");
+	// 								var mid = elem.getAttribute("marker-mid");
+	// 								var end = elem.getAttribute("marker-end");
+					// Has marker, so see if it should match color
+					colorChanged(elem);
+				}
+				
 			}
 		};
 	});
