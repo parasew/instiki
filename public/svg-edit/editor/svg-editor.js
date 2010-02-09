@@ -42,7 +42,6 @@ function svg_edit_setup() {
 		default_img_url = "images/logo.png",
 		workarea = $("#workarea");
 	
-	
 	// Store and retrieve preferences
 	$.pref = function(key, val) {
 		if(val) curPrefs[key] = val;
@@ -2704,7 +2703,7 @@ function svg_edit_setup() {
 		updateCanvas(true);
 	});
 	
-//	var revnums = "svg-editor.js ($Rev: 1347 $) ";
+//	var revnums = "svg-editor.js ($Rev: 1355 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	return svgCanvas;
