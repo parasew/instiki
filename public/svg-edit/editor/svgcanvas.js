@@ -87,8 +87,6 @@ function SvgCanvas(container)
 var isOpera = !!window.opera,
 	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
 	support = {},
-	htmlns = "http://www.w3.org/1999/xhtml",
-	mathns = "http://www.w3.org/1998/Math/MathML",
 
 // this defines which elements and attributes that we support
 	svgWhiteList = {
@@ -671,8 +669,10 @@ function BatchCommand(text) {
 				'height': 480,
 				'x': 0,
 				'y': 0,
+				'overflow': 'visible',
 				'style': 'pointer-events:none'
 			});
+			
 			var rect = svgdoc.createElementNS(svgns, "rect");
 			assignAttributes(rect, {
 				'width': '100%',
@@ -684,6 +684,7 @@ function BatchCommand(text) {
 				'fill': '#FFF',
 				'style': 'pointer-events:none'
 			});
+			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
 			canvasbg.appendChild(rect);
 			svgroot.insertBefore(canvasbg, svgcontent);
 		};
@@ -917,17 +918,25 @@ function BatchCommand(text) {
 		xlinkns = "http://www.w3.org/1999/xlink",
 		xmlns = "http://www.w3.org/XML/1998/namespace",
 		se_ns = "http://svg-edit.googlecode.com",
+		htmlns = "http://www.w3.org/1999/xhtml",
+		mathns = "http://www.w3.org/1998/Math/MathML",
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
-		svgroot = svgdoc.createElementNS(svgns, "svg");
-
-	$(svgroot).attr({
-		width: 640,
-		height: 480,
-		id: "svgroot",
-		xmlns: svgns,
-		"xmlns:xlink": xlinkns
-	}).appendTo(container);
+		svgroot = svgdoc.importNode(Utils.text2xml('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+						'width="640" height="480" x="640" y="480" overflow="visible">' +
+						'<defs>' +
+							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
+								'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
+								'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
+								'<feMerge>'+
+									'<feMergeNode in="offsetBlur"/>'+
+									'<feMergeNode in="SourceGraphic"/>'+
+								'</feMerge>'+
+							'</filter>'+
+						'</defs>'+
+					'</svg>').documentElement, true);
+		
+		$(svgroot).appendTo(container);
 	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
@@ -1985,15 +1994,20 @@ function BatchCommand(text) {
 			// temporarily strip off the rotate and save the old center
 			var gangle = canvas.getRotationAngle(selected);
 			if (gangle) {
+                var a = gangle * Math.PI / 180;
+				if ( Math.abs(a) > (1.0e-10) ) {
+				    var s = Math.sin(a)/(1 - Math.cos(a));
+				} else {
+				// FIXME: This blows up if the angle is exactly 0!
+				    var s = 2/a;
+				}
 				for (var i = 0; i < tlist.numberOfItems; ++i) {
 					var xform = tlist.getItem(i);
 					if (xform.type == 4) {
 						// extract old center through mystical arts
 						var rm = xform.matrix;
-						var a = gangle * Math.PI / 180;
-						// FIXME: This blows up if the angle is exactly 0 or 180 degrees!
-						oldcenter.y = 0.5 * (Math.sin(a)*rm.e + (1-Math.cos(a))*rm.f) / (1 - Math.cos(a));
-						oldcenter.x = ((1 - Math.cos(a)) * oldcenter.y - rm.f) / Math.sin(a);
+						oldcenter.y = (s*rm.e + rm.f)/2;
+						oldcenter.x = (rm.e - s*rm.f)/2;
 						tlist.removeItem(i);
 						break;
 					}
@@ -5527,33 +5541,34 @@ function BatchCommand(text) {
 			if(!support.goodDecimals) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
-        	
-			svgcontent.id= 'svgcontent';
 			
+			var content = $(svgcontent);
+        	
 			// determine proper size
 			var w, h;
-			if (svgcontent.getAttribute("viewBox")) {
-				var vb = svgcontent.getAttribute("viewBox").split(' ');
+			if (content.attr("viewBox")) {
+				var vb = content.attr("viewBox").split(' ');
 				w = vb[2];
 				h = vb[3];
 			}
-			// handle old content that doesn't have a viewBox
+			// handle content that doesn't have a viewBox
 			else {
-				w = svgcontent.getAttribute("width");
-				h = svgcontent.getAttribute("height");
+				var dims = content.attr(["width", "height"]);
+				w = convertToNum('width', dims.width);
+				h = convertToNum('height', dims.height);
 				// svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
 			}
 			
-			svgcontent.setAttribute('width', w);
-			svgcontent.setAttribute('height', h);
-			svgcontent.setAttribute('overflow', 'visible');
+			content.attr({
+				id: 'svgcontent',
+				width: w,
+				height: h,
+				overflow: 'visible'
+			});
+			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 			// update root to the correct size
-			var changes = {};
-			changes['width'] = svgcontent.getAttribute('width');
-			changes['height'] = svgcontent.getAttribute('height');
-// 			svgroot.setAttribute('width', w);
-// 			svgroot.setAttribute('height', h);
+			var changes = content.attr(["width", "height"]);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
 			
 			// reset zoom
@@ -6104,6 +6119,9 @@ function BatchCommand(text) {
 			if(!batchCmd) {
 				batchCmd = new BatchCommand("Change Image Dimensions");
 			}
+			x = convertToNum('width', x);
+			y = convertToNum('height', y);
+			
 			svgcontent.setAttribute('width', x);
 			svgcontent.setAttribute('height', y);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"width":w, "height":h}));
@@ -7631,7 +7649,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1369 $)";
+		return "svgcanvas.js ($Rev: 1375 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
