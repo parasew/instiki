@@ -87,6 +87,8 @@ function SvgCanvas(container)
 var isOpera = !!window.opera,
 	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
 	support = {},
+	htmlns = "http://www.w3.org/1999/xhtml",
+	mathns = "http://www.w3.org/1998/Math/MathML",
 
 // this defines which elements and attributes that we support
 	svgWhiteList = {
@@ -1064,7 +1066,7 @@ function BatchCommand(text) {
 		}
 		for(var attr in defaults) {
 			var val = defaults[attr];
-			if(element.localName != 'math' && element.getAttribute(attr) == val) {
+			if(element.getAttribute(attr) == val) {
 				element.removeAttribute(attr);
 			}
 		}
@@ -2718,6 +2720,13 @@ function BatchCommand(text) {
 			if (mouse_target.correspondingUseElement)
 				mouse_target = mouse_target.correspondingUseElement;
 	
+			// for foreign content, go up until we find the foreignObject
+			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1) {
+				while (mouse_target.nodeName != "foreignObject") {
+					mouse_target = mouse_target.parentNode;
+				}
+			}
+			
 			// go up until we hit a child of a layer
 			while (mouse_target.parentNode.parentNode.tagName == "g") {
 				mouse_target = mouse_target.parentNode;
@@ -6495,6 +6504,10 @@ function BatchCommand(text) {
 			ret = selected.getBBox();
 			ret.x += parseFloat(selected.getAttribute('x'));
 			ret.y += parseFloat(selected.getAttribute('y'));
+		} else if(elem.nodeName == 'foreignObject') {
+			ret = selected.getBBox();
+			ret.x += parseFloat(selected.getAttribute('x'));
+			ret.y += parseFloat(selected.getAttribute('y'));
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { ret = null; }
@@ -7618,7 +7631,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1367 $)";
+		return "svgcanvas.js ($Rev: 1369 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
