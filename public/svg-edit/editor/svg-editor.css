@@ -1,4 +1,4 @@
-﻿body {
+body {
 	background: #E8E8E8;
 }
 
@@ -35,6 +35,7 @@
 	vertical-align: middle;
 	width: 640px;
 	height: 480px;
+	line-height:normal;
 	-apple-dashboard-region:dashboard-region(control rectangle 0px 0px 0px 0px); /* for widget regions that shouldn't react to dragging */
 	position: relative;
 	/* 
@@ -957,3 +958,4 @@ button#tool_docprops_cancel {
 	-webkit-border-radius: 0px;	
 }
 
+foreignObject {	line-height:1.0; }
