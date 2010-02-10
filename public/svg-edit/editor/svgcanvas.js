@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -90,6 +90,7 @@ var isOpera = !!window.opera,
 
 // this defines which elements and attributes that we support
 	svgWhiteList = {
+	// SVG Elements
 	"a": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
 	"circle": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"clipPath": ["class", "clipPathUnits", "id"],
@@ -98,7 +99,7 @@ var isOpera = !!window.opera,
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["class", "id", "requiredFeatures", "stdDeviation"],
 	"filter": ["class", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"foreignObject": ["class", "font-size", "height", "id", "markdown", "opacity", "requiredFeatures", "style", "width", "x", "y"],
+	"foreignObject": ["class", "font-size", "height", "id", "markdown", "opacity", "overflow", "requiredFeatures", "style", "width", "x", "y"],
 	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
@@ -121,6 +122,8 @@ var isOpera = !!window.opera,
 	"title": [],
 	"tspan": ["class", "clip-path", "clip-rule", "dx", "dy", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "rotate", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "textLength", "transform", "x", "xml:space", "y"],
 	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"],
+	
+	// MathML Elements
 	"annotation-xml": ["encoding"],
 	"maction": ["actiontype", "other", "selection"],
 	"math": ["class", "id", "display", "xmlns"],
@@ -905,64 +908,6 @@ function BatchCommand(text) {
 		return canvas.updateElementFromJson(data)
 	};
 
-	var assignAttributes = function(node, attrs, suspendLength) {
-		if(!suspendLength) suspendLength = 0;
-		// Opera has a problem with suspendRedraw() apparently
-		var handle = null;
-		if (!window.opera) svgroot.suspendRedraw(suspendLength);
-
-		for (var i in attrs) {
-			var ns = (i.substr(0,4) == "xml:" ? xmlns : 
-				i.substr(0,6) == "xlink:" ? xlinkns : null);
-			node.setAttributeNS(ns, i, attrs[i]);
-		}
-		
-		if (!window.opera) svgroot.unsuspendRedraw(handle);
-	};
-
-	// remove unneeded attributes
-	// makes resulting SVG smaller
-	var cleanupElement = function(element) {
-		var handle = svgroot.suspendRedraw(60);
-		var defaults = {
-			'fill-opacity':1,
-			'opacity':1,
-			'stroke':'none',
-			'stroke-dasharray':'none',
-			'stroke-opacity':1,
-			'stroke-width':1,
-			'rx':0,
-			'ry':0,
-			'display':'inline'
-		}
-		for(var attr in defaults) {
-			var val = defaults[attr];
-			if(element.getAttribute(attr) == val) {
-				element.removeAttribute(attr);
-			}
-		}
-		
-		svgroot.unsuspendRedraw(handle);
-	};
-
-	this.updateElementFromJson = function(data) {
-		var shape = getElem(data.attr.id);
-		// if shape is a path but we need to create a rect/ellipse, then remove the path
-		if (shape && data.element != shape.tagName) {
-			current_layer.removeChild(shape);
-			shape = null;
-		}
-		if (!shape) {
-			shape = svgdoc.createElementNS(svgns, data.element);
-			if (current_layer) {
-				current_layer.appendChild(shape);
-			}
-		}
-		assignAttributes(shape, data.attr, 100);
-		cleanupElement(shape);
-		return shape;
-	};
-
 	// TODO: declare the variables and set them as null, then move this setup stuff to
 	// an initialization function - probably just use clear()
 	var canvas = this,
@@ -993,6 +938,157 @@ function BatchCommand(text) {
 		xmlns: svgns,
 		"xmlns:xlink": xlinkns
 	}).appendTo(svgroot);
+
+	var convertToNum, convertToUnit, setUnitAttr;
+	
+	(function() {
+		var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
+		var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
+		var unit_attrs = $.merge(['r','radius'], w_attrs);
+		$.merge(unit_attrs, h_attrs);
+		
+		// Converts given values to numbers. Attributes must be supplied in 
+		// case a percentage is given
+		convertToNum = function(attr, val) {
+			// Return a number if that's what it already is
+			if(!isNaN(val)) return val-0;
+			
+			if(val.substr(-1) === '%') {
+				// Deal with percentage, depends on attribute
+				var num = val.substr(0, val.length-1)/100;
+				var res = canvas.getResolution();
+				
+				if($.inArray(attr, w_attrs) !== -1) {
+					return num * res.w;
+				} else if($.inArray(attr, w_attrs) !== -1) {
+					return num * res.h;
+				} else {
+					return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+				}
+			} else {
+				var unit = val.substr(-2);
+				var num = val.substr(0, val.length-2);
+				// Note that this multiplication turns the string into a number
+				return num * unit_types[unit];
+			}
+		};
+		
+		setUnitAttr = function(elem, attr, val) {
+			if(!isNaN(val)) {
+				// New value is a number, so check currently used unit
+				var old_val = elem.getAttribute(attr);
+				
+				if(old_val !== null && isNaN(old_val)) {
+					// Old value was a number, so get unit, then convert
+					var unit;
+					if(old_val.substr(-1) === '%') {
+						var res = canvas.getResolution();
+						unit = '%';
+						val *= 100;
+						if($.inArray(attr, w_attrs) !== -1) {
+							val = val / res.w;
+						} else if($.inArray(attr, w_attrs) !== -1) {
+							val = val / res.h;
+						} else {
+							return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+						}
+
+					} else {
+						unit = old_val.substr(-2);
+						val = val / unit_types[unit];
+					}
+					
+					val += unit;
+				}
+			}
+			
+			elem.setAttribute(attr, val);
+		}
+		
+		canvas.isValidUnit = function(attr, val) {
+			var valid = false;
+			if($.inArray(attr, unit_attrs) != -1) {
+				// True if it's just a number
+				if(!isNaN(val)) {
+					valid = true;
+				} else {
+				// Not a number, check if it has a valid unit
+					val = val.toLowerCase();
+					$.each(unit_types, function(unit) {
+						if(valid) return;
+						var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+						if(re.test(val)) valid = true;
+					});
+				}
+			} else valid = true;			
+			
+			return valid;
+		}
+		
+	})();
+
+	var assignAttributes = function(node, attrs, suspendLength, unitCheck) {
+		if(!suspendLength) suspendLength = 0;
+		// Opera has a problem with suspendRedraw() apparently
+		var handle = null;
+		if (!window.opera) svgroot.suspendRedraw(suspendLength);
+
+		for (var i in attrs) {
+			var ns = (i.substr(0,4) == "xml:" ? xmlns : 
+				i.substr(0,6) == "xlink:" ? xlinkns : null);
+				
+			if(ns || !unitCheck) {
+				node.setAttributeNS(ns, i, attrs[i]);
+			} else {
+				setUnitAttr(node, i, attrs[i]);
+			}
+			
+		}
+		
+		if (!window.opera) svgroot.unsuspendRedraw(handle);
+	};
+
+	// remove unneeded attributes
+	// makes resulting SVG smaller
+	var cleanupElement = function(element) {
+		var handle = svgroot.suspendRedraw(60);
+		var defaults = {
+			'fill-opacity':1,
+			'opacity':1,
+			'stroke':'none',
+			'stroke-dasharray':'none',
+			'stroke-opacity':1,
+			'stroke-width':1,
+			'rx':0,
+			'ry':0
+		}
+		for(var attr in defaults) {
+			var val = defaults[attr];
+			if(element.localName != 'math' && element.getAttribute(attr) == val) {
+				element.removeAttribute(attr);
+			}
+		}
+		
+		svgroot.unsuspendRedraw(handle);
+	};
+
+	this.updateElementFromJson = function(data) {
+		var shape = getElem(data.attr.id);
+		// if shape is a path but we need to create a rect/ellipse, then remove the path
+		if (shape && data.element != shape.tagName) {
+			current_layer.removeChild(shape);
+			shape = null;
+		}
+		if (!shape) {
+			shape = svgdoc.createElementNS(svgns, data.element);
+			if (current_layer) {
+				current_layer.appendChild(shape);
+			}
+		}
+		assignAttributes(shape, data.attr, 100);
+		cleanupElement(shape);
+		return shape;
+	};
 
 	(function() {
 		// TODO: make this string optional and set by the client
@@ -1392,7 +1488,7 @@ function BatchCommand(text) {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
 					var attrVal = attr.nodeValue;
-					
+					if (attr.localName == '-moz-math-font-style') continue;
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
 						if(attr.localName == "class" && attrVal.indexOf('se_') == 0) continue;
@@ -1702,10 +1798,10 @@ function BatchCommand(text) {
 				changes.y = changes.y-0 + Math.min(0,changes.height);
 				changes.width = Math.abs(changes.width);
 				changes.height = Math.abs(changes.height);
-				assignAttributes(selected, changes, 1000);
+				assignAttributes(selected, changes, 1000, true);
 				break;
 			case "use":
-				assignAttributes(selected, changes, 1000);
+				assignAttributes(selected, changes, 1000, true);
 				break;
 			case "ellipse":
 				changes.rx = Math.abs(changes.rx);
@@ -1714,7 +1810,7 @@ function BatchCommand(text) {
 				if(changes.r) changes.r = Math.abs(changes.r);
 			case "line":
 			case "text":
-				assignAttributes(selected, changes, 1000);
+				assignAttributes(selected, changes, 1000, true);
 				break;
 			case "polyline":
 			case "polygon":
@@ -1860,12 +1956,18 @@ function BatchCommand(text) {
 		
 		if(attrs.length) {
 			changes = $(selected).attr(attrs);
+			$.each(changes, function(attr, val) {
+				changes[attr] = convertToNum(attr, val);
+			});
 		}
 		
 		// if we haven't created an initial array in polygon/polyline/path, then 
 		// make a copy of initial values and include the transform
 		if (initial == null) {
 			initial = $.extend(true, {}, changes);
+			$.each(initial, function(attr, val) {
+				initial[attr] = convertToNum(attr, val);
+			});
 		}
 		// save the start transform value too
 		initial["transform"] = start_transform ? start_transform : "";
@@ -6006,6 +6108,7 @@ function BatchCommand(text) {
 		}
 		return true;
 	};
+	
 	this.getOffset = function() {
 		return $(svgcontent).attr(['x', 'y']);
 	}
@@ -7515,7 +7618,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1363 $)";
+		return "svgcanvas.js ($Rev: 1367 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
