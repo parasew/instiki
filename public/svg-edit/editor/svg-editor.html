@@ -330,6 +330,22 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		</label>
 		<input id="text" type="text" title="Change text contents" size="35"/>
 	</div>
+
+	<div id="foreignObject_panel">
+		<div class="toolset">
+			<label id="tool_foreign_width">w:
+			  <input id="foreign_width" class="attr_changer" title="Change foreignObject's width" size="3" data-attr="width"/>
+			</label>
+			<label id="tool_foreign_height">h:
+			  <input id="foreign_height" class="attr_changer" title="Change foreignObject's height" size="3" data-attr="height"/>
+			</label>
+            <label id="tool_foreign_font_size">
+		      <span id="foreign_font_sizeLabel">font-size:</span>
+              <input id="foreign_font_size" class="attr_changer" title="Change Font Size" size="2" value="16" type="text"  data-attr="font-size"/>
+		    </label>
+			<div class="tool_button" id="tool_edit_foreign" title="Edit ForeignObject Content"><span></span></div>
+		</div>		
+	</div>
 	
 	<div id="path_node_panel">
 		<div class="tool_sep"></div>
@@ -365,6 +381,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div class="tool_button" id="tool_text" title="Text Tool [6]"></div>
 	<div class="tool_button" id="tool_image" title="Image Tool [8]"></div>
 	<div class="tool_button" id="tool_zoom" title="Zoom Tool [Ctrl+Up/Down]"></div>
+	<div class="tool_button" id="tool_foreign" title="Foreign Object Tool"></div>
 	
 	<div style="display: none">
 		<div id="tool_rect" title="Rectangle"></div>
@@ -448,6 +465,19 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		</div>
 		<form>
 			<textarea id="svg_source_textarea" spellcheck="false"></textarea>
+		</form>
+	</div>
+</div>
+
+<div id="svg_foreign_editor">
+	<div id="svg_foreign_overlay"></div>
+	<div id="svg_foreign_container">
+		<div id="tool_foreign_back" class="toolbar_button">
+			<button id="tool_foreign_save">Apply Changes</button>
+			<button id="tool_foreign_cancel">Cancel</button>
+		</div>
+		<form>
+			<textarea id="svg_foreign_textarea" spellcheck="false"></textarea>
 		</form>
 	</div>
 </div>

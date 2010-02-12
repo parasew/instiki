@@ -1,4 +1,4 @@
-﻿body {
+body {
 	background: #E8E8E8;
 }
 
@@ -681,11 +681,12 @@ span.zoom_tool {
 	text-align: right;
 }
 
-#svg_source_editor {
+#svg_source_editor,  #svg_foreign_editor{
 	display: none;
 }
 
-#svg_source_editor #svg_source_overlay {
+#svg_source_editor #svg_source_overlay,
+#svg_foreign_editor #svg_foreign_overlay {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -696,7 +697,8 @@ span.zoom_tool {
 	z-index: 5;
 }
 
-#svg_source_editor #svg_source_container {
+#svg_source_editor #svg_source_container,
+#svg_foreign_editor #svg_foreign_container {
 	position: absolute;
 	top: 30px;
 	left: 30px;
@@ -778,7 +780,8 @@ span.zoom_tool {
 	display: block;
 }
 
-#svg_source_editor #svg_source_textarea {
+#svg_source_editor #svg_source_textarea,
+#svg_foreign_editor #svg_foreign_textarea {
 	position: relative;
 	width: 95%;
 	top: 5px;
@@ -787,7 +790,8 @@ span.zoom_tool {
 	font-size: 12px;
 }
 
-#svg_source_editor #tool_source_back {
+#svg_source_editor #tool_source_back,
+#svg_foreign_editor #tool_foreign_back {
 	text-align: left;
 	padding-left: 20px;
 }
@@ -810,7 +814,7 @@ span.zoom_tool {
 	text-align: left;
 }
 
-#svg_source_editor button, #svg_docprops button {
+#svg_source_editor button, #svg_foreign_editor button, #svg_docprops button {
 	padding: 5px 5px 7px 28px;
 	margin: 5px 20px 0 0;	
 }
@@ -845,6 +849,8 @@ span.zoom_tool {
 
 button#tool_source_save,
 button#tool_source_cancel,
+button#tool_foreign_save,
+button#tool_foreign_cancel,
 button#tool_docprops_save,
 button#tool_docprops_cancel {
     border:1px solid #dedede;
@@ -963,4 +969,4 @@ button#tool_docprops_cancel {
 	-webkit-border-radius: 0px;	
 }
 
-foreignObject {	line-height:1.0; }
+foreignObject { line-height:1.0; }
