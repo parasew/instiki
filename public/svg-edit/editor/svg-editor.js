@@ -2955,8 +2955,8 @@ function svg_edit_setup() {
 				var src = loc.substring(loc.indexOf(pre) + pre.length);
 				svgCanvas.setSvgString(Utils.decode64(src));
 			}
-			else if(loc.indexOf('?url=') != -1) {
-				var pre = '?url=';
+			else if(loc.indexOf('url=') != -1) {
+				var pre = 'url=';
 				var url = loc.substring(loc.indexOf(pre) + pre.length);
 				$.ajax({
 					'url': url,
