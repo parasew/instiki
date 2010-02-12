@@ -1503,7 +1503,7 @@ function BatchCommand(text) {
                     var el = this;
                     $.each(this.attributes, function(i, attr) {
                         var uri = attr.namespaceURI;
-                        if(uri && !nsuris[uri]) {
+                        if(uri && !nsuris[uri] && nsMap[uri]) {
                             nsuris[uri] = true;
                             out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
                         }
