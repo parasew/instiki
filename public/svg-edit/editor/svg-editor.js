@@ -624,7 +624,8 @@ function svg_edit_setup() {
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
-		if (selectedElement != null && 
+		if (selectedElement != null &&
+            selectedElement.tagName != "foreignObject" &&
 			selectedElement.tagName != "image" &&
 			selectedElement.tagName != "g")
 		{

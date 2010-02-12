@@ -976,7 +976,7 @@ function BatchCommand(text) {
 				
 				if($.inArray(attr, w_attrs) !== -1) {
 					return num * res.w;
-				} else if($.inArray(attr, w_attrs) !== -1) {
+				} else if($.inArray(attr, h_attrs) !== -1) {
 					return num * res.h;
 				} else {
 					return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
@@ -1003,7 +1003,7 @@ function BatchCommand(text) {
 						val *= 100;
 						if($.inArray(attr, w_attrs) !== -1) {
 							val = val / res.w;
-						} else if($.inArray(attr, w_attrs) !== -1) {
+						} else if($.inArray(attr, h_attrs) !== -1) {
 							val = val / res.h;
 						} else {
 							return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
@@ -4720,11 +4720,18 @@ function BatchCommand(text) {
 						}
 						// else, create a new point, append to pts array, update path element
 						else {
+                            // Checks if current target or parents are #svgcontent
+                            if(!$.contains(container, evt.target)) {
+                                // Clicked outside canvas, so don't make point
+                                return false;
+                            }
+
 							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
 							// we store absolute values in our path points array for easy checking above
 							current_path_pts.push(x);
 							current_path_pts.push(y);
 							d_attr += "L" + round(x) + "," + round(y) + " ";
+
 							path.setAttribute("d", d_attr);
 	
 							// set stretchy line to latest point
@@ -7743,7 +7750,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1380 $)";
+		return "svgcanvas.js ($Rev: 1382 $)";
 	};
 	
 	this.setUiStrings = function(strs) {

@@ -82,11 +82,11 @@ function setupSVGedit(path){
     f.insert({top: SVGeditButton});
     SVGeditButton.disabled = true;
     Event.observe(SVGeditButton, 'click', function(){
+      var editor = window.open(path, 'Edit SVG graphic', 'status=1,resizable=1,scrollbars=1');
       if (selected) {
-         var editor = window.open(path +'?source=data:image/svg+xml;base64,' + window.btoa(selected),
-            'Editing Existing SVG Graphic', 'status=1,resizable=1,scrollbars=1');
-      } else {
-         var editor = window.open(path, 'Creating New SVG graphic', 'status=1,resizable=1,scrollbars=1');      
+        editor.addEventListener("load", function() {
+          editor.svgCanvas.setSvgString(selected);
+        }, true);
       }
       SVGeditButton.disabled = true;
       SVGeditButton.value = 'Create SVG graphic';      
