@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -99,7 +99,7 @@ var isOpera = !!window.opera,
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["class", "id", "requiredFeatures", "stdDeviation"],
 	"filter": ["class", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"foreignObject": ["class", "font-size", "height", "id", "markdown", "opacity", "overflow", "requiredFeatures", "style", "width", "x", "y"],
+	"foreignObject": ["class", "color", "font-size", "height", "id", "markdown", "opacity", "overflow", "requiredFeatures", "style", "transform", "width", "x", "y"],
 	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
@@ -913,6 +913,7 @@ function BatchCommand(text) {
 
 	// TODO: declare the variables and set them as null, then move this setup stuff to
 	// an initialization function - probably just use clear()
+
 	var canvas = this,
 		svgns = "http://www.w3.org/2000/svg",
 		xlinkns = "http://www.w3.org/1999/xlink",
@@ -922,7 +923,7 @@ function BatchCommand(text) {
 		mathns = "http://www.w3.org/1998/Math/MathML",
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
-		svgroot = svgdoc.importNode(Utils.text2xml('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+		svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
 						'width="640" height="480" x="640" y="480" overflow="visible">' +
 						'<defs>' +
 							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
@@ -938,6 +939,10 @@ function BatchCommand(text) {
 		
 		$(svgroot).appendTo(container);
 	
+	var nsMap = {};
+	nsMap[xlinkns] = 'xlink';
+	nsMap[se_ns] = 'se';
+
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
 		id: 'svgcontent',
@@ -1476,6 +1481,7 @@ function BatchCommand(text) {
 
 	var svgToString = function(elem, indent) {
 		var out = new Array();
+
 		if (elem) {
 			cleanupElement(elem);
 			var attrs = elem.attributes,
@@ -1486,15 +1492,24 @@ function BatchCommand(text) {
 			for (var i=0; i<indent; i++) out.push(" ");
 			out.push("<"); out.push(elem.nodeName);			
 			if(elem.id == 'svgcontent') {
-				// Process root element separately; Prevents errors caused 
-				// in webkit when removing attributes
+				// Process root element separately
 				var res = canvas.getResolution();
-				out.push(' width="' + res.w + '" height="' + res.h
-				+ '" xmlns:xlink="'+xlinkns+'" xmlns="'+svgns+'"');
-				if(svgcontent.getAttribute("xmlns:se")) {
-					// TODO: Check if any se: attributes are actually used
-					out.push(' xmlns:se="'+se_ns+'"');
-				}
+                out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+
+                var nsuris = {};
+              
+                // Check elements for namespaces, add if found
+                $(elem).find('*').each(function() {
+                    var el = this;
+                    $.each(this.attributes, function(i, attr) {
+                        var uri = attr.namespaceURI;
+                        if(uri && !nsuris[uri]) {
+                            nsuris[uri] = true;
+                            out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+                        }
+                    });
+                });
+
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
@@ -1520,19 +1535,10 @@ function BatchCommand(text) {
 						}
 						
 						// map various namespaces to our fixed namespace prefixes
-						// TODO: put this into a map and do a look-up instead of if-else
-						if (attr.namespaceURI == xlinkns) {
-							out.push('xlink:');
+                        if(attr.namespaceURI && nsMap[attr.namespaceURI]) {
+                            out.push(nsMap[attr.namespaceURI]+':');
 						}
-						else if(attr.namespaceURI == 'http://www.w3.org/2000/xmlns/' && attr.localName != 'xmlns') {
-							out.push('xmlns:');
-						}
-						else if(attr.namespaceURI == xmlns) {
-							out.push('xml:');
-						} 
-						else if(attr.namespaceURI == se_ns) {
-							out.push('se:');
-						}
+
 						out.push(attr.localName); out.push("=\""); 
 						out.push(attrVal); out.push("\"");
 					}
@@ -1766,8 +1772,8 @@ function BatchCommand(text) {
 					// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
 					// if relative, we want to scalew, scaleh
 					if (type % 2 == 0) { // absolute
-						var thisx = seg.x ? seg.x : currentpt.x, // for V commands
-							thisy = seg.y ? seg.y : currentpt.y, // for H commands
+                        var thisx = (seg.x != undefined) ? seg.x : currentpt.x, // for V commands
+                            thisy = (seg.y != undefined) ? seg.y : currentpt.y, // for H commands
 							pt = remap(thisx,thisy),
 							pt1 = remap(seg.x1,seg.y1),
 							pt2 = remap(seg.x2,seg.y2);
@@ -1914,7 +1920,7 @@ function BatchCommand(text) {
 		}
 		
 		// if this element had no transforms, we are done
-		if (tlist.numberOfItems == 0) {
+		if (!tlist || tlist.numberOfItems == 0) {
 			selected.removeAttribute("transform");
 			return null;
 		}
@@ -2012,8 +2018,7 @@ function BatchCommand(text) {
 						break;
 					}
 				}
-			}
-			
+			}	
 			var tx = 0, ty = 0,
 				operation = 0,
 				N = tlist.numberOfItems;
@@ -2229,15 +2234,20 @@ function BatchCommand(text) {
 				// temporarily strip off the rotate and save the old center
 				angle = canvas.getRotationAngle(selected);
 			if (angle) {
+                var a = angle * Math.PI / 180;
+				if ( Math.abs(a) > (1.0e-10) ) {
+				    var s = Math.sin(a)/(1 - Math.cos(a));
+				} else {
+				// FIXME: This blows up if the angle is exactly 0!
+				    var s = 2/a;
+				}
 				for (var i = 0; i < tlist.numberOfItems; ++i) {
 					var xform = tlist.getItem(i);
 					if (xform.type == 4) {
 						// extract old center through mystical arts
 						var rm = xform.matrix;
-						var a = angle * Math.PI / 180;
-						// FIXME: This blows up if the angle is exactly 0 or 180 degrees!
-						oldcenter.y = 0.5 * (Math.sin(a)*rm.e + (1-Math.cos(a))*rm.f) / (1 - Math.cos(a));
-						oldcenter.x = ((1 - Math.cos(a)) * oldcenter.y - rm.f) / Math.sin(a);
+						oldcenter.y = (s*rm.e + rm.f)/2;
+						oldcenter.x = (rm.e - s*rm.f)/2;
 						tlist.removeItem(i);
 						break;
 					}
@@ -2734,9 +2744,12 @@ function BatchCommand(text) {
 			if (mouse_target.correspondingUseElement)
 				mouse_target = mouse_target.correspondingUseElement;
 	
-			// for foreign content, go up until we find the foreignObject
-			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1) {
-				while (mouse_target.nodeName != "foreignObject") {
+            // for foreign content, go up until we find the foreignObject
+            // WebKit browsers set the mouse target to the svgcanvas div
+            if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 &&
+                mouse_target.id != "svgcanvas")
+            {
+                while (mouse_target.nodeName != "foreignObject") {
 					mouse_target = mouse_target.parentNode;
 				}
 			}
@@ -3016,6 +3029,28 @@ function BatchCommand(text) {
 					});
 					newText.textContent = "text";
 					break;
+				case "foreign":
+					started = true;
+					var newText = addSvgElementFromJson({
+						"element": "foreignObject",
+						"attr": {
+							"x": x,
+							"y": y,
+							"id": getNextId(),
+							"font-size": cur_text.font_size,
+							"width": "24",
+							"height": "24",
+							"style": "pointer-events:inherit"
+						}
+					});
+					var m = svgdoc.createElementNS(mathns, 'math');
+					m.setAttribute('xmlns', mathns);
+					m.setAttributeNS(mathns, 'display', 'inline');
+					var mi = svgdoc.createElementNS(mathns, 'mo');
+					mi.textContent = "\u03A6";
+					m.appendChild(mi);
+					newText.appendChild(m);
+					break;
 				case "path":
 					// Fall through
 				case "pathedit":
@@ -3234,6 +3269,14 @@ function BatchCommand(text) {
 						'height': Math.abs(y-start_y*current_zoom)
 					},100);			
 					break;
+				case "foreignObject":
+					assignAttributes(shape,{
+				        'width': 24,
+				        'height': 24,
+						'x': x,
+						'y': y
+					},1000);
+					break;
 				case "text":
 					assignAttributes(shape,{
 						'x': x,
@@ -3248,8 +3291,6 @@ function BatchCommand(text) {
 					shape.setAttributeNS(null, "y2", y);
 					if (!window.opera) svgroot.unsuspendRedraw(handle);
 					break;
-				case "foreignObject":
-					// fall through
 				case "square":
 					// fall through
 				case "rect":
@@ -3457,7 +3498,7 @@ function BatchCommand(text) {
 					var attrs = $(element).attr(["x1", "x2", "y1", "y2"]);
 					keep = (attrs.x1 != attrs.x2 || attrs.y1 != attrs.y2);
 					break;
-				case "foreignObject":
+				case "foreign":
 				case "square":
 				case "rect":
 				case "image":
@@ -3573,7 +3614,7 @@ function BatchCommand(text) {
 				element = null;
 				
 				var t = evt.target;
-				
+								
 				// if this element is in a group, go up until we reach the top-level group 
 				// just below the layer groups
 				// TODO: once we implement links, we also would have to check for <a> elements
@@ -3599,7 +3640,7 @@ function BatchCommand(text) {
 				cleanupElement(element);
 				if(current_mode == "path") {
 					pathActions.toEditMode(element);
-				} else if (current_mode == "text" || current_mode == "image") {
+				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreign") {
 					// keep us in the tool we were in unless it was a text or image element
 					canvas.addToSelection([element], true);
 				}
@@ -5495,6 +5536,19 @@ function BatchCommand(text) {
 		return svgCanvasToString();
 	};
 
+	// Function: getForeignString(elt)
+	// Returns the contents of element elt as XML text.
+	//
+	// Parameters:
+	// elt - The foreignObject Element.
+	//
+	// Returns:
+	// The contents of elt as raw XML text.
+	this.getForeignString = function(elt) {
+		var s = svgToString(elt, 0);
+        return s;
+	};
+
 	// Function: setSvgString
 	// This function sets the current drawing as the input SVG XML.
 	//
@@ -5542,6 +5596,20 @@ function BatchCommand(text) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
 			
+            // recalculate dimensions on the top-level children so that unnecessary transforms
+            // are removed
+            var deepdive = function(node) {
+                    if (node.nodeType == 1) {
+                        var children = node.children;
+                        var i = children.length;
+                        while (i--) { deepdive(children.item(i)); }
+                        try {
+                            recalculateDimensions(node);
+                        } catch(e) { console.log(e); }
+                    }
+                }
+            deepdive(svgcontent);
+              
 			var content = $(svgcontent);
         	
 			// determine proper size
@@ -5584,6 +5652,32 @@ function BatchCommand(text) {
 			
 			addCommandToHistory(batchCmd);
 			call("changed", [svgcontent]);
+		} catch(e) {
+			console.log(e);
+			return false;
+		}
+
+		return true;
+	};
+
+	// Function: setForeignString(xmlString, elt)
+	// This function sets the content of element elt to the input XML.
+	//
+	// Parameters:
+	// xmlString - The XML text.
+	// elt - the parent element to append to
+	//
+	// Returns:
+	// This function returns false if the set was unsuccessful, true otherwise.
+	this.setForeignString = function(xmlString, elt) {
+		try {
+			// convert string into XML document
+			var newDoc = Utils.text2xml('<svg xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'">'+xmlString+'</svg>');
+			// run it through our sanitizer to remove anything we do not support
+	        sanitizeSvg(newDoc.documentElement);
+	        
+	        elt.parentNode.replaceChild(newDoc.documentElement.firstChild, elt);
+			call("changed", [elt]);
 		} catch(e) {
 			console.log(e);
 			return false;
@@ -7649,7 +7743,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1375 $)";
+		return "svgcanvas.js ($Rev: 1380 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
