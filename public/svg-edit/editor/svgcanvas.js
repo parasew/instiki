@@ -5683,7 +5683,7 @@ function BatchCommand(text) {
 			// run it through our sanitizer to remove anything we do not support
 	        sanitizeSvg(newDoc.documentElement);
 	        
-	        elt.parentNode.replaceChild(newDoc.documentElement.firstChild, elt);
+	        elt.parentNode.replaceChild(svgdoc.importNode(newDoc.documentElement.firstChild, true), elt);
 			call("changed", [elt]);
 		} catch(e) {
 			console.log(e);
