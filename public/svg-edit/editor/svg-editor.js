@@ -171,12 +171,39 @@ function svg_edit_setup() {
 	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
 
-	// TODO: Unfortunately Mozilla does not handle internal references to gradients
-	// inside a data: URL document.  This means that any elements filled/stroked 
-	// with a gradient will appear black in Firefox, etc.  See bug 308590
-	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
 	var saveHandler = function(window,svg) {
-	  window.opener.postMessage(svg, window.location.protocol + '//' + window.location.host);
+		
+		window.opener.postMessage(svg, window.location.protocol + '//' + window.location.host);
+		return;
+
+		// Creates and opens an HTML page that provides a link to the SVG, a preview, and the markup. 
+		// Also includes warning about Mozilla bug #308590 when applicable
+		
+		var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+		
+		// Alert will only appear the first time saved OR the first time the bug is encountered
+		var done = $.pref('save_notice_done') + ""; // TODO: Find out why this returns an object in FF when online
+		if(done !== "all") {
+
+			var note = 'Select "Save As..." in your browser to save this image as an SVG file.';
+			
+			// Check if FF and has <defs/>
+			if(navigator.userAgent.indexOf('Gecko/') !== -1) {
+				if(svg.indexOf('<defs') !== -1) {
+					note += "\n\nNOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.";
+					$.pref('save_notice_done', 'all');
+					done = "all";
+				} else {
+					$.pref('save_notice_done', 'part');
+				}
+			} else {
+				$.pref('save_notice_done', 'all'); 
+			}
+			
+			if(done !== 'part') {
+				win.alert(note);
+			}
+		}
 	};
 	
 	// called when we've selected a different element
@@ -624,7 +651,7 @@ function svg_edit_setup() {
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
-		if (selectedElement != null &&
+		if (selectedElement != null && 
             selectedElement.tagName != "foreignObject" &&
 			selectedElement.tagName != "image" &&
 			selectedElement.tagName != "g")
@@ -1303,7 +1330,7 @@ function svg_edit_setup() {
 		toolButtonClick('#tool_text');
 		svgCanvas.setMode('text');
 	};
-
+	
 	var clickForeign = function(){
 		toolButtonClick('#tool_foreign');
 		svgCanvas.setMode('foreign');
@@ -1568,7 +1595,7 @@ function svg_edit_setup() {
 		var height = $('#svg_'+str+'_container').height() - 80;
 		$('#svg_'+str+'_textarea').css('height', height);
 	};
-
+	
     var saveForeignEditor = function(elt){
 		if (!editingforeign) return;
 		
@@ -2785,7 +2812,7 @@ function svg_edit_setup() {
 		updateCanvas(true);
 	});
 	
-//	var revnums = "svg-editor.js ($Rev: 1377 $) ";
+//	var revnums = "svg-editor.js ($Rev: 1386 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	return svgCanvas;
@@ -2978,11 +3005,11 @@ function svg_edit_setup() {
 // This happens when the page is loaded
 $(function() {
 	svgCanvas = svg_edit_setup();
-    var good_langs = [];
-    $('#lang_select option').each(function() {
-        good_langs.push(this.value);
-    });
-    put_locale(svgCanvas, null, good_langs);
+	var good_langs = [];
+	$('#lang_select option').each(function() {
+		good_langs.push(this.value);
+	});
+	put_locale(svgCanvas, null, good_langs);
 	
 	try{
 	    json_encode = function(obj){

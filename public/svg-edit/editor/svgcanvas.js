@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -913,7 +913,7 @@ function BatchCommand(text) {
 
 	// TODO: declare the variables and set them as null, then move this setup stuff to
 	// an initialization function - probably just use clear()
-
+	
 	var canvas = this,
 		svgns = "http://www.w3.org/2000/svg",
 		xlinkns = "http://www.w3.org/1999/xlink",
@@ -938,11 +938,11 @@ function BatchCommand(text) {
 					'</svg>').documentElement, true);
 		
 		$(svgroot).appendTo(container);
-	
+		
 	var nsMap = {};
 	nsMap[xlinkns] = 'xlink';
 	nsMap[se_ns] = 'se';
-
+	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
 		id: 'svgcontent',
@@ -1366,7 +1366,7 @@ function BatchCommand(text) {
 					}
 				}
 			});
-
+			
 			// recurse to children
 			i = node.childNodes.length;
 			while (i--) { sanitizeSvg(node.childNodes.item(i)); }
@@ -1494,21 +1494,21 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
-                out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
-
-                var nsuris = {};
-              
-                // Check elements for namespaces, add if found
-                $(elem).find('*').each(function() {
-                    var el = this;
-                    $.each(this.attributes, function(i, attr) {
-                        var uri = attr.namespaceURI;
+				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+			
+				var nsuris = {};
+				
+				// Check elements for namespaces, add if found
+				$(elem).find('*').each(function() {
+					var el = this;
+					$.each(this.attributes, function(i, attr) {
+						var uri = attr.namespaceURI;
                         if(uri && !nsuris[uri] && nsMap[uri]) {
-                            nsuris[uri] = true;
-                            out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
-                        }
-                    });
-                });
+							nsuris[uri] = true;
+							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+						}
+					});
+				});
 
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
@@ -1536,9 +1536,9 @@ function BatchCommand(text) {
 						
 						// map various namespaces to our fixed namespace prefixes
                         if(attr.namespaceURI && nsMap[attr.namespaceURI]) {
-                            out.push(nsMap[attr.namespaceURI]+':');
+							out.push(nsMap[attr.namespaceURI]+':');
 						}
-
+						
 						out.push(attr.localName); out.push("=\""); 
 						out.push(attrVal); out.push("\"");
 					}
@@ -1772,8 +1772,8 @@ function BatchCommand(text) {
 					// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
 					// if relative, we want to scalew, scaleh
 					if (type % 2 == 0) { // absolute
-                        var thisx = (seg.x != undefined) ? seg.x : currentpt.x, // for V commands
-                            thisy = (seg.y != undefined) ? seg.y : currentpt.y, // for H commands
+						var thisx = (seg.x != undefined) ? seg.x : currentpt.x, // for V commands
+							thisy = (seg.y != undefined) ? seg.y : currentpt.y, // for H commands
 							pt = remap(thisx,thisy),
 							pt1 = remap(seg.x1,seg.y1),
 							pt2 = remap(seg.x2,seg.y2);
@@ -2000,12 +2000,12 @@ function BatchCommand(text) {
 			// temporarily strip off the rotate and save the old center
 			var gangle = canvas.getRotationAngle(selected);
 			if (gangle) {
-                var a = gangle * Math.PI / 180;
+				var a = gangle * Math.PI / 180;
 				if ( Math.abs(a) > (1.0e-10) ) {
-				    var s = Math.sin(a)/(1 - Math.cos(a));
+					var s = Math.sin(a)/(1 - Math.cos(a));
 				} else {
-				// FIXME: This blows up if the angle is exactly 0!
-				    var s = 2/a;
+					// FIXME: This blows up if the angle is exactly 0!
+					var s = 2/a;
 				}
 				for (var i = 0; i < tlist.numberOfItems; ++i) {
 					var xform = tlist.getItem(i);
@@ -2018,7 +2018,7 @@ function BatchCommand(text) {
 						break;
 					}
 				}
-			}	
+			}
 			var tx = 0, ty = 0,
 				operation = 0,
 				N = tlist.numberOfItems;
@@ -2234,12 +2234,12 @@ function BatchCommand(text) {
 				// temporarily strip off the rotate and save the old center
 				angle = canvas.getRotationAngle(selected);
 			if (angle) {
-                var a = angle * Math.PI / 180;
+				var a = angle * Math.PI / 180;
 				if ( Math.abs(a) > (1.0e-10) ) {
-				    var s = Math.sin(a)/(1 - Math.cos(a));
+					var s = Math.sin(a)/(1 - Math.cos(a));
 				} else {
-				// FIXME: This blows up if the angle is exactly 0!
-				    var s = 2/a;
+					// FIXME: This blows up if the angle is exactly 0!
+					var s = 2/a;
 				}
 				for (var i = 0; i < tlist.numberOfItems; ++i) {
 					var xform = tlist.getItem(i);
@@ -2744,12 +2744,12 @@ function BatchCommand(text) {
 			if (mouse_target.correspondingUseElement)
 				mouse_target = mouse_target.correspondingUseElement;
 	
-            // for foreign content, go up until we find the foreignObject
-            // WebKit browsers set the mouse target to the svgcanvas div
-            if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 &&
-                mouse_target.id != "svgcanvas")
-            {
-                while (mouse_target.nodeName != "foreignObject") {
+			// for foreign content, go up until we find the foreignObject
+			// WebKit browsers set the mouse target to the svgcanvas div 
+			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
+				mouse_target.id != "svgcanvas") 
+			{
+				while (mouse_target.nodeName != "foreignObject") {
 					mouse_target = mouse_target.parentNode;
 				}
 			}
@@ -3614,7 +3614,7 @@ function BatchCommand(text) {
 				element = null;
 				
 				var t = evt.target;
-								
+				
 				// if this element is in a group, go up until we reach the top-level group 
 				// just below the layer groups
 				// TODO: once we implement links, we also would have to check for <a> elements
@@ -4720,11 +4720,11 @@ function BatchCommand(text) {
 						}
 						// else, create a new point, append to pts array, update path element
 						else {
-                            // Checks if current target or parents are #svgcontent
-                            if(!$.contains(container, evt.target)) {
-                                // Clicked outside canvas, so don't make point
-                                return false;
-                            }
+							// Checks if current target or parents are #svgcontent
+							if(!$.contains(container, evt.target)) {
+								// Clicked outside canvas, so don't make point
+								return false;
+							}
 
 							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
 							// we store absolute values in our path points array for easy checking above
@@ -5603,20 +5603,20 @@ function BatchCommand(text) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
 			
-            // recalculate dimensions on the top-level children so that unnecessary transforms
-            // are removed
-            var deepdive = function(node) {
-                    if (node.nodeType == 1) {
-                        var children = node.children;
-                        var i = children.length;
-                        while (i--) { deepdive(children.item(i)); }
-                        try {
-                            recalculateDimensions(node);
-                        } catch(e) { console.log(e); }
-                    }
-                }
-            deepdive(svgcontent);
-              
+			// recalculate dimensions on the top-level children so that unnecessary transforms
+			// are removed
+			var deepdive = function(node) {
+				if (node.nodeType == 1) {
+					var children = node.children;
+					var i = children.length;
+					while (i--) { deepdive(children.item(i)); }
+					try {
+						recalculateDimensions(node);
+					} catch(e) { console.log(e); }
+				}
+			}
+			deepdive(svgcontent);
+			
 			var content = $(svgcontent);
         	
 			// determine proper size
