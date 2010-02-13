@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -5615,7 +5615,7 @@ function BatchCommand(text) {
 					} catch(e) { console.log(e); }
 				}
 			}
-			deepdive(svgcontent);
+			if(!isWebkit) {deepdive(svgcontent);}
 			
 			var content = $(svgcontent);
         	
