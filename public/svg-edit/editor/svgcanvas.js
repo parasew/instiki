@@ -5607,7 +5607,7 @@ function BatchCommand(text) {
 			// are removed
 			var deepdive = function(node) {
 				if (node.nodeType == 1) {
-					var children = node.children;
+					var children = node.childNodes;
 					var i = children.length;
 					while (i--) { deepdive(children.item(i)); }
 					try {
@@ -5615,7 +5615,7 @@ function BatchCommand(text) {
 					} catch(e) { console.log(e); }
 				}
 			}
-			if(!isWebkit) {deepdive(svgcontent);}
+			deepdive(svgcontent);
 			
 			var content = $(svgcontent);
         	
