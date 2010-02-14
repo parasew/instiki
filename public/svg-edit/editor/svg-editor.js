@@ -772,7 +772,7 @@ function svg_edit_setup() {
 				}
 				
 				// Elements in this array cannot be converted to a path
-				var no_path = $.inArray(elname, ['image', 'text', 'path', 'g', 'use']) == -1;
+				var no_path = $.inArray(elname, ['image', 'text', 'path', 'g', 'use', 'foreignObject']) == -1;
 				$('#tool_topath').toggle(no_path);
 				$('#tool_reorient').toggle(elname == 'path');
 				$('#tool_reorient').toggleClass('disabled', angle == 0);
