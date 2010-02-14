@@ -1523,12 +1523,13 @@ function BatchCommand(text) {
 						
 						// map various namespaces to our fixed namespace prefixes
                         // (the default xmlns attribute itself does not get a prefix)
-                        if(attr.namespaceURI && nsMap[attr.namespaceURI] && nsMap[attr.namespaceURI] != "xmlns") {
+                        if (nsMap[attr.namespaceURI] != "xmlns"|| attr.localName != "xlink") {
+                          if(attr.namespaceURI && nsMap[attr.namespaceURI] && nsMap[attr.namespaceURI] != "xmlns") {
 							out.push(nsMap[attr.namespaceURI]+':');
-						}
-						
-						out.push(attr.localName); out.push("=\""); 
-						out.push(attrVal); out.push("\"");
+						  }						
+						  out.push(attr.localName); out.push("=\""); 
+						  out.push(attrVal); out.push("\"");
+                        }
 					}
 				}
 			}
