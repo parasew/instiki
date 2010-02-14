@@ -917,7 +917,7 @@ function BatchCommand(text) {
 	var canvas = this,
 		svgns = "http://www.w3.org/2000/svg",
 		xlinkns = "http://www.w3.org/1999/xlink",
-		xmlns = "http://www.w3.org/XML/1998/namespace",
+		xmlns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
 		se_ns = "http://svg-edit.googlecode.com",
 		htmlns = "http://www.w3.org/1999/xhtml",
 		mathns = "http://www.w3.org/1998/Math/MathML",
@@ -940,8 +940,9 @@ function BatchCommand(text) {
 		$(svgroot).appendTo(container);
 		
 	var nsMap = {};
-	nsMap[xlinkns] = 'xlink';
-	nsMap[se_ns] = 'se';
+    nsMap[xlinkns] = 'xlink';
+    nsMap[xmlns] = 'xmlns';
+    nsMap[se_ns] = 'se';
 	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
@@ -1494,21 +1495,7 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
-				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
-			
-				var nsuris = {};
-				
-				// Check elements for namespaces, add if found
-				$(elem).find('*').each(function() {
-					var el = this;
-					$.each(this.attributes, function(i, attr) {
-						var uri = attr.namespaceURI;
-                        if(uri && !nsuris[uri] && nsMap[uri]) {
-							nsuris[uri] = true;
-							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
-						}
-					});
-				});
+				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'"');
 
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
@@ -1535,7 +1522,8 @@ function BatchCommand(text) {
 						}
 						
 						// map various namespaces to our fixed namespace prefixes
-                        if(attr.namespaceURI && nsMap[attr.namespaceURI]) {
+                        // (the default xmlns attribute itself does not get a prefix)
+                        if(attr.namespaceURI && nsMap[attr.namespaceURI] && nsMap[attr.namespaceURI] != "xmlns") {
 							out.push(nsMap[attr.namespaceURI]+':');
 						}
 						
@@ -3044,7 +3032,7 @@ function BatchCommand(text) {
 						}
 					});
 					var m = svgdoc.createElementNS(mathns, 'math');
-					m.setAttribute('xmlns', mathns);
+					m.setAttributeNS(xmlns, 'xmlns', mathns);
 					m.setAttributeNS(mathns, 'display', 'inline');
 					var mi = svgdoc.createElementNS(mathns, 'mo');
 					mi.textContent = "\u03A6";
@@ -7750,7 +7738,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1382 $)";
+		return "svgcanvas.js ($Rev: 1389 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
