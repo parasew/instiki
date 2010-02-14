@@ -943,6 +943,8 @@ function BatchCommand(text) {
     nsMap[xlinkns] = 'xlink';
     nsMap[xmlns] = 'xmlns';
     nsMap[se_ns] = 'se';
+    nsMap[htmlns] = 'xhtml';
+    nsMap[mathns] = 'mathml';
 	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
@@ -1495,8 +1497,23 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
-				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'"');
-
+				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+                var i = attrs.length;
+                while (i--) {
+                    attr = attrs.item(i);
+                    var attrVal = attr.nodeValue;
+                    // only serialize attributes we don't use internally
+                    if (attrVal != "" && 
+                        $.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
+                    {
+                        // map various namespaces to our fixed namespace prefixes
+                        // (the default xmlns attribute itself does not get a prefix)
+                        if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+                            out.push(' '); out.push(attr.nodeName); out.push("=\"");
+                            out.push(attrVal); out.push("\"");
+                        }
+                    }
+                }
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
@@ -1523,14 +1540,11 @@ function BatchCommand(text) {
 						
 						// map various namespaces to our fixed namespace prefixes
                         // (the default xmlns attribute itself does not get a prefix)
-                        if (nsMap[attr.namespaceURI] != "xmlns"|| attr.localName != "xlink") {
-                          if(attr.namespaceURI && nsMap[attr.namespaceURI] && nsMap[attr.namespaceURI] != "xmlns") {
-							out.push(nsMap[attr.namespaceURI]+':');
-						  }						
-						  out.push(attr.localName); out.push("=\""); 
-						  out.push(attrVal); out.push("\"");
-                        }
-					}
+                        if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+                            out.push(attr.nodeName); out.push("=\""); 
+				            out.push(attrVal); out.push("\"");
+				        }
+ 					}
 				}
 			}
 
@@ -3034,7 +3048,7 @@ function BatchCommand(text) {
 					});
 					var m = svgdoc.createElementNS(mathns, 'math');
 					m.setAttributeNS(xmlns, 'xmlns', mathns);
-					m.setAttributeNS(mathns, 'display', 'inline');
+					m.setAttribute('display', 'inline');
 					var mi = svgdoc.createElementNS(mathns, 'mo');
 					mi.textContent = "\u03A6";
 					m.appendChild(mi);
