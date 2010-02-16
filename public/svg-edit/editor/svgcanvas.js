@@ -7595,7 +7595,8 @@ function BatchCommand(text) {
 		// manually create a copy of the element
 		var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
 		$.each(el.attributes, function(i, attr) {
-			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
+			if (attr.localName != '-moz-math-font-style')
+			  new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
 		});
 		// set the copied element's new id
 		new_el.removeAttribute("id");
@@ -7617,7 +7618,7 @@ function BatchCommand(text) {
 					new_el.appendChild(copyElem(child));
 					break;
 				case 3: // text node
-					new_el.textContent = child.nodeValue;
+					new_el.appendChild(child.cloneNode(false));
 					break;
 				default:
 					break;
