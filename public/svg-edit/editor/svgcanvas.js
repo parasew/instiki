@@ -7593,11 +7593,9 @@ function BatchCommand(text) {
 	// we also do it manually because Opera/Win/non-EN puts , instead of .
 	var copyElem = function(el) {
 		// manually create a copy of the element
-		var new_el = document.createElementNS(svgns, el.nodeName);
+		var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
 		$.each(el.attributes, function(i, attr) {
-			var ns = attr.localName == 'href' ? xlinkns : 
-				attr.prefix == "xml" ? xmlns : null;
-			new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
+			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
 		});
 		// set the copied element's new id
 		new_el.removeAttribute("id");
