@@ -1,4 +1,4 @@
-﻿body {
+body {
 	background: #D8D8D8;
 }
 
@@ -734,6 +734,7 @@ span.zoom_tool {
 
 #tool_docprops_back {
 	margin-left: 1em;
+	overflow: auto;
 }
 
 #svg_docprops_container #svg_docprops_docprops, 

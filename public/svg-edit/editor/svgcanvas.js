@@ -684,7 +684,9 @@ function BatchCommand(text) {
 				'fill': '#FFF',
 				'style': 'pointer-events:none'
 			});
-			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
+			// Both Firefox and WebKit are too slow with this filter region (especially at higher
+			// zoom levels) and Opera has at least one bug
+//			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
 			canvasbg.appendChild(rect);
 			svgroot.insertBefore(canvasbg, svgcontent);
 		};
@@ -1343,7 +1345,7 @@ function BatchCommand(text) {
 					if(attrName.indexOf('se:') == 0) {
 						se_attrs.push([attrName, attr.nodeValue]);
 					} 
-					node.removeAttribute(attrName);
+					node.removeAttributeNS(attrNsURI, attrLocalName);
 				}
 				// special handling for path d attribute
 				if (node.nodeName == 'path' && attrName == 'd') {
@@ -1528,7 +1530,7 @@ function BatchCommand(text) {
                 var i = attrs.length;
                 while (i--) {
                     attr = attrs.item(i);
-                    var attrVal = attr.nodeValue;
+                    var attrVal = toXml(attr.nodeValue);
                     // only serialize attributes we don't use internally
                     if (attrVal != "" && 
                         $.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
@@ -1542,7 +1544,7 @@ function BatchCommand(text) {
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
-					var attrVal = attr.nodeValue;
+					var attrVal = toXml(attr.nodeValue);
 					if (attr.localName == '-moz-math-font-style') continue;
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
@@ -7721,7 +7723,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1396 $)";
+		return "svgcanvas.js ($Rev: 1404 $)";
 	};
 	
 	this.setUiStrings = function(strs) {

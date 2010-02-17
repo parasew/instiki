@@ -171,10 +171,10 @@ function svg_edit_setup() {
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
 
 	var saveHandler = function(window,svg) {
+		// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
+		// can just provide their own custom save handler and might not want the XML prolog
+		svg = "<?xml version='1.0'?>\n" + svg;
 		
-		window.opener.postMessage(svg, window.location.protocol + '//' + window.location.host);
-		return;
-
 		// Creates and opens an HTML page that provides a link to the SVG, a preview, and the markup. 
 		// Also includes warning about Mozilla bug #308590 when applicable
 		
@@ -1738,7 +1738,7 @@ function svg_edit_setup() {
 				'margin-top': {s: '2px', l: '4px', xl: '5px'},
 				'height': {s: 'auto', l: 'auto', xl: 'auto'},
 				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-				'font-size': {s: '.9em', l: '2em', xl: '2.5em'}
+				'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
 			},
 			"#zoom_panel": {
 				'margin-top': {s: '3px', l: '4px', xl: '5px'}
@@ -1758,10 +1758,12 @@ function svg_edit_setup() {
 				'line-height': {s: '18px', l: '34px', xl: '40px'},
 				'margin-top': {s: '3px'}
 			},
-			"div.toolset, #tools_top label, #tools_bottom label": {
+			"#tools_top label, #tools_bottom label": {
 				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-				'margin-top': {s: '1px', l: '3px', xl: '5px'},
-				'height': {s: '25px', l: '43px', xl: '64px'}
+				'height': {s: '25px', l: '42px', xl: '64px'}
+			},
+			"div.toolset": {
+				'height': {s: '25px', l: '42px', xl: '64px'}
 			}, 
 			"#tool_bold, #tool_italic": {
 				'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
@@ -2761,7 +2763,7 @@ function svg_edit_setup() {
 		updateCanvas(true);
 	});
 	
-//	var revnums = "svg-editor.js ($Rev: 1395 $) ";
+//	var revnums = "svg-editor.js ($Rev: 1402 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	return svgCanvas;
