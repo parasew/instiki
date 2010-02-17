@@ -43,12 +43,13 @@ $(function() {
 		
 		return {
 			name: "ClosePath",
+			svgicons: "extensions/closepath_icons.svg",
 			context_tools: [{
 				type: "tool_button",
 				panel: "closepath_panel",
 				title: "Open or Close path",
 				id: "close",
-				events: { mousedown: toggleClosed }
+				events: { click: toggleClosed }
 			}],
 			callback: function() {
 				$('#closepath_panel').hide();

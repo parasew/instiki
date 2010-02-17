@@ -99,7 +99,7 @@ var isOpera = !!window.opera,
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["class", "id", "requiredFeatures", "stdDeviation"],
 	"filter": ["class", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"foreignObject": ["class", "color", "font-size", "height", "id", "markdown", "opacity", "overflow", "requiredFeatures", "style", "transform", "width", "x", "y"],
+	"foreignObject": ["class", "font-size", "height", "id", "markdown", "opacity", "overflow", "requiredFeatures", "style", "transform", "width", "x", "y"],
 	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
@@ -114,7 +114,7 @@ var isOpera = !!window.opera,
 	"radialGradient": ["class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "id", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
 	"rect": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["class", "id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
-	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "markdown", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
+	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "markdown", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:se", "xmlns:xlink"],
 	"switch": ["class", "id", "requiredFeatures", "systemLanguage"],
 	"symbol": ["class", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "preserveAspectRatio", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "viewBox"],
 	"text": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "transform", "x", "xml:space", "y"],
@@ -154,6 +154,7 @@ var isOpera = !!window.opera,
 	"none": [],
 	"semantics": []
 	},
+
 
 // console.log('Start profiling')
 // setTimeout(function() {
@@ -1557,7 +1558,8 @@ function BatchCommand(text) {
 							&& elem.nodeName == 'image' 
 							&& attr.localName == 'href'
 							&& save_options.images
-							&& save_options.images == 'embed') {
+							&& save_options.images == 'embed')
+						{
 							var img = encodableImages[attrVal];
 							if(img) attrVal = img;
 						}
@@ -3056,28 +3058,6 @@ function BatchCommand(text) {
 					});
 					newText.textContent = "text";
 					break;
-				case "foreign":
-					started = true;
-					var newText = addSvgElementFromJson({
-						"element": "foreignObject",
-						"attr": {
-							"x": x,
-							"y": y,
-							"id": getNextId(),
-							"font-size": cur_text.font_size,
-							"width": "24",
-							"height": "24",
-							"style": "pointer-events:inherit"
-						}
-					});
-					var m = svgdoc.createElementNS(mathns, 'math');
-					m.setAttributeNS(xmlnsns, 'xmlns', mathns);
-					m.setAttribute('display', 'inline');
-					var mi = svgdoc.createElementNS(mathns, 'mo');
-					mi.textContent = "\u03A6";
-					m.appendChild(mi);
-					newText.appendChild(m);
-					break;
 				case "path":
 					// Fall through
 				case "pathedit":
@@ -3296,14 +3276,6 @@ function BatchCommand(text) {
 						'height': Math.abs(y-start_y*current_zoom)
 					},100);			
 					break;
-				case "foreignObject":
-					assignAttributes(shape,{
-				        'width': 24,
-				        'height': 24,
-						'x': x,
-						'y': y
-					},1000);
-					break;
 				case "text":
 					assignAttributes(shape,{
 						'x': x,
@@ -3318,6 +3290,8 @@ function BatchCommand(text) {
 					shape.setAttributeNS(null, "y2", y);
 					if (!window.opera) svgroot.unsuspendRedraw(handle);
 					break;
+				case "foreignObject":
+					// fall through
 				case "square":
 					// fall through
 				case "rect":
@@ -3525,7 +3499,7 @@ function BatchCommand(text) {
 					var attrs = $(element).attr(["x1", "x2", "y1", "y2"]);
 					keep = (attrs.x1 != attrs.x2 || attrs.y1 != attrs.y2);
 					break;
-				case "foreign":
+				case "foreignObject":
 				case "square":
 				case "rect":
 				case "image":
@@ -3667,7 +3641,7 @@ function BatchCommand(text) {
 				cleanupElement(element);
 				if(current_mode == "path") {
 					pathActions.toEditMode(element);
-				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreign") {
+				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
 					// keep us in the tool we were in unless it was a text or image element
 					canvas.addToSelection([element], true);
 				}
@@ -5375,6 +5349,15 @@ function BatchCommand(text) {
 			"opacity": cur_shape.opacity,
 			"visibility":"hidden"
 		};
+
+		// any attribute on the element not covered by the above
+		// TODO: make this list global so that we can properly maintain it
+		// TODO: what about @transform, @clip-rule, @fill-rule, etc?
+		$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
+		  if (elem.getAttribute(this)) {
+		      attrs[this] = elem.getAttribute(this);
+		  }
+		});
 		
 		var path = addSvgElementFromJson({
 			"element": "path",
@@ -5570,19 +5553,6 @@ function BatchCommand(text) {
 		return svgCanvasToString();
 	};
 
-	// Function: getForeignString(elt)
-	// Returns the contents of element elt as XML text.
-	//
-	// Parameters:
-	// elt - The foreignObject Element.
-	//
-	// Returns:
-	// The contents of elt as raw XML text.
-	this.getForeignString = function(elt) {
-		var s = svgToString(elt, 0);
-        return s;
-	};
-
 	// Function: setSvgString
 	// This function sets the current drawing as the input SVG XML.
 	//
@@ -5686,32 +5656,6 @@ function BatchCommand(text) {
 			
 			addCommandToHistory(batchCmd);
 			call("changed", [svgcontent]);
-		} catch(e) {
-			console.log(e);
-			return false;
-		}
-
-		return true;
-	};
-
-	// Function: setForeignString(xmlString, elt)
-	// This function sets the content of element elt to the input XML.
-	//
-	// Parameters:
-	// xmlString - The XML text.
-	// elt - the parent element to append to
-	//
-	// Returns:
-	// This function returns false if the set was unsuccessful, true otherwise.
-	this.setForeignString = function(xmlString, elt) {
-		try {
-			// convert string into XML document
-			var newDoc = Utils.text2xml('<svg xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'">'+xmlString+'</svg>');
-			// run it through our sanitizer to remove anything we do not support
-	        sanitizeSvg(newDoc.documentElement);
-	        
-	        elt.parentNode.replaceChild(svgdoc.importNode(newDoc.documentElement.firstChild, true), elt);
-			call("changed", [elt]);
 		} catch(e) {
 			console.log(e);
 			return false;
@@ -7595,8 +7539,9 @@ function BatchCommand(text) {
 		// manually create a copy of the element
 		var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
 		$.each(el.attributes, function(i, attr) {
-			if (attr.localName != '-moz-math-font-style')
-			  new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
+			if (attr.localName != '-moz-math-font-style') {
+				new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
+			}
 		});
 		// set the copied element's new id
 		new_el.removeAttribute("id");
@@ -7776,7 +7721,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1391 $)";
+		return "svgcanvas.js ($Rev: 1394 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
