@@ -666,6 +666,7 @@ function svg_edit_setup() {
 	var updateToolbar = function() {
 		if (selectedElement != null && 
 			selectedElement.tagName != "image" &&
+			selectedElement.tagName != "text" &&
 			selectedElement.tagName != "foreignObject" &&
 			selectedElement.tagName != "g")
 		{
