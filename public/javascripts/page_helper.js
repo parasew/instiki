@@ -117,7 +117,7 @@ function setupSVGedit(path){
 // finally, slice up the textarea content into before, selected, & after pieces
     before = t.value.slice(0, begin);
     selected = t.value.slice(begin, end);
-    after = t.value.slice(end, t.value.length-1);
+    after = t.value.slice(end, t.value.length);
     if (selected && selected != '') {
       if ( selected.match(/^<svg(.|\n)*<\/svg>$/) ) {
         SVGeditButton.disabled = false;
