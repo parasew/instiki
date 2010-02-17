@@ -85,8 +85,23 @@ function setupSVGedit(path){
       var editor = window.open(path, 'Edit SVG graphic', 'status=1,resizable=1,scrollbars=1');
       if (selected) {
         editor.addEventListener("load", function() {
+          editor.svgCanvas.setCustomHandlers({
+             'save': function(window,svg){
+                  window.opener.postMessage(svg, window.location.protocol + '//' + window.location.host);
+                  window.close();
+                  }
+          });
           editor.svgCanvas.setSvgString(selected);
         }, true);
+      } else {
+        editor.addEventListener("load", function() {
+          editor.svgCanvas.setCustomHandlers({
+             'save': function(window,svg){
+                  window.opener.postMessage(svg, window.location.protocol + '//' + window.location.host);
+                  window.close();
+                  }
+          });
+        }, true);      
       }
       SVGeditButton.disabled = true;
       SVGeditButton.value = 'Create SVG graphic';      
