@@ -165,7 +165,6 @@ function svg_edit_setup() {
 	var selectedElement = null;
 	var multiselected = false;
 	var editingsource = false;
-	var editingforeign = false;
 	var docprops = false;
 	
 	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
@@ -416,7 +415,74 @@ function svg_edit_setup() {
 				ext.callback();
 			}
 		}
-	
+
+		if(ext.context_tools) {
+			$.each(ext.context_tools, function(i, tool) {
+				// Add select tool
+				var cont_id = tool.container_id?(' id="' + tool.container_id + '"'):"";
+				
+				var panel = $('#' + tool.panel);
+				
+				if(!panel.length) {
+					panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
+				}
+				
+				// TODO: Allow support for other types, or adding to existing tool
+				switch (tool.type) {
+				case 'tool_button':
+					var html = '<div class="tool_button">' + tool.id + '</div>';
+					var div = $(html).appendTo(panel);
+					if (tool.events) {
+						$.each(tool.events, function(evt, func) {
+							$(div).bind(evt, func);
+						});
+					}
+					break;
+				case 'select':
+					var html = '<label' + cont_id + '>'
+						+ '<select id="' + tool.id + '">';
+					$.each(tool.options, function(val, text) {
+						var sel = (val == tool.defval) ? " selected":"";
+						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
+					});
+					html += "</select></label>";
+					// Creates the tool, hides & adds it, returns the select element
+					var sel = $(html).appendTo(panel).find('select');
+					
+					$.each(tool.events, function(evt, func) {
+						$(sel).bind(evt, func);
+					});
+					break;
+				
+				case 'input':
+					var html = '<label' + cont_id + '>'
+						+ '<span id="' + tool.id + '_label">' 
+						+ tool.label + ':</span>'
+						+ '<input id="' + tool.id + '" title="' + tool.title
+						+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>'
+						
+					// Creates the tool, hides & adds it, returns the select element
+					
+					// Add to given tool.panel
+					var inp = $(html).appendTo(panel).find('input');
+					
+					if(tool.spindata) {
+						inp.SpinButton(tool.spindata);
+					}
+					
+					if(tool.events) {
+						$.each(tool.events, function(evt, func) {
+							inp.bind(evt, func);
+						});
+					}
+					break;
+					
+				default:
+					break;
+				}
+			});
+		}
+		
 		if(ext.buttons) {
 			var fallback_obj = {},
 				placement_obj = {},
@@ -450,6 +516,10 @@ function svg_edit_setup() {
 				case 'mode':
 					cls = 'tool_button';
 					parent = "#tools_left";
+					break;
+				case 'context':
+					cls = 'tool_button';
+					parent = "#" + btn.panel;
 					break;
 				}
 				
@@ -516,21 +586,31 @@ function svg_edit_setup() {
 				if(!svgicons) {
 					button.append(icon);
 				}
-				
+
 				// Add given events to button
 				$.each(btn.events, function(name, func) {
 					if(name == "click") {
 						if(btn.type == 'mode') {
-							button.bind(name, func);
+							if(btn.includeWith) {
+								button.bind(name, func);
+							} else {
+								button.bind(name, function() {
+									if(toolButtonClick(button)) {
+										func();
+									}
+								});
+							}
 							if(btn.key) {
 								$(document).bind('keydown', {combi: btn.key, disableInInput: true}, func);
 								if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
 							}
+						} else {
+							button.bind(name, func);
 						}
 					} else {
 						button.bind(name, func);
 					}
-					});
+				});
 				
 				setupFlyouts(holders);
 			});
@@ -542,7 +622,6 @@ function svg_edit_setup() {
 				fallback: fallback_obj,
 				placement: placement_obj,
 				callback: function(icons) {
-			
 					// Bad hack to make the icon match the current size
 					// TODO: Write better hack!
 					var old = curPrefs.iconsize;
@@ -553,72 +632,6 @@ function svg_edit_setup() {
 					runCallback();
 				}
 		
-			});
-		}
-		if(ext.context_tools) {
-			$.each(ext.context_tools, function(i, tool) {
-				// Add select tool
-				var cont_id = tool.container_id?(' id="' + tool.container_id + '"'):"";
-				
-				var panel = $('#' + tool.panel);
-				
-				if(!panel.length) {
-					panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
-				}
-				
-				// TODO: Allow support for other types, or adding to existing tool
-				switch (tool.type) {
-				case 'tool_button':
-					var html = '<div class="tool_button">' + tool.id + '</div>';
-					var div = $(html).appendTo(panel);
-					if (tool.events) {
-						$.each(tool.events, function(evt, func) {
-							$(div).bind(evt, func);
-						});
-					}
-					break;
-				case 'select':
-					var html = '<label' + cont_id + '>'
-						+ '<select id="' + tool.id + '">';
-					$.each(tool.options, function(val, text) {
-						var sel = (val == tool.defval) ? " selected":"";
-						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
-					});
-					html += "</select></label>";
-					// Creates the tool, hides & adds it, returns the select element
-					var sel = $(html).appendTo(panel).find('select');
-					
-					$.each(tool.events, function(evt, func) {
-						$(sel).bind(evt, func);
-					});
-					break;
-				
-				case 'input':
-					var html = '<label' + cont_id + '">'
-						+ '<span id="' + tool.id + '_label">' 
-						+ tool.label + ':</span>'
-						+ '<input id="' + tool.id + '" title="' + tool.title
-						+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>'
-						
-					// Creates the tool, hides & adds it, returns the select element
-					
-					// Add to given tool.panel
-					var inp = $(html).appendTo(panel).find('input');
-					
-					if(tool.spindata) {
-						inp.SpinButton(tool.spindata);
-					}
-					
-					if(tool.events) {
-						$.each(tool.events, function(evt, func) {
-							$(sel).bind(evt, func);
-						});
-					}
-					break;
-					
-				default:
-					break;
-				}
 			});
 		}
 		
@@ -652,8 +665,8 @@ function svg_edit_setup() {
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
 		if (selectedElement != null && 
-            selectedElement.tagName != "foreignObject" &&
 			selectedElement.tagName != "image" &&
+			selectedElement.tagName != "foreignObject" &&
 			selectedElement.tagName != "g")
 		{
 			// get opacity values
@@ -734,7 +747,7 @@ function svg_edit_setup() {
 		var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 		
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-			#ellipse_panel, #line_panel, #text_panel, #image_panel, #foreignObject_panel').hide();
+			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 		if (elem != null) {
 			var elname = elem.nodeName;
 			var angle = svgCanvas.getRotationAngle(elem);
@@ -772,7 +785,7 @@ function svg_edit_setup() {
 				}
 				
 				// Elements in this array cannot be converted to a path
-				var no_path = $.inArray(elname, ['image', 'text', 'path', 'g', 'use', 'foreignObject']) == -1;
+				var no_path = $.inArray(elname, ['image', 'text', 'path', 'g', 'use']) == -1;
 				$('#tool_topath').toggle(no_path);
 				$('#tool_reorient').toggle(elname == 'path');
 				$('#tool_reorient').toggleClass('disabled', angle == 0);
@@ -800,7 +813,6 @@ function svg_edit_setup() {
 				circle: ['cx','cy','r'],
 				ellipse: ['cx','cy','rx','ry'],
 				line: ['x1','y1','x2','y2'], 
-				foreignObject: [],
 				text: []
 			};
 			
@@ -837,12 +849,6 @@ function svg_edit_setup() {
 						$('#text').focus().select();
 					}
 				} // text
-				else if (el_name == 'foreignObject') {
-				    $('#foreignObject_panel').css("display", "inline");
-				    $('#foreign_font_size').val(elem.getAttribute("font-size"));
-				    $('#foreign_width').val(elem.getAttribute("width"));
-				    $('#foreign_height').val(elem.getAttribute("height"));
-				} //foreignObject
 				else if(el_name == 'image') {
 					var xlinkNS="http://www.w3.org/1999/xlink";
 					var href = elem.getAttributeNS(xlinkNS, "href");
@@ -1331,11 +1337,6 @@ function svg_edit_setup() {
 		svgCanvas.setMode('text');
 	};
 	
-	var clickForeign = function(){
-		toolButtonClick('#tool_foreign');
-		svgCanvas.setMode('foreign');
-	};
-
 	var clickPath = function(){
 		toolButtonClick('#tool_path');
 		svgCanvas.setMode('path');
@@ -1540,21 +1541,10 @@ function svg_edit_setup() {
 		var str = svgCanvas.getSvgString();
 		$('#svg_source_textarea').val(str);
 		$('#svg_source_editor').fadeIn();
-		properlySourceSizeTextArea('source');
+		properlySourceSizeTextArea();
 		$('#svg_source_textarea').focus();
 	};
 	
-	var showForeignEditor = function(elt){
-		if (!elt || editingforeign) return;
-		editingforeign = true;
-		elt.removeAttribute('fill');
-		var str = svgCanvas.getForeignString(elt);
-		$('#svg_foreign_textarea').val(str);
-		$('#svg_foreign_editor').fadeIn();
-		properlySourceSizeTextArea('foreign');
-		$('#svg_foreign_textarea').focus();
-	};
-
 	$('#svg_docprops_container').draggable({cancel:'button,fieldset'});
 	
 	var showDocProperties = function(){
@@ -1590,40 +1580,18 @@ function svg_edit_setup() {
 		$('#svg_docprops').fadeIn();
 	};
 	
-	var properlySourceSizeTextArea = function(str){
+	var properlySourceSizeTextArea = function(){
 		// TODO: remove magic numbers here and get values from CSS
-		var height = $('#svg_'+str+'_container').height() - 80;
-		$('#svg_'+str+'_textarea').css('height', height);
+		var height = $('#svg_source_container').height() - 80;
+		$('#svg_source_textarea').css('height', height);
 	};
 	
-    var saveForeignEditor = function(elt){
-		if (!editingforeign) return;
-		
-		var saveChanges = function() {
-			svgCanvas.clearSelection();
-			hideSourceEditor('foreign');
-			zoomImage();
-			populateLayers();
-			setTitle(svgCanvas.getImageTitle());
-		}
-
-        if (!svgCanvas.setForeignString($('#svg_foreign_textarea').val(), elt)) {
-			$.confirm(uiStrings.QerrorsRevertToSource, function(ok) {
-				if(!ok) return false;
-				saveChanges();
-            });
-		} else {
-			saveChanges();
-		}
-		setSelectMode();		
-    }
-
 	var saveSourceEditor = function(){
 		if (!editingsource) return;
 
 		var saveChanges = function() {
 			svgCanvas.clearSelection();
-			hideSourceEditor('source');
+			hideSourceEditor();
 			zoomImage();
 			populateLayers();
 			setTitle(svgCanvas.getImageTitle());
@@ -1850,28 +1818,18 @@ function svg_edit_setup() {
 		setFlyoutPositions();
 	}
 
-	var cancelOverlays = function(elt) {
+	var cancelOverlays = function() {
 		$('#dialog_box').hide();
-		if (!editingsource && !editingforeign && !docprops) return;
+		if (!editingsource && !docprops) return;
 
 		if (editingsource) {
 			var oldString = svgCanvas.getSvgString();
 			if (oldString != $('#svg_source_textarea').val()) {
 				$.confirm(uiStrings.QignoreSourceChanges, function(ok) {
-					if(ok) hideSourceEditor('source');
+					if(ok) hideSourceEditor();
 				});
 			} else {
-				hideSourceEditor('source');
-			}
-		}
-		else if (editingforeign) {
-			var oldString = svgCanvas.getForeignString(elt);
-			if (oldString != $('#svg_foreign_textarea').val()) {
-				$.confirm(uiStrings.QignoreSourceChanges, function(ok) {
-					if(ok) hideSourceEditor('foreign');
-				});
-			} else {
-				hideSourceEditor('foreign');
+				hideSourceEditor();
 			}
 		}
 		else if (docprops) {
@@ -1880,11 +1838,10 @@ function svg_edit_setup() {
 
 	};
 
-	var hideSourceEditor = function(str){
-		$('#svg_'+str+'_editor').hide();
+	var hideSourceEditor = function(){
+		$('#svg_source_editor').hide();
 		editingsource = false;
-		editingforeign = false;
-		$('#svg_'+str+'_textarea').blur();
+		$('#svg_source_textarea').blur();
 	};
 	
 	var hideDocProperties = function(){
@@ -1897,11 +1854,8 @@ function svg_edit_setup() {
 	
 	// TODO: add canvas-centering code in here
 	$(window).resize(function(evt) {
-		if (editingsource) {
-		  properlySourceSizeTextArea('source');
-        } else if(editingforeign) {
-          properlySourceSizeTextArea('foreign');
-        }
+		if (!editingsource) return;
+		properlySourceSizeTextArea();
 	});
 	
 	$('#url_notice').click(function() {
@@ -2037,7 +1991,7 @@ function svg_edit_setup() {
 		var bNoFill = (svgCanvas.getFillColor() == 'none');
 		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
 		var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
-		var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_foreign', '#tool_path', '#tool_edit_foreign'];
+		var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 		if (bNoStroke) {
 			for (index in buttonsNeedingStroke) {
 				var button = buttonsNeedingStroke[index];
@@ -2500,19 +2454,13 @@ function svg_edit_setup() {
 			{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
 			{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
 			{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
-			{sel:'#tool_foreign', fn: clickForeign, evt: 'mouseup'},
-			{sel:'#tool_edit_foreign', fn: function(){showForeignEditor(selectedElement)}, evt: 'mouseup'},
 			{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey+'N', true]},
-			{sel:'#tool_save', fn: function() { if(editingsource){saveSourceEditor()}
-			               else if(editingforeign){saveForeignEditor(selectedElement)}
-			               else clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
+			{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
 			{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: [modKey+'O', true]},
 			{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 			{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
 			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
-			{sel:'#tool_foreign_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: function(){cancelOverlays(selectedElement)}, evt: 'click', key: ['esc', false, false], hidekey: true},
 			{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
-			{sel:'#tool_foreign_save', fn: function(){saveForeignEditor(selectedElement)}, evt: 'click'},
 			{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
 			{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: [modKey+'I', true]},
 			{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
@@ -2812,7 +2760,7 @@ function svg_edit_setup() {
 		updateCanvas(true);
 	});
 	
-//	var revnums = "svg-editor.js ($Rev: 1386 $) ";
+//	var revnums = "svg-editor.js ($Rev: 1395 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	return svgCanvas;
@@ -2850,8 +2798,6 @@ function svg_edit_setup() {
 			'text':'text.png',
 			'image':'image.png',
 			'zoom':'zoom.png',
-			'foreign':'foreign.png',
-			'edit_foreign':'edit_foreign.png',
 			
 			'clone':'clone.png',
 			'delete':'delete.png',
@@ -2905,8 +2851,6 @@ function svg_edit_setup() {
 			'#tool_text,#layer_rename':'text',
 			'#tool_image':'image',
 			'#tool_zoom':'zoom',
-			'#tool_foreign':'foreign',
-			'#tool_edit_foreign':'edit_foreign',
 			
 			'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
 			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
@@ -2931,8 +2875,8 @@ function svg_edit_setup() {
 			'#layer_down':'go_down',
 			'#layerlist td.layervis':'eye',
 			
-			'#tool_source_save,#tool_foreign_save,#tool_docprops_save':'ok',
-			'#tool_source_cancel,#tool_foreign_cancel,#tool_docprops_cancel':'cancel',
+			'#tool_source_save,#tool_docprops_save':'ok',
+			'#tool_source_cancel,#tool_docprops_cancel':'cancel',
 			
 			'.flyout_arrow_horiz':'arrow_right',
 			'.dropdown button, #main_button .dropdown':'arrow_down',
@@ -2977,13 +2921,13 @@ function svg_edit_setup() {
 			
 			// Load source if given
 			var loc = document.location.href;
-			if(loc.indexOf('source=data') != -1) {
-				var pre = 'source=data:image/svg+xml;base64,';
+			if(loc.indexOf('?source=') != -1) {
+				var pre = '?source=data:image/svg+xml;base64,';
 				var src = loc.substring(loc.indexOf(pre) + pre.length);
 				svgCanvas.setSvgString(Utils.decode64(src));
 			}
-			else if(loc.indexOf('url=') != -1) {
-				var pre = 'url=';
+			else if(loc.indexOf('?url=') != -1) {
+				var pre = '?url=';
 				var url = loc.substring(loc.indexOf(pre) + pre.length);
 				$.ajax({
 					'url': url,

@@ -1,4 +1,4 @@
-body {
+﻿body {
 	background: #D8D8D8;
 }
 
@@ -410,7 +410,6 @@ body {
 #svg_editor #line_panel,
 #svg_editor #image_panel,
 #svg_editor #text_panel,
-#svg_editor #foreignObject_panel,
 #svg_editor #path_node_panel {
 	display: none;
 }
@@ -683,12 +682,11 @@ span.zoom_tool {
 	text-align: right;
 }
 
-#svg_source_editor,  #svg_foreign_editor{
+#svg_source_editor {
 	display: none;
 }
 
-#svg_source_editor #svg_source_overlay,
-#svg_foreign_editor #svg_foreign_overlay {
+#svg_source_editor #svg_source_overlay {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -699,8 +697,7 @@ span.zoom_tool {
 	z-index: 5;
 }
 
-#svg_source_editor #svg_source_container,
-#svg_foreign_editor #svg_foreign_container {
+#svg_source_editor #svg_source_container {
 	position: absolute;
 	top: 30px;
 	left: 30px;
@@ -782,8 +779,7 @@ span.zoom_tool {
 	display: block;
 }
 
-#svg_source_editor #svg_source_textarea,
-#svg_foreign_editor #svg_foreign_textarea {
+#svg_source_editor #svg_source_textarea {
 	position: relative;
 	width: 95%;
 	top: 5px;
@@ -792,8 +788,7 @@ span.zoom_tool {
 	font-size: 12px;
 }
 
-#svg_source_editor #tool_source_back,
-#svg_foreign_editor #tool_foreign_back {
+#svg_source_editor #tool_source_back {
 	text-align: left;
 	padding-left: 20px;
 }
@@ -814,11 +809,6 @@ span.zoom_tool {
 	top: 0;
 	left: 0;
 	text-align: left;
-}
-
-#svg_source_editor button, #svg_foreign_editor button, #svg_docprops button {
-	padding: 5px 5px 7px 28px;
-	margin: 5px 20px 0 0;	
 }
 
 #svg_docprops button {
@@ -849,17 +839,14 @@ span.zoom_tool {
 	z-index: 20000;
 }
 
-button#tool_source_save,
-button#tool_source_cancel,
-button#tool_foreign_save,
-button#tool_foreign_cancel,
-button#tool_docprops_save,
-button#tool_docprops_cancel {
+.toolbar_button button {
     border:1px solid #dedede;
     line-height:130%;
+    float: left;
 	background: #E8E8E8 none;
     padding:5px 10px 5px 7px; /* Firefox */
     line-height:17px; /* Safari */
+	margin: 5px 20px 0 0;	
 }
 
 .toolbar_button button .svg_icon {
@@ -971,4 +958,3 @@ button#tool_docprops_cancel {
 	-webkit-border-radius: 0px;	
 }
 
-foreignObject { line-height:1.0; }
