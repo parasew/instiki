@@ -939,7 +939,8 @@ function BatchCommand(text) {
 					'</svg>').documentElement, true);
 		
 		$(svgroot).appendTo(container);
-		
+
+	// map namespace URIs to prefixes		
 	var nsMap = {};
     nsMap[xlinkns] = 'xlink';
     nsMap[xmlns] = 'xml';
@@ -947,12 +948,12 @@ function BatchCommand(text) {
     nsMap[se_ns] = 'se';
     nsMap[htmlns] = 'xhtml';
     nsMap[mathns] = 'mathml';
-    
+
+    // map prefixes to namespace URIs    
     var nsRevMap = {};
     $.each(nsMap, function(key,value){
         nsRevMap[value] = key;
     });
-
 
     // Produce a Namespace-aware version of svgWhitelist
     var svgWhiteListNS = {};
@@ -1332,10 +1333,11 @@ function BatchCommand(text) {
 				var attrName = attr.nodeName;
 				var attrLocalName = attr.localName;
 				var attrNsURI = attr.namespaceURI;
-				//Check that an attribute with the correct localName in the correct namespace is on our whitelist
-				//   or is a namespace declaration for one of our allowed namespaces
+				// Check that an attribute with the correct localName in the correct namespace is on
+				// our whitelist or is a namespace declaration for one of our allowed namespaces
 				if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != xmlnsns) &&
-				    !(attrNsURI == xmlnsns && nsMap[attr.nodeValue]) ) {
+				    !(attrNsURI == xmlnsns && nsMap[attr.nodeValue]) )
+				{
 					// Bypassing the whitelist to allow se: prefixes. Is there
 					// a more appropriate way to do this?
 					if(attrName.indexOf('se:') == 0) {
@@ -1531,8 +1533,6 @@ function BatchCommand(text) {
                     if (attrVal != "" && 
                         $.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
                     {
-                        // map various namespaces to our fixed namespace prefixes
-                        // (the default xmlns attribute itself does not get a prefix)
                         if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
                             out.push(' '); out.push(attr.nodeName); out.push("=\"");
                             out.push(attrVal); out.push("\"");
@@ -7721,7 +7721,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1394 $)";
+		return "svgcanvas.js ($Rev: 1396 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
