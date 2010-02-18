@@ -1385,6 +1385,11 @@ function BatchCommand(text) {
 				}
 			}
 			
+			// Safari crashes on a <use> without a xlink:href, so we just remove the node here
+			if (node.nodeName == "use" && !node.getAttributeNS(xlinkns,"href")) {
+				parent.removeChild(node);
+				return;
+			}
 			// if the element has attributes pointing to a non-local reference, 
 			// need to remove the attribute
 			$.each(["clip-path", "fill", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
@@ -2647,6 +2652,7 @@ function BatchCommand(text) {
 	};
 	
 	var hasMatrixTransform = function(tlist) {
+		if(!tlist) return false;
 		var num = tlist.numberOfItems;
 		while (num--) {
 			var xform = tlist.getItem(num);
@@ -3083,11 +3089,13 @@ function BatchCommand(text) {
 				start_x: start_x,
 				start_y: start_y,
 				selectedElements: selectedElements
-			});
+			}, true);
 			
-			if(ext_result) {
-				started = ext_result.started;
+			$.each(ext_result, function(i, r) {
+				if(r && r.started) {
+					started = true;
 			}
+			});
 		};
 	
 		// in this function we do not record any state changes yet (but we do update
@@ -3604,13 +3612,15 @@ function BatchCommand(text) {
 				event: evt,
 				mouse_x: mouse_x,
 				mouse_y: mouse_y
-			});
+			}, true);
 			
-			if(ext_result) {
-				keep = ext_result.keep;
-				element = ext_result.element;
-				started = ext_result.started;
+			$.each(ext_result, function(i, r) {
+				if(r) {
+					keep = r.keep || keep;
+					element = r.element;
+					started = r.started || started;
 			}
+			});
 			
 			if (!keep && element != null) {
 				element.parentNode.removeChild(element);
@@ -5618,28 +5628,33 @@ function BatchCommand(text) {
 			
 			var content = $(svgcontent);
         	
+			var attrs = {
+				id: 'svgcontent',
+				overflow: 'visible'
+			};
+			
 			// determine proper size
-			var w, h;
 			if (content.attr("viewBox")) {
 				var vb = content.attr("viewBox").split(' ');
-				w = vb[2];
-				h = vb[3];
+				attrs.width = vb[2];
+				attrs.height = vb[3];
 			}
 			// handle content that doesn't have a viewBox
 			else {
-				var dims = content.attr(["width", "height"]);
-				w = convertToNum('width', dims.width);
-				h = convertToNum('height', dims.height);
-				// svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
+				$.each(['width', 'height'], function(i, dim) {
+					// Set to 100 if not given
+					var val = content.attr(dim) || 100;
+			
+					if((val+'').substr(-1) === "%") {
+						// Use user units if percentage given
+						attrs[dim] = parseInt(val);
+					} else {
+						attrs[dim] = convertToNum(dim, val);
+					}
+			});
 			}
 			
-			content.attr({
-				id: 'svgcontent',
-				width: w,
-				height: h,
-				overflow: 'visible'
-			});
-			
+			content.attr(attrs);
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 			// update root to the correct size
 			var changes = content.attr(["width", "height"]);
@@ -6602,7 +6617,19 @@ function BatchCommand(text) {
 			ret.y += parseFloat(selected.getAttribute('y'));
 		} else {
 			try { ret = selected.getBBox(); } 
-			catch(e) { ret = null; }
+			catch(e) { 
+				// Check if element is child of a foreignObject
+				var fo = $(selected).closest("foreignObject");
+				if(fo.length) {
+					try {
+						ret = fo[0].getBBox();						
+					} catch(e) {
+						ret = null;
+					}
+				} else {
+					ret = null;
+				}
+			}
 		}
 
 		// get the bounding box from the DOM (which is in that element's coordinate system)
@@ -7326,6 +7353,7 @@ function BatchCommand(text) {
 		// re-creating the getCheckedBBox() function?  shouldn't we make this a function 
 		// at the 'canvas' level
 		var getCheckedBBox = function(elem) {
+		
 			try {
 				// TODO: Fix issue with rotated groups. Currently they work
 				// fine in FF, but not in other browsers (same problem mentioned
@@ -7399,7 +7427,10 @@ function BatchCommand(text) {
 				}
 			
 				return bb;
-			} catch(e) { return null; } 
+			} catch(e) { 
+				console.log(elem, e);
+				return null;
+			} 
 
 		}
 		var full_bb;
@@ -7565,7 +7596,7 @@ function BatchCommand(text) {
 					new_el.appendChild(copyElem(child));
 					break;
 				case 3: // text node
-					new_el.appendChild(child.cloneNode(false));
+					new_el.textContent = child.nodeValue;
 					break;
 				default:
 					break;
@@ -7723,7 +7754,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1404 $)";
+		return "svgcanvas.js ($Rev: 1409 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
