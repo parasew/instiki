@@ -14,8 +14,11 @@ $(function() {
 		var selElems,
 			updateButton = function(path) {
 				var seglist = path.pathSegList,
-					button = $('#closepath_panel > div.tool_button')[0];
-					$(button).html(seglist.getItem(seglist.numberOfItems - 1).pathSegType==1 ? "open":"close");
+					closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType==1,
+					showbutton = closed ? '#tool_openpath' : '#tool_closepath',
+					hidebutton = closed ? '#tool_closepath' : '#tool_openpath';
+					$(hidebutton).hide();
+					$(showbutton).show();
 			},
 			showPanel = function(on) {
 				$('#closepath_panel').toggle(on);
@@ -44,12 +47,27 @@ $(function() {
 		return {
 			name: "ClosePath",
 			svgicons: "extensions/closepath_icons.svg",
-			context_tools: [{
-				type: "tool_button",
+			buttons: [{
+				id: "tool_openpath",
+				type: "context",
 				panel: "closepath_panel",
-				title: "Open or Close path",
-				id: "close",
-				events: { click: toggleClosed }
+				title: "Open path",
+				events: {
+					'click': function() {
+						toggleClosed();
+					}
+				}
+			},
+			{
+				id: "tool_closepath",
+				type: "context",
+				panel: "closepath_panel",
+				title: "Close path",
+				events: {
+					'click': function() {
+						toggleClosed();
+					}
+				}
 			}],
 			callback: function() {
 				$('#closepath_panel').hide();
@@ -70,7 +88,7 @@ $(function() {
 						showPanel(false);
 					}
 				}
-			},
+			}
 		};
 	});
 });
