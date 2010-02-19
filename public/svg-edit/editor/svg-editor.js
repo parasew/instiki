@@ -1823,7 +1823,7 @@ function svg_edit_setup() {
 
 	var cancelOverlays = function() {
 		$('#dialog_box').hide();
-		if (!editingsource && !docprops) return;
+		if (!editingsource && !editingforeign && !docprops) return;
 
 		if (editingsource) {
 			var oldString = svgCanvas.getSvgString();
