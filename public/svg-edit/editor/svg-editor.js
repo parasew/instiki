@@ -1823,7 +1823,7 @@ function svg_edit_setup() {
 
 	var cancelOverlays = function() {
 		$('#dialog_box').hide();
-		if (!editingsource && !docprops) return;
+		if (!editingsource && !editingforeign && !docprops) return;
 
 		if (editingsource) {
 			var oldString = svgCanvas.getSvgString();
@@ -2924,13 +2924,13 @@ function svg_edit_setup() {
 			
 			// Load source if given
 			var loc = document.location.href;
-			if(loc.indexOf('?source=') != -1) {
-				var pre = '?source=data:image/svg+xml;base64,';
+			if(loc.indexOf('source=data') != -1) {
+				var pre = 'source=data:image/svg+xml;base64,';
 				var src = loc.substring(loc.indexOf(pre) + pre.length);
 				svgCanvas.setSvgString(Utils.decode64(src));
 			}
-			else if(loc.indexOf('?url=') != -1) {
-				var pre = '?url=';
+			else if(loc.indexOf('url=') != -1) {
+				var pre = 'url=';
 				var url = loc.substring(loc.indexOf(pre) + pre.length);
 				$.ajax({
 					'url': url,
