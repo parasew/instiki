@@ -423,9 +423,9 @@ function svg_edit_setup() {
 				
 				var panel = $('#' + tool.panel);
 				
-				if(!panel.length) {
+				// create the panel if it doesn't exist
+				if(!panel.length)
 					panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
-				}
 				
 				// TODO: Allow support for other types, or adding to existing tool
 				switch (tool.type) {
@@ -487,7 +487,6 @@ function svg_edit_setup() {
 			var fallback_obj = {},
 				placement_obj = {},
 				svgicons = ext.svgicons;
-		
 			var holders = {};
 			
 		
@@ -520,6 +519,9 @@ function svg_edit_setup() {
 				case 'context':
 					cls = 'tool_button';
 					parent = "#" + btn.panel;
+					// create the panel if it doesn't exist
+					if(!$(parent).length)
+						$('<div>', {id: btn.panel}).appendTo("#tools_top");
 					break;
 				}
 				
@@ -527,7 +529,6 @@ function svg_edit_setup() {
 					.attr("id", id)
 					.attr("title", btn.title)
 					.addClass(cls);
-				
 				if(!btn.includeWith) {
 					button.appendTo(parent);
 				} else {
@@ -1823,7 +1824,7 @@ function svg_edit_setup() {
 
 	var cancelOverlays = function() {
 		$('#dialog_box').hide();
-		if (!editingsource && !editingforeign && !docprops) return;
+		if (!editingsource && !docprops) return;
 
 		if (editingsource) {
 			var oldString = svgCanvas.getSvgString();
@@ -2763,7 +2764,7 @@ function svg_edit_setup() {
 		updateCanvas(true);
 	});
 	
-//	var revnums = "svg-editor.js ($Rev: 1402 $) ";
+//	var revnums = "svg-editor.js ($Rev: 1414 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	return svgCanvas;

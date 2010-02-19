@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg">
-<g id="close">
+<g id="tool_closepath">
 <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>
-  <marker viewBox="0 0 10 10" id="close_arrow_fw2" refY="5" markerUnits="strokeWidth" markerWidth="5" markerHeight="5" orient="auto" refX="8">
+  <marker viewBox="0 0 10 10" id="close_arrow_fw256" refY="5" markerUnits="strokeWidth" markerWidth="5" markerHeight="5" orient="auto" refX="8">
    <path d="m0,0l10,5l-10,5l5,-5l-5,-5z" fill="#f00"/>
   </marker>
  </defs>
  <g>
   <title>Layer 1</title>
   <path stroke="#000" stroke-width="15" fill="#ffc8c8" d="m121.5,40l-84,106l27,115l166,2l29,-111"/>
-  <line x1="240" y1="136" x2="169.5" y2="74" stroke="#f00" stroke-width="15" fill="none" marker-end="url(#close_arrow_fw2)"/>
+  <line x1="240" y1="136" x2="169.5" y2="74" stroke="#f00" stroke-width="15" fill="none" marker-end="url(#close_arrow_fw256)"/>
   <g stroke-width="15" stroke="#00f" fill="#00ffff">
   <circle r="30" cy="41" cx="123"/>
   <circle r="30" cy="146" cx="40"/>
@@ -20,7 +20,7 @@
  </g>
 </svg>
 </g>
-<g id="open">
+<g id="tool_openpath">
 <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <g>
   <title>Layer 1</title>
@@ -40,4 +40,6 @@
  </g>
 </svg>
 </g>
+
+<g id="svg_eof"/>
 </svg>
