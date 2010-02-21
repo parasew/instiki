@@ -114,7 +114,7 @@ var isOpera = !!window.opera,
 	"radialGradient": ["class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "id", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
 	"rect": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["class", "id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
-	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "markdown", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:se", "xmlns:xlink"],
+	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "markdown", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "viewBox", "width", "x", "xmlns", "xmlns:se", "xmlns:xlink", "y"],
 	"switch": ["class", "id", "requiredFeatures", "systemLanguage"],
 	"symbol": ["class", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "preserveAspectRatio", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "viewBox"],
 	"text": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "transform", "x", "xml:space", "y"],
@@ -1169,7 +1169,7 @@ function BatchCommand(text) {
 				stroke: "#000000",
 				stroke_paint: null,
 				stroke_opacity: 1,
-				stroke_width: 5,
+				stroke_width: 2,
 				stroke_style: 'none',
 				opacity: 1
 			}
@@ -2819,7 +2819,6 @@ function BatchCommand(text) {
 			
 			start_transform = mouse_target.getAttribute("transform");
 			var tlist = canvas.getTransformList(mouse_target);
-	
 			switch (current_mode) {
 				case "select":
 					started = true;
@@ -5525,6 +5524,9 @@ function BatchCommand(text) {
 	this.open = function() {
 		// Nothing by default, handled by optional widget/extension
 	};
+	this.import = function() {
+		// Nothing by default, handled by optional widget/extension
+	};
 
 	// Function: save
 	// Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
@@ -5681,6 +5683,128 @@ function BatchCommand(text) {
 		return true;
 	};
 
+	// Function: importSvgString
+	// This function imports the input SVG XML into the current layer in the drawing
+	//
+	// Parameters:
+	// xmlString - The SVG as XML text.
+	//
+	// Returns:
+	// This function returns false if the import was unsuccessful, true otherwise.
+	
+	// TODO: create a new layer for the imported SVG
+	// TODO: properly size the new group
+	this.importSvgString = function(xmlString) {
+		try {
+			// convert string into XML document
+			var newDoc = Utils.text2xml(xmlString);
+			// run it through our sanitizer to remove anything we do not support
+	        sanitizeSvg(newDoc.documentElement);
+
+			var batchCmd = new BatchCommand("Change Source");
+
+			// import new svg document into our document
+			var importedNode = svgdoc.importNode(newDoc.documentElement, true);
+        
+    	    if (current_layer) {
+    	    	// add all children of the imported <svg> to the <g> we create
+    	    	var g = svgdoc.createElementNS(svgns, "g");
+    	    	while (importedNode.hasChildNodes()) { g.appendChild(importedNode.firstChild); }
+    	    	current_layer.appendChild(g);
+    	    }
+    	    
+        	// change image href vals if possible
+//        	$(svgcontent).find('image').each(function() {
+//        		var image = this;
+//        		preventClickDefault(image);
+//        		var val = this.getAttributeNS(xlinkns, "href");
+//				if(val.indexOf('data:') === 0) {
+//					// Check if an SVG-edit data URI
+//					var m = val.match(/svgedit_url=(.*?);/);
+//					if(m) {
+//						var url = decodeURIComponent(m[1]);
+//						$(new Image()).load(function() {
+//							image.setAttributeNS(xlinkns,'xlink:href',url);
+//						}).attr('src',url);
+//					}
+//				}
+//        		// Add to encodableImages if it loads
+//        		canvas.embedImage(val);
+//        	});
+        	
+        	// Fix XML for Opera/Win/Non-EN
+			if(!support.goodDecimals) {
+				canvas.fixOperaXML(svgcontent, importedNode);
+			}
+			
+			// recalculate dimensions on the top-level children so that unnecessary transforms
+			// are removed
+			var deepdive = function(node) {
+				if (node.nodeType == 1) {
+					var children = node.childNodes;
+					var i = children.length;
+					while (i--) { deepdive(children.item(i)); }
+					try {
+						recalculateDimensions(node);
+					} catch(e) { console.log(e); }
+				}
+			}
+			deepdive(importedNode);
+			
+//			var content = $(svgcontent);
+        	
+//			var attrs = {
+//				id: 'svgcontent',
+//				overflow: 'visible'
+//			};
+			
+			// determine proper size
+//			if (content.attr("viewBox")) {
+//				var vb = content.attr("viewBox").split(' ');
+//				attrs.width = vb[2];
+//				attrs.height = vb[3];
+//			}
+//			// handle content that doesn't have a viewBox
+//			else {
+//				$.each(['width', 'height'], function(i, dim) {
+//					// Set to 100 if not given
+//					var val = content.attr(dim) || 100;
+//
+//					if((val+'').substr(-1) === "%") {
+//						// Use user units if percentage given
+//						attrs[dim] = parseInt(val);
+//					} else {
+//						attrs[dim] = convertToNum(dim, val);
+//					}
+//				});
+//			}
+			
+//			content.attr(attrs);
+			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
+			// update root to the correct size
+//			var changes = content.attr(["width", "height"]);
+//			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
+			
+			// reset zoom
+			current_zoom = 1;
+			
+			// identify layers
+//			identifyLayers();
+			
+			// reset transform lists
+			svgTransformLists = {};
+			canvas.clearSelection();
+			
+			addCommandToHistory(batchCmd);
+			call("changed", [svgcontent]);
+		} catch(e) {
+			console.log(e);
+			return false;
+		}
+
+		return true;
+	};
+	
 	// Layer API Functions
 
 	// Group: Layers
@@ -7475,9 +7599,11 @@ function BatchCommand(text) {
 		
 		$.each(elems, function(i, elem) {
 			var cur_bb = bboxes[i];
+			if (cur_bb) {
 			var offset = getOffset(elem);
 			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
 			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
+			}
 		});
 		
 		full_bb.width = max_x - min_x;
@@ -7754,7 +7880,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1409 $)";
+		return "svgcanvas.js ($Rev: 1422 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
