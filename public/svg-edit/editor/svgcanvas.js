@@ -124,6 +124,7 @@ var isOpera = !!window.opera,
 	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"],
 	
 	// MathML Elements
+	"annotation": ["encoding"],
 	"annotation-xml": ["encoding"],
 	"maction": ["actiontype", "other", "selection"],
 	"math": ["class", "id", "display", "xmlns"],
