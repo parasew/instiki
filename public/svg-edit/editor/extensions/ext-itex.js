@@ -1,5 +1,5 @@
 /*
- * ext-foreignobject.js
+ * ext-itex.js
  *
  * Licensed under the Apache License, Version 2
  *
@@ -9,7 +9,7 @@
  */
 
 $(function() {
-	svgCanvas.addExtension("foreignObject", function(S) {
+	svgCanvas.addExtension("itex", function(S) {
 		var svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
 			selElems,
@@ -20,7 +20,7 @@ $(function() {
 			se_ns = "http://svg-edit.googlecode.com",
 			htmlns = "http://www.w3.org/1999/xhtml",
 			mathns = "http://www.w3.org/1998/Math/MathML",
-			editingforeign = false,
+			editingitex = false,
 			svgdoc = S.svgroot.parentNode.ownerDocument,
 			started,
 			newFO;
@@ -38,32 +38,52 @@ $(function() {
 				fc_rules = $('<style id="fc_rules"><\/style>').appendTo('head');
 			} 
 			fc_rules.text(!on?"":" #tool_topath { display: none !important; }");
-			$('#foreignObject_panel').toggle(on);
+			$('#itex_panel').toggle(on);
 		}
 
 		function toggleSourceButtons(on) {
 			$('#tool_source_save, #tool_source_cancel').toggle(!on);
-			$('#foreign_save, #foreign_cancel').toggle(on);
+			$('#itex_save, #itex_cancel').toggle(on);
 		}
 		
+		function  htmlEscape(string) {
+			return string.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		}
 			
-		// Function: setForeignString(xmlString, elt)
-		// This function sets the content of element elt to the input XML.
+		// Function: setItexString(string, url)
+		// This function sets the content of of the currently-selected foreignObject element,
+		// based on the itex contained in string.
 		//
 		// Parameters:
-		// xmlString - The XML text.
-		// elt - the parent element to append to
+		// string - The itex text.
+		// url - the url of the itex server to do the conversion
 		//
 		// Returns:
 		// This function returns false if the set was unsuccessful, true otherwise.
-		function setForeignString(xmlString) {
+		function setItexString(tex) {
 			var elt = selElems[0];
 			try {
-				// convert string into XML document
-				var newDoc = Utils.text2xml('<svg xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'">'+xmlString+'</svg>');
-				// run it through our sanitizer to remove anything we do not support
-				S.sanitizeSvg(newDoc.documentElement);
-				elt.parentNode.replaceChild(svgdoc.importNode(newDoc.documentElement.firstChild, true), elt);
+				math = svgdoc.createElementNS(mathns, 'math');
+				// make an AJAX request to the server, to get the MathML
+				$.get('../../itex', {'tex': tex, 'display': 'inline'}, function(data){
+				    math.setAttributeNS(xmlnsns, 'xmlns', mathns);
+				    math.setAttributeNS(xmlnsns, 'xmlns:xlink', xlinkns);
+				    math.setAttribute('display', 'inline');
+				    var semantics = document.createElementNS(mathns, 'semantics');
+				    var annotation = document.createElementNS(mathns, 'annotation');
+				    annotation.setAttribute('encoding', 'application/x-tex');
+				    annotation.textContent = htmlEscape(tex);
+				    var mrow = document.createElementNS(mathns, 'mrow');
+				    var children = data.documentElement.childNodes;
+				    while (children.length > 0) {
+				      mrow.appendChild(children[0]);
+				    }
+				    semantics.appendChild(mrow);
+				    semantics.appendChild(annotation);
+				    math.appendChild(semantics);
+				});
+				S.sanitizeSvg(math);
+				elt.replaceChild(math, elt.firstChild);
 				S.call("changed", [elt]);
 				svgCanvas.clearSelection();
 			} catch(e) {
@@ -74,14 +94,15 @@ $(function() {
 			return true;
 		};
 
-		function showForeignEditor() {
+		function showItexEditor() {
 			var elt = selElems[0];
-			if (!elt || editingforeign) return;
-			editingforeign = true;
+			var annotation = jQuery('math > semantics > annotation', elt);
+			if (!annotation || editingitex) return;
+			editingitex = true;
 			toggleSourceButtons(true);
-			elt.removeAttribute('fill');
+			// elt.removeAttribute('fill');
 
-			var str = S.svgToString(elt, 0);
+			var str = annotation.text();
 			$('#svg_source_textarea').val(str);
 			$('#svg_source_editor').fadeIn();
 			properlySourceSizeTextArea();
@@ -95,34 +116,34 @@ $(function() {
 		
 		
 		return {
-			name: "foreignObject",
-			svgicons: "extensions/foreignobject-icons.xml",
+			name: "itex",
+			svgicons: "extensions/itex-icons.xml",
 			buttons: [{
-				id: "tool_foreign",
+				id: "tool_itex",
 				type: "mode",
-				title: "Foreign Object Tool",
+				title: "itex Tool",
 				events: {
 					'click': function() {
-						svgCanvas.setMode('foreign')
+						svgCanvas.setMode('itex')
 					}
 				}
 			},{
-				id: "edit_foreign",
+				id: "edit_itex",
 				type: "context",
-				panel: "foreignObject_panel",
-				title: "Edit ForeignObject Content",
+				panel: "itex_panel",
+				title: "Edit TeX Content",
 				events: {
 					'click': function() {
-						showForeignEditor();
+						showItexEditor();
 					}
 				}
 			}],
 			
 			context_tools: [{
 				type: "input",
-				panel: "foreignObject_panel",
-				title: "Change foreignObject's width",
-				id: "foreign_width",
+				panel: "itex_panel",
+				title: "Change enclosing foreignObject's width",
+				id: "itex_width",
 				label: "w",
 				size: 3,
 				events: {
@@ -132,9 +153,9 @@ $(function() {
 				}
 			},{
 				type: "input",
-				panel: "foreignObject_panel",
-				title: "Change foreignObject's height",
-				id: "foreign_height",
+				panel: "itex_panel",
+				title: "Change enclosing foreignObject's height",
+				id: "itex_height",
 				label: "h",
 				events: {
 					change: function() {
@@ -143,9 +164,9 @@ $(function() {
 				}
 			}, {
 				type: "input",
-				panel: "foreignObject_panel",
-				title: "Change the font-size of enclosed content",
-				id: "foreign_font_size",
+				panel: "itex_panel",
+				title: "Change font size",
+				id: "itex_font_size",
 				label: "font-size",
 				size: 2,
 				defval: 16,
@@ -159,11 +180,11 @@ $(function() {
 			
 			],
 			callback: function() {
-				$('#foreignObject_panel').hide();
+				$('#itex_panel').hide();
 
 				var endChanges = function() {
 					$('#svg_source_editor').hide();
-					editingforeign = false;
+					editingitex = false;
 					$('#svg_source_textarea').blur();
 					toggleSourceButtons(false);
 				}
@@ -172,12 +193,12 @@ $(function() {
 				setTimeout(function() {				
 					// Create source save/cancel buttons
 					var save = $('#tool_source_save').clone()
-						.hide().attr('id', 'foreign_save').unbind()
+						.hide().attr('id', 'itex_save').unbind()
 						.appendTo("#tool_source_back").click(function() {
 							
-							if (!editingforeign) return;
+							if (!editingitex) return;
 
-							if (!setForeignString($('#svg_source_textarea').val())) {
+							if (!setItexString($('#svg_source_textarea').val())) {
 								$.confirm("Errors found. Revert to original?", function(ok) {
 									if(!ok) return false;
 									endChanges();
@@ -189,7 +210,7 @@ $(function() {
 						});
 						
 					var cancel = $('#tool_source_cancel').clone()
-						.hide().attr('id', 'foreign_cancel').unbind()
+						.hide().attr('id', 'itex_cancel').unbind()
 						.appendTo("#tool_source_back").click(function() {
 							endChanges();
 						});
@@ -199,7 +220,7 @@ $(function() {
 			mouseDown: function(opts) {
 				var e = opts.event;
 				
-				if(svgCanvas.getMode() == "foreign") {
+				if(svgCanvas.getMode() == "itex") {
 
 					started = true;
 					newFO = S.addSvgElementFromJson({
@@ -217,6 +238,8 @@ $(function() {
 					var m = svgdoc.createElementNS(mathns, 'math');
 					m.setAttributeNS(xmlnsns, 'xmlns', mathns);
 					m.setAttribute('display', 'inline');
+					var semantics = svgdoc.createElementNS(mathns, 'semantics');
+					var mrow = svgdoc.createElementNS(mathns, 'mrow');
 					var mi = svgdoc.createElementNS(mathns, 'mi');
 					mi.setAttribute('mathvariant', 'normal');
 					mi.textContent = "\u03A6";
@@ -224,9 +247,15 @@ $(function() {
 					mo.textContent = "\u222A";
 					var mi2 = svgdoc.createElementNS(mathns, 'mi');
 					mi2.textContent = "\u2133";
-					m.appendChild(mi);
-					m.appendChild(mo);
-					m.appendChild(mi2);
+					var annotation = svgdoc.createElementNS(mathns, 'annotation');
+					annotation.setAttribute('encoding', 'application/x-tex');
+					annotation.textContent = "\\Phi \\union \\mathcal{M}";
+					mrow.appendChild(mi);
+					mrow.appendChild(mo);
+					mrow.appendChild(mi2);
+					semantics.appendChild(mrow);
+					semantics.appendChild(annotation);
+					m.appendChild(semantics);
 					newFO.appendChild(m);
 					return {
 						started: true
@@ -235,7 +264,7 @@ $(function() {
 			},
 			mouseUp: function(opts) {
 				var e = opts.event;				
-				if(svgCanvas.getMode() == "foreign" && started) {
+				if(svgCanvas.getMode() == "itex" && started) {
 					var attrs = $(newFO).attr(["width", "height"]);
 					keep = (attrs.width != 0 || attrs.height != 0);					
 					svgCanvas.addToSelection([newFO], true);
@@ -258,9 +287,9 @@ $(function() {
 					var elem = selElems[i];
 					if(elem && elem.tagName == "foreignObject") {
 						if(opts.selectedElement && !opts.multiselected) {
-							$('#foreign_font_size').val(elem.getAttribute("font-size"));
-							$('#foreign_width').val(elem.getAttribute("width"));
-							$('#foreign_height').val(elem.getAttribute("height"));
+							$('#itex_font_size').val(elem.getAttribute("font-size"));
+							$('#itex_width').val(elem.getAttribute("width"));
+							$('#itex_height').val(elem.getAttribute("height"));
 						
 							showPanel(true);
 						} else {
