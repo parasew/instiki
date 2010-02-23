@@ -60,24 +60,27 @@ $(function() {
 		function setItexString(tex) {
 			var elt = selElems[0];
 			try {
-				math = svgdoc.createElementNS(mathns, 'math');
+				var math = svgdoc.createElementNS(mathns, 'math');
+				math.setAttributeNS(xmlnsns, 'xmlns', mathns);
+				math.setAttribute('display', 'inline');
+				var semantics = document.createElementNS(mathns, 'semantics');
+				var annotation = document.createElementNS(mathns, 'annotation');
+				annotation.setAttribute('encoding', 'application/x-tex');
+				annotation.textContent = tex;
+				var mrow = document.createElementNS(mathns, 'mrow');
+				semantics.appendChild(mrow);
+				semantics.appendChild(annotation);
+				math.appendChild(semantics);
 				// make an AJAX request to the server, to get the MathML
 				$.post(ajaxEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
-				    math.setAttributeNS(xmlnsns, 'xmlns', mathns);
-				    math.setAttribute('display', 'inline');
-				    var semantics = document.createElementNS(mathns, 'semantics');
-				    var annotation = document.createElementNS(mathns, 'annotation');
-				    annotation.setAttribute('encoding', 'application/x-tex');
-				    annotation.textContent = tex;
-				    var mrow = document.createElementNS(mathns, 'mrow');
 				    var children = data.documentElement.childNodes;
 				    while (children.length > 0) {
 				      mrow.appendChild(children[0]);
 				    }
-				    semantics.appendChild(mrow);
-				    semantics.appendChild(annotation);
-				    math.appendChild(semantics);
 				    S.sanitizeSvg(math);
+				    //elt.setAttribute('width', math.clientWidth+5);
+				    //elt.setAttribute('height', math.clientHeight+5);
+				    S.call("changed", [elt]);
 				});
 				elt.replaceChild(math, elt.firstChild);
 				S.call("changed", [elt]);

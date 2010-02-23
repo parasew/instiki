@@ -305,7 +305,7 @@ $(function() {
 								"id": getNextId(),
 								"points": (x+','+y+' '+x+','+y+' '+start_x+','+start_y),
 								"stroke": '#000',
-								"stroke-width": 3,
+								"stroke-width": 2,
 								"fill": "none",
 								"opacity": .5,
 								"style": "pointer-events:none"
