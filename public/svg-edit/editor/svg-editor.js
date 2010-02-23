@@ -1460,7 +1460,6 @@ function svg_edit_setup() {
 		svgCanvas.open();
 	};
 	var clickImport = function(){
-		svgCanvas.import();
 	};
 
 	var clickUndo = function(){
@@ -2780,7 +2779,7 @@ function svg_edit_setup() {
 		updateCanvas(true);
 	});
 	
-//	var revnums = "svg-editor.js ($Rev: 1421 $) ";
+//	var revnums = "svg-editor.js ($Rev: 1423 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	return svgCanvas;
