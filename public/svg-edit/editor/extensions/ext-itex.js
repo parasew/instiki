@@ -81,8 +81,8 @@ $(function() {
 				    semantics.appendChild(mrow);
 				    semantics.appendChild(annotation);
 				    math.appendChild(semantics);
+				    S.sanitizeSvg(math);
 				});
-				S.sanitizeSvg(math);
 				elt.replaceChild(math, elt.firstChild);
 				S.call("changed", [elt]);
 				svgCanvas.clearSelection();
@@ -94,6 +94,10 @@ $(function() {
 			return true;
 		};
 
+		function unescapeHTML(str) {
+			return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<');  
+		}
+
 		function showItexEditor() {
 			var elt = selElems[0];
 			var annotation = jQuery('math > semantics > annotation', elt);
@@ -102,7 +106,7 @@ $(function() {
 			toggleSourceButtons(true);
 			// elt.removeAttribute('fill');
 
-			var str = annotation.text();
+			var str = unescapeHTML(annotation.text());
 			$('#svg_source_textarea').val(str);
 			$('#svg_source_editor').fadeIn();
 			properlySourceSizeTextArea();
