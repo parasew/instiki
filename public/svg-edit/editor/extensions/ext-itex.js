@@ -20,6 +20,7 @@ $(function() {
 			se_ns = "http://svg-edit.googlecode.com",
 			htmlns = "http://www.w3.org/1999/xhtml",
 			mathns = "http://www.w3.org/1998/Math/MathML",
+			ajaxEndpoint = "../../itex",
 			editingitex = false,
 			svgdoc = S.svgroot.parentNode.ownerDocument,
 			started,
@@ -65,7 +66,7 @@ $(function() {
 			try {
 				math = svgdoc.createElementNS(mathns, 'math');
 				// make an AJAX request to the server, to get the MathML
-				$.get('../../itex', {'tex': tex, 'display': 'inline'}, function(data){
+				$.post(ajaxEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
 				    math.setAttributeNS(xmlnsns, 'xmlns', mathns);
 				    math.setAttribute('display', 'inline');
 				    var semantics = document.createElementNS(mathns, 'semantics');
