@@ -1393,7 +1393,7 @@ function BatchCommand(text) {
 			}
 			// if the element has attributes pointing to a non-local reference, 
 			// need to remove the attribute
-			$.each(["clip-path", "fill", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+			$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
 				var val = node.getAttribute(attr);
 				if (val) {
 					val = getUrlFromAttr(val);
@@ -2164,12 +2164,15 @@ function BatchCommand(text) {
 							start_transform = child.getAttribute("transform");
 							
 							var childTlist = canvas.getTransformList(child);
+							// some children might not have a transform (<metadata>, <defs>, etc)
+							if (childTlist) {
 							var newxlate = svgroot.createSVGTransform();
 							newxlate.setTranslate(tx,ty);
 							childTlist.insertItemBefore(newxlate, 0);
 							batchCmd.addSubCommand( recalculateDimensions(child) );
 							start_transform = old_start_transform;
 						}
+					}
 					}
 					start_transform = old_start_transform;
 				}
@@ -2263,6 +2266,7 @@ function BatchCommand(text) {
 		}
 		// else, it's a non-group
 		else {
+			// FIXME: box might be null for some elements (<metadata> etc), need to handle this
 			var box = canvas.getBBox(selected),
 				oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
@@ -2706,7 +2710,6 @@ function BatchCommand(text) {
 				}
 				tobj.text = "rotate(" + xform.angle + " " + tobj.cx*z + "," + tobj.cy*z + ")";
 				break;
-			// TODO: matrix, skewX, skewY
 		}
 		return tobj;
 	};
@@ -4484,7 +4487,7 @@ function BatchCommand(text) {
 					return;
 				}
 				
-				// TODO: Make sure current_path isn't null at this point
+				// Make sure current_path isn't null at this point
 				if(!current_path) return;
 				
 				current_path_oldd = getD();
@@ -5023,7 +5026,7 @@ function BatchCommand(text) {
 					current_path_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
 					
 					// TODO: This should select the new path points but breaks
-					// when doing several times seleting many nodes
+					// when doing several times selecting many nodes
 					nums.push(pt + i);
 					nums.push(pt + i + 1);
 				}	
@@ -5525,9 +5528,6 @@ function BatchCommand(text) {
 	this.open = function() {
 		// Nothing by default, handled by optional widget/extension
 	};
-	this.import = function() {
-		// Nothing by default, handled by optional widget/extension
-	};
 
 	// Function: save
 	// Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
@@ -5548,6 +5548,7 @@ function BatchCommand(text) {
 		call("saved", str);
 	};
 
+	// Walks the tree and executes the callback on each element in a top-down fashion
 	var walkTree = function(elem, cbFn){
 		if (elem && elem.nodeType == 1) {
 			cbFn(elem);
@@ -5555,6 +5556,16 @@ function BatchCommand(text) {
 			while (i--) {
 				walkTree(elem.childNodes.item(i), cbFn);
 			}
+		}
+	};
+	// Walks the tree and executes the callback on each element in a depth-first fashion
+	var walkTreePost = function(elem, cbFn) {
+		if (elem && elem.nodeType == 1) {
+			var i = elem.childNodes.length;
+			while (i--) {
+				walkTree(elem.childNodes.item(i), cbFn);
+			}
+			cbFn(elem);
 		}
 	};
 	
@@ -5617,17 +5628,7 @@ function BatchCommand(text) {
 			
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
-			var deepdive = function(node) {
-				if (node.nodeType == 1) {
-					var children = node.childNodes;
-					var i = children.length;
-					while (i--) { deepdive(children.item(i)); }
-					try {
-						recalculateDimensions(node);
-					} catch(e) { console.log(e); }
-				}
-			}
-			deepdive(svgcontent);
+			walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 			
 			var content = $(svgcontent);
         	
@@ -5693,8 +5694,8 @@ function BatchCommand(text) {
 	// Returns:
 	// This function returns false if the import was unsuccessful, true otherwise.
 	
+	// TODO: import should happen in top-left of current zoomed viewport	
 	// TODO: create a new layer for the imported SVG
-	// TODO: properly size the new group
 	this.importSvgString = function(xmlString) {
 		try {
 			// convert string into XML document
@@ -5708,9 +5709,120 @@ function BatchCommand(text) {
 			var importedNode = svgdoc.importNode(newDoc.documentElement, true);
         
     	    if (current_layer) {
+				// TODO: properly handle if width/height are not specified or if in percentages
+				// TODO: properly handle if width/height are in units (px, etc)
+				var innerw = importedNode.getAttribute("width"),
+					innerh = importedNode.getAttribute("height"),
+					innervb = importedNode.getAttribute("viewBox"),
+					// if no explicit viewbox, create one out of the width and height
+					vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
+				for (var j = 0; j < 4; ++j)
+					vb[j] = Number(vb[j]);
+
+				// TODO: properly handle preserveAspectRatio
+				var canvasw = Number(svgcontent.getAttribute("width")),
+					canvash = Number(svgcontent.getAttribute("height"));
+				// imported content should be 1/3 of the canvas on its largest dimension
+				if (innerh > innerw) {
+					var ts = "scale(" + (canvash/3)/vb[3] + ")";
+				}
+				else {
+					var ts = "scale(" + (canvash/3)/vb[2] + ")";
+				}
+				if (vb[0] != 0 || vb[1] != 0)
+					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
+
     	    	// add all children of the imported <svg> to the <g> we create
     	    	var g = svgdoc.createElementNS(svgns, "g");
-    	    	while (importedNode.hasChildNodes()) { g.appendChild(importedNode.firstChild); }
+				while (importedNode.hasChildNodes())
+					g.appendChild(importedNode.firstChild);
+				if (ts)
+					g.setAttribute("transform", ts);
+    	    		
+				// now ensure each element has a unique ID
+				var ids = {};
+				walkTree(g, function(n) {
+					// if it's an element node
+					if (n.nodeType == 1) {
+						// and the element has an ID
+						if (n.id) {
+							// and we haven't tracked this ID yet
+	    	    			if (!(n.id in ids)) {
+    		    				// add this id to our map
+			    	    		ids[n.id] = {elem:null, attrs:[], hrefs:[]};
+	    			    	}
+	    			    	ids[n.id]["elem"] = n;
+	    	    		}
+	    	    		
+	    	    		// now search for all attributes on this element that might refer
+	    	    		// to other elements
+						$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+							var attrnode = n.getAttributeNode(attr);
+							if (attrnode) {
+								// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
+								var url = getUrlFromAttr(attrnode.value),								
+									refid = url ? url.substr(1) : null;
+								if (refid) {
+									if (!(refid in ids)) {
+										// add this id to our map
+										ids[refid] = {elem:null, attrs:[], hrefs:[]};
+									}
+									ids[refid]["attrs"].push(attrnode);
+								}
+							}
+						});
+						
+						// check xlink:href now
+						var href = n.getAttributeNS(xlinkns,"href");
+						// TODO: what if an <image> or <a> element refers to an element internally?
+						if(href && 
+			   				$.inArray(n.nodeName, ["filter", "linearGradient", "pattern", 
+			   							 "radialGradient", "textPath", "use"]) != -1)
+						{
+							var refid = href.substr(1);
+							if (!(refid in ids)) {
+								// add this id to our map
+								ids[refid] = {elem:null, attrs:[], hrefs:[]};
+							}
+							ids[refid]["hrefs"].push(n);
+						}						
+	    	    	}
+    	    	});
+    	    	
+    	    	// in ids, we now have a map of ids, elements and attributes, let's re-identify
+    	    	for (var oldid in ids) {
+    	    		var elem = ids[oldid]["elem"];
+    	    		if (elem) {
+    	    			var newid = getNextId();
+						// manually increment obj_num because our cloned elements are not in the DOM yet
+						obj_num++;
+						
+						// assign element its new id
+    	    			elem.id = newid;
+    	    			
+    	    			// remap all url() attributes
+    	    			var attrs = ids[oldid]["attrs"];
+    	    			var j = attrs.length;
+    	    			while (j--) {
+    	    				var attr = attrs[j];
+    	    				attr.ownerElement.setAttribute(attr.name, "url(#" + newid + ")");
+    	    			}
+    	    			
+    	    			// remap all href attributes
+    	    			var hreffers = ids[oldid]["hrefs"];
+    	    			var k = hreffers.length;
+    	    			while (k--) {
+    	    				var hreffer = hreffers[k];
+    	    				hreffer.setAttributeNS(xlinkns, "xlink:href", "#"+newid);
+    	    			}
+    	    		}
+    	    	}
+    	    	
+    	    	// now give the g itself a new id
+				g.id = getNextId();
+				// manually increment obj_num because our cloned elements are not in the DOM yet
+				obj_num++;
+				
     	    	current_layer.appendChild(g);
     	    }
     	    
@@ -5740,54 +5852,13 @@ function BatchCommand(text) {
 			
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
-			var deepdive = function(node) {
-				if (node.nodeType == 1) {
-					var children = node.childNodes;
-					var i = children.length;
-					while (i--) { deepdive(children.item(i)); }
-					try {
-						recalculateDimensions(node);
-					} catch(e) { console.log(e); }
-				}
-			}
-			deepdive(importedNode);
-			
-//			var content = $(svgcontent);
+			walkTreePost(importedNode, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
         	
-//			var attrs = {
-//				id: 'svgcontent',
-//				overflow: 'visible'
-//			};
 			
-			// determine proper size
-//			if (content.attr("viewBox")) {
-//				var vb = content.attr("viewBox").split(' ');
-//				attrs.width = vb[2];
-//				attrs.height = vb[3];
-//			}
-//			// handle content that doesn't have a viewBox
-//			else {
-//				$.each(['width', 'height'], function(i, dim) {
-//					// Set to 100 if not given
-//					var val = content.attr(dim) || 100;
-//
-//					if((val+'').substr(-1) === "%") {
-//						// Use user units if percentage given
-//						attrs[dim] = parseInt(val);
-//					} else {
-//						attrs[dim] = convertToNum(dim, val);
-//					}
-//				});
-//			}
-			
-//			content.attr(attrs);
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
-			// update root to the correct size
-//			var changes = content.attr(["width", "height"]);
-//			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
 			
-			// reset zoom
-			current_zoom = 1;
+			// reset zoom - TODO: why?
+//			current_zoom = 1;
 			
 			// identify layers
 //			identifyLayers();
@@ -6734,12 +6805,12 @@ function BatchCommand(text) {
 			ret = getPathBBox(selected);
 		} else if(elem.nodeName == 'use' && !isWebkit) {
 			ret = selected.getBBox();
-			ret.x += parseFloat(selected.getAttribute('x'));
-			ret.y += parseFloat(selected.getAttribute('y'));
+			ret.x += parseFloat(selected.getAttribute('x')||0);
+			ret.y += parseFloat(selected.getAttribute('y')||0);
 		} else if(elem.nodeName == 'foreignObject') {
 			ret = selected.getBBox();
-			ret.x += parseFloat(selected.getAttribute('x'));
-			ret.y += parseFloat(selected.getAttribute('y'));
+			ret.x += parseFloat(selected.getAttribute('x')||0);
+			ret.y += parseFloat(selected.getAttribute('y')||0);
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { 
@@ -7474,9 +7545,6 @@ function BatchCommand(text) {
 		if(!elems) elems = canvas.getVisibleElements();
 		if(!elems.length) return false;
 		// Make sure the expected BBox is returned if the element is a group
-		// FIXME: doesn't this mean that every time we call getStrokedBBox() that we are 
-		// re-creating the getCheckedBBox() function?  shouldn't we make this a function 
-		// at the 'canvas' level
 		var getCheckedBBox = function(elem) {
 		
 			try {
@@ -7588,11 +7656,12 @@ function BatchCommand(text) {
 		var bboxes = [];
 		$.each(elems, function(i, elem) {
 			var cur_bb = getCheckedBBox(elem);
-			if(!cur_bb) return;
+			if(cur_bb) {
 			var offset = getOffset(elem);
 			min_x = Math.min(min_x, cur_bb.x - offset);
 			min_y = Math.min(min_y, cur_bb.y - offset);
 			bboxes.push(cur_bb);
+			}
 		});
 		
 		full_bb.x = min_x;
@@ -7600,7 +7669,8 @@ function BatchCommand(text) {
 		
 		$.each(elems, function(i, elem) {
 			var cur_bb = bboxes[i];
-			if (cur_bb) {
+			// ensure that elem is really an element node
+			if (cur_bb && elem.nodeType == 1) {
 			var offset = getOffset(elem);
 			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
 			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
@@ -7881,7 +7951,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1422 $)";
+		return "svgcanvas.js ($Rev: 1427 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
