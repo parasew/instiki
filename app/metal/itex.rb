@@ -20,8 +20,6 @@ class Itex
     case @params['display']
       when 'block'
         filter = :block_filter
-      when 'inline'
-         filter = :inline_filter
       else
          filter = :inline_filter
     end
@@ -31,8 +29,8 @@ class Itex
     eend = "</mtext></merror></math>"
     begin
       require 'itextomml'
-      itex2mml_parser =  Itex2MML::Parser.new
-      itex2mml_parser.send(filter, tex).to_utf8
+      @itex2mml_parser ||=  Itex2MML::Parser.new
+      @itex2mml_parser.send(filter, tex).to_utf8
     rescue LoadError
       estart + "Please install the itex2MML Ruby bindings." + eend  
     rescue Itex2MML::Error => e
