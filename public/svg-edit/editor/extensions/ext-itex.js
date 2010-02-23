@@ -67,7 +67,6 @@ $(function() {
 				// make an AJAX request to the server, to get the MathML
 				$.get('../../itex', {'tex': tex, 'display': 'inline'}, function(data){
 				    math.setAttributeNS(xmlnsns, 'xmlns', mathns);
-				    math.setAttributeNS(xmlnsns, 'xmlns:xlink', xlinkns);
 				    math.setAttribute('display', 'inline');
 				    var semantics = document.createElementNS(mathns, 'semantics');
 				    var annotation = document.createElementNS(mathns, 'annotation');
