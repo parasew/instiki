@@ -47,10 +47,6 @@ $(function() {
 			$('#itex_save, #itex_cancel').toggle(on);
 		}
 		
-		function  htmlEscape(string) {
-			return string.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-		}
-			
 		// Function: setItexString(string, url)
 		// This function sets the content of of the currently-selected foreignObject element,
 		// based on the itex contained in string.
@@ -72,7 +68,7 @@ $(function() {
 				    var semantics = document.createElementNS(mathns, 'semantics');
 				    var annotation = document.createElementNS(mathns, 'annotation');
 				    annotation.setAttribute('encoding', 'application/x-tex');
-				    annotation.textContent = htmlEscape(tex);
+				    annotation.textContent = tex;
 				    var mrow = document.createElementNS(mathns, 'mrow');
 				    var children = data.documentElement.childNodes;
 				    while (children.length > 0) {
@@ -94,10 +90,6 @@ $(function() {
 			return true;
 		};
 
-		function unescapeHTML(str) {
-			return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<');  
-		}
-
 		function showItexEditor() {
 			var elt = selElems[0];
 			var annotation = jQuery('math > semantics > annotation', elt);
@@ -106,7 +98,7 @@ $(function() {
 			toggleSourceButtons(true);
 			// elt.removeAttribute('fill');
 
-			var str = unescapeHTML(annotation.text());
+			var str = annotation.text();
 			$('#svg_source_textarea').val(str);
 			$('#svg_source_editor').fadeIn();
 			properlySourceSizeTextArea();
