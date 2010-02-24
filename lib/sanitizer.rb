@@ -59,7 +59,8 @@ module Sanitizer
        overline-position overline-thickness panose-1 path pathLength
        patternContentUnits patternTransform patternUnits points
        preserveAspectRatio primitiveUnits r refX refY repeatCount repeatDur
-       requiredExtensions requiredFeatures restart rotate rx ry slope spacing
+       requiredExtensions requiredFeatures restart rotate rx ry se:connector
+       slope spacing
        startOffset stdDeviation stemh stemv stop-color stop-opacity
        strikethrough-position strikethrough-thickness stroke stroke-dasharray
        stroke-dashoffset stroke-linecap stroke-linejoin stroke-miterlimit
@@ -68,7 +69,7 @@ module Sanitizer
        unicode unicode-range units-per-em values version viewBox
        visibility width widths x x-height x1 x2 xlink:actuate
        xlink:arcrole xlink:href xlink:role xlink:show xlink:title xlink:type
-       xml:base xml:lang xml:space xmlns xmlns:xlink y y1 y2 zoomAndPan]
+       xml:base xml:lang xml:space xmlns xmlns:xlink xmlns:se y y1 y2 zoomAndPan]
        
   attr_val_is_uri = Set.new %w[href src cite action longdesc xlink:href xml:base]
   
