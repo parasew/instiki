@@ -60,7 +60,7 @@ module Sanitizer
        patternContentUnits patternTransform patternUnits points
        preserveAspectRatio primitiveUnits r refX refY repeatCount repeatDur
        requiredExtensions requiredFeatures restart rotate rx ry se:connector
-       slope spacing
+       se:nonce slope spacing
        startOffset stdDeviation stemh stemv stop-color stop-opacity
        strikethrough-position strikethrough-thickness stroke stroke-dasharray
        stroke-dashoffset stroke-linecap stroke-linejoin stroke-miterlimit
