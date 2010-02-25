@@ -78,8 +78,6 @@ $(function() {
 				      mrow.appendChild(children[0]);
 				    }
 				    S.sanitizeSvg(math);
-				    //elt.setAttribute('width', math.clientWidth+5);
-				    //elt.setAttribute('height', math.clientHeight+5);
 				    S.call("changed", [elt]);
 				});
 				elt.replaceChild(math, elt.firstChild);

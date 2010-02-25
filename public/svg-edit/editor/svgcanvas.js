@@ -943,6 +943,9 @@ function BatchCommand(text) {
 		
 		$(svgroot).appendTo(container);
 
+    //nonce to uniquify id's
+    var nonce = Math.floor(Math.random()*100001);
+    
 	// map namespace URIs to prefixes		
 	var nsMap = {};
     nsMap[xlinkns] = 'xlink';
@@ -982,6 +985,8 @@ function BatchCommand(text) {
 		y: 480,
 		overflow: 'visible',
 		xmlns: svgns,
+		"xmlns:se": se_ns,
+		"se:nonce": nonce,
 		"xmlns:xlink": xlinkns
 	}).appendTo(svgroot);
 
@@ -1284,7 +1289,7 @@ function BatchCommand(text) {
 // private functions
 	var getId = function() {
 		if (events["getid"]) return call("getid", obj_num);
-		return idprefix + obj_num;
+		return idprefix + nonce +'_' + obj_num;
 	};
 
 	var getNextId = function() {
@@ -5602,6 +5607,15 @@ function BatchCommand(text) {
         
     	    // set new svg document
         	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+        	// retrieve or set the nonce
+        	n = svgcontent.getAttributeNS(se_ns, 'nonce');
+        	if (n) {
+        		nonce = n;
+        		if (extensions["Arrows"])  call("setarrownonce", n) ;
+        	} else {
+        		svgcontent.setAttributeNS(xmlnsns, 'xml:se', se_ns); 
+        		svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
+         	}         
         	// change image href vals if possible
         	$(svgcontent).find('image').each(function() {
         		var image = this;
@@ -8049,6 +8063,7 @@ function BatchCommand(text) {
 			var ext = ext_func($.extend(canvas.getPrivateMethods(), {
 				svgroot: svgroot,
 				svgcontent: svgcontent,
+				nonce: nonce,
 				selectorManager: selectorManager
 			}));
 			extensions[name] = ext;
