@@ -5613,7 +5613,7 @@ function BatchCommand(text) {
         		nonce = n;
         		if (extensions["Arrows"])  call("setarrownonce", n) ;
         	} else {
-        		svgcontent.setAttributeNS(xmlnsns, 'xml:se', se_ns); 
+        		svgcontent.setAttributeNS(xmlnsns, 'xmlns:se', se_ns); 
         		svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
          	}         
         	// change image href vals if possible
