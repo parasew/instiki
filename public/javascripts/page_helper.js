@@ -91,6 +91,7 @@ function setupSVGedit(path){
                   window.close();
                   }
           });
+          editor.svgCanvas.randomizeIds();
           editor.svgCanvas.setSvgString(selected);
         }, true);
       } else {
@@ -101,6 +102,7 @@ function setupSVGedit(path){
                   window.close();
                   }
           });
+          editor.svgCanvas.randomizeIds();
         }, true);      
       }
       SVGeditButton.disabled = true;

@@ -270,10 +270,10 @@ end
 module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
-    MINOR = 18
-    TINY  = 1 
+    MINOR = 19
+    TINY  = 0 
     SUFFIX = '(MML+)'
-    PRERELEASE =  false
+    PRERELEASE =  'pre'
     if PRERELEASE
        STRING = [MAJOR, MINOR].join('.') + PRERELEASE + SUFFIX
     else
