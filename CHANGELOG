@@ -5,6 +5,27 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19
+
+New Features:
+
+* WYSIWYG SVG editing (via SVG-edit)
+* One-click S5 templates
+
+Bugs Fixed:
+
+* Allow special characters ('.', '/', etc) in page names.
+* Fix BlahTeX/PNG path, so equations render in diff and
+  previous revision pages.
+* Fix HTML Export feature so that o uploaded files are
+  included, stylesheets load, etc.
+* Uploaded files inclided in Markup Export.
+* Fix Print View, so that uploaded images work.
+* Fix some more Ruby 1.9 isues.
+* Prevent page from being renamed to null.
+* Fix Migration to work under PostgreSQL (from J. Zellman).
+
+------------------------------------------------------------------------------
 * 0.18.1
 
 New Features:

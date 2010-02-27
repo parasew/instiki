@@ -945,6 +945,7 @@ function BatchCommand(text) {
 
     //nonce to uniquify id's
     var nonce = Math.floor(Math.random()*100001);
+    var randomize_ids = false;
     
 	// map namespace URIs to prefixes		
 	var nsMap = {};
@@ -986,9 +987,9 @@ function BatchCommand(text) {
 		overflow: 'visible',
 		xmlns: svgns,
 		"xmlns:se": se_ns,
-		"se:nonce": nonce,
 		"xmlns:xlink": xlinkns
 	}).appendTo(svgroot);
+	if (randomize_ids) svgContent.setAttributeNS(se_ns, nonce);
 
 	var convertToNum, convertToUnit, setUnitAttr;
 	
@@ -1071,6 +1072,20 @@ function BatchCommand(text) {
 						if(re.test(val)) valid = true;
 					});
 				}
+			} else if (attr == "id") {
+				// if we're trying to change the id, make sure it's not already present in the doc
+				// and the id value is valid.
+
+				var result = false;
+				// because getElem() can throw an exception in the case of an invalid id
+				// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
+				// we wrap it in an exception and only return true if the ID was valid and
+				// not already present
+				try {
+					var elem = getElem(val);
+					result = (elem == null);
+				} catch(e) {}
+				return result;
 			} else valid = true;			
 			
 			return valid;
@@ -1289,7 +1304,11 @@ function BatchCommand(text) {
 // private functions
 	var getId = function() {
 		if (events["getid"]) return call("getid", obj_num);
-		return idprefix + nonce +'_' + obj_num;
+		if (randomize_ids) {
+		  return idprefix + nonce +'_' + obj_num;
+		} else {
+		  return idprefix + obj_num;
+		}
 	};
 
 	var getNextId = function() {
@@ -5525,6 +5544,27 @@ function BatchCommand(text) {
 		return svgCanvasToString();
 	};
 
+	//function randomizeIds
+	// This function determines whether to add a nonce to the prefix, when
+	// generating IDs in SVG-Edit
+	// 
+	//  Parameters:
+	//   an opional boolean, which, if true, adds a nonce to the prefix. Thus
+	//     svgCanvas.randomizeIds()  <==> svgCanvas.randomizeIds(true)
+	//
+	// if you're controlling SVG-Edit externally, and want randomized IDs, call
+	// this BEFORE calling svgCanvas.setSvgString
+	//
+	this.randomizeIds = function() {
+	   if (arguments.length > 0 && arguments[0] == false) {
+	     randomize_ids = false;
+	     if (extensions["Arrows"])  call("unsetarrownonce") ;
+	   } else {
+	     randomize_ids = true;
+	   }
+	}
+
+	//   
 	// Function: setSvgString
 	// This function sets the current drawing as the input SVG XML.
 	//
@@ -5551,11 +5591,13 @@ function BatchCommand(text) {
         	// retrieve or set the nonce
         	n = svgcontent.getAttributeNS(se_ns, 'nonce');
         	if (n) {
+        		randomize_ids = true;
         		nonce = n;
         		if (extensions["Arrows"])  call("setarrownonce", n) ;
-        	} else {
+        	} else if (randomize_ids) {
         		svgcontent.setAttributeNS(xmlnsns, 'xml:se', se_ns); 
         		svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
+        		if (extensions["Arrows"])  call("setarrownonce", nonce) ;
          	}         
         	// change image href vals if possible
         	$(svgcontent).find('image').each(function() {
@@ -5650,6 +5692,11 @@ function BatchCommand(text) {
 	// Returns:
 	// This function returns false if the import was unsuccessful, true otherwise.
 	
+	// TODO: properly handle if namespace is introduced by imported content (must add to svgcontent
+	//       and update all prefixes in the imported node)
+	// TODO: properly handle recalculating dimensions, recalculateDimensions() doesn't handle
+	//       arbitrary transform lists, but makes some assumptions about how the transform list 
+	//       was obtained
 	// TODO: import should happen in top-left of current zoomed viewport	
 	// TODO: create a new layer for the imported SVG
 	this.importSvgString = function(xmlString) {
@@ -7908,7 +7955,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1431 $)";
+		return "svgcanvas.js ($Rev: 1433 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
@@ -8200,4 +8247,5 @@ var Utils = {
 		catch(e){ throw new Error("Error parsing XML string"); };
 		return out;
 	}
+
 };

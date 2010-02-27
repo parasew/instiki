@@ -13,9 +13,11 @@ $(function() {
 		var svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
 			nonce = S.nonce,
+			randomize_ids = S.randomize_ids,
 			selElems;
 
 		svgCanvas.bind('setarrownonce', setArrowNonce);
+		svgCanvas.bind('unsetsetarrownonce', unsetArrowNonce);
 			
 		var lang_list = {
 			"en":[
@@ -27,7 +29,11 @@ $(function() {
 		};
 		
 		var prefix = 'se_arrow_';
-		var arrowprefix = prefix + nonce + '_';
+		if (randomize_ids) {
+		  var arrowprefix = prefix + nonce + '_';
+		} else {
+		  var arrowprefix = prefix;
+		}
 
 		var pathdata = {
 			fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:8,  id: arrowprefix + 'fw'},
@@ -35,8 +41,16 @@ $(function() {
 		}
 		
 		function setArrowNonce(window, n) {
+		    randomize_ids = true;
 		    arrowprefix = prefix + n + '_';
-			pathdata.fw.id = arrowprefix + 'fw';
+ 			pathdata.fw.id = arrowprefix + 'fw';
+			pathdata.bk.id = arrowprefix + 'bk';
+		}
+
+		function unsetArrowNonce(window) {
+		    randomize_ids = false;
+		    arrowprefix = prefix;
+ 			pathdata.fw.id = arrowprefix + 'fw';
 			pathdata.bk.id = arrowprefix + 'bk';
 		}
 
