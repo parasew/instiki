@@ -18,11 +18,14 @@
 #
 # Version 1.3
 # http://www.spacebabies.nl/dnsbl_check
+#
+# Modified by Jacques Distler, to give a more informative (and valid) response (2/28/2010).
 require 'resolv'
 
 module DNSBL_Check
   $dnsbl_passed ||= []
-  DNSBLS = %w{bl.spamcop.net sbl-xbl.spamhaus.org}
+  DNSBLS  = {'bl.spamcop.net' => 'http://www.spamcop.net/w3m?action=checkblock&amp;ip=',
+             'sbl-xbl.spamhaus.org' => 'http://www.spamhaus.org/query/bl?ip='}
 
   private
   # Filter to check if the client is listed. This will be run before all requests.
@@ -31,16 +34,18 @@ module DNSBL_Check
     return true if $dnsbl_passed.include? request.remote_addr
 
     passed = true
+    ban_help = ''
     threads = []
     request.remote_addr =~ /(\d+).(\d+).(\d+).(\d+)/
 
     # Check the remote address against each dnsbl in a separate thread
-    DNSBLS.each do |dnsbl|
+    DNSBLS.each_key do |dnsbl|
       threads << Thread.new("#$4.#$3.#$2.#$1.#{dnsbl}") do |host|
         logger.warn("Checking DNSBL #{host}")
         addr = Resolv.getaddress("#{host}") rescue ''
         if addr[0,7]=="127.0.0"
           logger.info("#{request.remote_addr} found using DNSBL #{host}")
+          ban_help << " See <a href='#{DNSBLS[host]}#{request.remote_addr}'>here</a> for more information."
           passed = false
         end
       end
@@ -53,7 +58,8 @@ module DNSBL_Check
       $dnsbl_passed.push request.remote_addr
       logger.warn("#{request.remote_addr} added to DNSBL passed cache")
     else
-      render :text => 'Access denied', :status => 403
+      render( :text => "Access denied. Your IP address, #{request.remote_addr}, was found on one or more DNSBL" +
+                       " blocking list(s).#{ban_help}", :status => 403, :layout => 'error')
       return false
     end
   end
