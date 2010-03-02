@@ -31,7 +31,11 @@
   </h1>
 
 <div id="Error-Content">
-<%= h @content_for_layout %>
+<%= if :raw
+      @content_for_layout
+    else
+      h @content_for_layout
+    end %>
 
 </div> <!-- Error-Content -->
 
