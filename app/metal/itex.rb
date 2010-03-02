@@ -14,6 +14,9 @@ class Itex
   
   private
 
+  ESTART = "<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><merror><mtext>"
+  EEND = "</mtext></merror></math>"
+
   # plugable XML parser; falls back to REXML
   begin
     require 'nokogiri'
@@ -26,37 +29,43 @@ class Itex
       REXML::Document.new(text)
     end
   end
+
+  # itex2MML parser
+  begin
+    require 'itextomml'
+    def self.parse_itex(tex, filter)
+      Itex2MML::Parser.new.send(filter, tex).to_utf8
+    end
+  rescue LoadError
+    def self.parse_itex(tex, filter)
+      ESTART + "Please install the itex2MML Ruby bindings." + EEND
+    end  
+  end
     
   def self.response(env)
-    @params = Rack::Request.new(env).params
-    tex = (@params['tex'] || '').purify
-    case @params['display']
+    params = Rack::Request.new(env).params
+    tex = (params['tex'] || '').purify.strip
+    case params['display']
       when 'block'
         filter = :block_filter
       else
          filter = :inline_filter
     end
     return "<math xmlns='http://www.w3.org/1998/Math/MathML' display='" +
-        filter.to_s[/(.*?)_filter/] + "'/>" if tex.strip == ''
-    estart = "<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><merror><mtext>"
-    eend = "</mtext></merror></math>"
+        filter.to_s[/(.*?)_filter/] + "'/>" if tex == ''
     begin
-      require 'itextomml'
-      @itex2mml_parser ||=  Itex2MML::Parser.new
-      doc = @itex2mml_parser.send(filter, tex).to_utf8
+      doc = parse_itex(tex, filter)
       # make sure the result is well-formed, before sending it off
       begin
         xmlparse(doc)
       rescue
-        return estart +"Ill-formed XML." + eend
+        return ESTART +"Ill-formed XML." + EEND
       end
       return doc
-    rescue LoadError
-      estart + "Please install the itex2MML Ruby bindings." + eend  
     rescue Itex2MML::Error => e
-      estart + e.to_s + eend
+      ESTART + e.to_s + EEND
     rescue
-      estart + "Unknown Error" + eend
+      ESTART + "Unknown Error" + EEND
     end
   end
 end
