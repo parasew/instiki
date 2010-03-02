@@ -14,9 +14,6 @@ class Itex
   
   private
 
-  ESTART = "<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><merror><mtext>"
-  EEND = "</mtext></merror></math>"
-
   # plugable XML parser; falls back to REXML
   begin
     require 'nokogiri'
@@ -30,6 +27,12 @@ class Itex
     end
   end
 
+  #error message to return
+  def self.error(str)
+    "<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><merror><mtext>" +
+       str + "</mtext></merror></math>"
+  end
+
   # itex2MML parser
   begin
     require 'itextomml'
@@ -38,10 +41,11 @@ class Itex
     end
   rescue LoadError
     def self.parse_itex(tex, filter)
-      ESTART + "Please install the itex2MML Ruby bindings." + EEND
+      error("Please install the itex2MML Ruby bindings.")
     end  
   end
-    
+
+  # the actual response
   def self.response(env)
     params = Rack::Request.new(env).params
     tex = (params['tex'] || '').purify.strip
@@ -59,13 +63,13 @@ class Itex
       begin
         xmlparse(doc)
       rescue
-        return ESTART +"Ill-formed XML." + EEND
+        return error("Ill-formed XML.")
       end
       return doc
     rescue Itex2MML::Error => e
-      ESTART + e.to_s + EEND
+      error(e.to_s)
     rescue
-      ESTART + "Unknown Error" + EEND
+      error("Unknown Error")
     end
   end
 end
