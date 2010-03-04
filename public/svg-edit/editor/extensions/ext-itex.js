@@ -283,7 +283,8 @@ $(function() {
 				while(i--) {
 					var elem = selElems[i];
 					if(elem && elem.tagName == "foreignObject") {
-						if(opts.selectedElement && !opts.multiselected) {
+						if(opts.selectedElement && !opts.multiselected &&
+							  elem.firstElementChild.namespaceURI == mathns ) {
 							$('#itex_font_size').val(elem.getAttribute("font-size"));
 							$('#itex_width').val(elem.getAttribute("width"));
 							$('#itex_height').val(elem.getAttribute("height"));

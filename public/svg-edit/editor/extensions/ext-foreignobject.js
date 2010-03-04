@@ -144,7 +144,7 @@ $(function() {
 			}, {
 				type: "input",
 				panel: "foreignObject_panel",
-				title: "Change the font-size of enclosed content",
+				title: "Change foreignObject's font size",
 				id: "foreign_font_size",
 				label: "font-size",
 				size: 2,
@@ -234,10 +234,10 @@ $(function() {
 				}
 			},
 			mouseUp: function(opts) {
-				var e = opts.event;				
+				var e = opts.event;
 				if(svgCanvas.getMode() == "foreign" && started) {
 					var attrs = $(newFO).attr(["width", "height"]);
-					keep = (attrs.width != 0 || attrs.height != 0);					
+					keep = (attrs.width != 0 || attrs.height != 0);
 					svgCanvas.addToSelection([newFO], true);
 
 					return {
