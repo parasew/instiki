@@ -75,7 +75,7 @@ $(function() {
 				$.post(ajaxEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
 				    var children = data.documentElement.childNodes;
 				    while (children.length > 0) {
-				      mrow.appendChild(children[0]);
+				      mrow.appendChild(svgdoc.adoptNode(children[0], true));
 				    }
 				    S.sanitizeSvg(math);
 				    S.call("changed", [elt]);
