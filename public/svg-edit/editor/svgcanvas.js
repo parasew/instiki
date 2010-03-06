@@ -989,7 +989,7 @@ function BatchCommand(text) {
 		"xmlns:se": se_ns,
 		"xmlns:xlink": xlinkns
 	}).appendTo(svgroot);
-	if (randomize_ids) svgContent.setAttributeNS(se_ns, nonce);
+	if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
 
 	var convertToNum, convertToUnit, setUnitAttr;
 	
@@ -1190,7 +1190,7 @@ function BatchCommand(text) {
 				stroke: "#000000",
 				stroke_paint: null,
 				stroke_opacity: 1,
-				stroke_width: 5,
+				stroke_width: 2,
 				stroke_style: 'none',
 				opacity: 1
 			}
@@ -5628,7 +5628,7 @@ function BatchCommand(text) {
         		nonce = n;
         		if (extensions["Arrows"])  call("setarrownonce", n) ;
         	} else if (randomize_ids) {
-        		svgcontent.setAttributeNS(xmlnsns, 'xml:se', se_ns); 
+        		svgcontent.setAttributeNS(xmlnsns, 'xmlns:se', se_ns);
         		svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
         		if (extensions["Arrows"])  call("setarrownonce", nonce) ;
          	}         
