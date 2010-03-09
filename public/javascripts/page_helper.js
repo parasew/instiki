@@ -136,7 +136,7 @@ function setupSVGedit(path){
     selected = t.value.slice(begin, end);
     after = t.value.slice(end, t.value.length);
     if (selected && selected != '') {
-      if ( selected.match(/^<svg(.|\n)*<\/svg>$/) ) {
+      if ( selected.match(/^<svg(.|\n)*<\/svg>$/) && !selected.match(/<\/svg>(.|\n)/)) {
         SVGeditButton.disabled = false;
         SVGeditButton.value = 'Edit existing SVG graphic';
       } else {
