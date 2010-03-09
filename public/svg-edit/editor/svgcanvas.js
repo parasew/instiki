@@ -6516,6 +6516,7 @@ function BatchCommand(text) {
 			selectorManager.requestSelector(elem).resize();
 		});
 		pathActions.zoomChange();
+		runExtensions("zoomChanged", zoomlevel);
 	}
 
 	this.getMode = function() {
@@ -7989,7 +7990,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1448 $)";
+		return "svgcanvas.js ($Rev: 1450 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
