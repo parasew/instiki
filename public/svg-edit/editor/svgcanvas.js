@@ -82,7 +82,7 @@ if(window.opera) {
 }());
 
 
-function SvgCanvas(container)
+$.SvgCanvas = function(container, config)
 {
 var isOpera = !!window.opera,
 	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
@@ -169,6 +169,10 @@ var isOpera = !!window.opera,
 		"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
 	},
 	
+	curConfig = {
+		show_outside_canvas: true
+	},
+	
 	toXml = function(str) {
 		return $('<p/>').text(str).html();
 	},
@@ -176,6 +180,10 @@ var isOpera = !!window.opera,
 	fromXml = function(str) {
 		return $('<p/>').html(str).text();
 	};
+
+	if(config) {
+		$.extend(curConfig, config);
+	}
 
 	var unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0};
 	
@@ -992,7 +1000,7 @@ function BatchCommand(text) {
 		height: 480,
 		x: 640,
 		y: 480,
-		overflow: 'visible',
+		overflow: curConfig.show_outside_canvas?'visible':'hidden',
 		xmlns: svgns,
 		"xmlns:se": se_ns,
 		"xmlns:xlink": xlinkns
@@ -3899,7 +3907,10 @@ function BatchCommand(text) {
 			
 			if(update) {
 				var prev = seg.prev;
-				if(!prev) return segLine;
+				if(!prev) {
+					segLine.setAttribute("display", "none");
+					return segLine;
+				}
 			
 				var pt = getGripPt(prev);
 				// Set start point
@@ -5096,6 +5107,7 @@ function BatchCommand(text) {
 				}
 				else if (current_mode == "pathedit") {
 					this.clear();
+					this.toSelectMode();
 				}
 			},
 			getNodePoint: function() {
@@ -5143,8 +5155,64 @@ function BatchCommand(text) {
 					path.deleteSeg(pt);
 					}
 			
+				// Cleanup
+				var cleanup = function() {
+					var segList = path.elem.pathSegList;
+					var len = segList.numberOfItems;
+					
+					var remItems = function(pos, count) {
+						while(count--) {
+							segList.removeItem(pos);
+						}
+					}
+
+					if(len <= 1) return true;
+					
+					while(len--) {
+						var item = segList.getItem(len);
+						if(item.pathSegType === 1) {
+							var prev = segList.getItem(len-1);
+							var nprev = segList.getItem(len-2);
+							if(prev.pathSegType === 2) {
+								remItems(len-1, 2);
+								cleanup();
+								break;
+							} else if(nprev.pathSegType === 2) {
+								remItems(len-2, 3);
+								cleanup();
+								break;
+							}
+
+						} else if(item.pathSegType === 2) {
+							if(len > 0) {
+								var prev_type = segList.getItem(len-1).pathSegType;
+								// Path has M M  
+								if(prev_type === 2) {
+									remItems(len-1, 1);
+									cleanup();
+									break;
+								// Entire path ends with Z M 
+								} else if(prev_type === 1 && segList.numberOfItems-1 === len) {
+									remItems(len, 1);
+									cleanup();
+									break;
+								}
+							}
+						}
+					}	
+					return false;
+				}
+				
+				cleanup();
+				
+				// Completely delete a path with 1 or 0 segments
+				if(path.elem.pathSegList.numberOfItems <= 1) {
+					pathActions.toSelectMode(path.elem);
+					canvas.deleteSelectedElements();
+					return;
+				}
+				
 				path.init();
-				var sel_pt = sel_pts[0]-1 > 0 ? sel_pts[0]-1 : 1;
 				
 				path.clearSelection();
 				
@@ -5689,7 +5757,7 @@ function BatchCommand(text) {
         	
 			var attrs = {
 				id: 'svgcontent',
-				overflow: 'visible'
+				overflow: curConfig.show_outside_canvas?'visible':'hidden'
 			};
 			
 			// determine proper size
@@ -6375,6 +6443,10 @@ function BatchCommand(text) {
 	this.linkControlPoints = function(linkPoints) {
 		pathActions.linkControlPoints(linkPoints);
 	}
+
+	this.getContentElem = function() { return svgcontent; };
+	this.getRootElem = function() { return svgroot; };
+	this.getSelectedElems = function() { return selectedElements; };
 
 	this.getResolution = function() {
 // 		var vb = svgcontent.getAttribute("viewBox").split(' ');
@@ -8035,24 +8107,18 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1454 $)";
+		return "svgcanvas.js ($Rev: 1456 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
 		$.extend(uiStrings, strs);
 	}
 	
-	this.clear();
-
-	this.ready = function(cb) {
-		this.callback = cb;
+	this.setConfig = function(opts) {
+		$.extend(curConfig, opts);
 	}
 	
-	this.runCallback = function() {
-		if(this.callback) {
-			this.callback();
-		}
-	}
+	this.clear();
 	
 	function getElem(id) {
 		if(svgroot.querySelector) {

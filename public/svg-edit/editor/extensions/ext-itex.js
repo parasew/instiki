@@ -8,8 +8,7 @@
  *
  */
 
-$(function() {
-	svgCanvas.addExtension("itex", function(S) {
+svgEditor.addExtension("itex", function(S) {
 		var svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
 			selElems,
@@ -302,5 +301,4 @@ $(function() {
 				var elem = opts.elems[0];
 			}
 		};
-	});
 });
