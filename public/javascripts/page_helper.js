@@ -82,7 +82,7 @@ function setupSVGedit(path){
     f.insert({top: SVGeditButton});
     SVGeditButton.disabled = true;
     Event.observe(SVGeditButton, 'click', function(){
-      var editor = window.open(path, 'Edit SVG graphic', 'status=1,resizable=1,scrollbars=1');
+      var editor = window.open(path + "?initStroke[width]=2", 'Edit SVG graphic', 'status=1,resizable=1,scrollbars=1');
       editor.addEventListener("load", function() {
         editor.svgEditor.setCustomHandlers({
             'save': function(window,svg){
