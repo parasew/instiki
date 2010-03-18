@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -450,6 +450,7 @@ function BatchCommand(text) {
 								"stroke-width": "1"
 							}
 						}) );
+						
 		this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
 							"element": "circle",
 							"attr": {
@@ -458,7 +459,7 @@ function BatchCommand(text) {
 								"r": 4,
 								"stroke": "#22C",
 								"stroke-width": 2,
-								"style": "cursor:url(images/rotate.png) 12 12, auto;"
+								"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
 							}
 						}) );
 		
@@ -953,7 +954,7 @@ function BatchCommand(text) {
 					'</svg>').documentElement, true);
 		
 		$(svgroot).appendTo(container);
-
+		
 		var opac_ani = document.createElementNS(svgns, 'animate');
  		$(opac_ani).attr({
  			attributeName: 'opacity',
@@ -966,36 +967,36 @@ function BatchCommand(text) {
     var nonce = Math.floor(Math.random()*100001);
     var randomize_ids = false;
     
-	// map namespace URIs to prefixes		
+	// map namespace URIs to prefixes
 	var nsMap = {};
-    nsMap[xlinkns] = 'xlink';
-    nsMap[xmlns] = 'xml';
-    nsMap[xmlnsns] = 'xmlns';
-    nsMap[se_ns] = 'se';
-    nsMap[htmlns] = 'xhtml';
-    nsMap[mathns] = 'mathml';
+	nsMap[xlinkns] = 'xlink';
+	nsMap[xmlns] = 'xml';
+	nsMap[xmlnsns] = 'xmlns';
+	nsMap[se_ns] = 'se';
+	nsMap[htmlns] = 'xhtml';
+	nsMap[mathns] = 'mathml';
 
-    // map prefixes to namespace URIs    
-    var nsRevMap = {};
-    $.each(nsMap, function(key,value){
-        nsRevMap[value] = key;
+	// map prefixes to namespace URIs
+	var nsRevMap = {};
+	$.each(nsMap, function(key,value){
+		nsRevMap[value] = key;
     });
 
-    // Produce a Namespace-aware version of svgWhitelist
-    var svgWhiteListNS = {};
+	// Produce a Namespace-aware version of svgWhitelist
+	var svgWhiteListNS = {};
     $.each(svgWhiteList, function(elt,atts){
 		var attNS = {};
-        $.each(atts, function(i, att){
-            if (att.indexOf(':') != -1) {
+		$.each(atts, function(i, att){
+			if (att.indexOf(':') != -1) {
 				var v = att.split(':');
-                attNS[v[1]] = nsRevMap[v[0]];
-            } else {
-                attNS[att] = att == 'xmlns' ? xmlnsns : null;
-            }
-        });
-        svgWhiteListNS[elt] = attNS;
-    });
-
+				attNS[v[1]] = nsRevMap[v[0]];
+			} else {
+				attNS[att] = att == 'xmlns' ? xmlnsns : null;
+			}
+		});
+		svgWhiteListNS[elt] = attNS;
+	});
+	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
 		id: 'svgcontent',
@@ -1192,7 +1193,7 @@ function BatchCommand(text) {
 	// the first layer is the one at the bottom of the rendering
 	var all_layers = [],
 		encodableImages = {},
-		last_good_img_url = 'images/logo.png',
+		last_good_img_url = curConfig.imgPath + 'logo.png',
 		// pointer to the current layer <g>
 		current_layer = null,
 		save_options = {round_digits: 5},
@@ -1326,7 +1327,7 @@ function BatchCommand(text) {
 		if (randomize_ids) {
 		  return idprefix + nonce +'_' + obj_num;
 		} else {
-		  return idprefix + obj_num;
+		return idprefix + obj_num;
 		}
 	};
 
@@ -1366,7 +1367,7 @@ function BatchCommand(text) {
 
 		var allowedAttrs = svgWhiteList[node.nodeName];
 		var allowedAttrsNS = svgWhiteListNS[node.nodeName];
-		
+
 		// if this element is allowed
 		if (allowedAttrs != undefined) {
 			var se_attrs = [];
@@ -1379,10 +1380,10 @@ function BatchCommand(text) {
 				var attrName = attr.nodeName;
 				var attrLocalName = attr.localName;
 				var attrNsURI = attr.namespaceURI;
-				// Check that an attribute with the correct localName in the correct namespace is on
+				// Check that an attribute with the correct localName in the correct namespace is on 
 				// our whitelist or is a namespace declaration for one of our allowed namespaces
 				if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != xmlnsns) &&
-				    !(attrNsURI == xmlnsns && nsMap[attr.nodeValue]) )
+					!(attrNsURI == xmlnsns && nsMap[attr.nodeValue]) ) 
 				{
 					// Bypassing the whitelist to allow se: prefixes. Is there
 					// a more appropriate way to do this?
@@ -1577,21 +1578,21 @@ function BatchCommand(text) {
 				// Process root element separately
 				var res = canvas.getResolution();
 				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
-                var i = attrs.length;
-                while (i--) {
-                    attr = attrs.item(i);
-                    var attrVal = toXml(attr.nodeValue);
-                    // only serialize attributes we don't use internally
-                    if (attrVal != "" && 
-                        $.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
-                    {
-                        if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+				var i = attrs.length;
+				while (i--) {
+					attr = attrs.item(i);
+					var attrVal = toXml(attr.nodeValue);
+					// only serialize attributes we don't use internally
+					if (attrVal != "" && 
+						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
+					{
+						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
 							out.push(' '); 
 							out.push(attr.nodeName); out.push("=\"");
-                            out.push(attrVal); out.push("\"");
-                        }
-                    }
-                }
+							out.push(attrVal); out.push("\"");
+						}
+					}
+				}
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
@@ -1611,19 +1612,19 @@ function BatchCommand(text) {
 							&& elem.nodeName == 'image' 
 							&& attr.localName == 'href'
 							&& save_options.images
-							&& save_options.images == 'embed')
+							&& save_options.images == 'embed') 
 						{
 							var img = encodableImages[attrVal];
 							if(img) attrVal = img;
 						}
 						
 						// map various namespaces to our fixed namespace prefixes
-                        // (the default xmlns attribute itself does not get a prefix)
+						// (the default xmlns attribute itself does not get a prefix)
 						if(!attr.namespaceURI || attr.namespaceURI == svgns || nsMap[attr.namespaceURI]) {
-                            out.push(attr.nodeName); out.push("=\""); 
-				            out.push(attrVal); out.push("\"");
-				        }
- 					}
+							out.push(attr.nodeName); out.push("=\"");
+							out.push(attrVal); out.push("\"");
+						}
+					}
 				}
 			}
 
@@ -2211,13 +2212,13 @@ function BatchCommand(text) {
 							var childTlist = canvas.getTransformList(child);
 							// some children might not have a transform (<metadata>, <defs>, etc)
 							if (childTlist) {
-							var newxlate = svgroot.createSVGTransform();
-							newxlate.setTranslate(tx,ty);
-							childTlist.insertItemBefore(newxlate, 0);
-							batchCmd.addSubCommand( recalculateDimensions(child) );
-							start_transform = old_start_transform;
+								var newxlate = svgroot.createSVGTransform();
+								newxlate.setTranslate(tx,ty);
+								childTlist.insertItemBefore(newxlate, 0);
+								batchCmd.addSubCommand( recalculateDimensions(child) );
+								start_transform = old_start_transform;
+							}
 						}
-					}
 					}
 					start_transform = old_start_transform;
 				}
@@ -3142,7 +3143,7 @@ function BatchCommand(text) {
 			$.each(ext_result, function(i, r) {
 				if(r && r.started) {
 					started = true;
-			}
+				}
 			});
 		};
 	
@@ -3667,7 +3668,7 @@ function BatchCommand(text) {
 					keep = r.keep || keep;
 					element = r.element;
 					started = r.started || started;
-			}
+				}
 			});
 			
 			if (!keep && element != null) {
@@ -3711,19 +3712,19 @@ function BatchCommand(text) {
 				// but that doesn't seem to be supported in Webkit
 				setTimeout(function() {
 					if(c_ani) c_ani.remove();
-				element.setAttribute("opacity", cur_shape.opacity);
-				element.setAttribute("style", "pointer-events:inherit");
-				cleanupElement(element);
-				if(current_mode == "path") {
-					pathActions.toEditMode(element);
-				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
-					// keep us in the tool we were in unless it was a text or image element
-					canvas.addToSelection([element], true);
-				}
-				// we create the insert command that is stored on the stack
-				// undo means to call cmd.unapply(), redo means to call cmd.apply()
-				addCommandToHistory(new InsertElementCommand(element));
-				call("changed",[element]);
+					element.setAttribute("opacity", cur_shape.opacity);
+					element.setAttribute("style", "pointer-events:inherit");
+					cleanupElement(element);
+					if(current_mode == "path") {
+						pathActions.toEditMode(element);
+					} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
+						// keep us in the tool we were in unless it was a text or image element
+						canvas.addToSelection([element], true);
+					}
+					// we create the insert command that is stored on the stack
+					// undo means to call cmd.unapply(), redo means to call cmd.apply()
+					addCommandToHistory(new InsertElementCommand(element));
+					call("changed",[element]);
 				}, ani_dur * 1000);
 			}
 			
@@ -3815,7 +3816,7 @@ function BatchCommand(text) {
 				list.appendItem(arr[i]);
 			}
 		}
-	
+		
 		// TODO: See if this should just live in replacePathSeg
 		function ptObjToArr(type, seg_item) {
 			var arr = segData[type], len = arr.length;
@@ -3825,7 +3826,7 @@ function BatchCommand(text) {
 			}
 			return out;
 		}
-		
+
 		function getGripContainer() {
 			var c = getElem("pathpointgrip_container");
 			if (!c) {
@@ -3839,7 +3840,7 @@ function BatchCommand(text) {
 		var addPointGrip = function(index, x, y) {
 			// create the container of all the point grips
 			var pointGripContainer = getGripContainer();
-		
+	
 			var pointGrip = getElem("pathpointgrip_"+index);
 			// create it
 			if (!pointGrip) {
@@ -3861,15 +3862,15 @@ function BatchCommand(text) {
 				grip.dblclick(function() {
 					path.setSegType();
 				});
-				}
+			}
 			if(x && y) {
 				// set up the point grip element and display it
 				assignAttributes(pointGrip, {
 					'cx': x,
 					'cy': y,
 					'display': "inline"
-			});
-		}
+				});
+			}
 			return pointGrip;
 		};
 		
@@ -3884,11 +3885,11 @@ function BatchCommand(text) {
 					'cy': pt.y,
 					'display': "inline"
 				});
-				}
+			}
 			
 			return pointGrip;
 		}
-	
+		
 		var getSegSelector = function(seg, update) {
 			var index = seg.index;
 			var segLine = getElem("segline_" + index);
@@ -3914,30 +3915,30 @@ function BatchCommand(text) {
 					segLine.setAttribute("display", "none");
 					return segLine;
 				}
-			
+				
 				var pt = getGripPt(prev);
 				// Set start point
 				replacePathSeg(2, 0, [pt.x, pt.y], segLine);
-		
+				
 				var pts = ptObjToArr(seg.type, seg.item, true);
 				for(var i=0; i < pts.length; i+=2) {
 					var pt = getGripPt(seg, {x:pts[i], y:pts[i+1]});
 					pts[i] = pt.x;
 					pts[i+1] = pt.y;
 				}
-					
+
 				replacePathSeg(seg.type, 1, pts, segLine);
-						}
+			}
 			return segLine;
-					}
-					
+		}
+		
 		var getControlPoints = function(seg) {
 			var item = seg.item;
 			var index = seg.index;
 			if(!("x1" in item) || !("x2" in item)) return null;
 			var cpt = {};			
 			var pointGripContainer = getGripContainer();
-					
+		
 			// Note that this is intentionally not seg.prev.item
 			var prev = path.segs[index-1].item;
 
@@ -3957,7 +3958,7 @@ function BatchCommand(text) {
 					});
 					pointGripContainer.appendChild(ctrlLine);
 				}
-
+				
 				var pt = getGripPt(seg, {x:item['x' + i], y:item['y' + i]});
 				var gpt = getGripPt(seg, {x:seg_items[i-1].x, y:seg_items[i-1].y});
 				
@@ -3987,25 +3988,25 @@ function BatchCommand(text) {
 						'xlink:title': uiStrings.pathCtrlPtTooltip
 					});
 					pointGripContainer.appendChild(pointGrip);
-						}
+				}
 				
 				assignAttributes(pointGrip, {
 					'cx': pt.x,
 					'cy': pt.y,
 					'display': "inline"
-					});
+				});
 				cpt['c' + i] = pointGrip;
 			}
 			return cpt;
-			}
+		}
 		
 		function getGripPt(seg, alt_pt) {
 			var out = {
 				x: alt_pt? alt_pt.x : seg.item.x,
 				y: alt_pt? alt_pt.y : seg.item.y
 			}, path = seg.path;
-			
 
+			
 			if(path.matrix) {
 				var pt = transformPoint(out.x, out.y, path.matrix);
 				out = pt;
@@ -4015,7 +4016,7 @@ function BatchCommand(text) {
 			out.y *= current_zoom;
 			
 			return out;
-				}
+		}
 		
 		function getPointFromGrip(pt, path) {
 			var out = {
@@ -4028,16 +4029,16 @@ function BatchCommand(text) {
 				out.x = pt.x;
 				out.y = pt.y;
 			}
-				
+			
 			out.x /= current_zoom;
 			out.y /= current_zoom;			
-
+			
 			return out;
 		}
-			
+		
 		function Segment(index, item) {
 			var s = this;
-				
+			
 			s.index = index;
 			s.selected = false;
 			s.type = item.pathSegType;
@@ -4057,7 +4058,7 @@ function BatchCommand(text) {
 					
 					// Show/hide all control points if available
 					s.showCtrlPts(y);
-			}
+				}
 			}
 			s.select = function(y) {
 				if(grip) {
@@ -4080,9 +4081,9 @@ function BatchCommand(text) {
 						'cx': pt.x,
 						'cy': pt.y
 					});
-			
+					
 					getSegSelector(s, true);
-			
+					
 					if(s.ctrlpts) {
 						if(full) {
 							s.item = path.elem.pathSegList.getItem(s.index);
@@ -4095,24 +4096,24 @@ function BatchCommand(text) {
 			}
 			s.move = function(dx, dy) {
 				var item = s.item;
-		
+				
 				var cur = s;
-			
+				
 				if(cur.ctrlpts) {
 					var cur_pts = [item.x += dx, item.y += dy, 
 						item.x1, item.y1, item.x2 += dx, item.y2 += dy];
-			} else {
+				} else {
 					var cur_pts = [item.x += dx, item.y += dy];
-			}
+				}
 				replacePathSeg(cur.type, cur.index, cur_pts);
-			
+
 				if(s.next && s.next.ctrlpts) {
 					var next = s.next.item;
 					var next_pts = [next.x, next.y, 
 						next.x1 += dx, next.y1 += dy, next.x2, next.y2];
 					replacePathSeg(s.next.type, s.next.index, next_pts);
 				}
-			
+				
 				if(s.mate) {
 					// The last point of a closed subpath has a "mate",
 					// which is the "M" segment of the subpath
@@ -4121,7 +4122,7 @@ function BatchCommand(text) {
 					replacePathSeg(s.mate.type, s.mate.index, pts);
 					// Has no grip, so does not need "updating"?
 				}
-			
+				
 				s.update(true);
 				if(s.next) s.next.update(true);
 			}
@@ -4139,16 +4140,16 @@ function BatchCommand(text) {
 					pt = seg.item;
 				}
 				var item = seg.item;
-
+				
 				item['x' + anum] = pt.x + (pt.x - s.item['x' + num]);
 				item['y' + anum] = pt.y + (pt.y - s.item['y' + num]);
-
+				
 				var pts = [item.x,item.y,
 					item.x1,item.y1, item.x2,item.y2];
-		
+					
 				replacePathSeg(seg.type, seg.index, pts);
 				seg.update(true);
-	
+
 			}
 			s.moveCtrl = function(num, dx, dy) {
 				var item = s.item;
@@ -4161,7 +4162,7 @@ function BatchCommand(text) {
 					
 				replacePathSeg(s.type, s.index, pts);
 				s.update(true);
-					}
+			}
 			s.setType = function(new_type, pts) {
 				replacePathSeg(new_type, index, pts);
 				s.type = new_type;
@@ -4169,24 +4170,24 @@ function BatchCommand(text) {
 				s.showCtrlPts(new_type === 6);
 				s.ctrlpts = getControlPoints(s);
 				s.update(true);
-					}
+			}
 			s.showCtrlPts = function(y) {
 				if(s.ctrlpts) {
 					for (var o in s.ctrlpts) {
 						s.ctrlpts[o].setAttribute("display", y?"inline":"none");
+					}
 				}
 			}
-			}
-			}
-	
+		}
+		
 		function Path(elem) {
 			if(!elem || elem.tagName !== "path") return false;
-	
+		
 			var p = path = this;
 			this.elem = elem;
 			this.segs = [];
 			this.selected_pts = [];
-				
+			
 			// Reset path data
 			this.init = function() {
 				// Hide all grips, etc
@@ -4202,16 +4203,16 @@ function BatchCommand(text) {
 					var segment = new Segment(i, item);
 					segment.path = p;
 					p.segs.push(segment);
-			}
-			
+				}	
+				
 				var segs = p.segs;
 				var start_i = null;
-		
+
 				for(var i=0; i < len; i++) {
 					var seg = segs[i]; 
 					var next_seg = (i+1) >= len ? null : segs[i+1];
 					var prev_seg = (i-1) < 0 ? null : segs[i-1];
-			
+					
 					if(seg.type === 2) {
 						if(prev_seg && prev_seg.type !== 1) {
 							// New sub-path, last one is open,
@@ -4227,14 +4228,14 @@ function BatchCommand(text) {
 						// This is the last real segment of a closed sub-path
 						// Next is first seg after "M"
 						seg.next = segs[start_i+1];
-				
+						
 						// First seg after "M"'s prev is this
 						seg.next.prev = seg;
 						seg.mate = segs[start_i];
 						seg.addGrip();
 						if(!p.first_seg) {
 							p.first_seg = seg;
-					}
+						}
 					} else if(!next_seg) {
 						if(seg.type !== 1) {
 							// Last seg, doesn't close so add a grip
@@ -4244,7 +4245,7 @@ function BatchCommand(text) {
 							start_seg.next.prev = start_seg;
 							start_seg.addGrip();
 							seg.addGrip();
-				
+
 							if(!p.first_seg) {
 								// Open path, so set first as real first and add grip
 								p.first_seg = segs[start_i];
@@ -4253,27 +4254,27 @@ function BatchCommand(text) {
 					} else if(seg.type !== 1){
 						// Regular segment, so add grip and its "next"
 						seg.addGrip();
-					
+						
 						// Don't set its "next" if it's an "M"
 						if(next_seg && next_seg.type !== 2) {
 							seg.next = next_seg;
 							seg.next.prev = seg;
+						}
 					}
 				}
-			}
 				return p;
-		}
-
+			}
+			
 			this.init();
-				
+			
 			// Update position of all points
 			this.update = function() {
 				if(canvas.getRotationAngle(p.elem)) {
 					var tlist = canvas.getTransformList(path.elem);
 					p.matrix = transformListToTransform(tlist).matrix;
 					p.imatrix = p.matrix.inverse();
-			}
-			
+				}
+
 				p.eachSeg(function(i) {
 					this.item = elem.pathSegList.getItem(i);
 					this.update();
@@ -4281,27 +4282,27 @@ function BatchCommand(text) {
 				
 				return p;
 			}
-	
+			
 			this.eachSeg = function(fn) {
 				var len = p.segs.length
 				for(var i=0; i < len; i++) {
 					fn.call(p.segs[i], i);
 				}
 			}
-				
+			
 			this.addSeg = function(index) {
 				// Adds a new segment
 				var seg = p.segs[index];
 				var prev = seg.prev;
-			
+				
 				var new_x = (seg.item.x + prev.item.x) / 2;
 				var new_y = (seg.item.y + prev.item.y) / 2;
-			
+				
 				var list = elem.pathSegList;
 				var newseg = elem.createSVGPathSegLinetoAbs(new_x, new_y);
 				if(support.pathInsertItemBefore) {
 					list.insertItemBefore(newseg, index);
-			} else {
+				} else {
 					insertItemBefore(elem, newseg, index);
 				}
 
@@ -4333,14 +4334,14 @@ function BatchCommand(text) {
 					list.removeItem(index);
 				}
 			}
-	
+			
 			this.endChanges = function(text) {
 				if(isWebkit) resetD(p.elem);
 				var cmd = new ChangeElementCommand(elem, {d: p.last_d}, text);
 				addCommandToHistory(cmd);
 				call("changed", [elem]);
-				}
-	
+			}
+
 			
 			this.addPtsToSelection = function(indexes) {
 				if(!$.isArray(indexes)) indexes = [indexes];
@@ -4365,17 +4366,17 @@ function BatchCommand(text) {
 				}
 				pathActions.canDeleteNodes = true;
 				call("selected", grips);
-					}
-	
+			}
+
 			this.removePtFromSelection = function(index) {
 				var pos = $.inArray(index, p.selected_pts);
 				if(pos == -1) {
 					return;
-				}
+				} 
 				p.segs[index].select(false);
 				p.selected_pts.splice(pos, 1);
 			}
-			
+
 			
 			this.clearSelection = function() {
 				p.eachSeg(function(i) {
@@ -4402,7 +4403,7 @@ function BatchCommand(text) {
 					}
 				}
 			}
-				
+			
 			this.storeD = function() {
 				this.last_d = elem.getAttribute('d');
 			}
@@ -4424,8 +4425,8 @@ function BatchCommand(text) {
 				while(i--) {
 					var seg = p.segs[p.selected_pts[i]];
 					seg.move(d_x, d_y);
-					}
 				}
+			}
 			
 			this.moveCtrl = function(d_x, d_y) {
 				var seg = p.segs[p.selected_pts[0]];
@@ -4454,7 +4455,7 @@ function BatchCommand(text) {
 						var old_type = cur.type;
 						
 						new_type = (old_type == 6) ? 4 : 6;
-				}
+					} 
 					
 					new_type = new_type-0;
 					
@@ -4477,7 +4478,7 @@ function BatchCommand(text) {
 							var ct2_x = (cur_x + (diff_y/2));
 							var ct2_y = (cur_y - (diff_x/2));
 							points = [cur_x,cur_y, ct1_x,ct1_y, ct2_x,ct2_y];
-			}
+						}
 						break;
 					case 4:
 						points = [cur_x,cur_y];
@@ -4500,7 +4501,7 @@ function BatchCommand(text) {
 			if(!p) p = pathData[elem.id] = new Path(elem);
 			return p;
 		}
-	
+		
 		
 		var pathFuncs = [],
 			current_path = null,
@@ -4546,22 +4547,22 @@ function BatchCommand(text) {
 							prevArr[3] = newpts[0].y;
 							d[d.length-1] = prevArr.join(',');
 							ct1 = newpts[1];
-			}
-			}
-			
+						}
+					}
+					
 					d.push([ct1.x,ct1.y,ct2.x,ct2.y,end.x,end.y].join(','));
-				
+					
 					curpos = end;
 					prevCtlPt = ct2;
-			}
+				}
 				// handle remaining line segments
 				d.push("L");
 				for(;i < N;++i) {
 					var pt = points.getItem(i);
 					d.push([pt.x,pt.y].join(","));
-		}
+				}
 				d = d.join(" ");
-		
+
 				// create new path element
 				element = addSvgElementFromJson({
 					"element": "path",
@@ -4576,10 +4577,10 @@ function BatchCommand(text) {
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
 							"style": "pointer-events:inherit"
-			}
+						}
 					});
 				call("changed",[element]);
-		}
+			}
 			return element;
 		};
 		
@@ -4609,8 +4610,8 @@ function BatchCommand(text) {
 				}
 			}
 		}
-		
-		// If the path was rotated, we must now pay the piper:
+
+ 		// If the path was rotated, we must now pay the piper:
 		// Every path point must be rotated into the rotated coordinate system of 
 		// its old center, then determine the new center, then rotate it back
 		// This is because we want the path to remember its rotation
@@ -4729,13 +4730,13 @@ function BatchCommand(text) {
 					}
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					path.dragging = [start_x, start_y];
-
+					
 					var parts = id.split('_')[1].split('c');
 					var cur_pt = parts[0]-0;
 					var ctrl_num = parts[1]-0;
 					path.selectPt(cur_pt, ctrl_num);
 				}
-				
+
 				// Start selection box
 				if(!path.dragging) {
 					if (rubberBox == null) {
@@ -4784,7 +4785,7 @@ function BatchCommand(text) {
 					path.eachSeg(function(i) {
 						var seg = this;
 						if(!seg.next && !seg.prev) return;
-					
+							
 						var item = seg.item;
 						var rbb = rubberBox.getBBox();
 						
@@ -4806,7 +4807,7 @@ function BatchCommand(text) {
 				}
 			}, 
 			mouseUp: function(evt, element, mouse_x, mouse_y) {
-			
+				
 				// Create mode
 				if(current_mode == "path") {
 					var x = mouse_x/current_zoom,
@@ -4958,15 +4959,15 @@ function BatchCommand(text) {
 					path.dragctrl = false;
 					path.update();
 					
-					
+				
 					if(hasMoved) {
 						path.endChanges("Move path point(s)");
-						}
-						
+					} 
+					
 					if(!evt.shiftKey && !hasMoved) {
 						path.selectPt(last_pt);
 					} 
-				} 	
+				}
 				else if(rubberBox && rubberBox.getAttribute('display') != 'none') {
 					// Done with multi-node-select
 					rubberBox.setAttribute("display", "none");
@@ -5128,20 +5129,20 @@ function BatchCommand(text) {
 			},
 			clonePathNode: function() {
 				path.storeD();
-					
+				
 				var sel_pts = path.selected_pts;
 				var segs = path.segs;
-					
+				
 				var i = sel_pts.length;
 				var nums = [];
-					
+
 				while(i--) {
 					var pt = sel_pts[i];
 					path.addSeg(pt);
 					
 					nums.push(pt + i);
 					nums.push(pt + i + 1);
-				}	
+				}
 				path.init().addPtsToSelection(nums);
 
 				path.endChanges("Clone path node(s)");
@@ -5149,15 +5150,15 @@ function BatchCommand(text) {
 			deletePathNode: function() {
 				if(!pathActions.canDeleteNodes) return;
 				path.storeD();
-					
+				
 				var sel_pts = path.selected_pts;
 				var i = sel_pts.length;
-	
+
 				while(i--) {
 					var pt = sel_pts[i];
 					path.deleteSeg(pt);
-					}
-			
+				}
+				
 				// Cleanup
 				var cleanup = function() {
 					var segList = path.elem.pathSegList;
@@ -5233,14 +5234,14 @@ function BatchCommand(text) {
 			moveNode: function(attr, newValue) {
 				var sel_pts = path.selected_pts;
 				if(!sel_pts.length) return;
-	
+				
 				path.storeD();
-					
+				
 				// Get first selected point
 				var seg = path.segs[sel_pts[0]];
 				var diff = {x:0, y:0};
 				diff[attr] = newValue - seg.item[attr];
-			
+				
 				seg.move(diff.x, diff.y);
 				path.endChanges("Move path point");
 			},
@@ -5256,7 +5257,7 @@ function BatchCommand(text) {
 					if(item.pathSegType === 2) {
 						last_m = item;
 					}
-			
+					
 					if(item.pathSegType === 1) {
 						var prev = segList.getItem(i-1);
 						if(prev.x != last_m.x && prev.y != last_m.y) {
@@ -5264,14 +5265,14 @@ function BatchCommand(text) {
 							var newseg = elem.createSVGPathSegLinetoAbs(last_m.x, last_m.y);
 							if(support.pathInsertItemBefore) {
 								segList.insertItemBefore(newseg, i);
-					} else {
+							} else {
 								insertItemBefore(elem, newseg, i);
-					}
+							}
 							// Can this be done better?
 							pathActions.fixEnd(elem);
-						break;
-					}
-					
+							break;
+						}
+						
 					}
 				}
 				if(isWebkit) resetD(elem);
@@ -5458,14 +5459,14 @@ function BatchCommand(text) {
 			"opacity": cur_shape.opacity,
 			"visibility":"hidden"
 		};
-
+		
 		// any attribute on the element not covered by the above
 		// TODO: make this list global so that we can properly maintain it
 		// TODO: what about @transform, @clip-rule, @fill-rule, etc?
 		$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
-		  if (elem.getAttribute(this)) {
-		      attrs[this] = elem.getAttribute(this);
-		  }
+			if (elem.getAttribute(this)) {
+				attrs[this] = elem.getAttribute(this);
+			}
 		});
 		
 		var path = addSvgElementFromJson({
@@ -5774,14 +5775,14 @@ function BatchCommand(text) {
 				$.each(['width', 'height'], function(i, dim) {
 					// Set to 100 if not given
 					var val = content.attr(dim) || 100;
-			
+
 					if((val+'').substr(-1) === "%") {
 						// Use user units if percentage given
 						attrs[dim] = parseInt(val);
 					} else {
 						attrs[dim] = convertToNum(dim, val);
 					}
-			});
+				});
 			}
 			
 			content.attr(attrs);
@@ -5820,7 +5821,7 @@ function BatchCommand(text) {
 	//
 	// Returns:
 	// This function returns false if the import was unsuccessful, true otherwise.
-	
+
 	// TODO: properly handle if namespace is introduced by imported content (must add to svgcontent
 	//       and update all prefixes in the imported node)
 	// TODO: properly handle recalculating dimensions, recalculateDimensions() doesn't handle
@@ -5840,7 +5841,7 @@ function BatchCommand(text) {
 			// import new svg document into our document
 			var importedNode = svgdoc.importNode(newDoc.documentElement, true);
         
-    	    if (current_layer) {
+			if (current_layer) {
 				// TODO: properly handle if width/height are not specified or if in percentages
 				// TODO: properly handle if width/height are in units (px, etc)
 				var innerw = importedNode.getAttribute("width"),
@@ -5864,8 +5865,8 @@ function BatchCommand(text) {
 				if (vb[0] != 0 || vb[1] != 0)
 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 
-    	    	// add all children of the imported <svg> to the <g> we create
-    	    	var g = svgdoc.createElementNS(svgns, "g");
+				// add all children of the imported <svg> to the <g> we create
+				var g = svgdoc.createElementNS(svgns, "g");
 				while (importedNode.hasChildNodes())
 					g.appendChild(importedNode.firstChild);
 				if (ts)
@@ -5985,10 +5986,10 @@ function BatchCommand(text) {
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
 			walkTreePost(importedNode, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
-        	
+			
 			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
-			
+
 			// reset zoom - TODO: why?
 //			current_zoom = 1;
 			
@@ -6732,13 +6733,13 @@ function BatchCommand(text) {
 		while (i--) {
 			var og = existing_grads[i];
 			if(grad.tagName == "linearGradient") {
-			if (grad.getAttribute('x1') != og.getAttribute('x1') ||
-				grad.getAttribute('y1') != og.getAttribute('y1') ||
-				grad.getAttribute('x2') != og.getAttribute('x2') ||
-				grad.getAttribute('y2') != og.getAttribute('y2')) 
-			{
-				continue;
-			}
+				if (grad.getAttribute('x1') != og.getAttribute('x1') ||
+					grad.getAttribute('y1') != og.getAttribute('y1') ||
+					grad.getAttribute('x2') != og.getAttribute('x2') ||
+					grad.getAttribute('y2') != og.getAttribute('y2')) 
+				{
+					continue;
+				}
 			} else {
 				var grad_attrs = $(grad).attr(rad_attrs);
 				var og_attrs = $(og).attr(rad_attrs);
@@ -7815,10 +7816,10 @@ function BatchCommand(text) {
 		$.each(elems, function(i, elem) {
 			var cur_bb = getCheckedBBox(elem);
 			if(cur_bb) {
-			var offset = getOffset(elem);
-			min_x = Math.min(min_x, cur_bb.x - offset);
-			min_y = Math.min(min_y, cur_bb.y - offset);
-			bboxes.push(cur_bb);
+				var offset = getOffset(elem);
+				min_x = Math.min(min_x, cur_bb.x - offset);
+				min_y = Math.min(min_y, cur_bb.y - offset);
+				bboxes.push(cur_bb);
 			}
 		});
 		
@@ -7829,9 +7830,9 @@ function BatchCommand(text) {
 			var cur_bb = bboxes[i];
 			// ensure that elem is really an element node
 			if (cur_bb && elem.nodeType == 1) {
-			var offset = getOffset(elem);
-			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
-			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
+				var offset = getOffset(elem);
+				max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
+				max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
 			}
 		});
 		
@@ -8110,19 +8111,19 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1459 $)";
+		return "svgcanvas.js ($Rev: 1464 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
 		$.extend(uiStrings, strs);
 	}
-	
+
 	this.setConfig = function(opts) {
 		$.extend(curConfig, opts);
 	}
 	
 	this.clear();
-	
+
 	function getElem(id) {
 		if(svgroot.querySelector) {
 			// querySelector lookup
