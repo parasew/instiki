@@ -71,7 +71,7 @@ function cleanAuthorName() {
 document.forms["editForm"].elements["content"].focus();
 <%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) and !@page.categories.include?('S5-slideshow') -%>
 setupSVGedit('<%= compute_public_path("editor/svg-editor.html", "svg-edit").split(/\?/)[0] %>');
-addS5button('<%= CGI.escapeHTML(@page.name) %>');
+addS5button('<%= @page.name.escapeHTML %>');
 <%- end -%>
 //--><!]]>
 </script>
