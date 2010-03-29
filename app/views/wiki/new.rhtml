@@ -33,6 +33,6 @@ function cleanAuthorName() {
 document.forms["editForm"].elements["content"].focus();
 <%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) -%>
 setupSVGedit('<%= compute_public_path("editor/svg-editor.html", "svg-edit").split(/\?/)[0] %>');
-addS5button('<%= CGI.escapeHTML(@page_name) %>');
+addS5button('<%= @page_name.escapeHTML %>');
 <%- end -%>
 </script>
