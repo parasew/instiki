@@ -383,6 +383,7 @@ body {
 	top: 75px;
 	left: 0;
 	padding-left: 2px;
+	background: #D8D8D8; /* Needed so flyout icons don't appear on the left */
 	z-index: 4;
 }
 
@@ -466,17 +467,13 @@ body {
 }
 
 
-.magic_field > * {
-	float: left;
-}
-
 span.zoom_tool {
 	line-height: 26px;
 	padding: 3px;
 }
 
-.magic_field input {
-	margin-top: 5px;
+#zoom_panel label {
+	margin-top: 2px;
 }
 
 .dropdown {
@@ -701,6 +698,21 @@ span.zoom_tool {
 	height: 26px;
 }
 
+#toggle_stroke_tools {
+	letter-spacing: -.2em;
+	padding-right: 8px;
+}
+
+#toggle_stroke_tools:hover {
+	cursor: pointer;
+	background: #FFC;
+}
+
+.stroke_tool {
+	display: none;
+	white-space: nowrap;
+}
+
 .color_tool > *:first-child {
 	-moz-border-radius-topleft: 4px;
 	-moz-border-radius-bottomleft: 4px;
@@ -739,6 +751,8 @@ span.zoom_tool {
 
 
 #svg_editor #tools_bottom_3 {
+//	position: relative;
+	z-index: 2;
 }
 
 #svg_editor #copyright {

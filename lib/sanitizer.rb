@@ -48,7 +48,8 @@ module Sanitizer
 
   svg_attributes = Set.new %w[accent-height accumulate additive alphabetic
        arabic-form ascent attributeName attributeType baseProfile bbox begin
-       by calcMode cap-height class clip-path clip-rule color color-rendering
+       by calcMode cap-height class clip-path clip-rule color
+       color-interpolation-filters color-rendering
        content cx cy d dx dy descent display dur end fill fill-opacity fill-rule
        filterRes filterUnits font-family font-size font-stretch font-style
        font-variant font-weight from fx fy g1 g2 glyph-name gradientUnits

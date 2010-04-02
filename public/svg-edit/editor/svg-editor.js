@@ -45,7 +45,7 @@
 				imgPath: 'images/',
 				langPath: 'locale/',
 				extPath: 'extensions/',
-				extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-itex.js'],
+				extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js', 'ext-itex.js'],
 				initTool: 'select',
 				wireframe: false
 			},
@@ -59,6 +59,7 @@
 			'layerHasThatName':"Layer already has that name",
 			'QmoveElemsToLayer':"Move selected elements to layer '%s'?",
 			'QwantToClear':'Do you want to clear the drawing?\nThis will also erase your undo history!',
+			'QwantToOpen':'Do you want to open a new file?\nThis will also erase your undo history!',
 			'QerrorsRevertToSource':'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
 			'QignoreSourceChanges':'Ignore changes made to SVG source?',
 			'featNotSupported':'Feature not supported',
@@ -143,6 +144,7 @@
 				svgCanvas.open = opts.open;
 			}
 			if(opts.save) {
+				show_save_warning = false;
 				svgCanvas.bind("saved", opts.save);
 			}
 		}
@@ -190,10 +192,19 @@
 				}
 			})();
 			
+			var extFunc = function() {
+				$.each(curConfig.extensions, function() {
+					$.getScript(curConfig.extPath + this);
+				});
+			}
+			
 			// Load extensions
-			$.each(curConfig.extensions, function() {
-				$.getScript(curConfig.extPath + this);
-			});
+			// Bit of a hack to run extensions in local Opera
+			if(window.opera && document.location.protocol === 'file:') {
+				setTimeout(extFunc, 1000);
+			} else {
+				extFunc();
+			}
 			
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
@@ -361,7 +372,8 @@
 				modKey = "", //(isMac ? "meta+" : "ctrl+");
 				path = svgCanvas.pathActions,
 				default_img_url = curConfig.imgPath + "logo.png",
-				workarea = $("#workarea");
+				workarea = $("#workarea"),
+				show_save_warning = false;
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -388,7 +400,7 @@
 					if(type == 'prompt') {
 						var input = $('<input type="text">').prependTo(btn_holder);
 						input.val(defText || '');
-						input.bind('keydown', {combi:'return'}, function() {ok.click();});
+						input.bind('keydown', 'return', function() {ok.click();});
 					}
 		
 					box.show();
@@ -445,6 +457,8 @@
 			var strokePaint = new $.jGraduate.Paint({solidColor: curConfig.initStroke.color});
 		
 			var saveHandler = function(window,svg) {
+				show_save_warning = false;
+			
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
 				// can just provide their own custom save handler and might not want the XML prolog
 				svg = "<?xml version='1.0'?>\n" + svg;
@@ -525,6 +539,8 @@
 						selectedElement = elem;
 					}
 				}
+				
+				show_save_warning = true;
 		
 				// we update the contextual panel with potentially new
 				// positional/sizing information (we DON'T want to update the
@@ -607,7 +623,7 @@
 							$(this).mouseup(func);
 							
 							if(opts.key) {
-								$(document).bind('keydown', {combi: opts.key+'', disableInInput:true}, func);
+								$(document).bind('keydown', opts.key+'', func);
 							}
 						});
 					
@@ -878,7 +894,7 @@
 										});
 									}
 									if(btn.key) {
-										$(document).bind('keydown', {combi: btn.key, disableInInput: true}, func);
+										$(document).bind('keydown', btn.key, func);
 										if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
 									}
 								} else {
@@ -999,6 +1015,8 @@
 					
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
+					$('#stroke_linejoin').val(selectedElement.getAttribute("stroke-linejoin")||"miter");
+					$('#stroke_linecap').val(selectedElement.getAttribute("stroke-linecap")||"butt");
 				}
 				
 				// All elements including image and group have opacity
@@ -1270,9 +1288,20 @@
 			}
 		
 			$('#stroke_style').change(function(){
-				svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
+				svgCanvas.setStrokeAttr('stroke-dasharray', $(this).val());
 				operaRepaint();
 			});
+
+			$('#stroke_linejoin').change(function(){
+				svgCanvas.setStrokeAttr('stroke-linejoin', $(this).val());
+				operaRepaint();
+			});
+
+			$('#stroke_linecap').change(function(){
+				svgCanvas.setStrokeAttr('stroke-linecap', $(this).val());
+				operaRepaint();
+			});
+ 
 		
 			// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
 			$('select').change(function(){$(this).blur();});
@@ -1383,6 +1412,14 @@
 				updateToolButtonState();
 			});
 		
+			$("#toggle_stroke_tools").toggle(function() {
+				$(".stroke_tool").css('display','table-cell');
+				$(this).text('<<');
+			}, function() {
+				$(".stroke_tool").css('display','none');
+				$(this).text('>>');
+			});
+		
 			// This is a common function used when a tool has been clicked (chosen)
 			// It does several common things:
 			// - removes the tool_button_current class from whatever tool currently has it
@@ -1400,6 +1437,44 @@
 				svgCanvas.clearSelection();
 				return true;
 			};
+			
+			(function() {
+				var last_x = null, last_y = null, w_area = workarea[0], 
+					panning = false, keypan = false;
+				
+				$('#svgcanvas').bind('mousemove mouseup', function(evt) {
+					if(panning === false) return;
+
+					w_area.scrollLeft -= (evt.clientX - last_x);
+					w_area.scrollTop -= (evt.clientY - last_y);
+					
+					last_x = evt.clientX;
+					last_y = evt.clientY;
+					
+					if(evt.type === 'mouseup') panning = false;
+					return false;
+				}).mousedown(function(evt) {
+					if(evt.button === 1 || keypan === true) {
+						panning = true;
+						last_x = evt.clientX;
+						last_y = evt.clientY;
+						return false;
+					}
+				});
+				
+				$(window).mouseup(function() {
+					panning = false;
+				});
+				
+				$(document).bind('keydown', 'space', function(evt) {
+					svgCanvas.spaceKey = keypan = true;
+					evt.preventDefault();
+				}).bind('keyup', 'space', function(evt) {
+					evt.preventDefault();
+					svgCanvas.spaceKey = keypan = false;
+				});
+			}());
+			
 			
 			(function() {
 				var button = $('#main_icon');
@@ -2022,6 +2097,7 @@
 					".tool_button,\
 					.push_button,\
 					.tool_button_current,\
+					.push_button_pressed,\
 					.disabled,\
 					.tools_flyout .tool_button": {
 						'width': {s: '16px', l: '32px', xl: '48px'},
@@ -2047,11 +2123,11 @@
 					"div#workarea": {
 						'left': {s: '27px', l: '46px', xl: '65px'},
 						'top': {s: '50px', l: '88px', xl: '125px'},
-						'bottom': {s: '55px', l: '70px', xl: '77px'}
+						'bottom': {s: '55px', l: '98px', xl: '145px'}
 					},
 					"#tools_bottom": {
 						'left': {s: '27px', l: '46px', xl: '65px'},
-						'height': {s: '58px', l: '70px', xl: '77px'}
+						'height': {s: '58px', l: '98px', xl: '145px'}
 					},
 					"#color_tools": {
 						'border-spacing': {s: '0 1px'}
@@ -2060,7 +2136,8 @@
 						'height': {s: '20px'}
 					},
 					"#tool_opacity": {
-						'top': {s: '1px'}
+						'top': {s: '1px'},
+						'height': {s: 'auto', l:'auto', xl:'auto'}
 					},
 					"#tools_top input, #tools_bottom input": {
 						'margin-top': {s: '2px', l: '4px', xl: '5px'},
@@ -2888,7 +2965,7 @@
 								keyval += '';
 								
 								$.each(keyval.split('/'), function(i, key) {
-									$(document).bind('keydown', {combi: key, disableInInput: disInInp}, function(e) {
+									$(document).bind('keydown', key, function(e) {
 										fn();
 										if(pd) {
 											e.preventDefault();
@@ -2917,7 +2994,7 @@
 						// Misc additional actions
 						
 						// Make "return" keypress trigger the change event
-						$('.attr_changer, #image_url').bind('keydown', {combi:'return'}, 
+						$('.attr_changer, #image_url').bind('keydown', 'return', 
 							function(evt) {$(this).change();evt.preventDefault();}
 						);
 						
@@ -2994,20 +3071,44 @@
 			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 			
+			window.onbeforeunload = function() { 
+				// Suppress warning if page is empty 
+				if(svgCanvas.getHistoryPosition() === 0) {
+					show_save_warning = false;
+				}
+
+				// show_save_warning is set to "false" when the page is saved.
+				if(!curConfig.no_save_warning && show_save_warning) {
+					// Browser already asks question about closing the page
+					return "There are unsaved changes."; 
+				}
+			};
+			
 			// use HTML5 File API: http://www.w3.org/TR/FileAPI/
 			// if browser has HTML5 File API support, then we will show the open menu item
 			// and provide a file input to click.  When that change event fires, it will
 			// get the text contents of the file and send it to the canvas
 			if (window.FileReader) {
 				var inp = $('<input type="file">').change(function() {
+					var f = this;
+					var openFile = function(ok) {
+						if(!ok) return;
+						svgCanvas.clear();
+						if(f.files.length==1) {
+							var reader = new FileReader();
+							reader.onloadend = function(e) {
+								svgCanvas.setSvgString(e.target.result);
+								updateCanvas();
+							};
+							reader.readAsText(f.files[0]);
+						}
+					}
+				
 					$('#main_menu').hide();
-					if(this.files.length==1) {
-						var reader = new FileReader();
-						reader.onloadend = function(e) {
-							svgCanvas.setSvgString(e.target.result);
-							updateCanvas();
-						};
-						reader.readAsText(this.files[0]);
+					if(svgCanvas.getHistoryPosition() === 0) {
+						openFile(true);
+					} else {
+						$.confirm(uiStrings.QwantToOpen, openFile);
 					}
 				});
 				$("#tool_open").show().prepend(inp);
@@ -3092,7 +3193,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1470 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1498 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
