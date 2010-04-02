@@ -86,6 +86,7 @@ function setupSVGedit(path){
       editor.addEventListener("load", function() {
         editor.svgEditor.setCustomHandlers({
             'save': function(window,svg){
+               editor.svgEditor.setConfig({no_save_warning: true});
                window.opener.postMessage(svg, window.location.protocol + '//' + window.location.host);
                window.close();
             }

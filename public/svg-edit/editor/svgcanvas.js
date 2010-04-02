@@ -97,8 +97,8 @@ var isOpera = !!window.opera,
 	"defs": [],
 	"desc": [],
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"feGaussianBlur": ["class", "id", "requiredFeatures", "stdDeviation"],
-	"filter": ["class", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
+	"feGaussianBlur": ["class", "color-interpolation-filters", "id", "requiredFeatures", "stdDeviation"],
+	"filter": ["class", "color-interpolation-filters", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
 	"foreignObject": ["class", "font-size", "height", "id", "opacity", "requiredFeatures", "style", "transform", "width", "x", "y"],
 	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
@@ -1143,6 +1143,8 @@ function BatchCommand(text) {
 			'opacity':1,
 			'stroke':'none',
 			'stroke-dasharray':'none',
+			'stroke-linejoin':'miter',
+			'stroke-linecap':'butt',
 			'stroke-opacity':1,
 			'stroke-width':1,
 			'rx':0,
@@ -1170,6 +1172,20 @@ function BatchCommand(text) {
 			if (current_layer) {
 				current_layer.appendChild(shape);
 			}
+		}
+		if(data.curStyles) {
+			assignAttributes(shape, {
+				"fill": cur_shape.fill,
+				"stroke": cur_shape.stroke,
+				"stroke-width": cur_shape.stroke_width,
+				"stroke-dasharray": cur_shape.stroke_dasharray,
+				"stroke-linejoin": cur_shape.stroke_linejoin,
+				"stroke-linecap": cur_shape.stroke_linecap,
+				"stroke-opacity": cur_shape.stroke_opacity,
+				"fill-opacity": cur_shape.fill_opacity,
+				"opacity": cur_shape.opacity / 2,
+				"style": "pointer-events:inherit"
+			}, 100);
 		}
 		assignAttributes(shape, data.attr, 100);
 		cleanupElement(shape);
@@ -1211,7 +1227,9 @@ function BatchCommand(text) {
 				stroke_paint: null,
 				stroke_opacity: curConfig.initStroke.opacity,
 				stroke_width: curConfig.initStroke.width,
-				stroke_style: 'none',
+				stroke_dasharray: 'none',
+				stroke_linejoin: 'miter',
+				stroke_linecap: 'butt',
 				opacity: curConfig.initOpacity
 			}
 		};
@@ -1319,6 +1337,10 @@ function BatchCommand(text) {
 		}
 		undoStack.push(cmd);
 		undoStackPointer = undoStack.length;
+	};
+	
+	this.getHistoryPosition = function() {
+		return undoStackPointer;
 	};
 
 // private functions
@@ -1953,7 +1975,7 @@ function BatchCommand(text) {
 							break;
 						case 9: // relative quad (q) 
 						case 8: // absolute quad (Q)
-							dstr += seg.x + "," + seg.y + " " + seg.x1 + "," + seg.y1 + " ";
+							dstr += seg.x1 + "," + seg.y1 + " " + seg.x + "," + seg.y + " ";
 							break;
 						case 11: // relative elliptical arc (a)
 						case 10: // absolute elliptical arc (A)
@@ -1962,7 +1984,7 @@ function BatchCommand(text) {
 							break;
 						case 17: // relative smooth cubic (s)
 						case 16: // absolute smooth cubic (S)
-							dstr += seg.x + "," + seg.y + " " + seg.x2 + "," + seg.y2 + " ";
+							dstr += seg.x2 + "," + seg.y2 + " " + seg.x + "," + seg.y + " ";
 							break;
 					}
 				}
@@ -2130,12 +2152,14 @@ function BatchCommand(text) {
 					
 						var angle = canvas.getRotationAngle(child);
 						var old_start_transform = start_transform;
+						var childxforms = [];
 						start_transform = child.getAttribute("transform");
 						if(angle || hasMatrixTransform(childTlist)) {
 							var e2t = svgroot.createSVGTransform();
 							e2t.setMatrix(matrixMultiply(tm, sm, tmn, m));
 							childTlist.clear();
-							childTlist.appendItem(e2t,0);
+							childTlist.appendItem(e2t);
+							childxforms.push(e2t);
 						}
 						// if not rotated or skewed, push the [T][S][-T] down to the child
 						else {
@@ -2144,6 +2168,7 @@ function BatchCommand(text) {
 							// slide the [T][S][-T] from the front to the back
 							// [T][S][-T][M] = [M][T2][S2][-T2]
 							
+							// (only bringing [-T] to the right of [M])
 							// [T][S][-T][M] = [T][S][M][-T2]
 							// [-T2] = [M_inv][-T][M]
 							var t2n = matrixMultiply(m.inverse(), tmn, m);
@@ -2165,8 +2190,28 @@ function BatchCommand(text) {
 							childTlist.appendItem(translateBack);
 							childTlist.appendItem(scale);
 							childTlist.appendItem(translateOrigin);
+							childxforms.push(translateBack);
+							childxforms.push(scale);
+							childxforms.push(translateOrigin);
+							logMatrix(translateBack.matrix);
+							logMatrix(scale.matrix);
 						} // not rotated
 						batchCmd.addSubCommand( recalculateDimensions(child) );
+						// TODO: If any <use> have this group as a parent and are 
+						// referencing this child, then we need to impose a reverse 
+						// scale on it so that when it won't get double-translated
+//						var uses = selected.getElementsByTagNameNS(svgns, "use");
+//						var href = "#"+child.id;
+//						var u = uses.length;
+//						while (u--) {
+//							var useElem = uses.item(u);
+//							if(href == useElem.getAttributeNS(xlinkns, "href")) {
+//								var usexlate = svgroot.createSVGTransform();
+//								usexlate.setTranslate(-tx,-ty);
+//								canvas.getTransformList(useElem).insertItemBefore(usexlate,0);
+//								batchCmd.addSubCommand( recalculateDimensions(useElem) );
+//							}
+//						}
 						start_transform = old_start_transform;
 					} // element
 				} // for each child
@@ -2216,6 +2261,21 @@ function BatchCommand(text) {
 								newxlate.setTranslate(tx,ty);
 								childTlist.insertItemBefore(newxlate, 0);
 								batchCmd.addSubCommand( recalculateDimensions(child) );
+								// If any <use> have this group as a parent and are 
+								// referencing this child, then impose a reverse translate on it
+								// so that when it won't get double-translated
+								var uses = selected.getElementsByTagNameNS(svgns, "use");
+								var href = "#"+child.id;
+								var u = uses.length;
+								while (u--) {
+									var useElem = uses.item(u);
+									if(href == useElem.getAttributeNS(xlinkns, "href")) {
+										var usexlate = svgroot.createSVGTransform();
+										usexlate.setTranslate(-tx,-ty);
+										canvas.getTransformList(useElem).insertItemBefore(usexlate,0);
+										batchCmd.addSubCommand( recalculateDimensions(useElem) );
+									}
+								}
 								start_transform = old_start_transform;
 							}
 						}
@@ -2810,6 +2870,7 @@ function BatchCommand(text) {
 		//   and do nothing else
 		var mouseDown = function(evt)
 		{
+			if(evt.button === 1 || canvas.spaceKey) return;
 			root_sctm = svgcontent.getScreenCTM().inverse();
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 				mouse_x = pt.x * current_zoom,
@@ -2964,17 +3025,13 @@ function BatchCommand(text) {
 					var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
 					addSvgElementFromJson({
 						"element": "polyline",
+						"curStyles": true,
 						"attr": {
 							"points": d_attr,
 							"id": getNextId(),
 							"fill": "none",
-							"stroke": cur_shape.stroke,
-							"stroke-width": stroke_w,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"stroke-linecap": "round",
-							"stroke-linejoin": "round",
 							"opacity": cur_shape.opacity / 2,
+							"stroke-linecap": "round",
 							"style": "pointer-events:none"
 						}
 					});
@@ -3011,20 +3068,14 @@ function BatchCommand(text) {
 					start_y = y;
 					addSvgElementFromJson({
 						"element": "rect",
+						"curStyles": true,
 						"attr": {
 							"x": x,
 							"y": y,
 							"width": 0,
 							"height": 0,
 							"id": getNextId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:inherit"
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					break;
@@ -3033,6 +3084,7 @@ function BatchCommand(text) {
 					var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
 					addSvgElementFromJson({
 						"element": "line",
+						"curStyles": true,
 						"attr": {
 							"x1": x,
 							"y1": y,
@@ -3041,7 +3093,9 @@ function BatchCommand(text) {
 							"id": getNextId(),
 							"stroke": cur_shape.stroke,
 							"stroke-width": stroke_w,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
+							"stroke-linejoin": cur_shape.stroke_linejoin,
+							"stroke-linecap": cur_shape.stroke_linecap,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill": "none",
 							"opacity": cur_shape.opacity / 2,
@@ -3053,19 +3107,13 @@ function BatchCommand(text) {
 					started = true;
 					addSvgElementFromJson({
 						"element": "circle",
+						"curStyles": true,
 						"attr": {
 							"cx": x,
 							"cy": y,
 							"r": 0,
 							"id": getNextId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:inherit"
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					break;
@@ -3073,20 +3121,14 @@ function BatchCommand(text) {
 					started = true;
 					addSvgElementFromJson({
 						"element": "ellipse",
+						"curStyles": true,
 						"attr": {
 							"cx": x,
 							"cy": y,
 							"rx": 0,
 							"ry": 0,
 							"id": getNextId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:inherit"
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					break;
@@ -3094,22 +3136,16 @@ function BatchCommand(text) {
 					started = true;
 					var newText = addSvgElementFromJson({
 						"element": "text",
+						"curStyles": true,
 						"attr": {
 							"x": x,
 							"y": y,
 							"id": getNextId(),
 							"fill": cur_text.fill,
-							"stroke": cur_shape.stroke,
 							"stroke-width": cur_text.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							// fix for bug where text elements were always 50% opacity
-							"opacity": cur_shape.opacity,
 							"font-size": cur_text.font_size,
 							"font-family": cur_text.font_family,
 							"text-anchor": "middle",
-							"style": "pointer-events:inherit",
 							"xml:space": "preserve"
 						}
 					});
@@ -3155,6 +3191,7 @@ function BatchCommand(text) {
 		var mouseMove = function(evt)
 		{
 			if (!started) return;
+			if(evt.button === 1 || canvas.spaceKey) return;
 			var selected = selectedElements[0],
 				pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 				mouse_x = pt.x * current_zoom,
@@ -3452,6 +3489,7 @@ function BatchCommand(text) {
 		
 		var mouseUp = function(evt)
 		{
+			if(evt.button === 1) return;
 			var tempJustSelected = justSelected;
 			justSelected = null;
 			if (!started) return;
@@ -3486,7 +3524,9 @@ function BatchCommand(text) {
 								cur_properties.stroke = selected.getAttribute("stroke");
 								cur_properties.stroke_opacity = selected.getAttribute("stroke-opacity");
 								cur_properties.stroke_width = selected.getAttribute("stroke-width");
-								cur_properties.stroke_style = selected.getAttribute("stroke-dasharray");
+								cur_properties.stroke_dasharray = selected.getAttribute("stroke-dasharray");
+								cur_properties.stroke_linejoin = selected.getAttribute("stroke-linejoin");
+								cur_properties.stroke_linecap = selected.getAttribute("stroke-linecap");
 							}
 							if (selected.tagName == "text") {
 								cur_text.font_size = selected.getAttribute("font-size");
@@ -3577,20 +3617,13 @@ function BatchCommand(text) {
 						(freehand.maxy - freehand.miny) > 0) {
 						element = addSvgElementFromJson({
 							"element": "ellipse",
+							"curStyles": true,
 							"attr": {
 								"cx": (freehand.minx + freehand.maxx) / 2,
 								"cy": (freehand.miny + freehand.maxy) / 2,
 								"rx": (freehand.maxx - freehand.minx) / 2,
 								"ry": (freehand.maxy - freehand.miny) / 2,
-								"id": getId(),
-								"fill": cur_shape.fill,
-								"stroke": cur_shape.stroke,
-								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_style,
-								"opacity": cur_shape.opacity,
-								"stroke-opacity": cur_shape.stroke_opacity,
-								"fill-opacity": cur_shape.fill_opacity,
-								"style": "pointer-events:inherit"
+								"id": getId()
 							}
 						});
 						call("changed",[element]);
@@ -3602,20 +3635,13 @@ function BatchCommand(text) {
 						(freehand.maxy - freehand.miny) > 0) {
 						element = addSvgElementFromJson({
 							"element": "rect",
+							"curStyles": true,
 							"attr": {
 								"x": freehand.minx,
 								"y": freehand.miny,
 								"width": (freehand.maxx - freehand.minx),
 								"height": (freehand.maxy - freehand.miny),
-								"id": getId(),
-								"fill": cur_shape.fill,
-								"stroke": cur_shape.stroke,
-								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_style,
-								"opacity": cur_shape.opacity,
-								"stroke-opacity": cur_shape.stroke_opacity,
-								"fill-opacity": cur_shape.fill_opacity,
-								"style": "pointer-events:inherit"
+								"id": getId()
 							}
 						});
 						call("changed",[element]);
@@ -4589,19 +4615,13 @@ function BatchCommand(text) {
 				// create new path element
 				element = addSvgElementFromJson({
 					"element": "path",
-						"attr": {
-							"id": getId(),
-							"d": d,
-							"fill": "none",
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"opacity": cur_shape.opacity,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"style": "pointer-events:inherit"
-						}
-					});
+					"curStyles": true,
+					"attr": {
+						"id": getId(),
+						"d": d,
+						"fill": "none"
+					}
+				});
 				call("changed",[element]);
 			}
 			return element;
@@ -4856,17 +4876,12 @@ function BatchCommand(text) {
 						d_attr = "M" + x + "," + y + " ";
 						addSvgElementFromJson({
 							"element": "path",
+							"curStyles": true,
 							"attr": {
 								"d": d_attr,
 								"id": getNextId(),
-								"fill": cur_shape.fill,
-								"fill-opacity": cur_shape.fill_opacity,
-								"stroke": cur_shape.stroke,
-								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_style,
-								"stroke-opacity": cur_shape.stroke_opacity,
 								"opacity": cur_shape.opacity / 2,
-								"style": "pointer-events:inherit"
+
 							}
 						});
 						// set stretchy line to first point
@@ -5582,7 +5597,9 @@ function BatchCommand(text) {
 			"fill-opacity": cur_shape.fill_opacity,
 			"stroke": cur_shape.stroke,
 			"stroke-width": cur_shape.stroke_width,
-			"stroke-dasharray": cur_shape.stroke_style,
+			"stroke-dasharray": cur_shape.stroke_dasharray,
+			"stroke-linejoin": cur_shape.stroke_linejoin,
+			"stroke-linecap": cur_shape.stroke_linecap,
 			"stroke-opacity": cur_shape.stroke_opacity,
 			"opacity": cur_shape.opacity,
 			"visibility":"hidden"
@@ -5819,6 +5836,10 @@ function BatchCommand(text) {
 	     if (extensions["Arrows"])  call("unsetarrownonce") ;
 	   } else {
 	     randomize_ids = true;
+	     if (!svgcontent.getAttributeNS(se_ns, 'nonce')) {
+        		svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
+        		if (extensions["Arrows"])  call("setarrownonce", nonce) ;
+	     }
 	   }
 	}
 
@@ -5874,6 +5895,53 @@ function BatchCommand(text) {
 				}
         		// Add to encodableImages if it loads
         		canvas.embedImage(val);
+        	});
+        	
+        	// convert gradients with userSpaceOnUse to objectBoundingBox
+        	$(svgcontent).find('linearGradient, radialGradient').each(function() {
+        		var grad = this;
+        		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
+        			// TODO: Support more than one element with this ref by duplicating parent grad
+        			var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')],[stroke=url(#' + grad.id + ')]');
+        			if(!elems.length) return;
+        			
+        			// get object's bounding box
+        			var bb = elems[0].getBBox();
+        			
+        			if(grad.tagName === 'linearGradient') {
+						var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
+						
+						$(grad).attr({
+							x1: (g_coords.x1 - bb.x) / bb.width,
+							y1: (g_coords.y1 - bb.y) / bb.height,
+							x2: (g_coords.x2 - bb.x) / bb.width,
+							y2: (g_coords.y1 - bb.y) / bb.height
+						});
+						
+	        			grad.removeAttribute('gradientUnits');
+        			} else {
+        				// Note: radialGradient elements cannot be easily converted 
+        				// because userSpaceOnUse will keep circular gradients, while
+        				// objectBoundingBox will x/y scale the gradient according to
+        				// its bbox. 
+        				
+        				// For now we'll do nothing, though we should probably have
+        				// the gradient be updated as the element is moved, as 
+        				// inkscape/illustrator do.
+        			
+//         				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
+//         				
+// 						$(grad).attr({
+// 							cx: (g_coords.cx - bb.x) / bb.width,
+// 							cy: (g_coords.cy - bb.y) / bb.height,
+// 							r: g_coords.r
+// 						});
+// 						
+// 	        			grad.removeAttribute('gradientUnits');
+        			}
+        			
+
+        		}
         	});
         	
         	// Fix XML for Opera/Win/Non-EN
@@ -6985,12 +7053,8 @@ function BatchCommand(text) {
 		}
 	};
 
-	this.getStrokeStyle = function() {
-		return cur_shape.stroke_style;
-	};
-
-	this.setStrokeStyle = function(val) {
-		cur_shape.stroke_style = val;
+	this.setStrokeAttr = function(attr, val) {
+		cur_shape[attr.replace('-','_')] = val;
 		var elems = [];
 		var i = selectedElements.length;
 		while (i--) {
@@ -7003,10 +7067,10 @@ function BatchCommand(text) {
 			}
 		}		
 		if (elems.length > 0) {
-			this.changeSelectedAttribute("stroke-dasharray", val, elems);
+			this.changeSelectedAttribute(attr, val, elems);
 		}
 	};
-
+	
 	this.getOpacity = function() {
 		return cur_shape.opacity;
 	};
@@ -8239,7 +8303,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1470 $)";
+		return "svgcanvas.js ($Rev: 1498 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
