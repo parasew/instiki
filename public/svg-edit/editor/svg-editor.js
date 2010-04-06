@@ -6,7 +6,7 @@
  * Copyright(c) 2010 Alexis Deveria
  * Copyright(c) 2010 Pavol Rusnak
  * Copyright(c) 2010 Jeff Schiller
- * Copyright(c) 2010 Narendra Sisodya
+ * Copyright(c) 2010 Narendra Sisodiya
  *
  */
 
@@ -310,6 +310,14 @@
 					'#tool_alignmiddle':'align_middle',
 					'#tool_alignbottom':'align_bottom',
 					
+					'#linecap_butt,#cur_linecap':'linecap_butt',
+					'#linecap_round':'linecap_round',
+					'#linecap_square':'linecap_square',
+					
+					'#linejoin_miter,#cur_linejoin':'linejoin_miter',
+					'#linejoin_round':'linejoin_round',
+					'#linejoin_bevel':'linejoin_bevel',
+					
 					'#url_notice':'warning',
 					
 					'#layer_up':'go_up',
@@ -330,7 +338,8 @@
 					'.dropdown button .svg_icon': 7,
 					'#main_button .dropdown .svg_icon': 9,
 					'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
-					'.toolbar_button button .svg_icon':16
+					'.toolbar_button button .svg_icon':16,
+					'.stroke_tool div div .svg_icon': 20
 				},
 				callback: function(icons) {
 					$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
@@ -1015,8 +1024,12 @@
 					
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
-					$('#stroke_linejoin').val(selectedElement.getAttribute("stroke-linejoin")||"miter");
-					$('#stroke_linecap').val(selectedElement.getAttribute("stroke-linecap")||"butt");
+
+					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
+					$('#linejoin_' + attr).mouseup();
+
+					var attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
+					$('#linecap_' + attr).mouseup();
 				}
 				
 				// All elements including image and group have opacity
@@ -1297,10 +1310,10 @@
 				operaRepaint();
 			});
 
-			$('#stroke_linecap').change(function(){
-				svgCanvas.setStrokeAttr('stroke-linecap', $(this).val());
-				operaRepaint();
-			});
+// 			$('#stroke_linecap').change(function(){
+// 				svgCanvas.setStrokeAttr('stroke-linecap', $(this).val());
+// 				operaRepaint();
+// 			});
  
 		
 			// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
@@ -1584,6 +1597,55 @@
 				});
 			}
 			
+			// TODO: Combine this with addDropDown or find other way to optimize
+			var addAltDropDown = function(elem, list, callback, dropUp) {
+				var button = $(elem);
+				var list = $(list);
+				var on_button = false;
+				if(dropUp) {
+					$(elem).addClass('dropup');
+				}
+			
+				list.find('li').bind('mouseup', function() {
+					callback.apply(this, arguments);
+					$(this).addClass('current').siblings().removeClass('current');
+				});
+				
+				$(window).mouseup(function(evt) {
+					if(!on_button) {
+						button.removeClass('down');
+						list.hide();
+						list.css({top:0, left:0});
+					}
+					on_button = false;
+				});
+				
+				var height = list.height();
+				
+				$(elem).bind('mousedown',function() {
+					var off = $(elem).offset();
+					off.top -= list.height();
+					off.left += 8;
+					$(list).offset(off);
+					
+					if (!button.hasClass('down')) {
+						button.addClass('down');
+						list.show();
+						on_button = true;
+						return false;
+					} else {
+						button.removeClass('down');
+						// CSS position must be reset for Webkit
+						list.hide();
+						list.css({top:0, left:0});
+					}
+				}).hover(function() {
+					on_button = true;
+				}).mouseout(function() {
+					on_button = false;
+				});
+			}
+			
 			addDropDown('#font_family_dropdown', function() {
 				var fam = $(this).text();
 				$('#font_family').val($(this).text()).change();
@@ -1617,6 +1679,28 @@
 				} else {
 					changeZoom({value:parseInt(item.text())});
 				}
+			}, true);
+			
+// 			$('#cur_linecap').mousedown(function() {
+// 				$('#linecap_opts').show();
+// 			});
+			
+			addAltDropDown('#stroke_linecap', '#linecap_opts', function() {
+				var val = this.id.split('_')[1];
+				svgCanvas.setStrokeAttr('stroke-linecap', val);
+				operaRepaint();
+				var icon = $.getSvgIcon(this.id).clone();
+				$('#cur_linecap').empty().append(icon);
+				$.resizeSvgIcons({'#cur_linecap .svg_icon': 20});
+			}, true);
+			
+			addAltDropDown('#stroke_linejoin', '#linejoin_opts', function() {
+				var val = this.id.split('_')[1];
+				svgCanvas.setStrokeAttr('stroke-linejoin', val);
+				operaRepaint();
+				var icon = $.getSvgIcon(this.id).clone();
+				$('#cur_linejoin').empty().append(icon);
+				$.resizeSvgIcons({'#cur_linejoin .svg_icon': 20});
 			}, true);
 			
 			/*
@@ -3193,7 +3277,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1498 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1505 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		

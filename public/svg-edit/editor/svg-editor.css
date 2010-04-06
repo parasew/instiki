@@ -1,4 +1,4 @@
-body {
+﻿body {
 	background: #D8D8D8;
 }
 
@@ -54,6 +54,8 @@ body {
 	border-top: none;
 	margin-top: 2px;
 	margin-left: 4px;
+	position: relative;
+	z-index: 2;
 }
 
 #svg_editor #stroke_bg, 
@@ -116,7 +118,7 @@ body {
 	bottom: 0px;
 	right: 0px;
 	width: 0px;
-	overflow: hidden;
+	overflow: scroll;
 	margin: 0px;
 }
 
@@ -629,6 +631,7 @@ span.zoom_tool {
 	display: none;
 	background: #E8E8E8;
 	height: 350px;
+	z-index: 4;
 }
 
 #svg_editor .tools_flyout {
@@ -713,6 +716,59 @@ span.zoom_tool {
 	white-space: nowrap;
 }
 
+#svg_editor .stroke_tool button {
+	margin-top: 3px;
+	background: #F0F0F0;
+}
+
+#svg_editor .stroke_tool div div {
+	-moz-user-select: none;
+	width: 20px;
+	height: 20px;
+	margin: 1px 0;
+	padding: 1px;
+	border: 1px solid #DDD;
+}
+
+#svg_editor .stroke_tool:hover div > * {
+	background-color: #FFC;
+}
+
+#svg_editor .stroke_tool.down div div,
+#svg_editor .stroke_tool.down button {
+	border: 1px inset gray;
+	background: #F4E284;
+}
+
+.stroke_tool > div {
+	width: 42px;
+}
+
+.stroke_tool > div > * {
+	float: left;
+}
+
+#option_lists ul {
+	display: none;
+	position: absolute;
+	height: 90px;
+	z-index: 3;
+	margin: 0;
+	list-style: none;
+	padding-left: 0;
+}
+
+#svg_editor ul li.current {
+	background-color: #F4E284;
+}
+
+#svg_editor #option_lists ul li {
+	margin: 0;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+}
+
 .color_tool > *:first-child {
 	-moz-border-radius-topleft: 4px;
 	-moz-border-radius-bottomleft: 4px;
@@ -747,12 +803,6 @@ span.zoom_tool {
 
 #opacity_dropdown li {
 	width: 140px;
-}
-
-
-#svg_editor #tools_bottom_3 {
-//	position: relative;
-	z-index: 2;
 }
 
 #svg_editor #copyright {
