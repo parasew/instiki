@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -197,6 +197,7 @@ function ChangeElementCommand(elem, attrs, text) {
 	this.oldValues = attrs;
 	for (var attr in attrs) {
 		if (attr == "#text") this.newValues[attr] = elem.textContent;
+		else if (attr == "#href") this.newValues[attr] = elem.getAttributeNS(xlinkns, "href");
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 
@@ -205,6 +206,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		for(var attr in this.newValues ) {
 			if (this.newValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.newValues[attr];
+				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.newValues[attr])
 				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
 			else {
@@ -241,6 +243,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		for(var attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
+				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.oldValues[attr]);
 				else this.elem.setAttribute(attr, this.oldValues[attr]);
 			}
 			else {
@@ -1140,6 +1143,7 @@ function BatchCommand(text) {
 		var handle = svgroot.suspendRedraw(60);
 		var defaults = {
 			'fill-opacity':1,
+			'stop-opacity':1,
 			'opacity':1,
 			'stroke':'none',
 			'stroke-dasharray':'none',
@@ -1599,15 +1603,36 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
+//				console.log('res',res);
 				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+				
+				var nsuris = {};
+				
+				// Check elements for namespaces, add if found
+				$(elem).find('*').andSelf().each(function() {
+					var el = this;
+					$.each(this.attributes, function(i, attr) {
+						var uri = attr.namespaceURI;
+						if(uri && !nsuris[uri] && nsMap[uri] !== 'xmlns') {
+							nsuris[uri] = true;
+							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+						}
+					});
+				});
+				
 				var i = attrs.length;
 				while (i--) {
 					attr = attrs.item(i);
 					var attrVal = toXml(attr.nodeValue);
+					
+					// Namespaces have already been dealt with, so skip
+					if(attr.nodeName.indexOf('xmlns:') === 0) continue;
+					
 					// only serialize attributes we don't use internally
 					if (attrVal != "" && 
 						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
 					{
+
 						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
 							out.push(' '); 
 							out.push(attr.nodeName); out.push("=\"");
@@ -2148,6 +2173,10 @@ function BatchCommand(text) {
 					ty = 0;
 					if (child.nodeType == 1) {
 						var childTlist = canvas.getTransformList(child);
+
+						// some children might not have a transform (<metadata>, <defs>, etc)
+						if (!childTlist) continue;
+
 						var m = transformListToTransform(childTlist).matrix;
 					
 						var angle = canvas.getRotationAngle(child);
@@ -2589,6 +2618,11 @@ function BatchCommand(text) {
 				}
 			}
 		}
+		if(selectedElements[0] && selectedElements.length === 1 && selectedElements[0].tagName == 'a') {
+			// Make "a" element's child be the selected element 
+			selectedElements[0] = selectedElements[0].firstChild;
+		}
+		
 		call("selected", selectedElements);
 		
 		if (showGrips || selectedElements.length == 1) {
@@ -3603,7 +3637,8 @@ function BatchCommand(text) {
 				case "rect":
 				case "image":
 					var attrs = $(element).attr(["width", "height"]);
-					keep = (attrs.width != 0 || attrs.height != 0);
+					// Image should be kept regardless of size (use inherit dimensions later)
+					keep = (attrs.width != 0 || attrs.height != 0) || current_mode === "image";
 					break;
 				case "circle":
 					keep = (element.getAttribute('r') != 0);
@@ -5093,12 +5128,17 @@ function BatchCommand(text) {
 			},
 			
 			clear: function(remove) {
-				if(remove && current_mode == "path") {
+				if (current_mode == "path" && current_path_pts.length > 0) {
 					var elem = getElem(getId());
-					if(elem) elem.parentNode.removeChild(elem);
+					$(getElem("path_stretch_line")).remove();
+					$(elem).remove();
+					$(getElem("pathpointgrip_container")).find('*').attr('display', 'none');
+					current_path_pts = [];
+					started = false;
+				} else if (current_mode == "pathedit") {
+					this.toSelectMode();
 				}
 				if(path) path.init().show(false);
-				current_path = null;
 			},
 			resetOrientation: function(path) {
 				if(path == null || path.nodeName != 'path') return false;
@@ -5136,20 +5176,6 @@ function BatchCommand(text) {
 			zoomChange: function() {
 				if(current_mode == "pathedit") {
 					path.update();
-				}
-			},
-			modeChange: function() {
-				// toss out half-drawn path
-				if (current_mode == "path" && current_path_pts.length > 0) {
-					var elem = getElem(getId());
-					elem.parentNode.removeChild(elem);
-					this.clear();
-					canvas.clearSelection();
-					started = false;
-				}
-				else if (current_mode == "pathedit") {
-					this.clear();
-					this.toSelectMode();
 				}
 			},
 			getNodePoint: function() {
@@ -5980,10 +6006,11 @@ function BatchCommand(text) {
 					}
 				});
 			}
+			
+			content.attr(attrs);
 			this.contentW = attrs['width'];
 			this.contentH = attrs['height'];
-
-			content.attr(attrs);
+			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 			// update root to the correct size
 			var changes = content.attr(["width", "height"]);
@@ -6655,8 +6682,8 @@ function BatchCommand(text) {
 // 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 			
 		return {
-			'w':svgcontent.getAttribute("width"),
-			'h':svgcontent.getAttribute("height"),
+			'w':svgcontent.getAttribute("width")/current_zoom,
+			'h':svgcontent.getAttribute("height")/current_zoom,
 			'zoom': current_zoom
 		};
 	};
@@ -6824,7 +6851,7 @@ function BatchCommand(text) {
 	};
 
 	this.setMode = function(name) {
-		pathActions.modeChange();
+		pathActions.clear(true);
 		
 		cur_properties = (selectedElements[0] && selectedElements[0].nodeName == 'text') ? cur_text : cur_shape;
 		current_mode = name;
@@ -6951,7 +6978,7 @@ function BatchCommand(text) {
 				
 				if(diff) continue;
 			}
-
+			
 			// else could be a duplicate, iterate through stops
 			var stops = grad.getElementsByTagNameNS(svgns, "stop");
 			var ostops = og.getElementsByTagNameNS(svgns, "stop");
@@ -7082,6 +7109,82 @@ function BatchCommand(text) {
 	this.setOpacity = function(val) {
 		cur_shape.opacity = val;
 		this.changeSelectedAttribute("opacity", val);
+	};
+
+	this.getBlur = function() {
+		var val = 0;
+		var elem = selectedElements[0];
+		
+		if(elem) {
+			var filter_url = elem.getAttribute('filter');
+			if(filter_url) {
+				var blur = getElem(elem.id + '_blur');
+				if(blur) {
+					val = blur.firstChild.getAttribute('stdDeviation');
+				}
+			}
+		}
+		return val;
+	}
+
+	this.setBlur = function(val, noUndo) {
+		// Looks for associated blur, creates one if not found
+		var elem_id = selectedElements[0].id;
+		var filter = getElem(elem_id + '_blur');
+		
+		val -= 0;
+		
+		// Blur found!
+		if(filter) {
+			if(val === 0) {
+				$(filter).remove();
+			} else {
+				var elem = filter.firstChild;
+				if(noUndo) {
+					this.changeSelectedAttributeNoUndo('stdDeviation', val, [elem]);
+				} else {
+					this.changeSelectedAttribute('stdDeviation', val, [elem]);
+				}
+			}
+		} else {
+			// Not found, so create
+			var newblur = addSvgElementFromJson({ "element": "feGaussianBlur",
+				"attr": {
+					"in": 'SourceGraphic',
+					"stdDeviation": val
+				}
+			});
+			
+			filter = addSvgElementFromJson({ "element": "filter",
+				"attr": {
+					"id": elem_id + '_blur'
+				}
+			});
+			
+			filter.appendChild(newblur);
+			findDefs().appendChild(filter);
+		}
+		
+		if(val === 0) {
+			selectedElements[0].removeAttribute("filter");
+		} else {
+			this.changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
+			
+			if(val > 3) {
+				// TODO: Create algorithm here where size is based on expected blur
+				assignAttributes(filter, {
+					x: '-50%',
+					y: '-50%',
+					width: '200%',
+					height: '200%',
+				}, 100);
+			} else {
+				filter.removeAttribute('x');
+				filter.removeAttribute('y');
+				filter.removeAttribute('width');
+				filter.removeAttribute('height');
+			}
+		}
 	};
 
 	this.getFillOpacity = function() {
@@ -7331,7 +7434,44 @@ function BatchCommand(text) {
 	};
 
 	this.setImageURL = function(val) {
-		svgCanvas.changeSelectedAttribute("#href", val);
+		var elem = selectedElements[0];
+		if(!elem) return;
+		
+		var attrs = $(elem).attr(['width', 'height']);
+		var setsize = (!attrs.width || !attrs.height);
+
+		var cur_href = elem.getAttributeNS(xlinkns, "href");
+		
+		// Do nothing if no URL change or size change
+		if(cur_href !== val) {
+			setsize = true;
+		} else if(!setsize) return;
+
+		var batchCmd = new BatchCommand("Change Image URL");
+	
+		elem.setAttributeNS(xlinkns, "xlink:href", val);
+		batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+			"#href": cur_href
+		}));
+	
+		if(setsize) {
+			$(new Image()).load(function() {
+				var changes = $(elem).attr(['width', 'height']);
+			
+				$(elem).attr({
+					width: this.width,
+					height: this.height
+				});
+				
+				selectorManager.requestSelector(elem).resize();
+				
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+				addCommandToHistory(batchCmd);
+				call("changed", elem);
+			}).attr('src',val);
+		} else {
+			addCommandToHistory(batchCmd);
+		}
 	};
 
 	this.setRectRadius = function(val) {
@@ -8313,7 +8453,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1504 $)";
+		return "svgcanvas.js ($Rev: 1514 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
