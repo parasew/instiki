@@ -963,12 +963,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && 
-					selectedElement.tagName != "image" &&
-					selectedElement.tagName != "text" &&
-					selectedElement.tagName != "foreignObject" &&
-					selectedElement.tagName != "g")
-				{
+				if (selectedElement != null && $.inArray(selectedElement.tagName, ['image', 'text', 'foreignObject', 'g', 'a']) === -1) {
 					// get opacity values
 					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 					if (isNaN(fillOpacity)) {
@@ -1062,8 +1057,21 @@
 					#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 				if (elem != null) {
 					var elname = elem.nodeName;
+					
+					// If this is a link with no transform and one child, pretend
+					// its child is selected
+// 					console.log('go', elem)
+// 					if(elname === 'a') { // && !$(elem).attr('transform')) {
+// 						elem = elem.firstChild;
+// 					}
+
+					
 					var angle = svgCanvas.getRotationAngle(elem);
 					$('#angle').val(angle);
+
+					var blurval = svgCanvas.getBlur(elem);
+					$('#blur').val(blurval);
+					$('#blur_slider').slider('option', 'value', blurval);
 					
 					if(svgCanvas.addedNew) {
 						if(elname == 'image') {
@@ -1292,6 +1300,15 @@
 					$('#opac_slider').slider('option', 'value', val);
 				}
 				svgCanvas.setOpacity(val/100);
+			}
+		
+			var changeBlur = function(ctl, val, noUndo) {
+				if(val == null) val = ctl.value;
+				$('#blur').val(val);
+				if(!ctl || !ctl.handle) {
+					$('#blur_slider').slider('option', 'value', val);
+				}
+				svgCanvas.setBlur(val, noUndo);
 			}
 		
 			var operaRepaint = function() {
@@ -1671,6 +1688,23 @@
 				}
 			});
 		
+			addDropDown('#blur_dropdown', function() {
+			});
+			
+			$("#blur_slider").slider({
+				max: 10,
+				step: .1,
+				stop: function(evt, ui) {
+					changeBlur(ui);
+					$('#blur_dropdown li').show();
+					$(window).mouseup();
+				},
+				slide: function(evt, ui){
+					changeBlur(ui, null, true);
+				}
+			});
+
+		
 			addDropDown('#zoom_dropdown', function() {
 				var item = $(this);
 				var val = item.attr('data-val');
@@ -1680,10 +1714,6 @@
 					changeZoom({value:parseInt(item.text())});
 				}
 			}, true);
-			
-// 			$('#cur_linecap').mousedown(function() {
-// 				$('#linecap_opts').show();
-// 			});
 			
 			addAltDropDown('#stroke_linecap', '#linecap_opts', function() {
 				var val = this.id.split('_')[1];
@@ -2237,7 +2267,8 @@
 						'line-height': {s: '15px'}
 					},
 					"#tools_bottom_2": {
-						'width': {l: '295px', xl: '355px'}
+						'width': {l: '295px', xl: '355px'},
+						'top': {s: '4px'}
 					},
 					"#tools_top > div, #tools_top": {
 						'line-height': {s: '17px', l: '34px', xl: '50px'}
@@ -2364,6 +2395,7 @@
 		
 			function setImageURL(url) {
 				if(!url) url = default_img_url;
+				
 				svgCanvas.setImageURL(url);
 				$('#image_url').val(url);
 				
@@ -2567,6 +2599,13 @@
 			test_el.setAttribute('style','vector-effect:non-scaling-stroke');
 			var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
 			test_el.removeAttribute('style');
+			
+			// Use this to test support for blur element. Seems to work to test support in Webkit
+			var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+			if(typeof blur_test.stdDeviationX === "undefined") {
+				$('#tool_blur').hide();
+			}
+			$(blur_test).remove();
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
@@ -3153,6 +3192,7 @@
 			$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
 			$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
 			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
+			$('#blur').SpinButton({ step: .1, min: 0, max: 10, callback: changeBlur });
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 			
 			window.onbeforeunload = function() { 
@@ -3215,7 +3255,6 @@
 				var w = workarea.width(), h = workarea.height();
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();
-				var res = svgCanvas.getResolution();
 				var w_area = workarea;
 				var cnvs = $("#svgcanvas");
 				
@@ -3225,8 +3264,8 @@
 				};
 				
 				var multi = curConfig.canvas_expansion;
-				w = Math.max(w_orig, res.w * multi * zoom);
-				h = Math.max(h_orig, res.h * multi * zoom);
+				w = Math.max(w_orig, svgCanvas.contentW * zoom * multi);
+				h = Math.max(h_orig, svgCanvas.contentH * zoom * multi);
 				
 				if(w == w_orig && h == h_orig) {
 					workarea.css('overflow','hidden');
@@ -3255,8 +3294,8 @@
 					var new_y = new_can_y + old_dist_y * ratio;
 		
 					new_ctr = {
-						x: new_x, // + res.w/2,
-						y: new_y //+ res.h/2,
+						x: new_x,
+						y: new_y
 					};
 					
 				} else {
@@ -3277,7 +3316,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1505 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1514 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
