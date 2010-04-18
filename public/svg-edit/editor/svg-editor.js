@@ -177,7 +177,8 @@
 					svgEditor.setConfig(urldata);
 					
 					var src = urldata.source;
-
+					var qstr = $.param.querystring();
+					
 					if(src) {
 						if(src.indexOf("data:") === 0) {
 							// plusses get replaced by spaces, so re-insert
@@ -186,6 +187,9 @@
 						} else {
 							Editor.loadFromString(src);
 						}
+					} else if(qstr.indexOf('paramurl=') !== -1) {
+						// Get paramater URL (use full length of remaining location.href)
+						svgEditor.loadFromURL(qstr.substr(9));
 					} else if(urldata.url) {
 						svgEditor.loadFromURL(urldata.url);
 					}
@@ -268,6 +272,7 @@
 				
 					'#tool_clear div,#layer_new':'new_image',
 					'#tool_save div':'save',
+					'#tool_export div':'export',
 					'#tool_open div div':'open',
 					'#tool_import div div':'import',
 					'#tool_source':'source',
@@ -303,12 +308,13 @@
 					'#tool_group':'group',
 					'#tool_ungroup':'ungroup',
 					
-					'#tool_alignleft':'align_left',
-					'#tool_aligncenter':'align_center',
-					'#tool_alignright':'align_right',
-					'#tool_aligntop':'align_top',
-					'#tool_alignmiddle':'align_middle',
-					'#tool_alignbottom':'align_bottom',
+					'#tool_alignleft, #tool_posleft':'align_left',
+					'#tool_aligncenter, #tool_poscenter':'align_center',
+					'#tool_alignright, #tool_posright':'align_right',
+					'#tool_aligntop, #tool_postop':'align_top',
+					'#tool_alignmiddle, #tool_posmiddle':'align_middle',
+					'#tool_alignbottom, #tool_posbottom':'align_bottom',
+					'#cur_position':'align',
 					
 					'#linecap_butt,#cur_linecap':'linecap_butt',
 					'#linecap_round':'linecap_round',
@@ -326,6 +332,10 @@
 					
 					'#tool_source_save,#tool_docprops_save':'ok',
 					'#tool_source_cancel,#tool_docprops_cancel':'cancel',
+					
+					'#rwidthLabel, #iwidthLabel':'width',
+					'#rheightLabel, #iheightLabel':'height',
+					'#cornerRadiusLabel span':'c_radius',
 					
 					'.flyout_arrow_horiz':'arrow_right',
 					'.dropdown button, #main_button .dropdown':'arrow_down',
@@ -472,8 +482,7 @@
 				// can just provide their own custom save handler and might not want the XML prolog
 				svg = "<?xml version='1.0'?>\n" + svg;
 				
-				// Creates and opens an HTML page that provides a link to the SVG, a preview, and the markup. 
-				// Also includes warning about Mozilla bug #308590 when applicable
+				// Opens the SVG in new window, with warning about Mozilla bug #308590 when applicable
 				
 				var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 				
@@ -500,6 +509,32 @@
 						win.alert(note);
 					}
 				}
+			};
+			
+			var exportHandler = function(window, data) {
+
+				var issues = data.issues;
+				
+				if(!$('#export_canvas').length) {
+					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+				}
+				var c = $('#export_canvas')[0];
+				
+				c.width = svgCanvas.contentW;
+				c.height = svgCanvas.contentH;
+				canvg(c, data.svg);
+				var datauri = c.toDataURL('image/png');
+				var win = window.open(datauri);
+				
+				var note = 'Select "Save As..." in your browser to save this image as a PNG file.';
+				
+				// Check if there's issues
+
+				if(issues.length) {
+					var pre = "\n \u2022 ";
+					note += ("\n\nAlso note these issues:" + pre + issues.join(pre));
+				} 
+				win.alert(note);
 			};
 			
 			// called when we've selected a different element
@@ -1219,8 +1254,10 @@
 			svgCanvas.bind("selected", selectedChanged);
 			svgCanvas.bind("changed", elementChanged);
 			svgCanvas.bind("saved", saveHandler);
+			svgCanvas.bind("exported", exportHandler);
 			svgCanvas.bind("zoomed", zoomChanged);
 			svgCanvas.bind("extension_added", extAdded);
+			svgCanvas.textActions.setInputElem($("#text")[0]);
 		
 			var str = '<div class="palette_item" data-rgb="none"></div>'
 			$.each(palette, function(i,item){
@@ -1615,17 +1652,19 @@
 			}
 			
 			// TODO: Combine this with addDropDown or find other way to optimize
-			var addAltDropDown = function(elem, list, callback, dropUp) {
+			var addAltDropDown = function(elem, list, callback, opts) {
 				var button = $(elem);
 				var list = $(list);
 				var on_button = false;
+				var dropUp = opts.dropUp;
 				if(dropUp) {
 					$(elem).addClass('dropup');
 				}
-			
 				list.find('li').bind('mouseup', function() {
 					callback.apply(this, arguments);
-					$(this).addClass('current').siblings().removeClass('current');
+					if(!opts.multiclick) {
+						$(this).addClass('current').siblings().removeClass('current');
+					}
 				});
 				
 				$(window).mouseup(function(evt) {
@@ -1641,8 +1680,12 @@
 				
 				$(elem).bind('mousedown',function() {
 					var off = $(elem).offset();
-					off.top -= list.height();
-					off.left += 8;
+					if(dropUp) {
+						off.top -= list.height();
+						off.left += 8;
+					} else {
+						off.top += $(elem).height();
+					}
 					$(list).offset(off);
 					
 					if (!button.hasClass('down')) {
@@ -1661,6 +1704,12 @@
 				}).mouseout(function() {
 					on_button = false;
 				});
+				
+				if(opts.multiclick) {
+					list.mousedown(function() {
+						on_button = true;
+					});
+				}
 			}
 			
 			addDropDown('#font_family_dropdown', function() {
@@ -1722,7 +1771,7 @@
 				var icon = $.getSvgIcon(this.id).clone();
 				$('#cur_linecap').empty().append(icon);
 				$.resizeSvgIcons({'#cur_linecap .svg_icon': 20});
-			}, true);
+			}, {dropUp: true});
 			
 			addAltDropDown('#stroke_linejoin', '#linejoin_opts', function() {
 				var val = this.id.split('_')[1];
@@ -1731,7 +1780,12 @@
 				var icon = $.getSvgIcon(this.id).clone();
 				$('#cur_linejoin').empty().append(icon);
 				$.resizeSvgIcons({'#cur_linejoin .svg_icon': 20});
-			}, true);
+			}, {dropUp: true});
+			
+			addAltDropDown('#tool_position', '#position_opts', function() {
+				var letter = this.id.replace('tool_pos','').charAt(0);
+				svgCanvas.alignSelectedElements(letter, 'page');
+			}, {multiclick: true});
 			
 			/*
 			
@@ -1958,6 +2012,35 @@
 				svgCanvas.save(saveOpts);
 			};
 			
+			var clickExport = function() {
+				if(window.canvg) {
+					svgCanvas.rasterExport();
+					return;
+				} else {
+					$.getScript('canvg/rgbcolor.js', function() {
+						$.getScript('canvg/canvg.js');
+						// Would normally run svgCanvas.rasterExport() here,
+						// but that causes popup dialog box
+					});
+				}
+				var count = 0;
+				
+				// Run export when window.canvg is created
+				var timer = setInterval(function() {
+					count++;
+					if(window.canvg) {
+						clearInterval(timer);
+						svgCanvas.rasterExport();
+						return;
+					}
+					
+					if(count > 100) { // 5 seconds
+						clearInterval(timer);
+						$.alert("Error: Failed to load CanVG script");
+					}
+				}, 50);
+			}
+			
 			// by default, svgCanvas.open() is a no-op.
 			// it is up to an extension mechanism (opera widget, etc) 
 			// to call setCustomHandlers() which will make it do something
@@ -2067,7 +2150,7 @@
 				var res = svgCanvas.getResolution();
 				$('#canvas_width').val(res.w);
 				$('#canvas_height').val(res.h);
-				$('#canvas_title').val(svgCanvas.getImageTitle());
+				$('#canvas_title').val(svgCanvas.getDocumentTitle());
 				
 				// Update background color with current one
 				var blocks = $('#bg_blocks div');
@@ -2103,7 +2186,7 @@
 					hideSourceEditor();
 					zoomImage();
 					populateLayers();
-					setTitle(svgCanvas.getImageTitle());
+					setTitle(svgCanvas.getDocumentTitle());
 				}
 		
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
@@ -2127,7 +2210,7 @@
 				// set title
 				var new_title = $('#canvas_title').val();
 				setTitle(new_title);
-				svgCanvas.setImageTitle(new_title);
+				svgCanvas.setDocumentTitle(new_title);
 			
 				// update resolution
 				var width = $('#canvas_width'), w = width.val();
@@ -2192,7 +2275,7 @@
 				var size_num = icon_sizes[size];
 				
 				// Change icon size
-				$('.tool_button, .push_button, .tool_button_current, .disabled, #url_notice, #tool_open')
+				$('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
 				.find('> svg, > img').each(function() {
 					this.setAttribute('width',size_num);
 					this.setAttribute('height',size_num);
@@ -2213,6 +2296,7 @@
 					.tool_button_current,\
 					.push_button_pressed,\
 					.disabled,\
+					.icon_label,\
 					.tools_flyout .tool_button": {
 						'width': {s: '16px', l: '32px', xl: '48px'},
 						'height': {s: '16px', l: '32px', xl: '48px'},
@@ -2313,6 +2397,9 @@
 					},
 					"input.spin-button.down": {
 						'background-position': {l: '100% -85px', xl: '100% -82px'}
+					},
+					"#position_opts": {
+						'width': {all: (size_num*4) +'px'}
 					}
 				};
 				
@@ -2329,8 +2416,8 @@
 						selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
 						style_str += selector + '{';
 						$.each(rules, function(prop, values) {
-							if(values[size]) {
-								style_str += (prop + ':' + values[size] + ';');
+							if(values[size] || values.all) {
+								style_str += (prop + ':' + (values[size] || values.all) + ';');
 							}
 						});
 						style_str += '}';
@@ -2994,6 +3081,7 @@
 					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
 					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey+'N', true]},
 					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
+					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
 					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: [modKey+'O', true]},
 					{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
 					{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
@@ -3316,7 +3404,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1514 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1526 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		

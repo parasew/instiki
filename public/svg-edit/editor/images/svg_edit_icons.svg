@@ -345,6 +345,25 @@
 	</svg>
 </g>
 
+<g id="export">
+	<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+	 <defs>
+	  <linearGradient id="svg_5" x1="0.77734" y1="0.51172" x2="0.09375" y2="0.53516">
+	   <stop offset="0" stop-color="#81bbf4"/>
+	   <stop offset="1" stop-color="#376eb7"/>
+	  </linearGradient>
+	 </defs>
+	 <g>
+	  <rect x="7.22599" y="1.3603" width="15.76465" height="21.51735" id="svg_55" fill="#eaeaea" stroke="#606060"/>
+	  <circle fill="#31abed" stroke-width="0.5" cx="17.4206" cy="11.1278" r="4.69727" id="svg_3"/>
+	  <path fill="#ffcc00" stroke-width="0.5" d="m9.67673,20.24302l7.38701,-6.80778l2.91746,6.71323" id="svg_4"/>
+	  <rect fill="#ff5555" stroke-width="0.5" x="9.5385" y="2.94914" width="5.74652" height="5.74652" id="svg_2"/>
+	  <path d="m6.13727,17.94236l5.77328,-4.91041l-5.86949,-5.1832l-0.09622,2.36426l-4.64805,-0.06751l-0.04665,5.54694l4.79093,-0.02342l0.09623,2.27334z" id="svg_45" fill="url(#svg_5)" stroke="#285582"/>
+	  <title>Layer 1</title>
+	 </g>
+	</svg>
+</g>
+
 <g id="open">
 <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>
@@ -616,6 +635,34 @@
   <rect id="svg_95" x="4.5" y="12.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
   <rect id="svg_96" x="4.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
 </svg>
+</g>
+
+<g id="width">
+	<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+	  <path id="svg_6" d="m19,42.5l-7.5,7.5l7.5,7.5l0,-15zm0,7.5l62,0l0,-7.5l7.5,7.5l-7.5,7.5l0,-7.5" stroke-width="8" stroke="#000000" fill="#000000"/>
+	</svg>
+</g>
+
+<g id="height">
+	<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+	  <path transform="rotate(90, 50, 50)" fill="#000000" stroke="#000000" stroke-width="8" d="m19,42.5l-7.5,7.5l7.5,7.5l0,-15zm0,7.5l62,0l0,-7.5l7.5,7.5l-7.5,7.5l0,-7.5" id="svg_6"/>
+	</svg>
+</g>
+
+<g id="c_radius">
+<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+  <rect stroke="#404040" fill="none" stroke-width="0.5" x="2.37501" y="2.4375" width="43.9375" height="43.9375" id="svg_1" rx="13" ry="13"/>
+  <path fill="none" stroke="#000000" d="m2.43674,15.88952l13.73722,0l0.08978,-13.46483m0.08978,14.08493" id="svg_3"/>
+  <line fill="none" stroke="#000000" x1="16.35107" y1="15.88934" x2="5.20504" y2="5.20504" id="svg_4" stroke-dasharray="2,2"/>
+</svg>
+</g>
+
+<g id="align">
+	<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+	  <rect stroke="#606060" fill="#c0c0c0" id="svg_4" height="7" width="12" y="7.5" x="4.5"/>
+	  <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-10" x="9.5"/>
+	  <rect stroke="#ffffff" fill="none" id="svg_5" height="5" width="10" y="8.5" x="5.5"/>
+	</svg>
 </g>
 
 <g id="align_left">
