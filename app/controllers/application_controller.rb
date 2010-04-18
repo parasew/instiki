@@ -286,3 +286,17 @@ end
 class Hash
   alias_method(:key, :index) unless method_defined?(:key)
 end
+
+# Monkey patch, to ensure ActionCache doesn't muck with the content-type header.
+module ActionController #:nodoc:
+  module Caching
+    module Actions
+      class ActionCacheFilter
+        private
+          def set_content_type!(controller, extension)
+            return
+          end
+      end
+    end
+  end
+end
