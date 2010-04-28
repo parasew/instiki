@@ -165,8 +165,14 @@ var isOpera = !!window.opera,
 
 
 	uiStrings = {
-		"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
-		"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
+		"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
+		"pathCtrlPtTooltip": "Drag control point to adjust curve properties",
+		"exportNoBlur": "Blurred elements will appear as un-blurred",
+		"exportNoImage": "Image elements will not appear",
+		"exportNoforeignObject": "foreignObject elements will not appear",
+		"exportNoMarkers": "Marker elements (arrows, etc) may not appear as expected",
+		"exportNoDashArray": "Strokes will appear filled",
+		"exportNoText": "Text may not appear as expected"
 	},
 	
 	curConfig = {
@@ -522,13 +528,13 @@ function BatchCommand(text) {
 			var selectedBox = this.selectorRect,
 				selectedGrips = this.selectorGrips,
 				selected = this.selectedElement,
-				 sw = round(selected.getAttribute("stroke-width"));
-			var offset = 1/canvas.getZoom();
+				 sw = selected.getAttribute("stroke-width");
+			var offset = 1/current_zoom;
 			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
-				offset += sw/2;
+				offset += (sw/2);
 			}
 			if (selected.tagName == "text") {
-				offset += 2/canvas.getZoom();
+				offset += 2/current_zoom;
 			}
 			var bbox = canvas.getBBox(selected);
 			if(selected.tagName == 'g') {
@@ -541,8 +547,7 @@ function BatchCommand(text) {
 			}
 
 			// loop and transform our bounding box until we reach our first rotation
-			var tlist = canvas.getTransformList(selected),
-				m = transformListToTransform(tlist).matrix;
+			var m = getMatrix(selected);
 
 			// This should probably be handled somewhere else, but for now
 			// it keeps the selection box correctly positioned when zoomed
@@ -550,7 +555,7 @@ function BatchCommand(text) {
 			m.f *= current_zoom;
 			
 			// apply the transforms
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1),
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
 				bbox = {x:l, y:t, width:w, height:h};
 			
 			// we need to handle temporary transforms too
@@ -2804,17 +2809,11 @@ function BatchCommand(text) {
 		}
 		return false;
 	}
-
-//  // Easy way to loop through transform list, but may not be worthwhile	
-// 	var eachXform = function(elem, callback) {
-// 		var tlist = canvas.getTransformList(elem);
-// 		var num = tlist.numberOfItems;
-// 		if(num == 0) return;
-// 		while(num--) {
-// 			var xform = tlist.getItem(num);
-// 			callback(xform, tlist);
-// 		}
-// 	}
+	
+	var getMatrix = function(elem) {
+		var tlist = canvas.getTransformList(elem);
+		return transformListToTransform(tlist).matrix;
+	}
 	
     // FIXME: this should not have anything to do with zoom here - update the one place it is used this way
     // converts a tiny object equivalent of a SVGTransform
@@ -3421,8 +3420,58 @@ function BatchCommand(text) {
 					// Opera has a problem with suspendRedraw() apparently
 					var handle = null;
 					if (!window.opera) svgroot.suspendRedraw(1000);
-					shape.setAttributeNS(null, "x2", x);
-					shape.setAttributeNS(null, "y2", y);
+
+					var x2 = x;
+					var y2 = y;					
+
+					if(evt.shiftKey) {
+						var diff_x = x - start_x;
+						var diff_y = y - start_y;
+						
+						var angle = ((Math.atan2(start_y-y,start_x-x) * (180/Math.PI))-90) % 360;
+						angle = angle<0?(360+angle):angle
+
+						// TODO: Write all this more efficiently						
+						var dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
+						var val = Math.sqrt((dist*dist)/2);
+						var diagonal = false;
+						
+						if(angle >= 360-22.5 || angle < 22.5) {
+							x2 = start_x;
+						} else if(angle >= 22.5 && angle < 22.5 + 45) {
+							diagonal = true;
+						} else if(angle >= 22.5 + 45 && angle < 22.5 + 90) {
+							y2 = start_y;
+						} else if(angle >= 22.5 + 90 && angle < 22.5 + 135) {
+							diagonal = true;
+						} else if(angle >= 22.5 + 135 && angle < 22.5 + 180) {
+							x2 = start_x;
+						} else if(angle >= 22.5 + 180 && angle < 22.5 + 225) {
+							diagonal = true;
+						} else if(angle >= 22.5 + 225 && angle < 22.5 + 270) {
+							y2 = start_y;
+						} else if(angle >= 22.5 + 270 && angle < 22.5 + 315) {
+							diagonal = true;							
+						}
+						
+						if(diagonal) {
+							if(y2 < start_y) {
+								y2 = start_y - val;
+							} else {
+								y2 = start_y + val;
+							}
+
+							if(x2 < start_x) {
+								x2 = start_x - val;
+							} else {
+								x2 = start_x + val;
+							}
+						}
+					}
+
+					
+					shape.setAttributeNS(null, "x2", x2);
+					shape.setAttributeNS(null, "y2", y2);
 					if (!window.opera) svgroot.unsuspendRedraw(handle);
 					break;
 				case "foreignObject":
@@ -3520,7 +3569,7 @@ function BatchCommand(text) {
 					var box = canvas.getBBox(selected),
 						cx = box.x + box.width/2, 
 						cy = box.y + box.height/2,
-						m = transformListToTransform(canvas.getTransformList(selected)).matrix,
+						m = getMatrix(selected),
 						center = transformPoint(cx,cy,m);
 					cx = center.x;
 					cy = center.y;
@@ -4132,7 +4181,7 @@ function BatchCommand(text) {
 					call("selected", [curtext]);
 					canvas.addToSelection([curtext], true);
 				}
-				if(!curtext.textContent.length) {
+				if(curtext && !curtext.textContent.length) {
 					// No content, so delete
 					canvas.deleteSelectedElements();
 				}
@@ -4165,8 +4214,8 @@ function BatchCommand(text) {
 				textbb = canvas.getBBox(curtext);
 				
 				if(xform) {
-					var tlist = canvas.getTransformList(curtext);
-					var matrix = transformListToTransform(tlist).matrix;
+					var matrix = getMatrix(curtext);
+					
 					imatrix = matrix.inverse();
 // 					var tbox = transformBox(textbb.x, textbb.y, textbb.width, textbb.height, matrix);
 // 					transbb = {
@@ -4716,8 +4765,7 @@ function BatchCommand(text) {
 			// Update position of all points
 			this.update = function() {
 				if(canvas.getRotationAngle(p.elem)) {
-					var tlist = canvas.getTransformList(path.elem);
-					p.matrix = transformListToTransform(tlist).matrix;
+					p.matrix = getMatrix(path.elem);
 					p.imatrix = p.matrix.inverse();
 				}
 
@@ -4740,6 +4788,9 @@ function BatchCommand(text) {
 			this.addSeg = function(index) {
 				// Adds a new segment
 				var seg = p.segs[index];
+				
+				if(!seg.prev) return;
+				
 				var prev = seg.prev;
 				
 				var new_x = (seg.item.x + prev.item.x) / 2;
@@ -5357,10 +5408,17 @@ function BatchCommand(text) {
 							started = false;
 							
 							if(subpath) {
+								if(path.matrix) {
+									remapElement(newpath, {}, path.matrix.inverse());
+								}
+							
 								var new_d = newpath.getAttribute("d");
 								var orig_d = $(path.elem).attr("d");
 								$(path.elem).attr("d", orig_d + new_d);
 								$(newpath).remove();
+								if(path.matrix) {
+									recalcRotatedPath();
+								}
 								path.init();
 								pathActions.toEditMode(path.elem);
 								path.selectPt();
@@ -5498,7 +5556,8 @@ function BatchCommand(text) {
 				this.resetOrientation(elem);
 				addCommandToHistory(batchCmd);
 
-				getPath(elem).show(false);
+				// Set matrix to null
+				getPath(elem).show(false).matrix = null; 
 
 				this.clear();
 		
@@ -5812,7 +5871,7 @@ function BatchCommand(text) {
 					
 					if(item.pathSegType === 1) {
 						var prev = segList.getItem(i-1);
-						if(prev.x != last_m.x && prev.y != last_m.y) {
+						if(prev.x != last_m.x || prev.y != last_m.y) {
 							// Add an L segment here
 							var newseg = elem.createSVGPathSegLinetoAbs(last_m.x, last_m.y);
 							insertItemBefore(elem, newseg, i);
@@ -5831,6 +5890,7 @@ function BatchCommand(text) {
 				var len = segList.numberOfItems;
 				var curx = 0, cury = 0;
 				var d = "";
+				var last_m = null;
 				
 				for (var i = 0; i < len; ++i) {
 					var seg = segList.getItem(i);
@@ -5844,6 +5904,7 @@ function BatchCommand(text) {
 		
 					var type = seg.pathSegType;
 					var letter = pathMap[type]['to'+(toRel?'Lower':'Upper')+'Case']();
+					
 					var addToD = function(pnts, more, last) {
 						var str = '';
 						var more = more?' '+more.join(' '):'';
@@ -5885,8 +5946,14 @@ function BatchCommand(text) {
 						case 18: // absolute smooth quad (T)
 							x -= curx;
 							y -= cury;
-						case 3: // relative move (m)
 						case 5: // relative line (l)
+						case 3: // relative move (m)
+							// If the last segment was a "z", this must be relative to 
+							if(last_m && segList.getItem(i-1).pathSegType === 1 && !toRel) {
+								curx = last_m[0];
+								cury = last_m[1];
+							}
+						
 						case 19: // relative smooth quad (t)
 							if(toRel) {
 								curx += x;
@@ -5897,6 +5964,8 @@ function BatchCommand(text) {
 								curx = x;
 								cury = y;
 							}
+							if(type === 3) last_m = [curx, cury];
+							
 							addToD([[x,y]]);
 							break;
 						case 6: // absolute cubic (C)
@@ -6202,15 +6271,18 @@ function BatchCommand(text) {
 		
 		// Selector and notice
 		var issue_list = {
-			'feGaussianBlur': 'Blurred elements will appear as un-blurred',
-			'text': 'Text may not appear as expected',
-			'image': 'Image elements will not appear',
-			'foreignObject': 'foreignObject elements will not appear',
-			'marker': 'Marker elements (arrows, etc) will not appear',
-			'[stroke-dasharray]': 'Strokes will appear filled',
-			'[stroke^=url]': 'Strokes with gradients will not appear'
+			'feGaussianBlur': uiStrings.exportNoBlur,
+			'image': uiStrings.exportNoImage,
+			'foreignObject': uiStrings.exportNoforeignObject,
+			'marker': uiStrings.exportNoMarkers,
+			'[stroke-dasharray]': uiStrings.exportNoDashArray
 		};
 		var content = $(svgcontent);
+		
+		// Add font/text check if Canvas Text API is not implemented
+		if(!("font" in $('<canvas>')[0].getContext('2d'))) {
+			issue_list['text'] = uiStrings.exportNoText;
+		}
 		
 		$.each(issue_list, function(sel, descr) {
 			if(content.find(sel).length) {
@@ -7829,6 +7901,7 @@ function BatchCommand(text) {
 
 	this.setFontSize = function(val) {
 		cur_text.font_size = val;
+		textActions.toSelectMode();
 		this.changeSelectedAttribute("font-size", val);
 	};
 
@@ -7953,6 +8026,12 @@ function BatchCommand(text) {
 		while (i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
+			
+			// Go into "select" mode for text changes
+			if(current_mode === "textedit" && attr !== "#text") {
+				textActions.toSelectMode(elem);
+			}
+			
 			// Set x,y vals on elements that don't have them
 			if((attr == 'x' || attr == 'y') && $.inArray(elem.tagName, ['g', 'polyline', 'path']) != -1) {
 				var bbox = canvas.getStrokedBBox([elem]);
@@ -8864,7 +8943,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1526 $)";
+		return "svgcanvas.js ($Rev: 1548 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
