@@ -50,26 +50,30 @@
 				wireframe: false
 			},
 			uiStrings = {
-			'invalidAttrValGiven':'Invalid value given',
-			'noContentToFitTo':'No content to fit to',
-			'layer':"Layer",
-			'dupeLayerName':"There is already a layer named that!",
-			'enterUniqueLayerName':"Please enter a unique layer name",
-			'enterNewLayerName':"Please enter the new layer name",
-			'layerHasThatName':"Layer already has that name",
-			'QmoveElemsToLayer':"Move selected elements to layer '%s'?",
-			'QwantToClear':'Do you want to clear the drawing?\nThis will also erase your undo history!',
-			'QwantToOpen':'Do you want to open a new file?\nThis will also erase your undo history!',
-			'QerrorsRevertToSource':'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
-			'QignoreSourceChanges':'Ignore changes made to SVG source?',
-			'featNotSupported':'Feature not supported',
-			'enterNewImgURL':'Enter the new image URL',
-			'ok':'OK',
-			'cancel':'Cancel',
-			'key_up':'Up',
-			'key_down':'Down',
-			'key_backspace':'Backspace',
-			'key_del':'Del'
+			"invalidAttrValGiven":"Invalid value given",
+			"noContentToFitTo":"No content to fit to",
+			"layer":"Layer",
+			"dupeLayerName":"There is already a layer named that!",
+			"enterUniqueLayerName":"Please enter a unique layer name",
+			"enterNewLayerName":"Please enter the new layer name",
+			"layerHasThatName":"Layer already has that name",
+			"QmoveElemsToLayer":"Move selected elements to layer \"%s\"?",
+			"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
+			"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
+			"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+			"QignoreSourceChanges":"Ignore changes made to SVG source?",
+			"featNotSupported":"Feature not supported",
+			"enterNewImgURL":"Enter the new image URL",
+			"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
+			"loadingImage":"Loading image, please wait...",
+			"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
+			"noteTheseIssues": "Also note the following issues: ",
+			"ok":"OK",
+			"cancel":"Cancel",
+			"key_up":"Up",
+			"key_down":"Down",
+			"key_backspace":"Backspace",
+			"key_del":"Del"
 		};
 		
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
@@ -336,6 +340,13 @@
 					'#rwidthLabel, #iwidthLabel':'width',
 					'#rheightLabel, #iheightLabel':'height',
 					'#cornerRadiusLabel span':'c_radius',
+					'#angleLabel':'angle',
+					'#zoomLabel':'zoom',
+					'#tool_fill label': 'fill',
+					'#tool_stroke .icon_label': 'stroke',
+					'#group_opacityLabel': 'opacity',
+					'#blurLabel': 'blur',
+					'#font_sizeLabel': 'fontsize',
 					
 					'.flyout_arrow_horiz':'arrow_right',
 					'.dropdown button, #main_button .dropdown':'arrow_down',
@@ -349,7 +360,8 @@
 					'#main_button .dropdown .svg_icon': 9,
 					'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
 					'.toolbar_button button .svg_icon':16,
-					'.stroke_tool div div .svg_icon': 20
+					'.stroke_tool div div .svg_icon': 20,
+					'#tools_bottom label .svg_icon': 18
 				},
 				callback: function(icons) {
 					$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
@@ -392,7 +404,8 @@
 				path = svgCanvas.pathActions,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
-				show_save_warning = false;
+				show_save_warning = false, 
+				exportWindow = null;
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -490,12 +503,12 @@
 				var done = $.pref('save_notice_done');
 				if(done !== "all") {
 		
-					var note = 'Select "Save As..." in your browser to save this image as an SVG file.';
+					var note = uiStrings.saveFromBrowser.replace('%s', 'SVG');
 					
 					// Check if FF and has <defs/>
 					if(navigator.userAgent.indexOf('Gecko/') !== -1) {
 						if(svg.indexOf('<defs') !== -1) {
-							note += "\n\nNOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.";
+							note += "\n\n" + uiStrings.defsFailOnSave;
 							$.pref('save_notice_done', 'all');
 							done = "all";
 						} else {
@@ -512,7 +525,6 @@
 			};
 			
 			var exportHandler = function(window, data) {
-
 				var issues = data.issues;
 				
 				if(!$('#export_canvas').length) {
@@ -524,17 +536,17 @@
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg);
 				var datauri = c.toDataURL('image/png');
-				var win = window.open(datauri);
+				exportWindow.location.href = datauri;
 				
-				var note = 'Select "Save As..." in your browser to save this image as a PNG file.';
+				var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
 				
 				// Check if there's issues
 
 				if(issues.length) {
 					var pre = "\n \u2022 ";
-					note += ("\n\nAlso note these issues:" + pre + issues.join(pre));
+					note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
 				} 
-				win.alert(note);
+				exportWindow.alert(note);
 			};
 			
 			// called when we've selected a different element
@@ -1811,7 +1823,25 @@
 		// 		holder.empty().append(icon)
 		// 			.attr('data-curopt', holder_sel.replace('_show','')); // This sets the current mode
 		// 	}
-			
+		
+			// Unfocus text input when workarea is mousedowned.
+			(function() {
+				var inp;
+
+				var unfocus = function() {
+					$(inp).blur();
+				}
+				
+				// Do not include the #text input, as it needs to remain focused 
+				// when clicking on an SVG text element.
+				$('#svg_editor input:text:not(#text)').focus(function() {
+					inp = this;
+					workarea.mousedown(unfocus);
+				}).blur(function() {
+					workarea.unbind('mousedown', unfocus);
+				});
+			}());
+
 			var clickSelect = function() {
 				if (toolButtonClick('#tool_select')) {
 					svgCanvas.setMode('select');
@@ -2013,32 +2043,19 @@
 			};
 			
 			var clickExport = function() {
+				// Open placeholder window (prevents popup)
+				var str = uiStrings.loadingImage;
+				exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
+
 				if(window.canvg) {
 					svgCanvas.rasterExport();
-					return;
 				} else {
 					$.getScript('canvg/rgbcolor.js', function() {
-						$.getScript('canvg/canvg.js');
-						// Would normally run svgCanvas.rasterExport() here,
-						// but that causes popup dialog box
+						$.getScript('canvg/canvg.js', function() {
+							svgCanvas.rasterExport();
+						});
 					});
 				}
-				var count = 0;
-				
-				// Run export when window.canvg is created
-				var timer = setInterval(function() {
-					count++;
-					if(window.canvg) {
-						clearInterval(timer);
-						svgCanvas.rasterExport();
-						return;
-					}
-					
-					if(count > 100) { // 5 seconds
-						clearInterval(timer);
-						$.alert("Error: Failed to load CanVG script");
-					}
-				}, 50);
 			}
 			
 			// by default, svgCanvas.open() is a no-op.
@@ -2461,11 +2478,19 @@
 				$('#image_save_opts input').val([curPrefs.img_save]);
 				docprops = false;
 			};
+
+			var win_wh = {width:$(window).width(), height:$(window).height()};
 			
-			// TODO: add canvas-centering code in here
 			$(window).resize(function(evt) {
-				if (!editingsource) return;
-				properlySourceSizeTextArea();
+				if (editingsource) {
+					properlySourceSizeTextArea();
+				}
+				
+				$.each(win_wh, function(type, val) {
+					var curval = $(window)[type]();
+					workarea[0]['scroll' + (type==='width'?'Left':'Top')] -= (curval - val)/2;
+					win_wh[type] = curval;
+				});
 			});
 			
 			$('#url_notice').click(function() {
@@ -2707,16 +2732,26 @@
 				});
 			},1000);
 				
-			$('#fill_color').click(function(){
-				colorPicker($(this));
+			$('#fill_color, #tool_fill .icon_label').click(function(){
+				colorPicker($('#fill_color'));
 				updateToolButtonState();
 			});
 		
-			$('#stroke_color').click(function(){
-				colorPicker($(this));
+			$('#stroke_color, #tool_stroke .icon_label').click(function(){
+				colorPicker($('#stroke_color'));
 				updateToolButtonState();
 			});
-		
+			
+			$('#group_opacityLabel').click(function() {
+				$('#opacity_dropdown button').mousedown();
+				$(window).mouseup();
+			});
+			
+			$('#zoomLabel').click(function() {
+				$('#zoom_dropdown button').mousedown();
+				$(window).mouseup();
+			});
+			
 			$('#tool_move_top').mousedown(function(evt){
 				$('#tools_stacking').show();
 				evt.preventDefault();
@@ -2829,47 +2864,48 @@
 			var SIDEPANEL_MAXWIDTH = 300;
 			var SIDEPANEL_OPENWIDTH = 150;
 			var sidedrag = -1, sidedragging = false;
+				
+			var resizePanel = function(evt) {
+				if (sidedrag == -1) return;
+				sidedragging = true;
+				var deltax = sidedrag - evt.pageX;
+	
+				var sidepanels = $('#sidepanels');
+				var sidewidth = parseInt(sidepanels.css('width'));
+				if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
+					deltax = SIDEPANEL_MAXWIDTH - sidewidth;
+					sidewidth = SIDEPANEL_MAXWIDTH;
+				}
+				else if (sidewidth+deltax < 2) {
+					deltax = 2 - sidewidth;
+					sidewidth = 2;
+				}
+	
+				if (deltax == 0) return;
+				sidedrag -= deltax;
+	
+				var layerpanel = $('#layerpanel');
+				workarea.css('right', parseInt(workarea.css('right'))+deltax);
+				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
+				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+			}
+			
 			$('#sidepanel_handle')
-				.mousedown(function(evt) {sidedrag = evt.pageX;})
+				.mousedown(function(evt) {
+					sidedrag = evt.pageX;
+					$(window).mousemove(resizePanel);
+					
+				})
 				.mouseup(function(evt) {
 					if (!sidedragging) toggleSidePanel();
 					sidedrag = -1;
 					sidedragging = false;
 				});
-			$('#svg_editor')
-				.mouseup(function(){sidedrag=-1;})
-				.mouseout(function(evt){
-					if (sidedrag == -1) return;
-					// if we've moused out of the browser window, then we can stop dragging 
-					// and close the drawer
-					if (evt.pageX > this.clientWidth) {
-						sidedrag = -1;
-						toggleSidePanel(true);
-					}
-				})
-				.mousemove(function(evt) {
-					if (sidedrag == -1) return;
-					sidedragging = true;
-					var deltax = sidedrag - evt.pageX;
-		
-					var sidepanels = $('#sidepanels');
-					var sidewidth = parseInt(sidepanels.css('width'));
-					if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
-						deltax = SIDEPANEL_MAXWIDTH - sidewidth;
-						sidewidth = SIDEPANEL_MAXWIDTH;
-					}
-					else if (sidewidth+deltax < 2) {
-						deltax = 2 - sidewidth;
-						sidewidth = 2;
-					}
-		
-					if (deltax == 0) return;
-					sidedrag -= deltax;
-		
-					var layerpanel = $('#layerpanel');
-					workarea.css('right', parseInt(workarea.css('right'))+deltax);
-					sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
-					layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+
+			$(window).mouseup(function() {
+				sidedrag = -1;
+				sidedragging = false;
+				$('#svg_editor').unbind('mousemove', resizePanel);
 			});
 			
 			// if width is non-zero, then fully close it, otherwise fully open it
@@ -3404,7 +3440,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1526 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1548 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
@@ -3488,6 +3524,20 @@
 					
 					// Update flyout tooltips
 					setFlyoutTitles();
+					
+					// Copy title for certain tool elements
+					var elems = {
+						'#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
+// 						'#group_opacity': '#tool_opacity', // Change lang file
+//						'#zoom': '#zoom_panel',
+						'#fill_color': '#tool_fill label, #tool_fill .color_block'
+					}
+					
+					$.each(elems, function(source, dest) {
+						$(dest).attr('title', $(source).attr('title'));
+					});
+
+					
 				}
 			};
 		};
@@ -3521,9 +3571,11 @@
 					'url': url,
 					'dataType': 'text',
 					success: svgCanvas.setSvgString,
-					error: function(xhr) {
+					error: function(xhr, stat, err) {
 						if(xhr.responseText) {
 							svgCanvas.setSvgString(xhr.responseText);
+						} else {
+							$.alert("Unable to load from URL. Error: \n"+err+'');
 						}
 					}
 				});

@@ -161,22 +161,22 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<div class="push_button" id="tool_reorient" title="Reorient path"></div>
 			<div class="tool_sep"></div>
 <!--
-			<label>
+			<label id="idLabel">
 				<span>id:</span>
 				<input id="elem_id" class="attr_changer" data-attr="id" size="10" type="text" title="Identify the element"/>
 			</label>
 -->
 		</div>
 
-		<label id="tool_angle">
-			<span id="angleLabel">angle:</span>
-			<input id="angle" title="Change rotation angle" size="2" value="0" type="text"/>
+		<label id="tool_angle" title="Change rotation angle">
+			<span id="angleLabel" class="icon_label"></span>
+			<input id="angle" size="2" value="0" type="text"/>
 		</label>
 		
-		<div class="toolset" id="tool_blur">
+		<div class="toolset" id="tool_blur" title="Change gaussian blur value">
 			<label>
-				<span id="blurLabel">blur:</span>
-				<input id="blur" title="Change gaussian blur value" size="2" value="0" type="text"/>
+				<span id="blurLabel" class="icon_label"></span>
+				<input id="blur" size="2" value="0" type="text"/>
 			</label>
 			<div id="blur_dropdown" class="dropdown">
 				<button></button>
@@ -234,13 +234,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<div id="rect_panel">
 		<div class="toolset">
-			<label>
+			<label id="rect_width_tool" title="Change rectangle width">
 				<span id="rwidthLabel" class="icon_label"></span>
-				<input id="rect_width" class="attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
+				<input id="rect_width" class="attr_changer" size="3" data-attr="width"/>
 			</label>
-			<label>
+			<label id="rect_height_tool" title="Change rectangle height">
 				<span id="rheightLabel" class="icon_label"></span>
-				<input id="rect_height" class="attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
+				<input id="rect_height" class="attr_changer" size="3" data-attr="height"/>
 			</label>
 		</div>
 		<label id="cornerRadiusLabel" title="Change Rectangle Corner Radius">
@@ -347,7 +347,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		</div>
 
 		<label id="tool_font_size">
-			<span id="font_sizeLabel">size:</span>
+			<span id="font_sizeLabel" class="icon_label"></span>
 			<input id="font_size" title="Change Font Size" size="3" value="0" type="text"/>
 		</label>
 		
@@ -406,10 +406,10 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 <div id="tools_bottom" class="tools_panel">
 
     <!-- Zoom buttons -->
-	<div id="zoom_panel" class="toolset">
+	<div id="zoom_panel" class="toolset" title="Change zoom level">
 		<label>
-		<span id="zoomLabel" class="zoom_tool">zoom:</span>
-		<input id="zoom" title="Change zoom level" size="3" value="100" type="text" />
+		<span id="zoomLabel" class="zoom_tool icon_label"></span>
+		<input id="zoom" size="3" value="100" type="text" />
 		</label>
 		<div id="zoom_dropdown" class="dropdown">
 			<button></button>
@@ -432,20 +432,16 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<div id="tools_bottom_2">
 		<div id="color_tools">
-			<div class="color_tool" id="tool_fill">
-				<label>
-					fill:
-				</label>
+			<div class="color_tool" id="tool_fill" title="Change fill color">
+				<label class="icon_label" for="fill_color"></label>
 				<div class="color_block">
 					<div id="fill_bg"></div>
-					<div id="fill_color" class="color_block"  title="Change fill color"></div>
+					<div id="fill_color" class="color_block"></div>
 				</div>
 			</div>
 		
 			<div class="color_tool" id="tool_stroke">
-				<label>
-					stroke:
-				</label>
+				<label class="icon_label" title="Change stroke color"></label>
 				<div class="color_block">
 					<div id="stroke_bg"></div>
 					<div id="stroke_color" class="color_block" title="Change stroke color"></div>
@@ -487,10 +483,10 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			</div>
 		</div>
 	
-		<div class="toolset" id="tool_opacity">
+		<div class="toolset" id="tool_opacity" title="Change selected item opacity">
 			<label>
-				<span id="group_opacityLabel">opac:</span>
-				<input id="group_opacity" title="Change selected item opacity" size="3" value="100" type="text"/>
+				<span id="group_opacityLabel" class="icon_label"></span>
+				<input id="group_opacity" size="3" value="100" type="text"/>
 			</label>
 			<div id="opacity_dropdown" class="dropdown">
 				<button></button>
@@ -511,14 +507,14 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="tools_bottom_3">
 		<div id="palette_holder"><div id="palette" title="Click to change fill color, shift-click to change stroke color"></div></div>
 	</div>
-	<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.5-preAlpha</a></div>
+	<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.5-Beta</a></div>
 </div>
 
 <div id="option_lists">
 	<ul id="linejoin_opts">
 		<li class="tool_button current" id="linejoin_miter" title="Linejoin: Miter"></li>
-		<li class="tool_button" id="linejoin_round" title="Linecap: Round"></li>
-		<li class="tool_button" id="linejoin_bevel" title="Linecap: Bevel"></li>
+		<li class="tool_button" id="linejoin_round" title="Linejoin: Round"></li>
+		<li class="tool_button" id="linejoin_bevel" title="Linejoin: Bevel"></li>
 	</ul>
 	
 	<ul id="linecap_opts">
