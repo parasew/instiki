@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -1617,7 +1617,7 @@ function BatchCommand(text) {
 					var el = this;
 					$.each(this.attributes, function(i, attr) {
 						var uri = attr.namespaceURI;
-						if(uri && !nsuris[uri] && nsMap[uri] !== 'xmlns') {
+						if(uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
 							nsuris[uri] = true;
 							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
 						}
@@ -1631,9 +1631,6 @@ function BatchCommand(text) {
 					
 					// Namespaces have already been dealt with, so skip
 					if(attr.nodeName.indexOf('xmlns:') === 0) continue;
-
-					//remove bogus attributes added by Gecko
-					if (attr.localName == '-moz-math-font-style') continue;
 
 					// only serialize attributes we don't use internally
 					if (attrVal != "" && 
@@ -1651,7 +1648,8 @@ function BatchCommand(text) {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
 					var attrVal = toXml(attr.nodeValue);
-					if (attr.localName == '-moz-math-font-style') continue;
+					//remove bogus attributes added by Gecko
+					if ($.inArray(attr.localName, ['-moz-math-font-style', '_moz-math-font-style']) !== -1) continue;
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
 						if(attr.localName == "class" && attrVal.indexOf('se_') == 0) continue;
@@ -7595,9 +7593,9 @@ function BatchCommand(text) {
 		this.changeSelectedAttribute("opacity", val);
 	};
 
-	this.getBlur = function() {
+	this.getBlur = function(elem) {
 		var val = 0;
-		var elem = selectedElements[0];
+// 		var elem = selectedElements[0];
 		
 		if(elem) {
 			var filter_url = elem.getAttribute('filter');
@@ -7609,68 +7607,116 @@ function BatchCommand(text) {
 			}
 		}
 		return val;
-	}
-
-	this.setBlur = function(val, noUndo) {
-		// Looks for associated blur, creates one if not found
-		var elem_id = selectedElements[0].id;
-		var filter = getElem(elem_id + '_blur');
-		
-		val -= 0;
-		
-		// Blur found!
-		if(filter) {
-			if(val === 0) {
-				$(filter).remove();
-			} else {
-				var elem = filter.firstChild;
-				if(noUndo) {
-					this.changeSelectedAttributeNoUndo('stdDeviation', val, [elem]);
-				} else {
-					this.changeSelectedAttribute('stdDeviation', val, [elem]);
-				}
-			}
-		} else {
-			// Not found, so create
-			var newblur = addSvgElementFromJson({ "element": "feGaussianBlur",
-				"attr": {
-					"in": 'SourceGraphic',
-					"stdDeviation": val
-				}
-			});
-			
-			filter = addSvgElementFromJson({ "element": "filter",
-				"attr": {
-					"id": elem_id + '_blur'
-				}
-			});
-			
-			filter.appendChild(newblur);
-			findDefs().appendChild(filter);
-		}
-		
-		if(val === 0) {
-			selectedElements[0].removeAttribute("filter");
-		} else {
-			this.changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
-			
-			if(val > 3) {
-				// TODO: Create algorithm here where size is based on expected blur
-				assignAttributes(filter, {
-					x: '-50%',
-					y: '-50%',
-					width: '200%',
-					height: '200%',
-				}, 100);
-			} else {
-				filter.removeAttribute('x');
-				filter.removeAttribute('y');
-				filter.removeAttribute('width');
-				filter.removeAttribute('height');
-			}
-		}
 	};
 
+	(function() {
+		var cur_command = null;
+		var filter = null;
+		var filterHidden = false;
+		
+		canvas.setBlurNoUndo = function(val) {
+			if(!filter) {
+				canvas.setBlur(val);
+				return;
+			}
+			if(val === 0) {
+				// Don't change the StdDev, as that will hide the element.
+				// Instead, just remove the value for "filter"
+				canvas.changeSelectedAttributeNoUndo("filter", "");
+				filterHidden = true;
+			} else {
+				if(filterHidden) {
+					canvas.changeSelectedAttributeNoUndo("filter", 'url(#' + selectedElements[0].id + '_blur)');
+				}
+				canvas.changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
+			}
+		}
+		
+		function finishChange() {
+			var bCmd = canvas.finishUndoableChange();
+			cur_command.addSubCommand(bCmd);
+			addCommandToHistory(cur_command);
+			cur_command = null;	
+			filter = null;
+		}
+	
+		canvas.setBlur = function(val, complete) {
+			if(cur_command) {
+				finishChange();
+				return;
+			}
+		
+			// Looks for associated blur, creates one if not found
+			var elem = selectedElements[0];
+			var elem_id = elem.id;
+			filter = getElem(elem_id + '_blur');
+			
+			val -= 0;
+			
+			var batchCmd = new BatchCommand();
+			
+			// Blur found!
+			if(filter) {
+				if(val === 0) {
+					filter = null;
+				}
+			} else {
+				// Not found, so create
+				var newblur = addSvgElementFromJson({ "element": "feGaussianBlur",
+					"attr": {
+						"in": 'SourceGraphic',
+						"stdDeviation": val
+					}
+				});
+				
+				filter = addSvgElementFromJson({ "element": "filter",
+					"attr": {
+						"id": elem_id + '_blur'
+					}
+				});
+				
+				filter.appendChild(newblur);
+				findDefs().appendChild(filter);
+				
+				batchCmd.addSubCommand(new InsertElementCommand(filter));
+			}
+	
+			var changes = {filter: elem.getAttribute('filter')};
+			
+			if(val === 0) {
+				elem.removeAttribute("filter");
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+				return;
+			} else {
+				this.changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
+				
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+				
+				if(val > 3) {
+					// TODO: Create algorithm here where size is based on expected blur
+					assignAttributes(filter, {
+						x: '-50%',
+						y: '-50%',
+						width: '200%',
+						height: '200%',
+					}, 100);
+				} else {
+					filter.removeAttribute('x');
+					filter.removeAttribute('y');
+					filter.removeAttribute('width');
+					filter.removeAttribute('height');
+				}
+			}
+			
+			cur_command = batchCmd;
+			canvas.beginUndoableChange("stdDeviation", [filter?filter.firstChild:null]);
+			if(complete) {
+				canvas.setBlurNoUndo(val);
+				finishChange();
+			}
+		};
+	}());
+	
 	this.getFillOpacity = function() {
 		return cur_shape.fill_opacity;
 	};
@@ -8946,7 +8992,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1548 $)";
+		return "svgcanvas.js ($Rev: 1552 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
