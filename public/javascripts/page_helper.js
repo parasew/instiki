@@ -143,8 +143,7 @@ function setupSVGedit(path){
     t.value = before + event.data + after;
     t.focus();
     selectRange(t, before.length, before.length+event.data.length);
-    SVGeditButton.disabled = true;
-    SVGeditButton.value = 'Create SVG graphic';      
+    callback();      
   });  
 }
 
