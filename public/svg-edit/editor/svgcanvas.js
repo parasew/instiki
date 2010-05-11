@@ -170,7 +170,6 @@ var isOpera = !!window.opera,
 		"exportNoBlur": "Blurred elements will appear as un-blurred",
 		"exportNoImage": "Image elements will not appear",
 		"exportNoforeignObject": "foreignObject elements will not appear",
-		"exportNoMarkers": "Marker elements (arrows, etc) may not appear as expected",
 		"exportNoDashArray": "Strokes will appear filled",
 		"exportNoText": "Text may not appear as expected"
 	},
@@ -1526,41 +1525,41 @@ function BatchCommand(text) {
 	};
 	var getUrlFromAttr = this.getUrlFromAttr;
 
-	var removeUnusedGrads = function() {
+	var removeUnusedDefElems = function() {
 		var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
 		if(!defs || !defs.length) return 0;
 		
-		var all_els = svgcontent.getElementsByTagNameNS(svgns, '*'),
-			grad_uses = [],
+		var defelem_uses = [],
 			numRemoved = 0;
+		var attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
+		var alen = attrs.length;
 		
-		$.each(all_els, function(i, el) {
-			var fill = getUrlFromAttr(el.getAttribute('fill'));
-			if(fill) {
-				grad_uses.push(fill.substr(1));
-			}
-			
-			var stroke = getUrlFromAttr(el.getAttribute('stroke'));
-			if (stroke) {
-				grad_uses.push(stroke.substr(1));
+		var all_els = svgcontent.getElementsByTagNameNS(svgns, '*');
+		var all_len = all_els.length;
+		
+		for(var i=0; i<all_len; i++) {
+			var el = all_els[i];
+			for(var j = 0; j < alen; j++) {
+				var ref = getUrlFromAttr(el.getAttribute(attrs[j]));
+				if(ref) defelem_uses.push(ref.substr(1));
 			}
 			
 			// gradients can refer to other gradients
 			var href = el.getAttributeNS(xlinkns, "href");
 			if (href && href.indexOf('#') == 0) {
-				grad_uses.push(href.substr(1));
+				defelem_uses.push(href.substr(1));
 			}
-		});
+		};
 		
-		var grads = $(svgcontent).find("linearGradient, radialGradient");
-			grad_ids = [],
-			i = grads.length;
+		var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker");
+			defelem_ids = [],
+			i = defelems.length;
 		while (i--) {
-			var grad = grads[i];
-			var id = grad.id;
-			if($.inArray(id, grad_uses) == -1) {
+			var defelem = defelems[i];
+			var id = defelem.id;
+			if($.inArray(id, defelem_uses) == -1) {
 				// Not found, so remove
-				grad.parentNode.removeChild(grad);
+				defelem.parentNode.removeChild(defelem);
 				numRemoved++;
 			}
 		}
@@ -1579,7 +1578,8 @@ function BatchCommand(text) {
 	
 	var svgCanvasToString = function() {
 		// keep calling it until there are none to remove
-		while (removeUnusedGrads() > 0) {};
+		while (removeUnusedDefElems() > 0) {};
+		
 		pathActions.clear(true);
 		
 		// Keep SVG-Edit comment on top
@@ -2438,6 +2438,27 @@ function BatchCommand(text) {
 			// 2 = translate, 3 = scale, 4 = rotate, 1 = matrix imposition
 			var operation = 0;
 			var N = tlist.numberOfItems;
+			
+			
+			// Check if it has a gradient with userSpaceOnUse, in which case
+			// adjust it by recalculating the matrix transform.
+			// TODO: Make this work in Webkit using SVGEditTransformList
+			if(!isWebkit) {
+				var fill = selected.getAttribute('fill');
+				if(fill && fill.indexOf('url(') === 0) {
+					var grad = getElem(getUrlFromAttr(fill).substr(1));
+					if(grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
+						//Update the userSpaceOnUse element
+						var grad = $(grad);
+						m = transformListToTransform(tlist).matrix;
+						var gtlist = canvas.getTransformList(grad[0]);
+						var gmatrix = transformListToTransform(gtlist).matrix;
+						m = matrixMultiply(m, gmatrix);
+						var m_str = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
+						grad.attr('gradientTransform', m_str);
+					}
+				}
+			}
 			
 			// first, if it was a scale of a non-skewed element, then the second-last  
 			// transform will be the [S]
@@ -3923,7 +3944,7 @@ function BatchCommand(text) {
 		var blinker;
 		var chardata = [];
 		var textbb, transbb;
-		var xform, imatrix;
+		var matrix;
 		var last_x, last_y;
 		var allow_dbl;
 		
@@ -3962,18 +3983,21 @@ function BatchCommand(text) {
 				}, 600);
 
 			}
-				
+			
+			
+			var start_pt = ptToScreen(charbb.x, textbb.y);
+			var end_pt = ptToScreen(charbb.x, (textbb.y + textbb.height));
+			
 			assignAttributes(cursor, {
-				x1: charbb.x * current_zoom,
-				y1: textbb.y * current_zoom,
-				x2: charbb.x * current_zoom,
-				y2: (textbb.y + textbb.height) * current_zoom,
+				x1: start_pt.x,
+				y1: start_pt.y,
+				x2: end_pt.x,
+				y2: end_pt.y,
 				visibility: 'visible',
-				display: 'inline',
-				transform: (xform || '')
+				display: 'inline'
 			});
 			
-			if(selblock) selblock.setAttribute('width', 0);
+			if(selblock) selblock.setAttribute('d', '');
 		}
 		
 		function setSelection(start, end, skipInput) {
@@ -3988,28 +4012,38 @@ function BatchCommand(text) {
 			
 			selblock = getElem("text_selectblock");
 			if (!selblock) {
-				selblock = document.createElementNS(svgns, "rect");
+
+				selblock = document.createElementNS(svgns, "path");
 				assignAttributes(selblock, {
 					'id': "text_selectblock",
 					'fill': "green",
 					'opacity': .5,
 					'style': "pointer-events:none"
 				});
-				selblock = getElem("selectorParentGroup").appendChild(selblock);
+				getElem("selectorParentGroup").appendChild(selblock);
 			}
+
 			
 			var startbb = chardata[start];
 			
 			var endbb = chardata[end];
 			
 			cursor.setAttribute('visibility', 'hidden');
+			
+			var tl = ptToScreen(startbb.x, textbb.y),
+				tr = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y),
+				bl = ptToScreen(startbb.x, textbb.y + textbb.height),
+				br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height);
+			
+			
+			var dstr = "M" + tl.x + "," + tl.y
+						+ " L" + tr.x + "," + tr.y
+						+ " " + br.x + "," + br.y
+						+ " " + bl.x + "," + bl.y + "z";
+			
 			assignAttributes(selblock, {
-				'x': startbb.x * current_zoom,
-				'y': textbb.y * current_zoom,
-				'width': (endbb.x - startbb.x) * current_zoom,
-				'height': textbb.height * current_zoom,
-				'display': 'inline',
-				'transform': (xform || '')
+				d: dstr,
+				'display': 'inline'
 			});
 		}
 		
@@ -4060,14 +4094,32 @@ function BatchCommand(text) {
 				y: y_in
 			}
 			
-			if(xform) {
-				var pt = transformPoint(out.x, out.y, imatrix);
+			out.x /= current_zoom;
+			out.y /= current_zoom;			
+
+			if(matrix) {
+				var pt = transformPoint(out.x, out.y, matrix.inverse());
 				out.x = pt.x;
 				out.y = pt.y;
 			}
 			
-			out.x /= current_zoom;
-			out.y /= current_zoom;			
+			return out;
+		}	
+		
+		function ptToScreen(x_in, y_in) {
+			var out = {
+				x: x_in,
+				y: y_in
+			}
+			
+			if(matrix) {
+				var pt = transformPoint(out.x, out.y, matrix);
+				out.x = pt.x;
+				out.y = pt.y;
+			}
+			
+			out.x *= current_zoom;
+			out.y *= current_zoom;
 			
 			return out;
 		}
@@ -4135,6 +4187,7 @@ function BatchCommand(text) {
 			},			
 			mouseUp: function(evt, mouse_x, mouse_y) {
 				var pt = screenToPt(mouse_x, mouse_y);
+				
 				setEndSelectionFromPoint(pt.x, pt.y, true);
 				
 				// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
@@ -4187,6 +4240,8 @@ function BatchCommand(text) {
 					canvas.deleteSelectedElements();
 				}
 				
+				$(textinput).blur();
+				
 				curtext = false;
 			},
 			setInputElem: function(elem) {
@@ -4210,24 +4265,11 @@ function BatchCommand(text) {
 				var str = curtext.textContent;
 				var len = str.length;
 				
-				xform = curtext.getAttribute('transform');
+				var xform = curtext.getAttribute('transform');
 
 				textbb = canvas.getBBox(curtext);
 				
-				if(xform) {
-					var matrix = getMatrix(curtext);
-					
-					imatrix = matrix.inverse();
-// 					var tbox = transformBox(textbb.x, textbb.y, textbb.width, textbb.height, matrix);
-// 					transbb = {
-// 						width: tbox.tr.x - tbox.tl.x,
-// 						height: tbox.bl.y - tbox.tl.y,
-// 						x: tbox.tl.x,
-// 						y: tbox.tl.y
-// 					}
-				} else {
-// 					transbb = textbb;
-				}
+				matrix = xform?getMatrix(curtext):null;
 
 				chardata = Array(len);
 				textinput.focus();
@@ -6275,7 +6317,6 @@ function BatchCommand(text) {
 			'feGaussianBlur': uiStrings.exportNoBlur,
 			'image': uiStrings.exportNoImage,
 			'foreignObject': uiStrings.exportNoforeignObject,
-			'marker': uiStrings.exportNoMarkers,
 			'[stroke-dasharray]': uiStrings.exportNoDashArray
 		};
 		var content = $(svgcontent);
@@ -7762,6 +7803,9 @@ function BatchCommand(text) {
 		else if (elem.transform) {
 			return elem.transform.baseVal;
 		}
+		else if (elem.gradientTransform) {
+			return elem.gradientTransform.baseVal;
+		}
 		return null;
 	};
 
@@ -8992,7 +9036,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1552 $)";
+		return "svgcanvas.js ($Rev: 1561 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
@@ -9057,7 +9101,7 @@ function BatchCommand(text) {
 			recalculateDimensions: recalculateDimensions,
 			remapElement: remapElement,
 			RemoveElementCommand: RemoveElementCommand,
-			removeUnusedGrads: removeUnusedGrads,
+			removeUnusedDefElems: removeUnusedDefElems,
 			resetUndoStack: resetUndoStack,
 			round: round,
 			runExtensions: runExtensions,

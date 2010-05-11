@@ -142,9 +142,23 @@ function setupSVGedit(path){
     if(event.origin !== my_loc) { return;}
     t.value = before + event.data + after;
     t.focus();
+    selectRange(t, before.length, before.length+event.data.length);
     SVGeditButton.disabled = true;
     SVGeditButton.value = 'Create SVG graphic';      
   });  
+}
+
+function selectRange(elt, start, end) { 
+ if (elt.setSelectionRange) { 
+  elt.focus(); 
+  elt.setSelectionRange(start, end); 
+ } else if (elt.createTextRange) { 
+  var range = elt.createTextRange(); 
+  range.collapse(true); 
+  range.moveEnd('character', end); 
+  range.moveStart('character', start); 
+  range.select(); 
+ } 
 }
 
 function updateSize(elt, w, h) {
