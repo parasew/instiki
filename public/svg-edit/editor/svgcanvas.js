@@ -7604,6 +7604,7 @@ function BatchCommand(text) {
 		}		
 		if (elems.length > 0) {
 			this.changeSelectedAttribute("stroke-width", val, elems);
+			call("changed", selectedElements);
 		}
 	};
 
@@ -7622,6 +7623,7 @@ function BatchCommand(text) {
 		}		
 		if (elems.length > 0) {
 			this.changeSelectedAttribute(attr, val, elems);
+			call("changed", selectedElements);
 		}
 	};
 	
@@ -9036,7 +9038,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1561 $)";
+		return "svgcanvas.js ($Rev: 1569 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
