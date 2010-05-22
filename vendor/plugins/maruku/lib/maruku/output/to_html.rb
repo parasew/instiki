@@ -389,7 +389,7 @@ It is copied as a standard HTML attribute.
 	
 	HTML4Attributes = {}
 	
-	coreattrs = [:id, :class, :style, :title]
+	coreattrs = [:id, :class, :style, :title, :accesskey, :contenteditable, :dir, :draggable, :spellcheck, :tabindex]
 	i18n = [:lang, 'xml:lang'.to_sym]
 	events = [
 		:onclick, :ondblclick, :onmousedown, :onmouseup, :onmouseover, 
