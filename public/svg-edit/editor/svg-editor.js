@@ -246,7 +246,9 @@
 					'zoom':'zoom.png',
 					
 					'clone':'clone.png',
+					'node_clone':'node_clone.png',
 					'delete':'delete.png',
+					'node_delete':'node_delete.png',
 					'group':'shape_group.png',
 					'ungroup':'shape_ungroup.png',
 					'move_top':'move_top.png',
@@ -300,8 +302,10 @@
 					'#tool_image':'image',
 					'#tool_zoom':'zoom',
 					
-					'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
-					'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
+					'#tool_clone,#tool_clone_multi':'clone',
+					'#tool_node_clone':'node_clone',
+					'#layer_delete,#tool_delete,#tool_delete_multi':'delete',
+					'#tool_node_delete':'node_delete',
 					'#tool_add_subpath':'add_subpath',
 					'#tool_openclose_path':'open_path',
 					'#tool_move_top':'move_top',
@@ -1823,15 +1827,6 @@
 			
 			*/
 			
-		// 	var setIcon = function(holder_sel, id) {
-		// 		var icon = $.getSvgIcon(id).clone();
-		// 		var holder = $(holder_sel);
-		// 		icon[0].setAttribute('width',holder.width());
-		// 		icon[0].setAttribute('height',holder.height());
-		// 		holder.empty().append(icon)
-		// 			.attr('data-curopt', holder_sel.replace('_show','')); // This sets the current mode
-		// 	}
-		
 			// Unfocus text input when workarea is mousedowned.
 			(function() {
 				var inp;
@@ -2296,7 +2291,7 @@
 				var icon = $.getSvgIcon(icon_id).clone();
 				$(elem).empty().append(icon);
 				var size = curPrefs.iconsize;
-				if(size !== 'm') {
+				if(size && size !== 'm') {
 					var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
 					obj[elem + ' .svg_icon'] = icon_sizes[size];
 					$.resizeSvgIcons(obj);
@@ -3464,7 +3459,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1569 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1574 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
