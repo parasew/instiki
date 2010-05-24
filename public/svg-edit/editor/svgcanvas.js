@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -1202,7 +1202,8 @@ function BatchCommand(text) {
 	(function() {
 		// TODO: make this string optional and set by the client
 		var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
-		svgcontent.appendChild(comment);
+		// Lead to invalid content with Instiki's Sanitizer
+		// svgcontent.appendChild(comment);
 
 		// TODO For Issue 208: this is a start on a thumbnail
 		//	var svgthumb = svgdoc.createElementNS(svgns, "use");

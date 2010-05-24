@@ -12,7 +12,7 @@ module Sanitizer
 
   acceptable_elements = Set.new %w[a abbr acronym address area article aside
       audio b big blockquote br button canvas caption center cite code
-      col colgroup command dd del details dfn dialog dir div dl dt
+      col colgroup command datalist dd del details dfn dialog dir div dl dt
       em fieldset figcaption figure font footer form h1 h2 h3 h4 h5 h6 header
       hgroup hr i img input ins kbd label legend li map mark menu meter nav
       ol optgroup option p pre progress q rp rt ruby s samp section select small
@@ -30,13 +30,14 @@ module Sanitizer
       line marker mask metadata missing-glyph mpath path pattern polygon
       polyline radialGradient rect set stop svg switch text textPath title tspan use]
       
-  acceptable_attributes = Set.new %w[accept accept-charset accesskey action
-      align alt autocomplete axis border cellpadding cellspacing char charoff
+  acceptable_attributes = Set.new %w[abbr accept accept-charset accesskey action
+      align alt autocomplete axis bgcolor border cellpadding cellspacing char charoff
       checked cite class clear cols colspan color compact contenteditable contextmenu
-      controls coords datetime dir disabled draggable enctype for formaction frame
-      headers height href hreflang hspace icon id ismap label lang longdesc loop low
-      max maxlength media method min multiple name nohref open optimum pattern placeholder
-      poster preload pubdate readonly rel required reversed rows rowspan spellcheck scope
+      controls coords datetime dir disabled draggable enctype face for formaction frame
+      headers height high href hreflang hspace icon id ismap label list lang longdesc
+      loop low max maxlength media method min multiple name nohref noshade nowrap open
+      optimumpattern placeholder poster preload pubdate radiogroup readonly rel
+      required rev reversed rows rowspan rules spellcheck scope
       selected shape size span src start step style summary tabindex target title
       type usemap valign value vspace width wrap xml:lang]
 
