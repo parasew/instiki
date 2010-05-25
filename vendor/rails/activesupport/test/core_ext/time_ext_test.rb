@@ -1,6 +1,6 @@
 require 'abstract_unit'
 
-class TimeExtCalculationsTest < Test::Unit::TestCase
+class TimeExtCalculationsTest < ActiveSupport::TestCase
   def test_seconds_since_midnight
     assert_equal 1,Time.local(2005,1,1,0,0,1).seconds_since_midnight
     assert_equal 60,Time.local(2005,1,1,0,1,0).seconds_since_midnight
@@ -165,8 +165,12 @@ class TimeExtCalculationsTest < Test::Unit::TestCase
     # assert_equal Time.local(2182,6,5,10),  Time.local(2005,6,5,10,0,0).years_since(177)
   end
 
-  def test_last_year
-    assert_equal Time.local(2004,6,5,10),  Time.local(2005,6,5,10,0,0).last_year
+  def test_last_year_is_deprecated
+    assert_deprecated { Time.now.last_year }
+  end
+
+  def test_prev_year
+    assert_equal Time.local(2004,6,5,10),  Time.local(2005,6,5,10,0,0).prev_year
   end
 
   def test_next_year
@@ -562,12 +566,16 @@ class TimeExtCalculationsTest < Test::Unit::TestCase
     end
   end
 
+  def test_last_month_is_deprecated
+    assert_deprecated { Time.now.last_month }
+  end
+
   def test_next_month_on_31st
     assert_equal Time.local(2005, 9, 30), Time.local(2005, 8, 31).next_month
   end
 
-  def test_last_month_on_31st
-    assert_equal Time.local(2004, 2, 29), Time.local(2004, 3, 31).last_month
+  def test_prev_month_on_31st
+    assert_equal Time.local(2004, 2, 29), Time.local(2004, 3, 31).prev_month
   end
 
   def test_xmlschema_is_available
@@ -680,6 +688,10 @@ class TimeExtCalculationsTest < Test::Unit::TestCase
   def test_minus_with_time_with_zone
     assert_equal  86_400.0, Time.utc(2000, 1, 2) - ActiveSupport::TimeWithZone.new( Time.utc(2000, 1, 1), ActiveSupport::TimeZone['UTC'] )
   end
+  
+  def test_minus_with_datetime
+    assert_equal  86_400.0, Time.utc(2000, 1, 2) - DateTime.civil(2000, 1, 1)
+  end
 
   def test_time_created_with_local_constructor_cannot_represent_times_during_hour_skipped_by_dst
     with_env_tz 'US/Eastern' do
@@ -741,4 +753,19 @@ class TimeExtMarshalingTest < Test::Unit::TestCase
     assert_equal t, unmarshaled
     assert_equal t.zone, unmarshaled.zone
   end
+
+  def test_marshaling_does_not_modify_source_object
+    t = Time.local(2000)
+    Marshal.dump t
+    assert_equal false, t.instance_variable_defined?('@marshal_with_utc_coercion')
+  end
+
+  def test_marshaling_does_not_affect_yaml_dump
+    t = Time.local(2000)
+    t2 = t.dup
+    marshaled = Marshal.dump t2
+    unmarshaled = Marshal.load marshaled
+    assert_equal t.to_yaml, unmarshaled.to_yaml
+  end
+
 end

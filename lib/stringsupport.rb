@@ -118,6 +118,11 @@ end
    end
 
 #:stopdoc: 
+
+  def blank?
+    self.dup.as_bytes !~ /\S/
+  end
+
   MATHML_ENTITIES = {
 	'Alpha' => '&#x0391;',
 	'Beta' => '&#x0392;',

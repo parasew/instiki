@@ -87,7 +87,7 @@ module ActionView
           result = js unless result.length>max_length
         end
 
-        result
+        result.html_safe
 
       end
     end

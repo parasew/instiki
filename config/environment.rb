@@ -26,7 +26,7 @@ Rails::Initializer.run do |config|
     File.open(secret_file, 'w', 0600) { |f| f.write(secret) }  
   end  
   config.action_controller.session = { 
-    :session_key => "instiki_session",
+    :key => "instiki_session",
     :secret => secret
    } 
 

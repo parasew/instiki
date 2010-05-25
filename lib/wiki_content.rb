@@ -115,7 +115,7 @@ class WikiContentStub < String
   end
 end
 
-class WikiContent < String
+class WikiContent < ActiveSupport::SafeBuffer
 
   include ChunkManager
   include Sanitizer
@@ -209,6 +209,7 @@ class WikiContent < String
       end
     end
     self.replace xhtml_sanitize(self)
+    self.html_safe
   end
 
   def page_name
