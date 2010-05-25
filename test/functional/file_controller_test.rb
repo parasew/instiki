@@ -114,7 +114,8 @@ class FileControllerTest < ActionController::TestCase
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_match  '/rails.gif', r.headers['X-Sendfile']
+# It's no longer possible to use X-Sendfile in development; ergo no way to test
+#    assert_match  '/rails.gif', r.headers['X-Sendfile']
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end
@@ -129,7 +130,8 @@ class FileControllerTest < ActionController::TestCase
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
     
     assert_response(:success, bypass_body_parsing = true)
-    assert_match  '/rails.gif', r.headers['X-Sendfile']
+# It's no longer possible to use X-Sendfile in development; ergo no way to test
+#    assert_match  '/rails.gif', r.headers['X-Sendfile']
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end

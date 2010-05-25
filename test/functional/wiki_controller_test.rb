@@ -346,13 +346,13 @@ class WikiControllerTest < ActionController::TestCase
     
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body.as_bytes
 
     r = process('show', 'web' => 'wiki1', 'id' => 'HomePage')
     
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body
+    assert_match /<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body.as_bytes
 
     r = process 'save', 'web' => 'instiki', 'id' => 'HomePage', 'content' => 'Contents of a new page', 
       'author' => 'AuthorOfNewPage'
@@ -961,7 +961,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body
+    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body.as_utf8
   end
 
   def test_recursive_include_II
@@ -973,7 +973,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body.as_utf8
   end
   
   def test_recursive_include_III
@@ -987,7 +987,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body.as_utf8
   end
 
   def test_nonrecursive_include

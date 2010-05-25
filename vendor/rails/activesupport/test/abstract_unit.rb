@@ -1,9 +1,10 @@
 require 'rubygems'
 require 'test/unit'
+require 'empty_bool'
 
 ENV['NO_RELOAD'] = '1'
 
-$:.unshift "#{File.dirname(__FILE__)}/../lib"
+$:.unshift File.expand_path('../../lib', __FILE__)
 require 'active_support'
 require 'active_support/test_case'
 

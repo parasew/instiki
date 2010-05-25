@@ -39,9 +39,8 @@ class TimeZoneTest < Test::Unit::TestCase
       assert_instance_of ActiveSupport::TimeZone, ActiveSupport::TimeZone[zone.name]
     end
 
-    define_method("test_utc_offset_for_#{name}") do
-      period = zone.tzinfo.current_period
-      assert_equal period.utc_offset, zone.utc_offset
+    define_method("test_zones_map_for_#{name}") do
+      assert_equal ActiveSupport::TimeZone.zones_map[zone.name], zone
     end
   end
 
@@ -71,6 +70,21 @@ class TimeZoneTest < Test::Unit::TestCase
       zone = ActiveSupport::TimeZone['Eastern Time (US & Canada)']
       assert_equal Time.utc(2006,10,29,1), zone.now.time
       assert_equal true, zone.now.dst?
+    end
+  end
+
+  def test_unknown_timezones_delegation_to_tzinfo
+    zone = ActiveSupport::TimeZone['America/Montevideo']
+    begin
+      require 'tzinfo/country'
+    rescue LoadError
+      # using vendored tzinfo which doesn't have tzinfo/country
+      assert_nil zone
+    else
+      assert_equal ActiveSupport::TimeZone, zone.class
+      assert_equal zone.object_id, ActiveSupport::TimeZone['America/Montevideo'].object_id
+      assert_equal Time.utc(2010, 1, 31, 22), zone.utc_to_local(Time.utc(2010, 2)) # daylight saving offset -0200
+      assert_equal Time.utc(2010, 3, 31, 21), zone.utc_to_local(Time.utc(2010, 4)) # standard offset -0300
     end
   end
 
