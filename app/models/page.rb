@@ -90,7 +90,7 @@ class Page < ActiveRecord::Base
 
   # Returns the original wiki-word name as separate words, so "MyPage" becomes "My Page".
   def plain_name
-    web.brackets_only? ? name.escapeHTML : WikiWords.separate(name).escapeHTML
+    web.brackets_only? ? name.escapeHTML.html_safe : WikiWords.separate(name).escapeHTML.html_safe
   end
 
   LOCKING_PERIOD = 30.minutes

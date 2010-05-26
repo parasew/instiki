@@ -57,7 +57,7 @@ class PageRenderer
 
       diffs = ''
       diff_doc.write(diffs, -1, true, true)
-      diffs.gsub(/\A<div class='xhtmldiff_wrapper'>(.*)<\/div>\Z/m, '\1')
+      diffs.gsub(/\A<div class='xhtmldiff_wrapper'>(.*)<\/div>\Z/m, '\1').html_safe
     else
       display_content
     end

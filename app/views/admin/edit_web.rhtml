@@ -46,18 +46,18 @@
         }, @web.color) %>
     </select>
     <p>
-      <input type="checkbox" class="disableAutoComplete" id="safe_mode" name="safe_mode" <%= 'checked="checked"' if @web.safe_mode? %> /> 
+      <input type="checkbox" class="disableAutoComplete" id="safe_mode" name="safe_mode" <%= raw 'checked="checked"' if @web.safe_mode? %> /> 
       <label for="safe_mode">Safe mode
       <em>- strip HTML tags and stylesheet options from the content of all pages</em></label>
       <br/>
-      <input type="checkbox" class="disableAutoComplete" id="brackets_only" name="brackets_only" <%= 'checked="checked"' if @web.brackets_only? %> /> 
+      <input type="checkbox" class="disableAutoComplete" id="brackets_only" name="brackets_only" <%= raw 'checked="checked"' if @web.brackets_only? %> /> 
       <label for="brackets_only">Brackets only 
       <em>- require all wiki words to be as [[wiki word]], WikiWord links won't be created</em></label>
       <br/>
-      <input type="checkbox" class="disableAutoComplete" id="count_pages" name="count_pages" <%= 'checked="checked"' if @web.count_pages? %> /> 
+      <input type="checkbox" class="disableAutoComplete" id="count_pages" name="count_pages" <%= raw 'checked="checked"' if @web.count_pages? %> /> 
       <label for="count_pages">Count pages</label>
       <br/>
-      <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= 'checked="checked"' if @web.allow_uploads? %> /> 
+      <input type="checkbox" class="disableAutoComplete" name="allow_uploads" <%= raw 'checked="checked"' if @web.allow_uploads? %> /> 
       Allow uploads of no more than 
       <input type="text" class="disableAutoComplete" name="max_upload_size" value="<%= @web.max_upload_size %>" 
              size="20" /> 
@@ -100,7 +100,7 @@
     The published version is accessible through URLs like /<%= @web.address %>/published/HomePage.
   </div>
   <div class="inputBox">
-    <input type="checkbox" id="published" name="published" class="disableAutoComplete" <%= 'checked="checked"' if @web.published? %> /> 
+    <input type="checkbox" id="published" name="published" class="disableAutoComplete" <%= raw 'checked="checked"' if @web.published? %> /> 
     <label for="published">Publish this web</label>
   </div>
 

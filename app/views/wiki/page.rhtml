@@ -1,6 +1,6 @@
 <%- 
   @title = @page.plain_name
-  @title += ' (changes)' if @show_diff 
+  @title += ' (changes)' if @show_diff
   @show_footer = true
 -%>
 
@@ -18,7 +18,7 @@
 
 <div class="byline">
   <%= @page.revisions? ? "Revised" : "Created" %> on <%= format_date(@page.revised_at) %> 
-  by <%= author_link(@page).purify %>
+  by <%= author_link(@page) %>
   <%= "(#{@page.author.ip})" if @page.author.respond_to?(:ip) %>
   <% if @web.count_pages? %>
     <% total_chars = @page.content.length %>
@@ -28,7 +28,7 @@
 
 <div class="navigation navfoot">
 
-  <%= navigation_menu_for_page.join(' | ') %>
+  <%= raw navigation_menu_for_page.join(' | ') %>
   
   <span class="views">
     | Views: 

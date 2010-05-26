@@ -41,7 +41,7 @@
       wanted by
       <%= @web.select.pages_that_reference(wanted_page_name).collect { |referring_page|            
             link_to_existing_page referring_page
-          }.join(", ") 
+          }.join(", ").html_safe 
       %>
     </li>
   <%- end -%>
