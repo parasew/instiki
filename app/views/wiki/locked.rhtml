@@ -1,4 +1,4 @@
-<%- @title = "#{@page.plain_name} is locked" -%>
+<%- @title = "#{@page.plain_name} is locked".html_safe -%>
 
 <p>
   <%= link_to_page(h(@page.locked_by.purify)) %>

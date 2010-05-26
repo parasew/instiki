@@ -1,4 +1,4 @@
-<%- @title = "Search results for \"#{h @query}\"" -%>
+<%- @title = "Search results for \"#{h @query}\"".html_safe -%>
 
 <%- unless @title_results.empty? -%>
 <h2><%= @title_results.length %> page(s) containing search string in the page name:</h2>
