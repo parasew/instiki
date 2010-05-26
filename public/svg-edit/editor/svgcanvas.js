@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -2610,7 +2610,7 @@ function BatchCommand(text) {
 
 	// Function: clearSelection
 	// Clears the selection.  The 'selected' handler is then called.
-	this.clearSelection = function() {
+	this.clearSelection = function(noCall) {
 		if (selectedElements[0] != null) {
 			var len = selectedElements.length;
 			for (var i = 0; i < len; ++i) {
@@ -2621,7 +2621,7 @@ function BatchCommand(text) {
 			}
 			selectedBBoxes[0] = null;
 		}
-		call("selected", selectedElements);
+		if(!noCall) call("selected", selectedElements);
 	};
 
 	// TODO: do we need to worry about selectedBBoxes here?
@@ -3013,7 +3013,8 @@ function BatchCommand(text) {
 							// only clear selection if shift is not pressed (otherwise, add 
 							// element to selection)
 							if (!evt.shiftKey) {
-								canvas.clearSelection();
+								// No need to do the call here as it will be done on addToSelection
+								canvas.clearSelection(true);
 							}
 							canvas.addToSelection([mouse_target]);
 							justSelected = mouse_target;
@@ -3290,6 +3291,12 @@ function BatchCommand(text) {
 					if (selectedElements[0] != null) {
 						var dx = x - start_x;
 						var dy = y - start_y;
+						
+						if(evt.shiftKey) { // restrict to movement up/down/left/right (WRS)
+							if (Math.abs(dx)>Math.abs(dy)) dy=0;
+							else dx=0; 
+							}
+
 						if (dx != 0 || dy != 0) {
 							var len = selectedElements.length;
 							for (var i = 0; i < len; ++i) {
@@ -3297,8 +3304,8 @@ function BatchCommand(text) {
 								if (selected == null) break;
 								if (i==0) {
 									var box = canvas.getBBox(selected);
-									selectedBBoxes[i].x = box.x + dx;
-									selectedBBoxes[i].y = box.y + dy;
+// 									selectedBBoxes[i].x = box.x + dx;
+// 									selectedBBoxes[i].y = box.y + dy;
 								}
 	
 								// update the dummy transform in our transform list
@@ -3543,6 +3550,12 @@ function BatchCommand(text) {
 				case "pathedit":
 					x *= current_zoom;
 					y *= current_zoom;
+					
+					if(evt.shiftKey) { // restrict path segments to horizontal/vertical (WRS)
+						if (Math.abs(start_x-x)>Math.abs(start_y-y)) {y=start_y; mouse_y=y;}
+						else {x=start_x; mouse_x=x;}
+					}
+					
 					if(rubberBox && rubberBox.getAttribute('display') != 'none') {
 						assignAttributes(rubberBox, {
 							'x': Math.min(start_x,x),
@@ -3579,6 +3592,12 @@ function BatchCommand(text) {
 					cx = center.x;
 					cy = center.y;
 					var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
+                    
+					if(evt.shiftKey) { // restrict rotations to nice angles (WRS)
+                        			var snap = 45;
+                        			angle= Math.round(angle/snap)*snap;
+                    			}
+
 					canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 					call("changed", selectedElements);
 					break;
@@ -3641,7 +3660,9 @@ function BatchCommand(text) {
 								cur_text.font_family = selected.getAttribute("font-family");
 							}
 							selectorManager.requestSelector(selected).showGrips(true);
-							call("selected", [selected]);
+							
+							// This shouldn't be necessary as it was done on mouseDown...
+// 							call("selected", [selected]);
 						}
 						// always recalculate dimensions to strip off stray identity transforms
 						recalculateAllSelectedDimensions();
@@ -4188,9 +4209,14 @@ function BatchCommand(text) {
 				allow_dbl = false;
 				current_mode = "textedit";
 				selectorManager.requestSelector(curtext).showGrips(false);
-
+				
 				textActions.init();
 				$(curtext).css('cursor', 'text');
+				
+// 				if(support.editableText) {
+// 					curtext.setAttribute('editable', 'simple');
+// 					return;
+// 				}
 				
 				if(!arguments.length) {
 					setCursor();
@@ -4226,6 +4252,10 @@ function BatchCommand(text) {
 				$(textinput).blur();
 				
 				curtext = false;
+				
+// 				if(support.editableText) {
+// 					curtext.removeAttribute('editable');
+// 				}
 			},
 			setInputElem: function(elem) {
 				textinput = elem;
@@ -4238,13 +4268,18 @@ function BatchCommand(text) {
 			},
 			init: function(inputElem) {
 				if(!curtext) return;
+
+// 				if(support.editableText) {
+// 					curtext.select();
+// 					return;
+// 				}
 			
 				if(!curtext.parentNode) {
 					// Result of the ffClone, need to get correct element
 					curtext = selectedElements[0];
 					selectorManager.requestSelector(curtext).showGrips(false);
 				}
-			
+				
 				var str = curtext.textContent;
 				var len = str.length;
 				
@@ -5487,6 +5522,12 @@ function BatchCommand(text) {
 							}
 
 							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
+
+							if (evt.shiftKey) { // restrict to horizonontal/vertical (WRS)
+								if (Math.abs(x-lastx)>Math.abs(y-lasty)) y=lasty;
+								else x=lastx;
+							}
+
 							// we store absolute values in our path points array for easy checking above
 							current_path_pts.push(x);
 							current_path_pts.push(y);
@@ -5496,14 +5537,14 @@ function BatchCommand(text) {
 	
 							// set stretchy line to latest point
 							assignAttributes(stretchy, {
-								'x1': mouse_x,
-								'y1': mouse_y,
-								'x2': mouse_x,
-								'y2': mouse_y
+								'x1': x,
+								'y1': y,
+								'x2': x,
+								'y2': y
 							});
 							var index = (current_path_pts.length/2 - 1);
 							if(subpath) index += path.segs.length;
-							addPointGrip(index, mouse_x, mouse_y);
+							addPointGrip(index, x, y);
 						}
 						keep = true;
 					}
@@ -9048,7 +9089,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1573 $)";
+		return "svgcanvas.js ($Rev: 1576 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
@@ -9170,6 +9211,9 @@ function BatchCommand(text) {
 		} catch(err) {
 			support.pathInsertItemBefore = false;
 		}
+		
+		// TODO: Find better way to check support for this
+		support.editableText = isOpera;
 		
 		// Correct decimals on clone attributes (Opera/win/non-en)
 		var rect = document.createElementNS(svgns,'rect');
