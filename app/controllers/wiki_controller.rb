@@ -280,7 +280,7 @@ EOL
 
   def save
     render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil?
-    unless (request.post? || ENV["RAILS_ENV"] == "test")
+    unless (request.post? || Rails.env.test?)
       headers['Allow'] = 'POST'
       render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
       return
