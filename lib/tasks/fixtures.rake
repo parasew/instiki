@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'lib', 'manage_fixtures.rb')
+require Rails.root.join('vendor', 'plugins', 'manage_fixtures', 'lib', 'manage_fixtures.rb')
 
 desc "use rake db:fixtures:export_using_query SQL=\"select * from foo where id='bar'\" FIXTURE_NAME=foo"
 namespace :db do  
@@ -33,7 +33,7 @@ namespace :db do
       ActiveRecord::Base.establish_connection 
       (ActiveRecord::Base.connection.tables - skip_tables).each do |table_name| 
         i = "000" 
-        File.open("#{RAILS_ROOT}/dump/fixtures/#{table_name}.yml", 'w' ) do |file| 
+        File.open(Rails.root.join('dump', 'fixtures', table_name + '.yml'), 'w' ) do |file| 
           write_yaml_fixtures_to_file(sql % table_name, table_name)
         end 
       end 
@@ -73,8 +73,9 @@ namespace :db do
   namespace :fixtures do
     task :import_all => :environment do
       ActiveRecord::Base.establish_connection
-      Dir.glob(File.join(RAILS_ROOT,'dump','fixtures',"*.yml")).each do |f|
-        table_name = f.gsub(File.join(RAILS_ROOT,'dump','fixtures', ''), '').gsub('.yml', '')
+      Dir.glob(Rails.root.join('dump','fixtures',"*.yml")).each do |f|
+        table_name = f.gsub( Regexp.escape(Rails.root.join('dump','fixtures').to_s + File::SEPARATOR), '').gsub('.yml', '')
+         puts "Importing #{table_name}"
         import_table_fixture(table_name)
       end
     end

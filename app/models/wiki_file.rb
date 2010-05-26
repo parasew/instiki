@@ -9,7 +9,7 @@ class WikiFile < ActiveRecord::Base
   validates_length_of :description, :maximum=>255
 
   def self.find_by_file_name(file_name)
-    find(:first, :conditions => ['file_name = ?', file_name])
+    first(:conditions => ['file_name = ?', file_name])
   end
 
   SANE_FILE_NAME = /^[a-zA-Z0-9\-_\. ]*$/
