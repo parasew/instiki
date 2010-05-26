@@ -1,13 +1,13 @@
 <%- unless @page.linked_from.empty? -%>
   <span class="linked">
     | Linked from: 
-    <%= @page.linked_from.collect { |referring_page| link_to_existing_page referring_page }.join(", ") %>
+    <%= @page.linked_from.collect { |referring_page| link_to_existing_page referring_page }.join(", ").html_safe %>
   </span>
 <%- end -%>
 
 <%- unless @page.included_from.empty? -%>
   <span class="linked">
     | Included from: 
-    <%= @page.included_from.collect { |referring_page| link_to_existing_page referring_page }.join(", ") %>
+    <%= @page.included_from.collect { |referring_page| link_to_existing_page referring_page }.join(", ").html_safe %>
   </span>
 <%- end -%>

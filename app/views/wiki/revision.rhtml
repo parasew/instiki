@@ -1,5 +1,5 @@
 <%- 
-  @title = "#{@page.plain_name} (Rev ##{@revision_number}#{@show_diff ? ', changes' : ''})"
+  @title = "#{@page.plain_name} (Rev ##{@revision_number}#{@show_diff ? ', changes' : ''})".html_safe
 -%>
 
 
@@ -21,6 +21,6 @@
 </div>
 
 <div class="navigation navfoot">
-  <%= navigation_menu_for_revision.join(' | ') %>
+  <%= raw navigation_menu_for_revision.join(' | ') %>
   <%= render :partial => 'inbound_links' %>
 </div>

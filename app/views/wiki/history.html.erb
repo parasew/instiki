@@ -1,4 +1,4 @@
-<%- @title = @page.plain_name + " (history)" -%>
+<%- @title = @page.plain_name + " (history)".html_safe -%>
 <%- @show_footer = true -%>
 
 <%- @revisions_by_day.keys.sort.reverse.each do |day| -%>

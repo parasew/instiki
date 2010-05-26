@@ -20,7 +20,7 @@
       <a href="<%= url_for :web => @web.address, :action => 'files', 
             :id => file.file_name %>"><%= file.file_name%></a> (<%= file.created_at.asctime %>) <span class="linked"><%= "Linked to by: " unless
             @web.pages_that_link_to_file(file.file_name).empty? -%>
-            <%= @web.pages_that_link_to_file(file.file_name).collect { |referring_page|  link_to_page(referring_page) }.join(", ") %></span>
+            <%= @web.pages_that_link_to_file(file.file_name).collect { |referring_page|  link_to_page(referring_page) }.join(", ").html_safe %></span>
     </li>
   <%- end -%>
   </ul>
