@@ -65,11 +65,25 @@ end
 # It provides a easy way to test whether a chunk matches a particular string
 # and any the values of any fields that should be set after a match.
 class ContentStub < String
+
+  attr_reader :web
+
   include ChunkManager
   def initialize(str)
     super
     init_chunk_manager
+    @web = Object.new
+    class << @web
+      def address
+        'wiki1'
+      end
+    end
   end
+
+  def url_generator
+     StubUrlGenerator.new
+  end
+     
   def page_link(*); end
 end
 
@@ -108,7 +122,11 @@ class StubUrlGenerator < AbstractUrlGenerator
   end
 
   def url_for(hash = {})
-    '../files/pngs'
+    if(hash[:action] == 'list')
+      "http://example.com/#{hash[:web]}/list"
+    else
+      '../files/pngs'
+    end
   end
 
   def file_link(mode, name, text, web_name, known_file, description)

@@ -6,7 +6,7 @@
 <%- unless @pages_that_are_orphaned.empty? && @page_names_that_are_wanted.empty? -%>
   <h2>
     All Pages
-    <br/><span class="pageType">All pages in <%= @set_name %> listed alphabetically</span>
+    <br/><span class="pageType">All pages in <%= raw @set_name %> listed alphabetically</span>
   </h2>
 <%- end -%>
 
@@ -30,7 +30,7 @@
     Wanted Pages
     <br/>
     <span class="pageType">
-      Nonexistent pages that other pages in <%= @set_name %> reference
+      Nonexistent pages that other pages in <%= raw @set_name %> reference
     </span>
   </h2>
 
@@ -51,7 +51,7 @@
 <%- unless @pages_that_are_orphaned.empty? -%>
   <h2>
     Orphaned Pages
-    <br/><span class="pageType">Pages in <%= @set_name %> that no other page reference</span>
+    <br/><span class="pageType">Pages in <%= raw @set_name %> that no other page reference</span>
   </h2>
 
   <ul style="margin-bottom: 35px">
