@@ -123,7 +123,7 @@ class StubUrlGenerator < AbstractUrlGenerator
 
   def url_for(hash = {})
     if(hash[:action] == 'list')
-      "http://example.com/#{hash[:web]}/list"
+      "/#{hash[:web]}/list"
     else
       '../files/pngs'
     end
