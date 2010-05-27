@@ -128,7 +128,7 @@ class WikiContent < ActiveSupport::SafeBuffer
     :mode                => :show
   }.freeze
 
-  attr_reader :web, :options, :revision, :not_rendered, :pre_rendered
+  attr_reader :web, :options, :revision, :not_rendered, :pre_rendered, :url_generator
 
   # Create a new wiki content string from the given one.
   # The options are explained at the top of this file.

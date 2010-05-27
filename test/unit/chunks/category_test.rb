@@ -7,8 +7,10 @@ class CategoryTest < Test::Unit::TestCase
   include ChunkMatch
 
   def test_single_category
-	match(Category, 'category: test', :list => ['test'], :hidden => nil)
-	match(Category, 'category :   chunk test   ', :list => ['chunk test'], :hidden => nil)
+	match(Category, 'category: test', :list => ['test'], :hidden => nil, :unmask_text => 
+	"<div class=\"property\"> category: <a class=\"category_link\" href=\"http://example.com/wiki1/list/test\">test</a></div>")
+	match(Category, 'category :   chunk test   ', :list => ['chunk test'], :hidden => nil, :unmask_text => 
+	"<div class=\"property\"> category: <a class=\"category_link\" href=\"http://example.com/wiki1/list/chunk+test\">chunk test</a></div>")
 	match(Category, ':category: test', :list => ['test'], :hidden => ':')
   end
 
