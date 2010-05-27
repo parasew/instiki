@@ -33,6 +33,6 @@ def initialize(match_data, content)
   # TODO move presentation of page metadata to controller/view
   def url(category)
     %{<a class="category_link" href="#{@content.url_generator.url_for :web => @content.web.address,
-                                        :action => 'list'}/#{CGI.escape(category)}">#{category}</a>}
+                    :action => 'list', :only_path => true}/#{CGI.escape(category)}">#{category}</a>}
   end
 end
