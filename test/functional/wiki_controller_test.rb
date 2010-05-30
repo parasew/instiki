@@ -1217,7 +1217,6 @@ class WikiControllerTest < ActionController::TestCase
 \newcommand{\conint}{\oint}
 \newcommand{\contourintegral}{\oint}
 \newcommand{\infinity}{\infty}
-\renewcommand{\empty}{\emptyset}
 \newcommand{\bottom}{\bot}
 \newcommand{\minusb}{\boxminus}
 \newcommand{\plusb}{\boxplus}
