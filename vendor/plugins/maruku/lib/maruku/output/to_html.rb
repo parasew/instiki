@@ -832,7 +832,7 @@ If true, raw HTML is discarded from the output.
 			pre = Element.new('pre')
 			pre.attributes['style'] = 'border: solid 3px red; background-color: pink'
 			pre.attributes['class'] = 'markdown-html-error'
-			pre << Text.new("HTML parse error: \n#{raw_html}", true)
+			pre << Text.new("REXML could not parse this XML/HTML: \n#{raw_html}", true)
 			return pre
 		end
 	end
