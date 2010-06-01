@@ -113,9 +113,14 @@ module MaRuKu; module Strings
 			while s[i,1] =~ /\s/; i+=1 end
 			# skip indicator (+, -, *)
 			i+=1
+			# skip whitespace
+			while s[i,1] =~ /\s/; i+=1 end
+			# find an IAL
+			ial = s[i,s.length - i][/^\{(.*?)\}/]
+			i+= ial.length if ial
 			# skip optional whitespace
 			while s[i,1] =~ /\s/; i+=1 end
-			return i
+			return [i, ial]
 		when :olist
 			i=0;
 			# skip whitespace
@@ -124,12 +129,17 @@ module MaRuKu; module Strings
 			while s[i,1] =~ /\d/; i+=1 end
 			# skip dot
 			i+=1
+			# skip optional whitespace
+			while s[i,1] =~ /\s/; i+=1 end
+			# find an IAL
+			ial = s[i,s.length - i][/^\{(.*?)\}/]
+			i+= ial.length if ial
 			# skip whitespace
 			while s[i,1] =~ /\s/; i+=1 end
-			return i
+			return [i, ial]
 		else
 			tell_user "BUG (my bad): '#{s}' is not a list"
-			0
+			[0, nil]
 		end
 	end
 
