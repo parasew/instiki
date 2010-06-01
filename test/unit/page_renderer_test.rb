@@ -209,6 +209,20 @@ END_THM
         "ecuasi\303\263n $\\sin(x)$")
   
   end
+
+  def test_ial_in_lists
+
+    assert_markup_parsed_as(
+    "<ul>\n<li>item 1</li>\n\n<li style='color: red;'>" +
+    "item 2</li>\n\n<li>item 3 continues here</li>\n</ul>",
+    "* item 1\n* {: style=\"color:red\"} item 2\n* item 3\n   continues here\n")
+    
+    assert_markup_parsed_as(
+    "<ol start='4'>\n<li>item 1</li>\n\n<li value='10'>" +
+    "item 2</li>\n\n<li>item 3 continues here</li>\n</ol>",
+    "1. item 1\n2. {: value=\"10\"} item 2\n13. item 3\n   continues here\n{: start=\"4\"}")
+
+  end
   
   def test_have_latest_itex2mml  
 
