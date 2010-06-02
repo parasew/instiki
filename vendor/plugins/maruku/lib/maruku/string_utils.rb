@@ -81,18 +81,7 @@ module MaRuKu; module Strings
 	# Returns the number of leading spaces, considering that
 	# a tab counts as `TabSize` spaces.
 	def number_of_leading_spaces(s)
-		n=0; i=0;
-		while i < s.size 
-			c = s[i,1]
-			if c == ' '
-				i+=1; n+=1;
-			elsif c == "\t"
-				i+=1; n+=TabSize;
-			else
-				break
-			end
-		end
-		n
+		s[/^[ \t]*/].gsub("\t", ' '*TabSize).length
 	end
 
 	# This returns the position of the first real char in a list item
@@ -108,54 +97,31 @@ module MaRuKu; module Strings
 	def spaces_before_first_char(s)
 		case s.md_type
 		when :ulist
-			i=0;
-			# skip whitespace if present
-			while s[i,1] =~ /\s/; i+=1 end
-			# skip indicator (+, -, *)
-			i+=1
-			# skip whitespace
-			while s[i,1] =~ /\s/; i+=1 end
-			# find an IAL
-			ial = s[i,s.length - i][/^\{(.*?)\}/]
-			i+= ial.length if ial
-			# skip optional whitespace
-			while s[i,1] =~ /\s/; i+=1 end
-			return [i, ial]
+		    # whitespace, followed by ('*'|'+'|'-') followed by
+		    # more whitespace, followed by an optional IAL, followed
+		    # by yet more whitespace
+		    h=s[/^\s*(\*|\+|\-)\s*(\{.*?\})?\s*/]
 		when :olist
-			i=0;
-			# skip whitespace
-			while s[i,1] =~ /\s/; i+=1 end
-			# skip digits
-			while s[i,1] =~ /\d/; i+=1 end
-			# skip dot
-			i+=1
-			# skip optional whitespace
-			while s[i,1] =~ /\s/; i+=1 end
-			# find an IAL
-			ial = s[i,s.length - i][/^\{(.*?)\}/]
-			i+= ial.length if ial
-			# skip whitespace
-			while s[i,1] =~ /\s/; i+=1 end
-			return [i, ial]
+		    # whitespace, followed by a number, followed by a period,
+		    # more whitespace, an optional IAL, and more whitespace
+		    h=s[/^\s*\d+\.\s*(\{.*?\})?\s*/]
 		else
 			tell_user "BUG (my bad): '#{s}' is not a list"
-			[0, nil]
+			h=''
 		end
+		ial = h[/\{.*\}/]
+		return [h.length, ial]		
 	end
 
 	# Counts the number of leading '#' in the string
 	def num_leading_hashes(s)
-		i=0;
-		while i<(s.size-1) && (s[i,1]=='#'); i+=1 end
-		i	
+		h = s[/^#*/]
+		h ? h.length : 0
 	end
 	
 	# Strips initial and final hashes
 	def strip_hashes(s)
-		s = s[num_leading_hashes(s), s.size]
-		i = s.size-1
-		while i > 0 && (s[i,1] =~ /(#|\s)/); i-=1; end
-		s[0, i+1].strip
+		s.sub(/^#*(.*?)(#|\s)*$/, '\1').strip
 	end
 	
 	# change space to "_" and remove any non-word character
