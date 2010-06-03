@@ -221,7 +221,10 @@ function ChangeElementCommand(elem, attrs, text) {
 					this.elem.removeAttribute(attr);
 				}
 			}
+			
 			if (attr == "transform") { bChangedTransform = true; }
+			else if (attr == "stdDeviation") { canvas.setBlurOffsets(this.elem.parentNode, this.newValues[attr]); }
+			
 		}
 		// relocate rotational transform, if necessary
 		if(!bChangedTransform) {
@@ -250,6 +253,8 @@ function ChangeElementCommand(elem, attrs, text) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
 				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.oldValues[attr]);
 				else this.elem.setAttribute(attr, this.oldValues[attr]);
+				
+				if (attr == "stdDeviation") canvas.setBlurOffsets(this.elem.parentNode, this.oldValues[attr]);
 			}
 			else {
 				if (attr == "#text") this.elem.textContent = "";
@@ -1439,6 +1444,7 @@ function BatchCommand(text) {
 							node.setAttribute(nv[0],nv[1]);
 						}
 					}
+					node.removeAttribute('style');
 				}
 			}
 			
@@ -2421,8 +2427,10 @@ function BatchCommand(text) {
 		// else, it's a non-group
 		else {
 			// FIXME: box might be null for some elements (<metadata> etc), need to handle this
-			var box = canvas.getBBox(selected),
-				oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
+			var box = canvas.getBBox(selected);
+			if(!box) return null;
+			
+			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
 								transformListToTransform(tlist).matrix),
 				m = svgroot.createSVGMatrix(),
@@ -2647,8 +2655,7 @@ function BatchCommand(text) {
 		var i = elemsToAdd.length;
 		while (i--) {
 			var elem = elemsToAdd[i];
-			// we ignore any selectors
-			if (!elem || elem.id.substr(0,13) == "selectorGrip_" || !this.getBBox(elem)) continue;
+			if (!elem || !this.getBBox(elem)) continue;
 			// if it's not already there, add it
 			if (selectedElements.indexOf(elem) == -1) {
 				selectedElements[j] = elem;
@@ -2921,6 +2928,39 @@ function BatchCommand(text) {
 		return {tl:topleft, tr:topright, bl:botleft, br:botright, 
 				aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
 	};
+	
+	var getMouseTarget = function(evt) {
+		if (evt == null) {
+			return null;
+		}
+		var mouse_target = evt.target;
+		
+		// if it was a <use>, Opera and WebKit return the SVGElementInstance
+		if (mouse_target.correspondingUseElement)
+		
+		mouse_target = mouse_target.correspondingUseElement;
+		// for foreign content, go up until we find the foreignObject
+		// WebKit browsers set the mouse target to the svgcanvas div 
+		if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
+			mouse_target.id != "svgcanvas") 
+		{
+			while (mouse_target.nodeName != "foreignObject") {
+				mouse_target = mouse_target.parentNode;
+			}
+		}
+		
+		// go up until we hit a child of a layer
+		while (mouse_target.parentNode.parentNode.tagName == "g") {
+			mouse_target = mouse_target.parentNode;
+		}
+		// Webkit bubbles the mouse event all the way up to the div, so we
+		// set the mouse_target to the svgroot like the other browsers
+		if (mouse_target.nodeName.toLowerCase() == "div") {
+			mouse_target = svgroot;
+		}
+		
+		return mouse_target;
+	};
 
 	// Mouse events
 	(function() {
@@ -2955,34 +2995,11 @@ function BatchCommand(text) {
 			
 			var x = mouse_x / current_zoom,
 				y = mouse_y / current_zoom,
-				mouse_target = evt.target;
+				mouse_target = getMouseTarget(evt);
 			
 			start_x = x;
 			start_y = y;
 	
-			// if it was a <use>, Opera and WebKit return the SVGElementInstance
-			if (mouse_target.correspondingUseElement)
-				mouse_target = mouse_target.correspondingUseElement;
-	
-			// for foreign content, go up until we find the foreignObject
-			// WebKit browsers set the mouse target to the svgcanvas div 
-			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
-				mouse_target.id != "svgcanvas") 
-			{
-				while (mouse_target.nodeName != "foreignObject") {
-					mouse_target = mouse_target.parentNode;
-				}
-			}
-			
-			// go up until we hit a child of a layer
-			while (mouse_target.parentNode.parentNode.tagName == "g") {
-				mouse_target = mouse_target.parentNode;
-			}
-			// Webkit bubbles the mouse event all the way up to the div, so we
-			// set the mouse_target to the svgroot like the other browsers
-			if (mouse_target.nodeName.toLowerCase() == "div") {
-				mouse_target = svgroot;
-			}
 			// if it is a selector grip, then it must be a single element selected, 
 			// set the mouse_target to that and update the mode to rotate/resize
 			if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
@@ -3261,7 +3278,8 @@ function BatchCommand(text) {
 				}
 			});
 		};
-	
+
+		
 		// in this function we do not record any state changes yet (but we do update
 		// any elements that are still being created, moved or resized on the canvas)
 		// TODO: svgcanvas should just retain a reference to the image being dragged instead
@@ -3292,10 +3310,7 @@ function BatchCommand(text) {
 						var dx = x - start_x;
 						var dy = y - start_y;
 						
-						if(evt.shiftKey) { // restrict to movement up/down/left/right (WRS)
-							if (Math.abs(dx)>Math.abs(dy)) dy=0;
-							else dx=0; 
-							}
+						if(evt.shiftKey) { var xya = snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
 
 						if (dx != 0 || dy != 0) {
 							var len = selectedElements.length;
@@ -3471,16 +3486,7 @@ function BatchCommand(text) {
 					var x2 = x;
 					var y2 = y;					
 
-					if(evt.shiftKey) {
-						var snap = Math.PI/4; // 45 degrees
-						var diff_x = x - start_x;
-						var diff_y = y - start_y;
-						var angle = Math.atan2(diff_y,diff_x);
-						var dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
-						var snapangle= Math.round(angle/snap)*snap;
-						x2 = start_x + dist*Math.cos(snapangle);	
-						y2 = start_y + dist*Math.sin(snapangle);	
-					}
+					if(evt.shiftKey) { var xya=Utils.snapToAngle(start_x,start_y,x2,y2); x2=xya.x; y2=xya.y; }
 					
 					shape.setAttributeNS(null, "x2", x2);
 					shape.setAttributeNS(null, "y2", y2);
@@ -3551,9 +3557,11 @@ function BatchCommand(text) {
 					x *= current_zoom;
 					y *= current_zoom;
 					
-					if(evt.shiftKey) { // restrict path segments to horizontal/vertical (WRS)
-						if (Math.abs(start_x-x)>Math.abs(start_y-y)) {y=start_y; mouse_y=y;}
-						else {x=start_x; mouse_x=x;}
+					if(evt.shiftKey) {
+						var x1 = path.dragging?path.dragging[0]:start_x;
+						var y1 = path.dragging?path.dragging[1]:start_y;
+					    var xya=Utils.snapToAngle(x1,y1,x,y);
+					    x=xya.x; y=xya.y;
 					}
 					
 					if(rubberBox && rubberBox.getAttribute('display') != 'none') {
@@ -3565,7 +3573,7 @@ function BatchCommand(text) {
 						},100);
 					}
 					
-					pathActions.mouseMove(mouse_x, mouse_y);
+					pathActions.mouseMove(x, y);
 					
 					break;
 				case "textedit":
@@ -3594,9 +3602,9 @@ function BatchCommand(text) {
 					var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
                     
 					if(evt.shiftKey) { // restrict rotations to nice angles (WRS)
-                        			var snap = 45;
-                        			angle= Math.round(angle/snap)*snap;
-                    			}
+                        var snap = 45;
+                        angle= Math.round(angle/snap)*snap;
+                    }
 
 					canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 					call("changed", selectedElements);
@@ -3941,7 +3949,7 @@ function BatchCommand(text) {
 	}());
 
 	var textActions = canvas.textActions = function() {
-		var curtext;
+		var curtext, current_text;
 		var textinput;
 		var cursor;
 		var selblock;
@@ -4164,11 +4172,12 @@ function BatchCommand(text) {
 
 		return {
 			select: function(target, x, y) {
-				if (curtext == target) {
+				if (current_text == target) {
+					curtext = target;
 					textActions.toEditMode(x, y);
 				} // going into pathedit mode
 				else {
-					curtext = target;
+					current_text = target;
 				}	
 			},
 			start: function(elem) {
@@ -4262,6 +4271,7 @@ function BatchCommand(text) {
 				$(textinput).blur(hideCursor);
 			},
 			clear: function() {
+				current_text = null;
 				if(current_mode == "textedit") {
 					textActions.toSelectMode();
 				}
@@ -5516,17 +5526,15 @@ function BatchCommand(text) {
 						// else, create a new point, append to pts array, update path element
 						else {
 							// Checks if current target or parents are #svgcontent
-							if(!$.contains(container, evt.target)) {
+							if(!$.contains(container, getMouseTarget(evt))) {
 								// Clicked outside canvas, so don't make point
+								console.log("Clicked outside canvas");
 								return false;
 							}
 
 							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
 
-							if (evt.shiftKey) { // restrict to horizonontal/vertical (WRS)
-								if (Math.abs(x-lastx)>Math.abs(y-lasty)) y=lasty;
-								else x=lastx;
-							}
+							if(evt.shiftKey) { var xya=Utils.snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
 
 							// we store absolute values in our path points array for easy checking above
 							current_path_pts.push(x);
@@ -5660,6 +5668,7 @@ function BatchCommand(text) {
 			},
 			
 			clear: function(remove) {
+				current_path = null;
 				if (current_mode == "path" && current_path_pts.length > 0) {
 					var elem = getElem(getId());
 					$(getElem("path_stretch_line")).remove();
@@ -6660,8 +6669,13 @@ function BatchCommand(text) {
 				else {
 					var ts = "scale(" + (canvash/3)/vb[2] + ")";
 				}
-				if (vb[0] != 0 || vb[1] != 0)
-					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
+				
+				// Hack to make recalculateDimensions understand how to scale
+				ts = "translate(0) " + ts + " translate(0)";
+				
+				// TODO: Find way to add this in a recalculateDimensions-parsable way
+// 				if (vb[0] != 0 || vb[1] != 0)
+// 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 
 				// add all children of the imported <svg> to the <g> we create
 				var g = svgdoc.createElementNS(svgns, "g");
@@ -6750,6 +6764,7 @@ function BatchCommand(text) {
     	    	}
     	    	
     	    	// now give the g itself a new id
+    	    	
 				g.id = getNextId();
 				// manually increment obj_num because our cloned elements are not in the DOM yet
 				obj_num++;
@@ -6783,7 +6798,7 @@ function BatchCommand(text) {
 			
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
-			walkTreePost(importedNode, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+			walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 			
 			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
@@ -7723,6 +7738,7 @@ function BatchCommand(text) {
 					canvas.changeSelectedAttributeNoUndo("filter", 'url(#' + selectedElements[0].id + '_blur)');
 				}
 				canvas.changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
+				canvas.setBlurOffsets(filter, val);
 			}
 		}
 		
@@ -7732,6 +7748,23 @@ function BatchCommand(text) {
 			addCommandToHistory(cur_command);
 			cur_command = null;	
 			filter = null;
+		}
+	
+		canvas.setBlurOffsets = function(filter, stdDev) {
+			if(stdDev > 3) {
+				// TODO: Create algorithm here where size is based on expected blur
+				assignAttributes(filter, {
+					x: '-50%',
+					y: '-50%',
+					width: '200%',
+					height: '200%',
+				}, 100);
+			} else {
+				filter.removeAttribute('x');
+				filter.removeAttribute('y');
+				filter.removeAttribute('width');
+				filter.removeAttribute('height');
+			}
 		}
 	
 		canvas.setBlur = function(val, complete) {
@@ -7786,20 +7819,7 @@ function BatchCommand(text) {
 				
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 				
-				if(val > 3) {
-					// TODO: Create algorithm here where size is based on expected blur
-					assignAttributes(filter, {
-						x: '-50%',
-						y: '-50%',
-						width: '200%',
-						height: '200%',
-					}, 100);
-				} else {
-					filter.removeAttribute('x');
-					filter.removeAttribute('y');
-					filter.removeAttribute('width');
-					filter.removeAttribute('height');
-				}
+				canvas.setBlurOffsets(filter, val);
 			}
 			
 			cur_command = batchCmd;
@@ -8188,7 +8208,7 @@ function BatchCommand(text) {
 			}
 			
 			// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
-			if (elem.tagName == "g" && (attr != "transform" && attr != "opacity")) continue;
+			if (elem.tagName == "g" && $.inArray(attr, ['transform', 'opacity', 'filter']) !== -1);
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 			if (oldval == null)  oldval = "";
 			if (oldval != String(newValue)) {
@@ -8373,19 +8393,63 @@ function BatchCommand(text) {
 			// "stroke-width"
 			// and then for each child, if they do not have the attribute (or the value is 'inherit')
 			// then set the child's attribute
-
-			// TODO: get the group's opacity and propagate it down to the children (multiply it
-			// by the child's opacity (or 1.0)
 			
 			var i = 0;
 			var gangle = canvas.getRotationAngle(g);
+			
+			var gattrs = $(g).attr(['filter', 'opacity']);
+			var gfilter, gblur;
+			
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
 				var oldParent = elem.parentNode;
 				children[i++] = elem = parent.insertBefore(elem, anchor);
 				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
+				
+				if(gattrs.opacity !== null && gattrs.opacity !== 1) {
+					var c_opac = elem.getAttribute('opacity') || 1;
+					var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
+					this.changeSelectedAttribute('opacity', new_opac, [elem]);
+				}
 
+				if(gattrs.filter) {
+					var cblur = this.getBlur(elem);
+					var orig_cblur = cblur;
+					if(!gblur) gblur = this.getBlur(g);
+					if(cblur) {
+						// Is this formula correct?
+						cblur = (gblur-0) + (cblur-0);
+					} else if(cblur === 0) {
+						cblur = gblur;
+					}
+					
+					// If child has no current filter, get group's filter or clone it.
+					if(!orig_cblur) {
+						// Set group's filter to use first child's ID
+						if(!gfilter) {
+							gfilter = getElem(getUrlFromAttr(gattrs.filter).substr(1));
+						} else {
+							// Clone the group's filter
+							gfilter = copyElem(gfilter);
+							findDefs().appendChild(gfilter);
+						}
+					} else {
+						gfilter = getElem(getUrlFromAttr(elem.getAttribute('filter')).substr(1));
+					}
+
+					// Change this in future for different filters
+					var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
+					gfilter.id = elem.id + '_' + suffix;
+					this.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
+					
+					// Update blur value 
+					if(cblur) {
+						this.changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
+						canvas.setBlurOffsets(gfilter, cblur);
+					}
+				}
+				
 				var chtlist = canvas.getTransformList(elem);
 				
 				if (glist.numberOfItems) {
@@ -8462,6 +8526,7 @@ function BatchCommand(text) {
 					batchCmd.addSubCommand(recalculateDimensions(elem));
 				}
 			}
+
 			
 			// remove transform and make it undo-able
 			if (xform) {
@@ -9089,7 +9154,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1576 $)";
+		return "svgcanvas.js ($Rev: 1586 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
@@ -9139,6 +9204,7 @@ function BatchCommand(text) {
 			getElem: getElem,
 			getId: getId,
 			getIntersectionList: getIntersectionList,
+			getMouseTarget: getMouseTarget,
 			getNextId: getNextId,
 			getPathBBox: getPathBBox,
 			getUrlFromAttr: getUrlFromAttr,
@@ -9360,6 +9426,19 @@ var Utils = {
 			(r2.y+r2.height) > r1.y;
 	},
 
+	"snapToAngle": function(x1,y1,x2,y2) {
+		var snap = Math.PI/4; // 45 degrees
+		var dx = x2 - x1;
+		var dy = y2 - y1;
+		var angle = Math.atan2(dy,dx);
+		var dist = Math.sqrt(dx * dx + dy * dy);
+		var snapangle= Math.round(angle/snap)*snap;
+		var x = x1 + dist*Math.cos(snapangle);	
+		var y = y1 + dist*Math.sin(snapangle);
+		//console.log(x1,y1,x2,y2,x,y,angle)
+		return {x:x, y:y, a:snapangle};
+	},
+	
 	// found this function http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 	"text2xml": function(sXML) {
 		// NOTE: I'd like to use jQuery for this, but jQuery makes all tags uppercase
