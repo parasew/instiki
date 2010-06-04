@@ -71,7 +71,7 @@ class WikiController < ApplicationController
     export_pages_as_zip(html_ext) do |page| 
       renderer = PageRenderer.new(page.revisions.last)
       rendered_page = <<-EOL
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg-flat.dtd" >
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>#{page.plain_name} in #{@web.name}</title>
