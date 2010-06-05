@@ -1,77 +1,67 @@
-#--
 #   Copyright (C) 2006  Andrea Censi  <andrea (at) rubyforge.org>
 #
 # This file is part of Maruku.
-# 
+#
 #   Maruku is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
-# 
+#
 #   Maruku is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
-# 
+#
 #   You should have received a copy of the GNU General Public License
 #   along with Maruku; if not, write to the Free Software
 #   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#++
+
+dir = File.dirname(__FILE__)
+$LOAD_PATH.unshift dir unless $LOAD_PATH.include?(dir)
 
 require 'rexml/document'
 
-# :include:MaRuKu.txt
 module MaRuKu
+  module In
+    module Markdown
+      module SpanLevelParser; end
+      module BlockLevelParser; end
+    end
+  end
 
-	module In
-		module Markdown
-			module SpanLevelParser; end
-			module BlockLevelParser; end
-		end
-		# more to come?
-	end
+  module Out
+    module Markdown; end
+    module HTML; end
+    module Latex; end
+  end
 
-	module Out
-		# Functions for exporting to MarkDown.
-		module Markdown; end
-		# Functions for exporting to HTML.
-		module HTML; end
-		# Functions for exporting to Latex
-		module Latex; end
-	end
-		
-	# These are strings utilities.
-	module Strings; end
+  module Strings; end
 
-	module Helpers; end
+  module Helpers; end
 
-	module Errors; end
-		
-	class MDElement
-		include REXML
-		include MaRuKu
-		include Out::Markdown
-		include Out::HTML
-		include Out::Latex
-		include Strings
-		include Helpers
-		include Errors
-	end
-	
-	
-	class MDDocument < MDElement
-		include In::Markdown
-		include In::Markdown::SpanLevelParser
-		include In::Markdown::BlockLevelParser
-	end
+  module Errors; end
+
+  class MDElement
+    include REXML
+    include MaRuKu
+    include Out::Markdown
+    include Out::HTML
+    include Out::Latex
+    include Strings
+    include Helpers
+    include Errors
+  end
+
+
+  class MDDocument < MDElement
+    include In::Markdown
+    include In::Markdown::SpanLevelParser
+    include In::Markdown::BlockLevelParser
+  end
 end
 
-# This is the public interface
 class Maruku < MaRuKu::MDDocument; end
 
-
-
-require 'rexml/document'
 
 # Structures definition
 require 'maruku/structures'
@@ -106,7 +96,7 @@ require 'maruku/attributes'
 
 require 'maruku/structures_iterators'
 
-require 'maruku/errors_management'
+require 'maruku/errors'
 
 # Code for creating a table of contents
 require 'maruku/toc'
@@ -140,4 +130,3 @@ require 'maruku/output/to_s'
 
 # class Maruku is the global interface
 require 'maruku/maruku'
-

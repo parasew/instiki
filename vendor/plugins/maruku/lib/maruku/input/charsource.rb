@@ -122,7 +122,7 @@ class CharSourceManual
 	
 	def consume_whitespace
 		while c = cur_char 
-			if (c == ?\s || c == ?\t)
+		  if (c == ?\s || c == ?\t)
 #				puts "ignoring #{c}"
 				ignore_char
 			else
@@ -191,7 +191,7 @@ def describe_pos(buffer, buffer_index)
 	pre + "+--- Byte #{buffer_index}\n"+
 	
 	"Shown bytes [#{index_start} to #{size}] of #{buffer.size}:\n"+
-	add_tabs(buffer,1,">")
+	buffer.gsub(/^/, ">")
 	
 #		"CharSource: At character #{@buffer_index} of block "+
 #		" beginning with:\n    #{@buffer[0,50].inspect} ...\n"+

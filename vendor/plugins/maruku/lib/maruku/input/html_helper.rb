@@ -168,9 +168,9 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			"match=#{@m.to_s.inspect}\n"+
 			"Tag stack = #{@tag_stack.inspect} \n"+
 			"Before:\n"+
-			add_tabs(@already,1,'|')+"\n"+
+			@already.gsub(/^/, '|')+"\n"+
 			"After:\n"+
-			add_tabs(@rest,1,'|')+"\n"
+			@rest.gsub(/^/, '|')+"\n"
 			
 		end
 		
