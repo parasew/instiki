@@ -47,7 +47,7 @@ module MaRuKu; module Out; module Markdown
 	
 	def to_md_li_span(context)
 		len = (context[:line_length] || DefaultLineLength) - 2
-		s = add_tabs(wrap(@children, len-2, context), 1, '  ')
+		s = wrap(@children, len-2, context).rstrip.gsub(/^/, '  ')
 		s[0] = ?*
 		s + "\n"
 	end
@@ -60,7 +60,7 @@ module MaRuKu; module Out; module Markdown
 		len = (context[:line_length] || DefaultLineLength) - 2
 		md = ""
 		self.children.each_with_index do |li, i|
-			s = add_tabs(w=wrap(li.children, len-2, context), 1, '    ')+"\n"
+			s = (w=wrap(li.children, len-2, context)).rstrip.gsub(/^/, '    ')+"\n"
 			s[0,4] = "#{i+1}.  "[0,4]
 #			puts w.inspect
 			md += s

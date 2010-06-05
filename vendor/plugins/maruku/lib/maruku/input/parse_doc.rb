@@ -141,19 +141,19 @@ Disabled by default because of security concerns.
 			return object.instance_eval(code)
 		rescue Exception => e
 			maruku_error "Exception while executing this:\n"+
-				add_tabs(code, 1, ">")+
+				code.gsub(/^/, ">")+
 				"\nThe error was:\n"+
-				add_tabs(e.inspect+"\n"+e.caller.join("\n"), 1, "|")
+				(e.inspect+"\n"+e.caller.join("\n")).gsub(/^/, "|")
 		rescue RuntimeError => e
 			maruku_error "2: Exception while executing this:\n"+
-				add_tabs(code, 1, ">")+
+				code.gsub(/^/, ">")+
 				"\nThe error was:\n"+
-				add_tabs(e.inspect, 1, "|")
+				e.inspect.gsub(/^/, "|")
 		rescue SyntaxError => e
 			maruku_error "2: Exception while executing this:\n"+
-				add_tabs(code, 1, ">")+
+				code.gsub(/^/, ">")+
 				"\nThe error was:\n"+
-				add_tabs(e.inspect, 1, "|")
+				e.inspect.gsub(/^/, "|")
 		end
 		nil
 	end

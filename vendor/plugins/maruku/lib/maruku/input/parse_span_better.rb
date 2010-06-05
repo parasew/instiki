@@ -500,7 +500,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			# end
 		rescue Exception => e
 			maruku_error "Bad html: \n" + 
-				add_tabs(e.inspect+e.backtrace.join("\n"),1,'>'),
+				(e.inspect+e.backtrace.join("\n")).gsub(/^/, '>'),
 				src,con
 			maruku_recover "I will try to continue after bad HTML.", src, con
 			con.push_char src.shift_char
@@ -733,7 +733,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		def describe
 			lines = @elements.map{|x| x.inspect}.join("\n")
 			s = "Elements read in span: \n" +
-			add_tabs(lines,1, ' -')+"\n"
+			lines.gsub(/^/, ' -')+"\n"
 		
 			if @cur_string.size > 0
 			s += "Current string: \n  #{@cur_string.inspect}\n" 

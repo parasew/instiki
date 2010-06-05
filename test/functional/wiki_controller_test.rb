@@ -955,7 +955,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_recursive_include
-    @wiki.write_page('wiki1', 'HomePage', 'Self-include: [[!include HomePage]]', Time.now, 
+    @wiki.write_page('wiki1', 'HomePage', "Self-include:\n\n [[!include HomePage]] ", Time.now, 
         Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
 
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')

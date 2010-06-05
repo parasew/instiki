@@ -198,8 +198,8 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			ial = $2
 			al  = read_attribute_list(CharSource.new(ial,src), context=nil, break_on=[nil])
 		end
-		level = num_leading_hashes(line)
-		text = parse_lines_as_span [strip_hashes(line)] 
+		level = line[/^#+/].size
+		text = parse_lines_as_span [line.gsub(/\A#+|#+\Z/, '')]
 		return md_header(level, text, al)
 	end
 
@@ -214,7 +214,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		if not code =~ (/\?>\s*$/)
 			garbage = (/\?>(.*)$/.match(code))[1]
 			maruku_error "Trailing garbage on last line: #{garbage.inspect}:\n"+
-				add_tabs(code, 1, '|'), src
+				code.gsub(/^/, '|'), src
 		end
 		code.gsub!(/\?>\s*$/, '')
 		
@@ -244,7 +244,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			end
 		rescue Exception => e
 			ex = e.inspect + e.backtrace.join("\n")
-			maruku_error "Bad block-level HTML:\n#{add_tabs(ex,1,'|')}\n", src
+			maruku_error "Bad block-level HTML:\n#{ex.gsub(/^/, '|')}\n", src
 		end
 		if not (h.rest =~ /^\s*$/)
 			maruku_error "Could you please format this better?\n"+
@@ -271,7 +271,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			
 			lines << src.shift_line
 		end
-#		dbg_describe_ary(lines, 'PAR')
 		children = parse_lines_as_span(lines, src)
 
 		return md_par(children)
@@ -296,7 +295,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			stripped = first[indentation, first.size-1]
 		lines.unshift stripped
 		
-		# dbg_describe_ary(lines, 'LIST ITEM ')
 
 		src2 = LineSource.new(lines, src, parent_offset)
 		children = parse_blocks(src2)
@@ -347,7 +345,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		# add first line
 		if text && text.strip != "" then lines.unshift text end
 		
-#		dbg_describe_ary(lines, 'FOOTNOTE')
 		src2 = LineSource.new(lines, src, parent_offset)
 		children = parse_blocks(src2)
 		
@@ -405,7 +402,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		want_my_paragraph = saw_anything_after || 
 			(saw_empty && (src.cur_line  && (src.cur_line.md_type == item_type))) 
 	
-#		dbg_describe_ary(lines, 'LI')
 		# create a new context 
 	
 		while lines.last && (lines.last.md_type == :empty)
@@ -424,7 +420,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		while src.cur_line && src.cur_line.md_type == :quote
 			lines << unquote(src.shift_line)
 		end
-#		dbg_describe_ary(lines, 'QUOTE')
 
 		src2 = LineSource.new(lines, src, parent_offset)
 		children = parse_blocks(src2)
@@ -451,7 +446,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 
 		source = lines.join("\n")
 		
-#		dbg_describe_ary(lines, 'CODE')
 
 		return md_codeblock(source)
 	end
@@ -568,7 +562,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		while  src.cur_line &&  src.cur_line.md_type == :text
 			terms << md_el(:definition_term, parse_lines_as_span([src.shift_line]))
 		end
-#		dbg_describe_ary(terms, 'DT')
 
 		want_my_paragraph = false
 
@@ -599,7 +592,6 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 		
 			lines.unshift first
 			
-#			dbg_describe_ary(lines, 'DD')
 			src2 = LineSource.new(lines, src, parent_offset)
 			children = parse_blocks(src2)
 			definitions << md_el(:definition_data, children)

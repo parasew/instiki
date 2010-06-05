@@ -71,7 +71,7 @@ class LineSource
 		
 #		if @parent 
 #			s << "Parent context is: \n"
-#			s << add_tabs(@parent.describe,1,'|')
+#			s << @parent.describe.gsub(/^/, '|')
 #		end
 		s
 	end
