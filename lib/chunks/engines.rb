@@ -1,7 +1,7 @@
 $: << File.dirname(__FILE__) + "../../lib"
 
 require_dependency 'chunks/chunk'
-require 'stringsupport'
+require 'instiki_stringsupport'
 require 'maruku'
 require 'maruku/ext/math'
 require_dependency 'rdocsupport'

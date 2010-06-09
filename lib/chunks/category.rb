@@ -1,5 +1,5 @@
 require 'chunks/chunk'
-require 'stringsupport'
+require 'instiki_stringsupport'
 
 # The category chunk looks for "category: news" on a line by
 # itself and parses the terms after the ':' as categories.

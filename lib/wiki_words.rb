@@ -1,7 +1,7 @@
 #coding: utf-8
 # Contains all the methods for finding and replacing wiki words
 
-require 'stringsupport'
+require 'instiki_stringsupport'
 
 module WikiWords
   # In order of appearance: Latin, greek, cyrillic, armenian

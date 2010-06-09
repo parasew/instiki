@@ -10,7 +10,7 @@ require 'wiki_controller'
 require 'rexml/document'
 require 'tempfile'
 require 'zip/zipfilesystem'
-require 'stringsupport'
+require 'instiki_stringsupport'
 
 # Raise errors beyond the default web-based presentation
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end

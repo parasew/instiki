@@ -6,6 +6,11 @@ module MaRuKu; module Out; module HTML
 		# or return an empty array on error
 		#    return []  
 		# or have a string parsed by REXML:
+		begin
+		  require 'itex_stringsupport'
+		rescue LoadError
+		  require 'instiki_stringsupport'
+		end
 		tex = tex.escapeHTML
 		mathml = "<code>#{tex}</code>"
 		return Document.new(mathml).root

@@ -3,8 +3,18 @@ module MaRuKu
     module HTML
       def convert_to_mathml_itex2mml(kind, tex)
         return if $already_warned_itex2mml
-        require 'itextomml'
-        require 'stringsupport'
+        begin
+          require 'itextomml'
+        rescue LoadError => e
+          maruku_error "Could not load package 'itex2mml'.\nPlease install it." unless $already_warned_itex2mml
+          $already_warned_itex2mml = true
+          return nil
+        end
+        begin
+          require 'itex_stringsupport'
+        rescue LoadError
+          require 'instiki_stringsupport'
+        end
 
         parser = Itex2MML::Parser.new
         mathml =
@@ -17,11 +27,6 @@ module MaRuKu
           end
 
         return Document.new(mathml.to_utf8, :respect_whitespace => :all).root
-      rescue LoadError => e
-        # TODO: Properly scope this global
-        maruku_error "Could not load package 'itex2mml'.\nPlease install it." unless $already_warned_itex2mml
-        $already_warned_itex2mml = true
-        nil
       rescue REXML::ParseException => e
         maruku_error "Invalid MathML TeX: \n#{tex.gsub(/^/, 'tex>')}\n\n #{e.inspect}"
         nil
