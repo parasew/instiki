@@ -19,8 +19,8 @@ module Sanitizer
       source span strike strong sub summary sup table tbody td textarea tfoot
       th thead time tr tt u ul var video wbr]
       
-  mathml_elements = Set.new %w[annotation annotation-xml maction math merror mfrac
-      mfenced mi mmultiscripts mn mo mover mpadded mphantom mprescripts mroot
+  mathml_elements = Set.new %w[annotation annotation-xml maction math menclose merror
+      mfrac mfenced mi mmultiscripts mn mo mover mpadded mphantom mprescripts mroot
       mrow mspace msqrt mstyle msub msubsup msup mtable mtd mtext mtr munder
       munderover none semantics]
       
@@ -45,7 +45,7 @@ module Sanitizer
       columnalign columnlines columnspacing columnspan depth display
       displaystyle encoding equalcolumns equalrows fence fontstyle fontweight
       frame height linethickness lspace mathbackground mathcolor mathvariant
-      maxsize minsize open other rowalign
+      maxsize minsize notation open other rowalign
       rowlines rowspacing rowspan rspace scriptlevel selection separator
       separators stretchy width xlink:href xlink:show xlink:type xmlns
       xmlns:xlink]
