@@ -7,7 +7,7 @@ require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
 require 'sanitizer'
-require 'stringsupport'
+require 'instiki_stringsupport'
 
 
 # Wiki content is just a string that can process itself with a chain of

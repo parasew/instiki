@@ -1,6 +1,6 @@
 # The methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-require 'stringsupport'
+require 'instiki_stringsupport'
 
   # Accepts a container (hash, array, enumerable, your type) and returns a string of option tags. Given a container 
   # where the elements respond to first and last (such as a two-element array), the "lasts" serve as option values and

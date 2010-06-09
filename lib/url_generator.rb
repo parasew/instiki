@@ -1,4 +1,4 @@
-require 'stringsupport'
+require 'instiki_stringsupport'
 
 class AbstractUrlGenerator
 

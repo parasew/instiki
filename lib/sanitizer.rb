@@ -7,7 +7,7 @@ module Sanitizer
 
   require 'action_controller/vendor/html-scanner/html/tokenizer'
   require 'node'
-  require 'stringsupport'
+  require 'instiki_stringsupport'
   require 'set'
 
   acceptable_elements = Set.new %w[a abbr acronym address area article aside
