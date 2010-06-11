@@ -11,9 +11,9 @@ module MaRuKu
           return nil
         end
         begin
-          require 'itex_stringsupport'
-        rescue LoadError
           require 'instiki_stringsupport'
+        rescue LoadError
+          require 'itex_stringsupport'
         end
 
         parser = Itex2MML::Parser.new
