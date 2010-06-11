@@ -1,8 +1,8 @@
-require File.join(File.dirname(__FILE__), 'helper')
+require 'helper'
 
 class TC_ResultSet < Test::Unit::TestCase
   def setup
-    @db = SQLite3::Database.new( "test.db" )
+    @db = SQLite3::Database.new(":memory:")
     @db.transaction do
       @db.execute "create table foo ( a integer primary key, b text )"
       @db.execute "insert into foo ( b ) values ( 'foo' )"
@@ -16,7 +16,6 @@ class TC_ResultSet < Test::Unit::TestCase
   def teardown
     @stmt.close
     @db.close
-    File.delete( "test.db" )
   end
 
   def test_reset_unused
@@ -56,7 +55,7 @@ class TC_ResultSet < Test::Unit::TestCase
 
   def test_next_no_type_translation_no_hash
     @result.reset( 1 )
-    assert_equal [ "1", "foo" ], @result.next
+    assert_equal [ 1, "foo" ], @result.next
   end
 
   def test_next_type_translation
@@ -68,8 +67,20 @@ class TC_ResultSet < Test::Unit::TestCase
   def test_next_type_translation_with_untyped_column
     @db.type_translation = true
     @db.query( "select count(*) from foo" ) do |result|
-      assert_equal ["3"], result.next
+      assert_equal [3], result.next
     end
+  end
+
+  def test_type_translation_execute
+    @db.type_translation = true
+    @db.execute "create table bar ( a integer, b america )"
+    @db.execute "insert into bar (a, b) values (NULL, '1974-07-25 14:39:00')"
+
+    @db.translator.add_translator('america') do |type, thing|
+      'america'
+    end
+
+    assert_equal [[nil, 'america']], @db.execute("select * from bar")
   end
 
   def test_type_translation_with_null_column
@@ -98,10 +109,23 @@ class TC_ResultSet < Test::Unit::TestCase
     end
   end
 
+  def test_real_translation
+    @db.type_translation = true
+    @db.execute('create table foo_real(a real)')
+    @db.execute('insert into foo_real values (42)' )
+    @db.query('select a, sum(a), typeof(a), typeof(sum(a)) from foo_real') do |result|
+      result = result.next
+      assert result[0].is_a?(Float)
+      assert result[1].is_a?(Float)
+      assert result[2].is_a?(String)
+      assert result[3].is_a?(String)
+    end
+  end
+
   def test_next_results_as_hash
     @db.results_as_hash = true
     @result.reset( 1 )
-    assert_equal( { "a" => "1", "b" => "foo", 0 => "1", 1 => "foo" },
+    assert_equal( { "a" => 1, "b" => "foo", 0 => 1, 1 => "foo" },
       @result.next )
   end
 
@@ -110,7 +134,7 @@ class TC_ResultSet < Test::Unit::TestCase
     @result.reset( 1 )
     row = @result.next
     row.each do |_, v|
-      assert_equal true, v.tainted?
+      assert(v.tainted?) if String === v
     end
   end
 
@@ -118,7 +142,7 @@ class TC_ResultSet < Test::Unit::TestCase
     @result.reset( 1 )
     row = @result.next
     row.each do |v|
-      assert_equal true, v.tainted?
+      assert(v.tainted?) if String === v
     end
   end
 
