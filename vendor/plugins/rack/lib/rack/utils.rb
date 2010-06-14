@@ -1,5 +1,6 @@
 # -*- encoding: binary -*-
 
+require 'fileutils'
 require 'set'
 require 'tempfile'
 
@@ -38,9 +39,6 @@ module Rack
 
       (qs || '').split(d ? /[#{d}] */n : DEFAULT_SEP).each do |p|
         k, v = p.split('=', 2).map { |x| unescape(x) }
-        if v =~ /^("|')(.*)\1$/
-          v = $2.gsub('\\'+$1, $1)
-        end
         if cur = params[k]
           if cur.class == Array
             params[k] << v
@@ -69,9 +67,6 @@ module Rack
     module_function :parse_nested_query
 
     def normalize_params(params, name, v = nil)
-      if v and v =~ /^("|')(.*)\1$/
-        v = $2.gsub('\\'+$1, $1)
-      end
       name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
       k = $1 || ''
       after = $' || ''
@@ -133,13 +128,18 @@ module Rack
     end
     module_function :build_nested_query
 
+    ESCAPE_HTML = {
+      "&" => "&amp;",
+      "<" => "&lt;",
+      ">" => "&gt;",
+      "'" => "&#39;",
+      '"' => "&quot;",
+    }
+    ESCAPE_HTML_PATTERN = Regexp.union(ESCAPE_HTML.keys)
+
     # Escape ampersands, brackets and quotes to their HTML/XML entities.
     def escape_html(string)
-      string.to_s.gsub("&", "&amp;").
-        gsub("<", "&lt;").
-        gsub(">", "&gt;").
-        gsub("'", "&#39;").
-        gsub('"', "&quot;")
+      string.to_s.gsub(ESCAPE_HTML_PATTERN){|c| ESCAPE_HTML[c] }
     end
     module_function :escape_html
 
@@ -180,8 +180,8 @@ module Rack
         path    = "; path="    + value[:path]   if value[:path]
         # According to RFC 2109, we need dashes here.
         # N.B.: cgi.rb uses spaces...
-        expires = "; expires=" + value[:expires].clone.gmtime.
-          strftime("%a, %d-%b-%Y %H:%M:%S GMT") if value[:expires]
+        expires = "; expires=" +
+          rfc2822(value[:expires].clone.gmtime) if value[:expires]
         secure = "; secure"  if value[:secure]
         httponly = "; HttpOnly" if value[:httponly]
         value = value[:value]
@@ -192,12 +192,12 @@ module Rack
         "#{domain}#{path}#{expires}#{secure}#{httponly}"
 
       case header["Set-Cookie"]
-      when Array
-        header["Set-Cookie"] << cookie
-      when String
-        header["Set-Cookie"] = [header["Set-Cookie"], cookie]
-      when nil
+      when nil, ''
         header["Set-Cookie"] = cookie
+      when String
+        header["Set-Cookie"] = [header["Set-Cookie"], cookie].join("\n")
+      when Array
+        header["Set-Cookie"] = (header["Set-Cookie"] + [cookie]).join("\n")
       end
 
       nil
@@ -205,13 +205,24 @@ module Rack
     module_function :set_cookie_header!
 
     def delete_cookie_header!(header, key, value = {})
-      unless Array === header["Set-Cookie"]
-        header["Set-Cookie"] = [header["Set-Cookie"]].compact
+      case header["Set-Cookie"]
+      when nil, ''
+        cookies = []
+      when String
+        cookies = header["Set-Cookie"].split("\n")
+      when Array
+        cookies = header["Set-Cookie"]
       end
 
-      header["Set-Cookie"].reject! { |cookie|
-        cookie =~ /\A#{escape(key)}=/
+      cookies.reject! { |cookie|
+        if value[:domain]
+          cookie =~ /\A#{escape(key)}=.*domain=#{value[:domain]}/
+        else
+          cookie =~ /\A#{escape(key)}=/
+        end
       }
+
+      header["Set-Cookie"] = cookies.join("\n")
 
       set_cookie_header!(header, key,
                  {:value => '', :path => nil, :domain => nil,
@@ -233,6 +244,22 @@ module Rack
       end
     end
     module_function :bytesize
+
+    # Modified version of stdlib time.rb Time#rfc2822 to use '%d-%b-%Y' instead
+    # of '% %b %Y'.
+    # It assumes that the time is in GMT to comply to the RFC 2109.
+    #
+    # NOTE: I'm not sure the RFC says it requires GMT, but is ambigous enough
+    # that I'm certain someone implemented only that option.
+    # Do not use %a and %b from Time.strptime, it would use localized names for
+    # weekday and month.
+    #
+    def rfc2822(time)
+      wday = Time::RFC2822_DAY_NAME[time.wday]
+      mon = Time::RFC2822_MONTH_NAME[time.mon - 1]
+      time.strftime("#{wday}, %d-#{mon}-%Y %T GMT")
+    end
+    module_function :rfc2822
 
     # Context allows the use of a compatible middleware at different points
     # in a request handling stack. A compatible middleware must define
@@ -291,7 +318,8 @@ module Rack
       end
 
       def [](k)
-        super(@names[k] ||= @names[k.downcase])
+        super(@names[k]) if @names[k]
+        super(@names[k.downcase])
       end
 
       def []=(k, v)
@@ -478,11 +506,31 @@ module Rack
                 head = buf.slice!(0, i+2) # First \r\n
                 buf.slice!(0, 2)          # Second \r\n
 
-                filename = head[/Content-Disposition:.* filename=(?:"((?:\\.|[^\"])*)"|([^;\s]*))/ni, 1]
+                token = /[^\s()<>,;:\\"\/\[\]?=]+/
+                condisp = /Content-Disposition:\s*#{token}\s*/i
+                dispparm = /;\s*(#{token})=("(?:\\"|[^"])*"|#{token})*/
+
+                rfc2183 = /^#{condisp}(#{dispparm})+$/i
+                broken_quoted = /^#{condisp}.*;\sfilename="(.*?)"(?:\s*$|\s*;\s*#{token}=)/i
+                broken_unquoted = /^#{condisp}.*;\sfilename=(#{token})/i
+
+                if head =~ rfc2183
+                  filename = Hash[head.scan(dispparm)]['filename']
+                  filename = $1 if filename and filename =~ /^"(.*)"$/
+                elsif head =~ broken_quoted
+                  filename = $1
+                elsif head =~ broken_unquoted
+                  filename = $1
+                end
+
+                if filename && filename !~ /\\[^\\"]/
+                  filename = Utils.unescape(filename).gsub(/\\(.)/, '\1')
+                end
+
                 content_type = head[/Content-Type: (.*)#{EOL}/ni, 1]
                 name = head[/Content-Disposition:.*\s+name="?([^\";]*)"?/ni, 1] || head[/Content-ID:\s*([^#{EOL}]*)/ni, 1]
 
-                if content_type || filename
+                if filename
                   body = Tempfile.new("RackMultipart")
                   body.binmode  if body.respond_to?(:binmode)
                 end
@@ -519,8 +567,7 @@ module Rack
               # This handles the full Windows paths given by Internet Explorer
               # (and perhaps other broken user agents) without affecting
               # those which give the lone filename.
-              filename =~ /^(?:.*[:\\\/])?(.*)/m
-              filename = $1
+              filename = filename.split(/[\/\\]/).last
 
               data = {:filename => filename, :type => content_type,
                       :name => name, :tempfile => body, :head => head}
