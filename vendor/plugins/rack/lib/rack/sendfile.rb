@@ -2,7 +2,9 @@ require 'rack/file'
 
 module Rack
   class File #:nodoc:
-    alias :to_path :path
+    unless instance_methods(false).include?('to_path')
+      alias :to_path :path
+    end
   end
 
   # = Sendfile
@@ -11,7 +13,7 @@ module Rack
   # served from a file and replaces it with a server specific X-Sendfile
   # header. The web server is then responsible for writing the file contents
   # to the client. This can dramatically reduce the amount of work required
-  # by the Ruby backend and takes advantage of the web servers optimized file
+  # by the Ruby backend and takes advantage of the web server's optimized file
   # delivery code.
   #
   # In order to take advantage of this middleware, the response body must
@@ -31,19 +33,19 @@ module Rack
   # a private "/files/" area, enable X-Accel-Redirect, and pass the special
   # X-Sendfile-Type and X-Accel-Mapping headers to the backend:
   #
-  #   location /files/ {
+  #   location ~ /files/(.*) {
   #     internal;
-  #     alias /var/www/;
+  #     alias /var/www/$1;
   #   }
   #
   #   location / {
-  #     proxy_redirect     false;
+  #     proxy_redirect     off;
   #
   #     proxy_set_header   Host                $host;
   #     proxy_set_header   X-Real-IP           $remote_addr;
   #     proxy_set_header   X-Forwarded-For     $proxy_add_x_forwarded_for;
   #
-  #     proxy_set_header   X-Sendfile-Type     X-Accel-Redirect
+  #     proxy_set_header   X-Sendfile-Type     X-Accel-Redirect;
   #     proxy_set_header   X-Accel-Mapping     /files/=/var/www/;
   #
   #     proxy_pass         http://127.0.0.1:8080/;

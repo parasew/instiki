@@ -57,7 +57,7 @@ module Rack
           }
 
           opts.on("-P", "--pid FILE", "file to store PID (default: rack.pid)") { |f|
-            options[:pid] = ::File.expand_path(f)
+            options[:pid] = f
           }
 
           opts.separator ""
@@ -74,17 +74,66 @@ module Rack
           end
         end
         opt_parser.parse! args
-        options[:rack_file] = args.last if args.last
+        options[:config] = args.last if args.last
         options
       end
     end
 
-    def self.start
-      new.start
+    # Start a new rack server (like running rackup). This will parse ARGV and
+    # provide standard ARGV rackup options, defaulting to load 'config.ru'.
+    #
+    # Providing an options hash will prevent ARGV parsing and will not include
+    # any default options.
+    #
+    # This method can be used to very easily launch a CGI application, for
+    # example:
+    #
+    #  Rack::Server.start(
+    #    :app => lambda do |e|
+    #      [200, {'Content-Type' => 'text/html'}, ['hello world']]
+    #    end,
+    #    :server => 'cgi'
+    #  )
+    #
+    # Further options available here are documented on Rack::Server#initialize
+    def self.start(options = nil)
+      new(options).start
     end
 
-    attr_accessor :options
+    attr_writer :options
 
+    # Options may include:
+    # * :app
+    #     a rack application to run (overrides :config)
+    # * :config
+    #     a rackup configuration file path to load (.ru)
+    # * :environment
+    #     this selects the middleware that will be wrapped around
+    #     your application. Default options available are:
+    #       - development: CommonLogger, ShowExceptions, and Lint
+    #       - deployment: CommonLogger
+    #       - none: no extra middleware
+    #     note: when the server is a cgi server, CommonLogger is not included.
+    # * :server
+    #     choose a specific Rack::Handler, e.g. cgi, fcgi, webrick
+    # * :daemonize
+    #     if true, the server will daemonize itself (fork, detach, etc)
+    # * :pid
+    #     path to write a pid file after daemonize
+    # * :Host
+    #     the host address to bind to (used by supporting Rack::Handler)
+    # * :Port
+    #     the port to bind to (used by supporting Rack::Handler)
+    # * :AccessLog
+    #     webrick acess log options (or supporting Rack::Handler)
+    # * :debug
+    #     turn on debug output ($DEBUG = true)
+    # * :warn
+    #     turn on warnings ($-w = true)
+    # * :include
+    #     add given paths to $LOAD_PATH
+    # * :require
+    #     require the given libraries
     def initialize(options = nil)
       @options = options
     end
@@ -100,17 +149,17 @@ module Rack
         :Port        => 9292,
         :Host        => "0.0.0.0",
         :AccessLog   => [],
-        :rack_file   => ::File.expand_path("config.ru")
+        :config      => "config.ru"
       }
     end
 
     def app
       @app ||= begin
-        if !::File.exist? options[:rack_file]
-          abort "configuration #{options[:rack_file]} not found"
+        if !::File.exist? options[:config]
+          abort "configuration #{options[:config]} not found"
         end
 
-        app, options = Rack::Builder.parse_file(self.options[:rack_file], opt_parser)
+        app, options = Rack::Builder.parse_file(self.options[:config], opt_parser)
         self.options.merge! options
         app
       end
@@ -119,7 +168,7 @@ module Rack
     def self.middleware
       @middleware ||= begin
         m = Hash.new {|h,k| h[k] = []}
-        m["deployment"].concat  [lambda {|server| server.server =~ /CGI/ ? nil : [Rack::CommonLogger, $stderr] }]
+        m["deployment"].concat  [lambda {|server| server.server.name =~ /CGI/ ? nil : [Rack::CommonLogger, $stderr] }]
         m["development"].concat m["deployment"] + [[Rack::ShowExceptions], [Rack::Lint]]
         m
       end
@@ -143,7 +192,7 @@ module Rack
       end
 
       if includes = options[:include]
-        $LOAD_PATH.unshift *includes
+        $LOAD_PATH.unshift(*includes)
       end
 
       if library = options[:require]
@@ -152,11 +201,20 @@ module Rack
 
       daemonize_app if options[:daemonize]
       write_pid if options[:pid]
+
+      trap(:INT) do
+        if server.respond_to?(:shutdown)
+          server.shutdown
+        else
+          exit
+        end
+      end
+
       server.run wrapped_app, options
     end
 
     def server
-      @_server ||= Rack::Handler.get(options[:server]) || Rack::Handler.default
+      @_server ||= Rack::Handler.get(options[:server]) || Rack::Handler.default(options)
     end
 
     private
@@ -168,6 +226,7 @@ module Rack
         args.clear if ENV.include?("REQUEST_METHOD")
 
         options.merge! opt_parser.parse! args
+        ENV["RACK_ENV"] = options[:environment]
         options
       end
 

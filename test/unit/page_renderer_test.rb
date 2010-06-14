@@ -227,6 +227,15 @@ END_THM
   def test_have_latest_itex2mml  
 
       assert_markup_parsed_as(
+        %{<p>boxed equation <math class='maruku-mathml' } +
+        %{display='inline' xmlns='http://www.w3.org/1998} +
+        %{/Math/MathML'><menclose notation='box'><mrow><} +
+        %{menclose notation='updiagonalstrike'><mi>D</mi} +
+        %{></menclose><mi>\317\210</mi><mo>=</mo><mn>0</} +
+        %{mn></mrow></menclose></math></p>},
+        "boxed equation $\\boxed{\\slash{D}\\psi=0}$")
+
+      assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
         %{MathML'><mi>\316\265</mi><mo>\342\211\240</mo>} +

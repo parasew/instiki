@@ -1,4 +1,4 @@
-# Copyright (C) 2007, 2008, 2009 Christian Neukirchen <purl.org/net/chneukirchen>
+# Copyright (C) 2007, 2008, 2009, 2010 Christian Neukirchen <purl.org/net/chneukirchen>
 #
 # Rack is freely distributable under the terms of an MIT-style license.
 # See COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -20,7 +20,7 @@ module Rack
 
   # Return the Rack release as a dotted string.
   def self.release
-    "1.1"
+    "1.2"
   end
 
   autoload :Builder, "rack/builder"
@@ -77,16 +77,5 @@ module Rack
     autoload :Cookie, "rack/session/cookie"
     autoload :Pool, "rack/session/pool"
     autoload :Memcache, "rack/session/memcache"
-  end
-
-  # *Adapters* connect Rack with third party web frameworks.
-  #
-  # Rack includes an adapter for Camping, see README for other
-  # frameworks supporting Rack in their code bases.
-  #
-  # Refer to the submodules for framework-specific calling details.
-
-  module Adapter
-    autoload :Camping, "rack/adapter/camping"
   end
 end
