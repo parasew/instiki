@@ -68,7 +68,7 @@ svgEditor.addExtension("Markers", function(S) {
 			{element:'path', attr:{d:'M20,80 L80,20 M80,80 L20,20'}},
 		triangle:
 			{element:'path', attr:{d:'M10,80 L50,20 L80,80 Z'}},
-		circle:
+		mcircle:
 			{element:'circle', attr:{r:30, cx:50, cy:50}},			
 	}
 	
@@ -89,19 +89,19 @@ svgEditor.addExtension("Markers", function(S) {
 			{id: "star", title: "Star" },
 			{id: "xmark", title: "X" },
 			{id: "triangle", title: "Triangle" },
-			{id: "circle", title: "Circle" },
+			{id: "mcircle", title: "Circle" },
 			{id: "leftarrow_o", title: "Open Left Arrow" },
 			{id: "rightarrow_o", title: "Open Right Arrow" },
 			{id: "box_o", title: "Open Box" },
 			{id: "star_o", title: "Open Star" },
 			{id: "triangle_o", title: "Open Triangle" },
-			{id: "circle_o", title: "Open Circle" },
+			{id: "mcircle_o", title: "Open Circle" },
 		]
 	};
 
 
 	// duplicate shapes to support unfilled (open) marker types with an _o suffix
-	$.each(['leftarrow','rightarrow','box','star','circle','triangle'],function(i,v) {
+	$.each(['leftarrow','rightarrow','box','star','mcircle','triangle'],function(i,v) {
 		marker_types[v+'_o'] = marker_types[v];
 	});
 	
@@ -301,10 +301,16 @@ svgEditor.addExtension("Markers", function(S) {
 			var m = elem.getAttribute(nam);
 			if (m) pline.setAttribute(nam,elem.getAttribute(nam));
 		});
+		
+		var batchCmd = new S.BatchCommand();
+		batchCmd.addSubCommand(new S.RemoveElementCommand(elem, elem.parentNode));
+		batchCmd.addSubCommand(new S.InsertElementCommand(pline));
+		
 		$(elem).after(pline).remove();
 		svgCanvas.clearSelection();
 		pline.id = id;
 		svgCanvas.addToSelection([pline]);
+		S.addCommandToHistory(batchCmd);
 		return pline;
 	}
 
@@ -484,6 +490,7 @@ svgEditor.addExtension("Markers", function(S) {
 			panel: "marker_panel",
 			title: getTitle('en','start_marker_list'),
 			id: "start_marker_list",
+			colnum: 3,
 			events: { change: setArrowFromButton }
 		},{
 			type: "input",
@@ -499,6 +506,7 @@ svgEditor.addExtension("Markers", function(S) {
 			panel: "marker_panel",
 			title: getTitle('en','mid_marker_list'),
 			id: "mid_marker_list",
+			colnum: 3,
 			events: { change: setArrowFromButton }
 		},{
 			type: "input",
@@ -513,10 +521,12 @@ svgEditor.addExtension("Markers", function(S) {
 			panel: "marker_panel",
 			title: getTitle('en','end_marker_list'),
 			id: "end_marker_list",
+			colnum: 3,
 			events: { change: setArrowFromButton }
 		} ],
 		callback: function() {
-			$('#marker_panel').hide();
+			$('#marker_panel').addClass('toolset').hide();
+			
 		},
 		addLangData: function(lang) {
 			return { data: lang_list[lang] };
