@@ -279,6 +279,12 @@ function ChangeElementCommand(elem, attrs, text) {
 		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgcontent) {
 			identifyLayers();
 		}		
+		
+		// Remove transformlist to prevent confusion that causes bugs like 575.
+		if (svgTransformLists[this.elem.id]) {
+			delete svgTransformLists[this.elem.id];
+		}	
+		
 		return true;
 	};
 
@@ -315,7 +321,11 @@ function RemoveElementCommand(elem, parent, text) {
 	this.text = text || ("Delete " + elem.tagName);
 	this.parent = parent;
 
-	this.apply = function() {
+	this.apply = function() {	
+		if (svgTransformLists[this.elem.id]) {
+			delete svgTransformLists[this.elem.id];
+		}	
+	
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
 		if (this.parent == svgcontent) {
@@ -324,6 +334,10 @@ function RemoveElementCommand(elem, parent, text) {
 	};
 
 	this.unapply = function() { 
+		if (svgTransformLists[this.elem.id]) {
+			delete svgTransformLists[this.elem.id];
+		}
+
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
 		if (this.parent == svgcontent) {
 			identifyLayers();
@@ -3310,7 +3324,7 @@ function BatchCommand(text) {
 						var dx = x - start_x;
 						var dy = y - start_y;
 						
-						if(evt.shiftKey) { var xya = snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
+						if(evt.shiftKey) { var xya = Utils.snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
 
 						if (dx != 0 || dy != 0) {
 							var len = selectedElements.length;
@@ -4425,7 +4439,7 @@ function BatchCommand(text) {
 	
 				var grip = $('#pathpointgrip_'+index);
 				grip.dblclick(function() {
-					path.setSegType();
+					if(path) path.setSegType();
 				});
 			}
 			if(x && y) {
@@ -5656,6 +5670,7 @@ function BatchCommand(text) {
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 				canvas.clearSelection();
 				this.resetOrientation(elem);
+				
 				addCommandToHistory(batchCmd);
 
 				// Set matrix to null
@@ -9154,7 +9169,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1586 $)";
+		return "svgcanvas.js ($Rev: 1599 $)";
 	};
 	
 	this.setUiStrings = function(strs) {

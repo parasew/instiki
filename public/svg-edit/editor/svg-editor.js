@@ -821,6 +821,10 @@
 							
 							var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
 							
+							if(tool.colnum) {
+								list.addClass('optcols' + tool.colnum);
+							}
+							
 							// Creates the tool, hides & adds it, returns the select element
 							var dropdown = $(html).appendTo(panel).children();
 							
@@ -2936,13 +2940,14 @@
 			
 			var SIDEPANEL_MAXWIDTH = 300;
 			var SIDEPANEL_OPENWIDTH = 150;
-			var sidedrag = -1, sidedragging = false;
+			var sidedrag = -1, sidedragging = false, allowmove = false;
 				
 			var resizePanel = function(evt) {
+				if (!allowmove) return;
 				if (sidedrag == -1) return;
 				sidedragging = true;
 				var deltax = sidedrag - evt.pageX;
-	
+				
 				var sidepanels = $('#sidepanels');
 				var sidewidth = parseInt(sidepanels.css('width'));
 				if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
@@ -2967,7 +2972,11 @@
 				.mousedown(function(evt) {
 					sidedrag = evt.pageX;
 					$(window).mousemove(resizePanel);
-					
+					allowmove = false;
+					// Silly hack for Chrome, which always runs mousemove right after mousedown
+					setTimeout(function() {
+						allowmove = true;
+					}, 20);
 				})
 				.mouseup(function(evt) {
 					if (!sidedragging) toggleSidePanel();
@@ -3513,7 +3522,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1586 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1592 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
