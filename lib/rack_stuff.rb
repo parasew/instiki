@@ -18,6 +18,8 @@ module Rack
     end
   end
 
+ if Rack.release  <= "1.2"
+  # The Tempfile bug is fixed in the bundled version of Rack
   class RewindableInput
     def make_rewindable
       # Buffer all data into a tempfile. Since this tempfile is private to this
@@ -58,4 +60,6 @@ module Rack
       ruby_engine == "ruby" && RUBY_VERSION == "1.9.1" && RUBY_PATCHLEVEL >= 152
     end
   end
+ end
+ 
 end
