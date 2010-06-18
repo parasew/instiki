@@ -25,14 +25,13 @@ task :officialrelease_really => ["SPEC", :dist, :gem] do
 end
 
 def release
-  require File.dirname(__FILE__) + "/lib/rack"
-  "rack-#{Rack.release}.0"
+  "rack-#{File.read("rack.gemspec")[/s.version *= *"(.*?)"/, 1]}"
 end
 
 desc "Make binaries executable"
 task :chmod do
   Dir["bin/*"].each { |binary| File.chmod(0775, binary) }
-  Dir["spec/cgi/spec*"].each { |binary| File.chmod(0775, binary) }
+  Dir["test/cgi/test*"].each { |binary| File.chmod(0775, binary) }
 end
 
 desc "Generate a ChangeLog"
@@ -69,16 +68,16 @@ desc "Run all the fast tests"
 task :test do
   opts     = ENV['TEST'] || '-a'
   specopts = ENV['TESTOPTS'] ||
-    "-q -t '^(?!Rack::Handler|Rack::Adapter|Rack::Session::Memcache|rackup)'"
+    "-q -t '^(?!Rack::Adapter|Rack::Session::Memcache|rackup)'"
 
-  sh "bacon -I./lib:./spec -w #{opts} #{specopts}"
+  sh "bacon -I./lib:./test -w #{opts} #{specopts}"
 end
 
 desc "Run all the tests"
 task :fulltest => [:chmod] do
   opts     = ENV['TEST'] || '-a'
   specopts = ENV['TESTOPTS'] || '-q'
-  sh "bacon -I./lib:./spec -w #{opts} #{specopts}"
+  sh "bacon -I./lib:./test -w #{opts} #{specopts}"
 end
 
 task :gem => ["SPEC"] do

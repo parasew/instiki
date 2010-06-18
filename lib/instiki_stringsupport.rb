@@ -2306,12 +2306,17 @@ end
 
 #:stopdoc:
 
+    TO_ESCAPE = {
+      '&' => '&amp;',
+      '<' => '&lt;',
+      '>' => '&gt;',
+      "'" => '&#39;',
+      '"' => '&quot;',
+    }
+    TO_ESCAPE_PATTERN = Regexp.union(TO_ESCAPE.keys)
+    
     def escapeHTML
-            self.gsub( /&/, "&amp;" ).
-             gsub( /</, "&lt;" ).
-             gsub( />/, "&gt;" ).
-             gsub(/'/, "&#39;" ).
-             gsub(/"/, "&quot;" )
+      self.gsub(TO_ESCAPE_PATTERN){|m| TO_ESCAPE[m]}
     end
     
     def unescapeHTML
