@@ -74,9 +74,7 @@ module MaRuKu; module Out; module HTML
 			div.write(xml,indent,transitive=true,ie_hack)
 		end
 
-		xml.gsub!(/\A<dummy>\s*/,'')
-		xml.gsub!(/\s*<\/dummy>\Z/,'')
-		xml.gsub!(/\A<dummy\s*\/>/,'')
+		xml.gsub!(/\A<dummy>\s*|\s*<\/dummy>\Z|\A<dummy\s*\/>/,'')
 		xml
 	end
 	
@@ -507,8 +505,7 @@ by Maruku, to have the same results in both HTML and LaTeX.
 	def source2html(source)
 #		source = source.gsub(/&/,'&amp;')
 		source = Text.normalize(source)
-		source = source.gsub(/\&apos;/,'&#39;') # IE bug
-		source = source.gsub(/'/,'&#39;') # IE bug
+		source.gsub!(/\&apos;|'/,'&#39;') # IE bug
 		Text.new(source, true, nil, true )
 	end
 		
@@ -571,8 +568,7 @@ and
 				source = source.gsub(/\n*\Z/,'')
 				
 				html = convertor.convert( source )
-				html = html.gsub(/\&apos;/,'&#39;') # IE bug
-				html = html.gsub(/'/,'&#39;') # IE bug
+				html.gsub!(/\&apos;|'/,'&#39;') # IE bug
 	#			html = html.gsub(/&/,'&amp;') 
 				
 				code = Document.new(html, {:respect_whitespace =>:all}).root
@@ -633,9 +629,7 @@ of the form `#ff00ff`.
 		s = source
 		
 #		s  = s.gsub(/&/,'&amp;')
-		s = Text.normalize(s)
-		s  = s.gsub(/\&apos;/,'&#39;') # IE bug
-		s  = s.gsub(/'/,'&#39;') # IE bug
+		s = Text.normalize(s).gsub(/\&apos;|'/,'&#39;') # IE bug
 
 		if get_setting(:code_show_spaces) 
 			# 187 = raquo

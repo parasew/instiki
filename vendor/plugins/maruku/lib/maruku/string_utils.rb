@@ -141,6 +141,26 @@ module MaRuKu
       return s
     end
 
+#--
+    MARUKU_HTML_ESCAPE = {
+      '&' => '&amp;',
+      '<' => '&lt;',
+      '>' => '&gt;',
+      "'" => '&#39;',
+      '"' => '&quot;',
+    }
+    MARUKU_HTML_ESCAPE_PATTERN = Regexp.union(*MARUKU_HTML_ESCAPE.keys)
+#++
+
+    # HTML-escapes a string.
+    #
+    # @param str [String]
+    # @return [String]
+    
+    def html_escape(string)
+      string.gsub(MARUKU_HTML_ESCAPE_PATTERN){|m| MARUKU_HTML_ESCAPE[m]}
+    end
+
     # Escapes a string so that it can be safely used in a Bourne shell command line.
     #
     # Note that a resulted string should be used unquoted

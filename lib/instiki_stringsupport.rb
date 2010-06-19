@@ -2313,7 +2313,7 @@ end
       "'" => '&#39;',
       '"' => '&quot;',
     }
-    TO_ESCAPE_PATTERN = Regexp.union(TO_ESCAPE.keys)
+    TO_ESCAPE_PATTERN = Regexp.union(*TO_ESCAPE.keys)
     
     def escapeHTML
       self.gsub(TO_ESCAPE_PATTERN){|m| TO_ESCAPE[m]}
