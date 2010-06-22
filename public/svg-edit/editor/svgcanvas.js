@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -81,14 +81,21 @@ if(window.opera) {
 
 }());
 
-
+// Class: SvgCanvas
+// The main SvgCanvas class that manages all SVG-related functions
+//
+// Parameters:
+// container - The container HTML element that should hold the SVG root element
+// config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
 var isOpera = !!window.opera,
 	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
+	
+	// Object populated later with booleans indicating support for features	
 	support = {},
 
-// this defines which elements and attributes that we support
+	// this defines which elements and attributes that we support
 	svgWhiteList = {
 	// SVG Elements
 	"a": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
@@ -128,6 +135,7 @@ var isOpera = !!window.opera,
 	"annotation-xml": ["encoding"],
 	"maction": ["actiontype", "other", "selection"],
 	"math": ["class", "id", "display", "xmlns"],
+	"menclose": ["notation"],
 	"merror": [],
 	"mfrac": ["linethickness"],
 	"mi": ["mathvariant"],
@@ -156,14 +164,7 @@ var isOpera = !!window.opera,
 	"semantics": []
 	},
 
-
-// console.log('Start profiling')
-// setTimeout(function() {
-// 	canvas.addToSelection(canvas.getVisibleElements());
-// 	console.log('Stop profiling')
-// },3000);
-
-
+	// Interface strings, usually for title elements
 	uiStrings = {
 		"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
 		"pathCtrlPtTooltip": "Drag control point to adjust curve properties",
@@ -174,28 +175,268 @@ var isOpera = !!window.opera,
 		"exportNoText": "Text may not appear as expected"
 	},
 	
+	// Default configuration options
 	curConfig = {
 		show_outside_canvas: true,
 		dimensions: [640, 480]
 	},
 	
+	// Function: toXml
+	// Converts characters in a string to XML-friendly entities.
+	//
+	// Example: "&" becomes "&amp;"
+	//
+	// Parameters:
+	// str - The string to be converted
+	//
+	// Returns:
+	// The converted string
 	toXml = function(str) {
 		return $('<p/>').text(str).html();
 	},
 	
+	// Function: fromXml
+	// Converts XML entities in a string to single characters. 
+	// Example: "&amp;" becomes "&"
+	//
+	// Parameters:
+	// str - The string to be converted
+	//
+	// Returns: 
+	// The converted string
 	fromXml = function(str) {
 		return $('<p/>').html(str).text();
 	};
 
+	// Update config with new one if given
 	if(config) {
 		$.extend(curConfig, config);
 	}
-
-	var unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0};
 	
-// These command objects are used for the Undo/Redo stack
-// attrs contains the values that the attributes had before the change
-function ChangeElementCommand(elem, attrs, text) {
+	
+// TODO: declare the variables and set them as null, then move this setup stuff to
+// an initialization function - probably just use clear()
+
+var canvas = this,
+	
+	// Namespace constants
+	svgns = "http://www.w3.org/2000/svg",
+	xlinkns = "http://www.w3.org/1999/xlink",
+	xmlns = "http://www.w3.org/XML/1998/namespace",
+	xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
+	se_ns = "http://svg-edit.googlecode.com",
+	htmlns = "http://www.w3.org/1999/xhtml",
+	mathns = "http://www.w3.org/1998/Math/MathML",
+	
+	// Prefix string for element IDs
+	idprefix = "svg_",
+	
+	// Map of units, those set to 0 are updated later based on calculations
+	unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0},
+
+	//nonce to uniquify id's
+	nonce = Math.floor(Math.random()*100001),
+	
+	// Boolean to indicate whether or not IDs given to elements should be random
+	randomize_ids = false, 
+	
+	// "document" element associated with the container (same as window.document using default svg-editor.js)
+	svgdoc = container.ownerDocument,
+	
+	// Array with width/height of canvas
+	dimensions = curConfig.dimensions,
+	
+	// Create Root SVG element. This is a container for the document being edited, not the document itself.
+	svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
+					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
+					'<defs>' +
+						'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
+							'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
+							'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
+							'<feMerge>'+
+								'<feMergeNode in="offsetBlur"/>'+
+								'<feMergeNode in="SourceGraphic"/>'+
+							'</feMerge>'+
+						'</filter>'+
+					'</defs>'+
+				'</svg>').documentElement, true);
+				
+
+	container.appendChild(svgroot);
+	
+// The actual element that represents the final output SVG element
+var svgcontent = svgdoc.createElementNS(svgns, "svg");
+$(svgcontent).attr({
+	id: 'svgcontent',
+	width: dimensions[0],
+	height: dimensions[1],
+	x: dimensions[0],
+	y: dimensions[1],
+	overflow: curConfig.show_outside_canvas?'visible':'hidden',
+	xmlns: svgns,
+	"xmlns:se": se_ns,
+	"xmlns:xlink": xlinkns
+}).appendTo(svgroot);
+
+// Set nonce if randomize_ids = true
+if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
+
+// map namespace URIs to prefixes
+var nsMap = {};
+nsMap[xlinkns] = 'xlink';
+nsMap[xmlns] = 'xml';
+nsMap[xmlnsns] = 'xmlns';
+nsMap[se_ns] = 'se';
+nsMap[htmlns] = 'xhtml';
+nsMap[mathns] = 'mathml';
+
+// map prefixes to namespace URIs
+var nsRevMap = {};
+$.each(nsMap, function(key,value){
+	nsRevMap[value] = key;
+});
+
+// Produce a Namespace-aware version of svgWhitelist
+var svgWhiteListNS = {};
+$.each(svgWhiteList, function(elt,atts){
+	var attNS = {};
+	$.each(atts, function(i, att){
+		if (att.indexOf(':') != -1) {
+			var v = att.split(':');
+			attNS[v[1]] = nsRevMap[v[0]];
+		} else {
+			attNS[att] = att == 'xmlns' ? xmlnsns : null;
+		}
+	});
+	svgWhiteListNS[elt] = attNS;
+});
+
+// Animation element to change the opacity of any newly created element
+var opac_ani = document.createElementNS(svgns, 'animate');
+$(opac_ani).attr({
+	attributeName: 'opacity',
+	begin: 'indefinite',
+	dur: 1,
+	fill: 'freeze'
+}).appendTo(svgroot);
+
+// Unit conversion functions
+var convertToNum, convertToUnit, setUnitAttr;
+
+(function() {
+	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
+	var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
+	var unit_attrs = $.merge(['r','radius'], w_attrs);
+	$.merge(unit_attrs, h_attrs);
+	
+	// Converts given values to numbers. Attributes must be supplied in 
+	// case a percentage is given
+	convertToNum = function(attr, val) {
+		// Return a number if that's what it already is
+		if(!isNaN(val)) return val-0;
+		
+		if(val.substr(-1) === '%') {
+			// Deal with percentage, depends on attribute
+			var num = val.substr(0, val.length-1)/100;
+			var res = canvas.getResolution();
+			
+			if($.inArray(attr, w_attrs) !== -1) {
+				return num * res.w;
+			} else if($.inArray(attr, h_attrs) !== -1) {
+				return num * res.h;
+			} else {
+				return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+			}
+		} else {
+			var unit = val.substr(-2);
+			var num = val.substr(0, val.length-2);
+			// Note that this multiplication turns the string into a number
+			return num * unit_types[unit];
+		}
+	};
+	
+	setUnitAttr = function(elem, attr, val) {
+		if(!isNaN(val)) {
+			// New value is a number, so check currently used unit
+			var old_val = elem.getAttribute(attr);
+			
+			if(old_val !== null && isNaN(old_val)) {
+				// Old value was a number, so get unit, then convert
+				var unit;
+				if(old_val.substr(-1) === '%') {
+					var res = canvas.getResolution();
+					unit = '%';
+					val *= 100;
+					if($.inArray(attr, w_attrs) !== -1) {
+						val = val / res.w;
+					} else if($.inArray(attr, h_attrs) !== -1) {
+						val = val / res.h;
+					} else {
+						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+					}
+
+				} else {
+					unit = old_val.substr(-2);
+					val = val / unit_types[unit];
+				}
+				
+				val += unit;
+			}
+		}
+		
+		elem.setAttribute(attr, val);
+	}
+	
+	canvas.isValidUnit = function(attr, val) {
+		var valid = false;
+		if($.inArray(attr, unit_attrs) != -1) {
+			// True if it's just a number
+			if(!isNaN(val)) {
+				valid = true;
+			} else {
+			// Not a number, check if it has a valid unit
+				val = val.toLowerCase();
+				$.each(unit_types, function(unit) {
+					if(valid) return;
+					var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+					if(re.test(val)) valid = true;
+				});
+			}
+		} else if (attr == "id") {
+			// if we're trying to change the id, make sure it's not already present in the doc
+			// and the id value is valid.
+
+			var result = false;
+			// because getElem() can throw an exception in the case of an invalid id
+			// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
+			// we wrap it in an exception and only return true if the ID was valid and
+			// not already present
+			try {
+				var elem = getElem(val);
+				result = (elem == null);
+			} catch(e) {}
+			return result;
+		} else valid = true;			
+		
+		return valid;
+	}
+	
+})();
+
+
+// Group: Undo/Redo history management
+
+this.undoCmd = {};
+
+// Function: ChangeElementCommand
+// History command to make a change to an element. 
+// Usually an attribute change, but can also be textcontent.
+//
+// Parameters:
+// elem - The DOM element that was changed
+// attrs - An object with the attributes to be changed and the values they had *before* the change
+// text - An optional string visible to user related to this change
+var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, text) {
 	this.elem = elem;
 	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
 	this.newValues = {};
@@ -206,6 +447,8 @@ function ChangeElementCommand(elem, attrs, text) {
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 
+	// Function: ChangeElementCommand.apply
+	// Performs the stored change action
 	this.apply = function() {
 		var bChangedTransform = false;
 		for(var attr in this.newValues ) {
@@ -246,6 +489,8 @@ function ChangeElementCommand(elem, attrs, text) {
 		return true;
 	};
 
+	// Function: ChangeElementCommand.unapply
+	// Reverses the stored change action
 	this.unapply = function() {
 		var bChangedTransform = false;
 		for(var attr in this.oldValues ) {
@@ -288,14 +533,24 @@ function ChangeElementCommand(elem, attrs, text) {
 		return true;
 	};
 
+	// Function: ChangeElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; }
 }
 
-function InsertElementCommand(elem, text) {
+// Function: InsertElementCommand
+// History command for an element that was added to the DOM
+//
+// Parameters:
+// elem - The newly added DOM element
+// text - An optional string visible to user related to this change
+var InsertElementCommand = this.undoCmd.insertElement = function(elem, text) {
 	this.elem = elem;
 	this.text = text || ("Create " + elem.tagName);
 	this.parent = elem.parentNode;
-
+	
+	// Function: InsertElementCommand.apply
+	// Re-Inserts the new element
 	this.apply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
 		if (this.parent == svgcontent) {
@@ -303,6 +558,8 @@ function InsertElementCommand(elem, text) {
 		}		
 	};
 
+	// Function: InsertElementCommand.unapply
+	// Removes the element
 	this.unapply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
@@ -311,16 +568,25 @@ function InsertElementCommand(elem, text) {
 		}		
 	};
 
+	// Function: InsertElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; };
 }
 
-// this is created for an element that has or will be removed from the DOM
-// (creating this object does not remove the element from the DOM itself)
-function RemoveElementCommand(elem, parent, text) {
+// Function: RemoveElementCommand
+// History command for an element removed from the DOM
+//
+// Parameters:
+// elem - The removed DOM element
+// parent - The DOM element's parent
+// text - An optional string visible to user related to this change
+var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, text) {
 	this.elem = elem;
 	this.text = text || ("Delete " + elem.tagName);
 	this.parent = parent;
 
+	// Function: RemoveElementCommand.apply
+	// Re-removes the new element
 	this.apply = function() {	
 		if (svgTransformLists[this.elem.id]) {
 			delete svgTransformLists[this.elem.id];
@@ -333,6 +599,8 @@ function RemoveElementCommand(elem, parent, text) {
 		}		
 	};
 
+	// Function: RemoveElementCommand.unapply
+	// Re-adds the new element
 	this.unapply = function() { 
 		if (svgTransformLists[this.elem.id]) {
 			delete svgTransformLists[this.elem.id];
@@ -344,16 +612,25 @@ function RemoveElementCommand(elem, parent, text) {
 		}		
 	};
 
+	// Function: RemoveElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; };
 	
 	// special hack for webkit: remove this element's entry in the svgTransformLists map
 	if (svgTransformLists[elem.id]) {
 		delete svgTransformLists[elem.id];
 	}
-
 }
 
-function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
+// Function: MoveElementCommand
+// History command for an element that had its DOM position changed
+//
+// Parameters:
+// elem - The DOM element that was moved
+// oldNextSibling - The element's next sibling before it was moved
+// oldParent - The element's parent before it was moved
+// text - An optional string visible to user related to this change
+var MoveElementCommand = this.undoCmd.moveElement = function(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
 	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
 	this.oldNextSibling = oldNextSibling;
@@ -361,6 +638,8 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.newNextSibling = elem.nextSibling;
 	this.newParent = elem.parentNode;
 
+	// Function: MoveElementCommand.unapply
+	// Re-positions the element
 	this.apply = function() {
 		this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
 		if (this.newParent == svgcontent) {
@@ -368,6 +647,8 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 		}
 	};
 
+	// Function: MoveElementCommand.unapply
+	// Positions the element back to its original location
 	this.unapply = function() {
 		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
 		if (this.oldParent == svgcontent) {
@@ -375,6 +656,8 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 		}
 	};
 
+	// Function: MoveElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; };
 }
 
@@ -382,11 +665,17 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 // if a new Typing command is created and the top command on the stack is also a Typing
 // and they both affect the same element, then collapse the two commands into one
 
-// this command object acts an arbitrary number of subcommands 
-function BatchCommand(text) {
+// Function: BatchCommand
+// History command that can contain/execute multiple other commands
+//
+// Parameters:
+// text - An optional string visible to user related to this change
+var BatchCommand = this.undoCmd.batch = function(text) {
 	this.text = text || "Batch Command";
 	this.stack = [];
 
+	// Function: BatchCommand.apply
+	// Runs "apply" on all subcommands
 	this.apply = function() {
 		var len = this.stack.length;
 		for (var i = 0; i < len; ++i) {
@@ -394,14 +683,17 @@ function BatchCommand(text) {
 		}
 	};
 
+	// Function: BatchCommand.unapply
+	// Runs "unapply" on all subcommands
 	this.unapply = function() {
 		for (var i = this.stack.length-1; i >= 0; i--) {
 			this.stack[i].unapply();
 		}
 	};
 
+	// Function: BatchCommand.elements
+	// Iterate through all our subcommands and returns all the elements we are changing
 	this.elements = function() {
-		// iterate through all our subcommands and find all the elements we are changing
 		var elems = [];
 		var cmd = this.stack.length;
 		while (cmd--) {
@@ -414,14 +706,181 @@ function BatchCommand(text) {
 		return elems; 
 	};
 
+	// Function: BatchCommand.addSubCommand
+	// Adds a given command to the history stack
+
+	// Parameters:
+	// cmd - The undo command object to add
 	this.addSubCommand = function(cmd) { this.stack.push(cmd); };
 
+	// Function: BatchCommand.isEmpty
+	// Returns a boolean indicating whether or not the batch command is empty
 	this.isEmpty = function() { return this.stack.length == 0; };
 }
 
-// private members
+// Set scope for these undo functions
+var resetUndoStack, addCommandToHistory;
 
-	// **************************************************************************************
+// Undo/redo stack related functions
+(function(c) {
+	var undoStackPointer = 0, 
+		undoStack = [];
+	
+	// Function: resetUndoStack
+	// Resets the undo stack, effectively clearing the undo/redo history
+	resetUndoStack = function() {
+		undoStack = [];
+		undoStackPointer = 0;
+	};
+	
+	c.undoMgr = {
+		// Function: undoMgr.getUndoStackSize
+		// Returns: 
+		// Integer with the current size of the undo history stack
+		getUndoStackSize: function() { return undoStackPointer; },
+		
+		// Function: undoMgr.getRedoStackSize
+		// Returns: 
+		// Integer with the current size of the redo history stack
+		getRedoStackSize: function() { return undoStack.length - undoStackPointer; },
+		
+		// Function: undoMgr.getNextUndoCommandText
+		// Returns: 
+		// String associated with the next undo command
+		getNextUndoCommandText: function() { 
+			if (undoStackPointer > 0) 
+				return undoStack[undoStackPointer-1].text;
+			return "";
+		},
+		
+		// Function: undoMgr.getNextRedoCommandText
+		// Returns: 
+		// String associated with the next redo command
+		getNextRedoCommandText: function() { 
+			if (undoStackPointer < undoStack.length) 
+				return undoStack[undoStackPointer].text;
+			return "";
+		},
+		
+		// Function: undoMgr.undo
+		// Performs an undo step
+		undo: function() {
+			if (undoStackPointer > 0) {
+				c.clearSelection();
+				var cmd = undoStack[--undoStackPointer];
+				cmd.unapply();
+				pathActions.clear();
+				call("changed", cmd.elements());
+			}
+		},
+
+		// Function: undoMgr.redo		
+		// Performs a redo step
+		redo: function() {
+			if (undoStackPointer < undoStack.length && undoStack.length > 0) {
+				c.clearSelection();
+				var cmd = undoStack[undoStackPointer++];
+				cmd.apply();
+				pathActions.clear();
+				call("changed", cmd.elements());
+			}
+		}
+	};
+	
+	// Function: addCommandToHistory
+	// Adds a command object to the undo history stack
+	//
+	// Parameters: 
+	// cmd - The command object to add
+	addCommandToHistory = c.undoCmd.add = function(cmd) {
+	// FIXME: we MUST compress consecutive text changes to the same element
+	// (right now each keystroke is saved as a separate command that includes the
+	// entire text contents of the text element)
+	// TODO: consider limiting the history that we store here (need to do some slicing)
+	
+		// if our stack pointer is not at the end, then we have to remove
+		// all commands after the pointer and insert the new command
+		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
+			undoStack = undoStack.splice(0, undoStackPointer);
+		}
+		undoStack.push(cmd);
+		undoStackPointer = undoStack.length;
+	};
+	
+}(canvas));
+
+(function(c) {
+
+	// New functions for refactoring of Undo/Redo
+	
+	// this is the stack that stores the original values, the elements and
+	// the attribute name for begin/finish
+	var undoChangeStackPointer = -1;
+	var undoableChangeStack = [];
+	
+	// Function: beginUndoableChange
+	// This function tells the canvas to remember the old values of the 
+	// attrName attribute for each element sent in.  The elements and values 
+	// are stored on a stack, so the next call to finishUndoableChange() will 
+	// pop the elements and old values off the stack, gets the current values
+	// from the DOM and uses all of these to construct the undo-able command.
+	//
+	// Parameters: 
+	// attrName - The name of the attribute being changed
+	// elems - Array of DOM elements being changed
+	c.beginUndoableChange = function(attrName, elems) {
+		var p = ++undoChangeStackPointer;
+		var i = elems.length;
+		var oldValues = new Array(i), elements = new Array(i);
+		while (i--) {
+			var elem = elems[i];
+			if (elem == null) continue;
+			elements[i] = elem;
+			oldValues[i] = elem.getAttribute(attrName);
+		}
+		undoableChangeStack[p] = {'attrName': attrName,
+								'oldValues': oldValues,
+								'elements': elements};
+	};
+	
+	// Function: finishUndoableChange
+	// This function returns a BatchCommand object which summarizes the
+	// change since beginUndoableChange was called.  The command can then
+	// be added to the command history
+	//
+	// Returns: 
+	// Batch command object with resulting changes
+	c.finishUndoableChange = function() {
+		var p = undoChangeStackPointer--;
+		var changeset = undoableChangeStack[p];
+		var i = changeset['elements'].length;
+		var attrName = changeset['attrName'];
+		var batchCmd = new BatchCommand("Change " + attrName);
+		while (i--) {
+			var elem = changeset['elements'][i];
+			if (elem == null) continue;
+			var changes = {};
+			changes[attrName] = changeset['oldValues'][i];
+			if (changes[attrName] != elem.getAttribute(attrName)) {
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName));
+			}
+		}
+		undoableChangeStack[p] = null;
+		return batchCmd;
+	};
+
+}(canvas));
+
+// Put SelectorManager in this scope
+var SelectorManager;
+
+(function() {
+	// Class: Selector
+	// Private class for DOM element selection boxes
+	// 
+	// Parameters:
+	// id - integer to internally indentify the selector
+	// elem - DOM element associated with this selector
 	function Selector(id, elem) {
 		// this is the selector's unique number
 		this.id = id;
@@ -432,8 +891,12 @@ function BatchCommand(text) {
 		// this is a flag used internally to track whether the selector is being used or not
 		this.locked = true;
 
-		// this function is used to reset the id and element that the selector is attached to
-		this.reset = function(e, update) {
+		// Function: Selector.reset 
+		// Used to reset the id and element that the selector is attached to
+		//
+		// Parameters: 
+		// e - DOM element associated with this selector
+		this.reset = function(e) {
 			this.locked = true;
 			this.selectedElement = e;
 			this.resize();
@@ -511,6 +974,11 @@ function BatchCommand(text) {
 				}) );
 		}
 
+		// Function: Selector.showGrips
+		// Show the resize grips of this selector
+		//
+		// Parameters:
+		// show - boolean indicating whether grips should be shown or not
 		this.showGrips = function(show) {
 			// TODO: use suspendRedraw() here
 			var bShow = show ? "inline" : "none";
@@ -523,7 +991,11 @@ function BatchCommand(text) {
 			if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
 		};
 		
+		// Function: Selector.updateGripCursors
 		// Updates cursors for corner grips on rotation so arrows point the right way
+		//
+		// Parameters:
+		// angle - Float indicating current rotation angle in degrees
 		this.updateGripCursors = function(angle) {
 			var dir_arr = [];
 			var steps = Math.round(angle / 45);
@@ -542,6 +1014,8 @@ function BatchCommand(text) {
 			};
 		};
 		
+		// Function: Selector.resize
+		// Updates the selector to match the element's size
 		this.resize = function() {
 			var selectedBox = this.selectorRect,
 				selectedGrips = this.selectorGrips,
@@ -667,135 +1141,153 @@ function BatchCommand(text) {
 		this.reset(elem);
 	};
 
-	function SelectorManager() {
+	// Class: SelectorManager
+	// public class to manage all selector objects (selection boxes)
+	SelectorManager = function() {
 
-		// this will hold the <g> element that contains all selector rects/grips
-		this.selectorParentGroup = null;
+	// this will hold the <g> element that contains all selector rects/grips
+	this.selectorParentGroup = null;
 
-		// this is a special rect that is used for multi-select
-		this.rubberBandBox = null;
+	// this is a special rect that is used for multi-select
+	this.rubberBandBox = null;
 
-		// this will hold objects of type Selector (see above)
-		this.selectors = [];
+	// this will hold objects of type Selector (see above)
+	this.selectors = [];
 
-		// this holds a map of SVG elements to their Selector object
-		this.selectorMap = {};
+	// this holds a map of SVG elements to their Selector object
+	this.selectorMap = {};
 
-		// local reference to this object
-		var mgr = this;
+	// local reference to this object
+	var mgr = this;
+	
+	// Function: SelectorManager.initGroup
+	// Resets the parent selector group element
+	this.initGroup = function() {
+		// remove old selector parent group if it existed
+		if (mgr.selectorParentGroup && mgr.selectorParentGroup.parentNode) {
+			mgr.selectorParentGroup.parentNode.removeChild(mgr.selectorParentGroup);
+		}
+		// create parent selector group and add it to svgroot
+		mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
+		mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
+		svgroot.appendChild(mgr.selectorParentGroup);
+		mgr.selectorMap = {};
+		mgr.selectors = [];
+		mgr.rubberBandBox = null;
+		
+		if($("#canvasBackground").length) return;
 
-		this.initGroup = function() {
-			// remove old selector parent group if it existed
-			if (mgr.selectorParentGroup && mgr.selectorParentGroup.parentNode) {
-				mgr.selectorParentGroup.parentNode.removeChild(mgr.selectorParentGroup);
-			}
-			// create parent selector group and add it to svgroot
-			mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
-			mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
-			svgroot.appendChild(mgr.selectorParentGroup);
-			mgr.selectorMap = {};
-			mgr.selectors = [];
-			mgr.rubberBandBox = null;
-			
-			if($("#canvasBackground").length) return;
-
-			var canvasbg = svgdoc.createElementNS(svgns, "svg");
-			var dims = curConfig.dimensions;
-			assignAttributes(canvasbg, {
-				'id':'canvasBackground',
-				'width': dims[0],
-				'height': dims[1],
-				'x': 0,
-				'y': 0,
-				'overflow': 'visible',
-				'style': 'pointer-events:none'
-			});
-			
-			var rect = svgdoc.createElementNS(svgns, "rect");
-			assignAttributes(rect, {
-				'width': '100%',
-				'height': '100%',
-				'x': 0,
-				'y': 0,
-				'stroke-width': 1,
-				'stroke': '#000',
-				'fill': '#FFF',
-				'style': 'pointer-events:none'
-			});
-			// Both Firefox and WebKit are too slow with this filter region (especially at higher
-			// zoom levels) and Opera has at least one bug
+		var canvasbg = svgdoc.createElementNS(svgns, "svg");
+		var dims = curConfig.dimensions;
+		assignAttributes(canvasbg, {
+			'id':'canvasBackground',
+			'width': dims[0],
+			'height': dims[1],
+			'x': 0,
+			'y': 0,
+			'overflow': 'visible',
+			'style': 'pointer-events:none'
+		});
+		
+		var rect = svgdoc.createElementNS(svgns, "rect");
+		assignAttributes(rect, {
+			'width': '100%',
+			'height': '100%',
+			'x': 0,
+			'y': 0,
+			'stroke-width': 1,
+			'stroke': '#000',
+			'fill': '#FFF',
+			'style': 'pointer-events:none'
+		});
+		// Both Firefox and WebKit are too slow with this filter region (especially at higher
+		// zoom levels) and Opera has at least one bug
 //			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
-			canvasbg.appendChild(rect);
-			svgroot.insertBefore(canvasbg, svgcontent);
-		};
-
-		this.requestSelector = function(elem) {
-			if (elem == null) return null;
-			var N = this.selectors.length;
-			// if we've already acquired one for this element, return it
-			if (typeof(this.selectorMap[elem.id]) == "object") {
-				this.selectorMap[elem.id].locked = true;
-				return this.selectorMap[elem.id];
+		canvasbg.appendChild(rect);
+		svgroot.insertBefore(canvasbg, svgcontent);
+	};
+	
+	// Function: SelectorManager.requestSelector
+	// Returns the selector based on the given element
+	//
+	// Parameters:
+	// elem - DOM element to get the selector for
+	this.requestSelector = function(elem) {
+		if (elem == null) return null;
+		var N = this.selectors.length;
+		// if we've already acquired one for this element, return it
+		if (typeof(this.selectorMap[elem.id]) == "object") {
+			this.selectorMap[elem.id].locked = true;
+			return this.selectorMap[elem.id];
+		}
+		for (var i = 0; i < N; ++i) {
+			if (this.selectors[i] && !this.selectors[i].locked) {
+				this.selectors[i].locked = true;
+				this.selectors[i].reset(elem);
+				this.selectorMap[elem.id] = this.selectors[i];
+				return this.selectors[i];
 			}
-			for (var i = 0; i < N; ++i) {
-				if (this.selectors[i] && !this.selectors[i].locked) {
-					this.selectors[i].locked = true;
-					this.selectors[i].reset(elem);
-					this.selectorMap[elem.id] = this.selectors[i];
-					return this.selectors[i];
+		}
+		// if we reached here, no available selectors were found, we create one
+		this.selectors[N] = new Selector(N, elem);
+		this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
+		this.selectorMap[elem.id] = this.selectors[N];
+		return this.selectors[N];
+	};
+	
+	// Function: SelectorManager.releaseSelector
+	// Removes the selector of the given element (hides selection box) 
+	//
+	// Parameters:
+	// elem - DOM element to remove the selector for
+	this.releaseSelector = function(elem) {
+		if (elem == null) return;
+		var N = this.selectors.length,
+			sel = this.selectorMap[elem.id];
+		for (var i = 0; i < N; ++i) {
+			if (this.selectors[i] && this.selectors[i] == sel) {
+				if (sel.locked == false) {
+					console.log("WARNING! selector was released but was already unlocked");
 				}
+				delete this.selectorMap[elem.id];
+				sel.locked = false;
+				sel.selectedElement = null;
+				sel.showGrips(false);
+
+				// remove from DOM and store reference in JS but only if it exists in the DOM
+				try {
+					sel.selectorGroup.setAttribute("display", "none");
+				} catch(e) { }
+
+				break;
 			}
-			// if we reached here, no available selectors were found, we create one
-			this.selectors[N] = new Selector(N, elem);
-			this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
-			this.selectorMap[elem.id] = this.selectors[N];
-			return this.selectors[N];
-		};
-		this.releaseSelector = function(elem) {
-			if (elem == null) return;
-			var N = this.selectors.length,
-				sel = this.selectorMap[elem.id];
-			for (var i = 0; i < N; ++i) {
-				if (this.selectors[i] && this.selectors[i] == sel) {
-					if (sel.locked == false) {
-						console.log("WARNING! selector was released but was already unlocked");
-					}
-					delete this.selectorMap[elem.id];
-					sel.locked = false;
-					sel.selectedElement = null;
-					sel.showGrips(false);
+		}
+	};
 
-					// remove from DOM and store reference in JS but only if it exists in the DOM
-					try {
-						sel.selectorGroup.setAttribute("display", "none");
-					} catch(e) { }
+	// Function: SelectorManager.getRubberBandBox
+	// Returns the rubberBandBox DOM element. This is the rectangle drawn by the user for selecting/zooming
+	this.getRubberBandBox = function() {
+		if (this.rubberBandBox == null) {
+			this.rubberBandBox = this.selectorParentGroup.appendChild(
+					addSvgElementFromJson({ "element": "rect",
+						"attr": {
+							"id": "selectorRubberBand",
+							"fill": "#22C",
+							"fill-opacity": 0.15,
+							"stroke": "#22C",
+							"stroke-width": 0.5,
+							"display": "none",
+							"style": "pointer-events:none"
+						}
+					}));
+		}
+		return this.rubberBandBox;
+	};
 
-					break;
-				}
-			}
-		};
+	this.initGroup();
+};
+}());
 
-		this.getRubberBandBox = function() {
-			if (this.rubberBandBox == null) {
-				this.rubberBandBox = this.selectorParentGroup.appendChild(
-						addSvgElementFromJson({ "element": "rect",
-							"attr": {
-								"id": "selectorRubberBand",
-								"fill": "#22C",
-								"fill-opacity": 0.15,
-								"stroke": "#22C",
-								"stroke-width": 0.5,
-								"display": "none",
-								"style": "pointer-events:none"
-							}
-						}));
-			}
-			return this.rubberBandBox;
-		};
-
-		this.initGroup();
-	}
-	// **************************************************************************************
 
 	// **************************************************************************************
 	// SVGTransformList implementation for Webkit 
@@ -947,197 +1439,6 @@ function BatchCommand(text) {
 	};
 	// **************************************************************************************
 
-	var addSvgElementFromJson = function(data) {
-		return canvas.updateElementFromJson(data)
-	};
-
-	// TODO: declare the variables and set them as null, then move this setup stuff to
-	// an initialization function - probably just use clear()
-	
-	var canvas = this,
-		svgns = "http://www.w3.org/2000/svg",
-		xlinkns = "http://www.w3.org/1999/xlink",
-		xmlns = "http://www.w3.org/XML/1998/namespace",
-		xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
-		se_ns = "http://svg-edit.googlecode.com",
-		htmlns = "http://www.w3.org/1999/xhtml",
-		mathns = "http://www.w3.org/1998/Math/MathML",
-		idprefix = "svg_",
-		svgdoc  = container.ownerDocument,
-		dimensions = curConfig.dimensions,
-		svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
-						'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
-						'<defs>' +
-							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
-								'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
-								'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
-								'<feMerge>'+
-									'<feMergeNode in="offsetBlur"/>'+
-									'<feMergeNode in="SourceGraphic"/>'+
-								'</feMerge>'+
-							'</filter>'+
-						'</defs>'+
-					'</svg>').documentElement, true);
-		
-		$(svgroot).appendTo(container);
-		var opac_ani = document.createElementNS(svgns, 'animate');
- 		$(opac_ani).attr({
- 			attributeName: 'opacity',
- 			begin: 'indefinite',
- 			dur: 1,
- 			fill: 'freeze'
- 		}).appendTo(svgroot);
-	
-    //nonce to uniquify id's
-    var nonce = Math.floor(Math.random()*100001);
-    var randomize_ids = false;
-    
-	// map namespace URIs to prefixes
-	var nsMap = {};
-	nsMap[xlinkns] = 'xlink';
-	nsMap[xmlns] = 'xml';
-	nsMap[xmlnsns] = 'xmlns';
-	nsMap[se_ns] = 'se';
-	nsMap[htmlns] = 'xhtml';
-	nsMap[mathns] = 'mathml';
-
-	// map prefixes to namespace URIs
-	var nsRevMap = {};
-	$.each(nsMap, function(key,value){
-		nsRevMap[value] = key;
-    });
-
-	// Produce a Namespace-aware version of svgWhitelist
-	var svgWhiteListNS = {};
-    $.each(svgWhiteList, function(elt,atts){
-		var attNS = {};
-		$.each(atts, function(i, att){
-			if (att.indexOf(':') != -1) {
-				var v = att.split(':');
-				attNS[v[1]] = nsRevMap[v[0]];
-			} else {
-				attNS[att] = att == 'xmlns' ? xmlnsns : null;
-			}
-		});
-		svgWhiteListNS[elt] = attNS;
-	});
-	
-	var svgcontent = svgdoc.createElementNS(svgns, "svg");
-	$(svgcontent).attr({
-		id: 'svgcontent',
-		width: dimensions[0],
-		height: dimensions[1],
-		x: dimensions[0],
-		y: dimensions[1],
-		overflow: curConfig.show_outside_canvas?'visible':'hidden',
-		xmlns: svgns,
-		"xmlns:se": se_ns,
-		"xmlns:xlink": xlinkns
-	}).appendTo(svgroot);
-	if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
-
-	var convertToNum, convertToUnit, setUnitAttr;
-	
-	(function() {
-		var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
-		var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
-		var unit_attrs = $.merge(['r','radius'], w_attrs);
-		$.merge(unit_attrs, h_attrs);
-		
-		// Converts given values to numbers. Attributes must be supplied in 
-		// case a percentage is given
-		convertToNum = function(attr, val) {
-			// Return a number if that's what it already is
-			if(!isNaN(val)) return val-0;
-			
-			if(val.substr(-1) === '%') {
-				// Deal with percentage, depends on attribute
-				var num = val.substr(0, val.length-1)/100;
-				var res = canvas.getResolution();
-				
-				if($.inArray(attr, w_attrs) !== -1) {
-					return num * res.w;
-				} else if($.inArray(attr, h_attrs) !== -1) {
-					return num * res.h;
-				} else {
-					return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-				}
-			} else {
-				var unit = val.substr(-2);
-				var num = val.substr(0, val.length-2);
-				// Note that this multiplication turns the string into a number
-				return num * unit_types[unit];
-			}
-		};
-		
-		setUnitAttr = function(elem, attr, val) {
-			if(!isNaN(val)) {
-				// New value is a number, so check currently used unit
-				var old_val = elem.getAttribute(attr);
-				
-				if(old_val !== null && isNaN(old_val)) {
-					// Old value was a number, so get unit, then convert
-					var unit;
-					if(old_val.substr(-1) === '%') {
-						var res = canvas.getResolution();
-						unit = '%';
-						val *= 100;
-						if($.inArray(attr, w_attrs) !== -1) {
-							val = val / res.w;
-						} else if($.inArray(attr, h_attrs) !== -1) {
-							val = val / res.h;
-						} else {
-							return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-						}
-
-					} else {
-						unit = old_val.substr(-2);
-						val = val / unit_types[unit];
-					}
-					
-					val += unit;
-				}
-			}
-			
-			elem.setAttribute(attr, val);
-		}
-		
-		canvas.isValidUnit = function(attr, val) {
-			var valid = false;
-			if($.inArray(attr, unit_attrs) != -1) {
-				// True if it's just a number
-				if(!isNaN(val)) {
-					valid = true;
-				} else {
-				// Not a number, check if it has a valid unit
-					val = val.toLowerCase();
-					$.each(unit_types, function(unit) {
-						if(valid) return;
-						var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
-						if(re.test(val)) valid = true;
-					});
-				}
-			} else if (attr == "id") {
-				// if we're trying to change the id, make sure it's not already present in the doc
-				// and the id value is valid.
-
-				var result = false;
-				// because getElem() can throw an exception in the case of an invalid id
-				// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
-				// we wrap it in an exception and only return true if the ID was valid and
-				// not already present
-				try {
-					var elem = getElem(val);
-					result = (elem == null);
-				} catch(e) {}
-				return result;
-			} else valid = true;			
-			
-			return valid;
-		}
-		
-	})();
-
 	var assignAttributes = function(node, attrs, suspendLength, unitCheck) {
 		if(!suspendLength) suspendLength = 0;
 		// Opera has a problem with suspendRedraw() apparently
@@ -1186,7 +1487,7 @@ function BatchCommand(text) {
 		svgroot.unsuspendRedraw(handle);
 	};
 
-	this.updateElementFromJson = function(data) {
+	var addSvgElementFromJson = this.updateElementFromJson = function(data) {
 		var shape = getElem(data.attr.id);
 		// if shape is a path but we need to create a rect/ellipse, then remove the path
 		if (shape && data.element != shape.tagName) {
@@ -1283,8 +1584,6 @@ function BatchCommand(text) {
 		selectorManager = new SelectorManager(),
 		rubberBox = null,
 		events = {},
-		undoStackPointer = 0,
-		undoStack = [],
 		curBBoxes = [],
 		extensions = {};
 	
@@ -1352,23 +1651,6 @@ function BatchCommand(text) {
 		return resultList;
 	};
 
-	// FIXME: we MUST compress consecutive text changes to the same element
-	// (right now each keystroke is saved as a separate command that includes the
-	// entire text contents of the text element)
-	// TODO: consider limiting the history that we store here (need to do some slicing)
-	var addCommandToHistory = function(cmd) {
-		// if our stack pointer is not at the end, then we have to remove
-		// all commands after the pointer and insert the new command
-		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
-			undoStack = undoStack.splice(0, undoStackPointer);
-		}
-		undoStack.push(cmd);
-		undoStackPointer = undoStack.length;
-	};
-	
-	this.getHistoryPosition = function() {
-		return undoStackPointer;
-	};
 
 // private functions
 	var getId = function() {
@@ -8168,33 +8450,6 @@ function BatchCommand(text) {
 		return clone;
 	}
 
-	// New functions for refactoring of Undo/Redo
-	
-	// this is the stack that stores the original values, the elements and
-	// the attribute name for begin/finish
-	var undoChangeStackPointer = -1;
-	var undoableChangeStack = [];
-	
-	// This function tells the canvas to remember the old values of the 
-	// attrName attribute for each element sent in.  The elements and values 
-	// are stored on a stack, so the next call to finishUndoableChange() will 
-	// pop the elements and old values off the stack, gets the current values
-	// from the DOM and uses all of these to construct the undo-able command.
-	this.beginUndoableChange = function(attrName, elems) {
-		var p = ++undoChangeStackPointer;
-		var i = elems.length;
-		var oldValues = new Array(i), elements = new Array(i);
-		while (i--) {
-			var elem = elems[i];
-			if (elem == null) continue;
-			elements[i] = elem;
-			oldValues[i] = elem.getAttribute(attrName);
-		}
-		undoableChangeStack[p] = {'attrName': attrName,
-								'oldValues': oldValues,
-								'elements': elements};
-	};
-	
 	// This function makes the changes to the elements
 	this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		var handle = svgroot.suspendRedraw(1000);
@@ -8301,27 +8556,7 @@ function BatchCommand(text) {
 		svgroot.unsuspendRedraw(handle);	
 	};
 	
-	// This function returns a BatchCommand object which summarizes the
-	// change since beginUndoableChange was called.  The command can then
-	// be added to the command history
-	this.finishUndoableChange = function() {
-		var p = undoChangeStackPointer--;
-		var changeset = undoableChangeStack[p];
-		var i = changeset['elements'].length;
-		var attrName = changeset['attrName'];
-		var batchCmd = new BatchCommand("Change " + attrName);
-		while (i--) {
-			var elem = changeset['elements'][i];
-			if (elem == null) continue;
-			var changes = {};
-			changes[attrName] = changeset['oldValues'][i];
-			if (changes[attrName] != elem.getAttribute(attrName)) {
-				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName));
-			}
-		}
-		undoableChangeStack[p] = null;
-		return batchCmd;
-	};
+
 
 	// If you want to change all selectedElements, ignore the elems argument.
 	// If you want to change only a subset of selectedElements, then send the
@@ -8942,43 +9177,7 @@ function BatchCommand(text) {
 		call("selected", selectedElements);
 	}
 
-	var resetUndoStack = function() {
-		undoStack = [];
-		undoStackPointer = 0;
-	};
 
-	this.getUndoStackSize = function() { return undoStackPointer; };
-	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; };
-
-	this.getNextUndoCommandText = function() { 
-		if (undoStackPointer > 0) 
-			return undoStack[undoStackPointer-1].text;
-		return "";
-	};
-	this.getNextRedoCommandText = function() { 
-		if (undoStackPointer < undoStack.length) 
-			return undoStack[undoStackPointer].text;
-		return "";
-	};
-
-	this.undo = function() {
-		if (undoStackPointer > 0) {
-			this.clearSelection();
-			var cmd = undoStack[--undoStackPointer];
-			cmd.unapply();
-			pathActions.clear();
-			call("changed", cmd.elements());
-		}
-	};
-	this.redo = function() {
-		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
-			this.clearSelection();
-			var cmd = undoStack[undoStackPointer++];
-			cmd.apply();
-			pathActions.clear();
-			call("changed", cmd.elements());
-		}
-	};
 
 	// this function no longer uses cloneNode because we need to update the id
 	// of every copied element (even the descendants)
@@ -9169,7 +9368,7 @@ function BatchCommand(text) {
 	// Function: getVersion
 	// Returns a string which describes the revision number of SvgCanvas.
 	this.getVersion = function() {
-		return "svgcanvas.js ($Rev: 1599 $)";
+		return "svgcanvas.js ($Rev: 1612 $)";
 	};
 	
 	this.setUiStrings = function(strs) {
@@ -9236,11 +9435,9 @@ function BatchCommand(text) {
 			remapElement: remapElement,
 			RemoveElementCommand: RemoveElementCommand,
 			removeUnusedDefElems: removeUnusedDefElems,
-			resetUndoStack: resetUndoStack,
 			round: round,
 			runExtensions: runExtensions,
 			sanitizeSvg: sanitizeSvg,
-			Selector: Selector,
 			SelectorManager: SelectorManager,
 			shortFloat: shortFloat,
 			svgCanvasToString: svgCanvasToString,
