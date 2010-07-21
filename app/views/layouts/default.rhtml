@@ -30,7 +30,7 @@
   </style>
   <%= "<style type='text/css'>#{@style_additions}</style>" if @style_additions %>
   <style type="text/css"><!--/*--><![CDATA[/*><!--*/    
-    <%= @web ? @web.additional_style : '' %>
+    <%= @web ? @web.additional_style.html_safe : '' %>
   /*]]>*/--></style>
   <%= javascript_include_tag :defaults %>
   <%- if @web -%>
