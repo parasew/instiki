@@ -91,6 +91,7 @@ static VALUE initialize(int argc, VALUE *argv, VALUE self)
   rb_iv_set(self, "@authorizer", Qnil);
   rb_iv_set(self, "@encoding", Qnil);
   rb_iv_set(self, "@busy_handler", Qnil);
+  rb_iv_set(self, "@collations", rb_hash_new());
   rb_iv_set(self, "@results_as_hash", rb_hash_aref(opts, sym_results_as_hash));
   rb_iv_set(self, "@type_translation", rb_hash_aref(opts, sym_type_translation));
 
@@ -571,6 +572,64 @@ static VALUE set_busy_timeout(VALUE self, VALUE timeout)
   return self;
 }
 
+int rb_comparator_func(void * ctx, int a_len, const void * a, int b_len, const void * b)
+{
+  VALUE comparator;
+  VALUE a_str;
+  VALUE b_str;
+  VALUE comparison;
+#ifdef HAVE_RUBY_ENCODING_H
+  rb_encoding * internal_encoding;
+
+  internal_encoding = rb_default_internal_encoding();
+#endif
+
+  comparator = (VALUE)ctx;
+  a_str = rb_str_new((const char *)a, a_len);
+  b_str = rb_str_new((const char *)b, b_len);
+
+#ifdef HAVE_RUBY_ENCODING_H
+  rb_enc_associate_index(a_str, rb_utf8_encindex());
+  rb_enc_associate_index(b_str, rb_utf8_encindex());
+
+  if(internal_encoding) {
+    a_str = rb_str_export_to_enc(a_str, internal_encoding);
+    b_str = rb_str_export_to_enc(b_str, internal_encoding);
+  }
+#endif
+
+  comparison = rb_funcall(comparator, rb_intern("compare"), 2, a_str, b_str);
+
+  return NUM2INT(comparison);
+}
+
+/* call-seq: db.collation(name, comparator)
+ *
+ * Add a collation with name +name+, and a +comparator+ object.  The
+ * +comparator+ object should implement a method called "compare" that takes
+ * two parameters and returns an integer less than, equal to, or greater than
+ * 0.
+ */
+static VALUE collation(VALUE self, VALUE name, VALUE comparator)
+{
+  sqlite3RubyPtr ctx;
+  Data_Get_Struct(self, sqlite3Ruby, ctx);
+  REQUIRE_OPEN_DB(ctx);
+
+  CHECK(ctx->db, sqlite3_create_collation_v2(
+        ctx->db,
+        StringValuePtr(name),
+        SQLITE_UTF8,
+        (void *)comparator,
+        NIL_P(comparator) ? NULL : rb_comparator_func,
+        NULL));
+
+  /* Make sure our comparator doesn't get garbage collected. */
+  rb_hash_aset(rb_iv_get(self, "@collations"), name, comparator);
+
+  return self;
+}
+
 /* call-seq: db.load_extension(file)
  *
  * Loads an SQLite extension library from the named file. Extension
@@ -623,6 +682,16 @@ static int enc_cb(void * _self, int UNUSED(columns), char **data, char **UNUSED(
 
   return 0;
 }
+#else
+static int enc_cb(void * _self, int UNUSED(columns), char **data, char **UNUSED(names))
+{
+  VALUE self = (VALUE)_self;
+
+  rb_iv_set(self, "@encoding", rb_str_new2(data[0]));
+
+  return 0;
+}
+#endif
 
 /* call-seq: db.encoding
  *
@@ -644,7 +713,6 @@ static VALUE db_encoding(VALUE self)
 
   return rb_iv_get(self, "@encoding");
 }
-#endif
 
 void init_sqlite3_database()
 {
@@ -656,6 +724,7 @@ void init_sqlite3_database()
 
   rb_define_alloc_func(cSqlite3Database, allocate);
   rb_define_method(cSqlite3Database, "initialize", initialize, -1);
+  rb_define_method(cSqlite3Database, "collation", collation, 2);
   rb_define_method(cSqlite3Database, "close", sqlite3_rb_close, 0);
   rb_define_method(cSqlite3Database, "closed?", closed_p, 0);
   rb_define_method(cSqlite3Database, "total_changes", total_changes, 0);
@@ -680,9 +749,7 @@ void init_sqlite3_database()
   rb_define_method(cSqlite3Database, "enable_load_extension", enable_load_extension, 1);
 #endif
 
-#ifdef HAVE_RUBY_ENCODING_H
   rb_define_method(cSqlite3Database, "encoding", db_encoding, 0);
-#endif
 
   id_utf16 = rb_intern("utf16");
   sym_utf16 = ID2SYM(id_utf16);

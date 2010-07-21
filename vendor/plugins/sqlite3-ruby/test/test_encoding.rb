@@ -12,6 +12,9 @@ module SQLite3
     end
 
     def test_default_internal_is_honored
+      warn_before = $-w
+      $-w = false
+
       before_enc = Encoding.default_internal
 
       str = "壁に耳あり、障子に目あり"
@@ -27,6 +30,7 @@ module SQLite3
       assert_equal str, string.encode(str.encoding)
     ensure
       Encoding.default_internal = before_enc
+      $-w = warn_before
     end
 
     def test_blob_is_binary
@@ -97,7 +101,7 @@ module SQLite3
 
     def test_utf_8
       str = "猫舌"
-      @db.execute(@insert, 10, str)
+      @db.execute(@insert, [10, str])
       row = @db.execute("select data from ex")
       assert_equal @db.encoding, row.first.first.encoding
       assert_equal str, row.first.first
@@ -105,7 +109,7 @@ module SQLite3
 
     def test_euc_jp
       str = "猫舌".encode('EUC-JP')
-      @db.execute(@insert, 10, str)
+      @db.execute(@insert, [10, str])
       row = @db.execute("select data from ex")
       assert_equal @db.encoding, row.first.first.encoding
       assert_equal str.encode('UTF-8'), row.first.first

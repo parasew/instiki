@@ -227,6 +227,13 @@ END_THM
   def test_have_latest_itex2mml  
 
       assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' displa} +
+        %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
+        %{MathML'><mi>A</mi><mo>\342\253\275</mo><mi>B</} +
+        %{mi></math></p>},
+        "equation $A\\sslash B$")
+
+      assert_markup_parsed_as(
         %{<p>boxed equation <math class='maruku-mathml' } +
         %{display='inline' xmlns='http://www.w3.org/1998} +
         %{/Math/MathML'><menclose notation='box'><mrow><} +
