@@ -181,7 +181,7 @@ class WikiContent < ActiveSupport::SafeBuffer
     @options[:engine].apply_to(copy)
 
     copy.inside_chunks(@options[:hide_chunks]) do |id|
-      @chunks_by_id[id.to_i].revert
+      @chunks_by_id[id.to_i].revert if @chunks_by_id[id.to_i]
     end
   end
 
