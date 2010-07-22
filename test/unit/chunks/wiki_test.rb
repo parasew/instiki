@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# encoding: UTF-8
+#coding: UTF-8
 
 require Rails.root.join('test', 'test_helper')
 require 'chunks/wiki'
@@ -10,6 +10,14 @@ class WikiTest < Test::Unit::TestCase
 
   def test_simple
 	match(WikiChunk::Word, 'This is a WikiWord okay?', :page_name => 'WikiWord')
+  end
+
+  def test_cyrillic
+	match(WikiChunk::Word, 'This is a НовойСтраницы okay?', :page_name => 'НовойСтраницы')
+  end
+
+  def test_cyrillic_lowercase
+	no_match(WikiChunk::Word, 'This is a Новойстраницы?')
   end
 
   def test_lowercase_accented
