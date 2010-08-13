@@ -168,7 +168,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 -->
 		</div>
 
-		<label id="tool_angle" title="Change rotation angle">
+		<label id="tool_angle" title="Change rotation angle" class="toolset">
 			<span id="angleLabel" class="icon_label"></span>
 			<input id="angle" size="2" value="0" type="text"/>
 		</label>
@@ -227,11 +227,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	</div>
 
-	<div id="g_panel">
-		<div class="tool_sep"></div>
-		<div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
-	</div>
-
 	<div id="rect_panel">
 		<div class="toolset">
 			<label id="rect_width_tool" title="Change rectangle width">
@@ -243,7 +238,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<input id="rect_height" class="attr_changer" size="3" data-attr="height"/>
 			</label>
 		</div>
-		<label id="cornerRadiusLabel" title="Change Rectangle Corner Radius">
+		<label id="cornerRadiusLabel" title="Change Rectangle Corner Radius" class="toolset">
 			<span class="icon_label"></span>
 			<input id="rect_rx" size="3" value="0" type="text" data-attr="Corner Radius"/>
 		</label>
@@ -354,6 +349,27 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<!-- Not visible, but still used -->
 		<input id="text" type="text" size="35"/>
 	</div>
+
+	<!-- formerly gsvg_panel -->
+	<div id="container_panel">
+		<div class="tool_sep"></div>
+
+		<!-- Add viewBox field here? -->
+
+		<label id="group_title" title="Group identification label">
+			<span>label:</span>
+			<input id="g_title" data-attr="title" size="10" type="text"/>
+		</label>
+	</div>
+	
+	<div id="use_panel">
+		<div class="push_button" id="tool_unlink_use" title="Break link to reference element (make unique)"></div>
+	</div>
+	
+	<div id="g_panel">
+		<div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
+	</div>
+
 	
 	<div id="path_node_panel">
 		<div class="tool_sep"></div>
@@ -507,7 +523,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="tools_bottom_3">
 		<div id="palette_holder"><div id="palette" title="Click to change fill color, shift-click to change stroke color"></div></div>
 	</div>
-	<div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.5</a></div>
+	<div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.5.1</a></div>
 </div>
 
 <div id="option_lists">

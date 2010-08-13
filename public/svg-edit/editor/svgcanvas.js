@@ -1253,9 +1253,11 @@ var SelectorManager;
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = getStrokedBBox(selected.childNodes);
-				$.each(bbox, function(key, val) {
-					bbox[key] = stroked_bbox[key];
-				});
+				if(stroked_bbox) {
+					$.each(bbox, function(key, val) {
+						bbox[key] = stroked_bbox[key];
+					});
+				}
 			}
 
 			// loop and transform our bounding box until we reach our first rotation
@@ -1834,8 +1836,8 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 (function() {
 	// TODO: make this string optional and set by the client
 	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
-	// Lead to invalid content with Instiki's Sanitizer
-	// svgcontent.appendChild(comment);
+       // Lead to invalid content with Instiki's Sanitizer
+       // svgcontent.appendChild(comment);
 
 	// TODO For Issue 208: this is a start on a thumbnail
 	//	var svgthumb = svgdoc.createElementNS(svgns, "use");
@@ -2280,7 +2282,12 @@ var copyElem = function(el) {
 	
 	if($(el).data('gsvg')) {
 		$(new_el).data('gsvg', new_el.firstChild);
-	} else if(new_el.tagName == 'image') {
+	} else if($(el).data('symbol')) {
+		var ref = $(el).data('symbol');
+		$(new_el).data('ref', ref).data('symbol', ref);
+	}
+	
+	else if(new_el.tagName == 'image') {
 		preventClickDefault(new_el);
 	}
 	return new_el;
@@ -2885,10 +2892,10 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes["height"] = scaleh(changes["height"]);
 			break;
 		case "use":
-			var pt1 = remap(changes["x"],changes["y"]);
-			changes["x"] = pt1.x;
-			changes["y"] = pt1.y;
-			break;
+// 			var pt1 = remap(changes["x"],changes["y"]);
+// 			changes["x"] = pt1.x;
+// 			changes["y"] = pt1.y;
+// 			break;
 		case "g":
 		case "text":
 			// if it was a translate, then just update x,y
@@ -2999,9 +3006,6 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes.height = Math.abs(changes.height);
 			assignAttributes(selected, changes, 1000, true);
 			break;
-		case "use":
-			assignAttributes(selected, changes, 1000, true);
-			break;
 		case "ellipse":
 			changes.rx = Math.abs(changes.rx);
 			changes.ry = Math.abs(changes.ry);
@@ -3009,6 +3013,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			if(changes.r) changes.r = Math.abs(changes.r);
 		case "line":
 		case "text":
+		case "use":
 			assignAttributes(selected, changes, 1000, true);
 			break;
 		case "g":
@@ -3168,8 +3173,6 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			attrs = ["width", "height", "x", "y"];
 			break;
 		case "use":
-			attrs = ["x", "y"];
-			break;
 		case "text":
 			attrs = ["x", "y"];
 			break;
@@ -3280,6 +3283,22 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					if (!childTlist) continue;
 
 					var m = transformListToTransform(childTlist).matrix;
+
+					// Convert a matrix to a scale if applicable
+// 					if(hasMatrixTransform(childTlist) && childTlist.numberOfItems == 1) {
+// 						if(m.b==0 && m.c==0 && m.e==0 && m.f==0) {
+// 							childTlist.removeItem(0);
+// 							var translateOrigin = svgroot.createSVGTransform(),
+// 								scale = svgroot.createSVGTransform(),
+// 								translateBack = svgroot.createSVGTransform();
+// 							translateOrigin.setTranslate(0, 0);
+// 							scale.setScale(m.a, m.d);
+// 							translateBack.setTranslate(0, 0);
+// 							childTlist.appendItem(translateBack);
+// 							childTlist.appendItem(scale);
+// 							childTlist.appendItem(translateOrigin);
+// 						}
+// 					}
 				
 					var angle = getRotationAngle(child);
 					var old_start_transform = start_transform;
@@ -3445,6 +3464,8 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					start_transform = child.getAttribute("transform");
 					var childTlist = getTransformList(child);
 					
+					if (!childTlist) continue;
+					
 					var em = matrixMultiply(m, transformListToTransform(childTlist).matrix);
 					var e2m = svgroot.createSVGTransform();
 					e2m.setMatrix(em);
@@ -3595,8 +3616,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		// if we had [M][T][S][T] we want to extract the matrix equivalent of
 		// [T][S][T] and push it down to the element
 		if (N >= 3 && tlist.getItem(N-2).type == 3 && 
-			tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2 &&
-			selected.nodeName != "use") 
+			tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
+			
+			// Removed this so a <use> with a given [T][S][T] would convert to a matrix. 
+			// Is that bad?
+			//  && selected.nodeName != "use"
 		{
 			operation = 3; // scale
 			m = transformListToTransform(tlist,N-3,N-1).matrix;
@@ -4522,12 +4546,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							// to be a translate
 							var xform = svgroot.createSVGTransform();
 							var tlist = getTransformList(selected);
+							// Note that if Webkit and there's no ID for this
+							// element, the dummy transform may have gotten lost.
+							// This results in unexpected behaviour
+							
 							xform.setTranslate(dx,dy);
 							if(tlist.numberOfItems) {
 								tlist.replaceItem(xform, 0);
-								// TODO: Webkit returns null here, find out why
-// 								console.log(selected.getAttribute("transform"))
-
 							} else {
 								tlist.appendItem(xform);
 							}
@@ -5077,7 +5102,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					to: cur_shape.opacity,
 					dur: ani_dur
 				}).appendTo(element);
-				c_ani[0].beginElement();
+				try {
+					// Fails in FF4 on foreignObject
+					c_ani[0].beginElement();
+				} catch(e){}
 			} else {
 				ani_dur = 0;
 			}
@@ -5174,6 +5202,7 @@ var textActions = canvas.textActions = function() {
 	
 	function setCursor(index) {
 		var empty = (textinput.value === "");
+		$(textinput).focus();
 	
 		if(!arguments.length) {
 			if(empty) {
@@ -5430,6 +5459,8 @@ var textActions = canvas.textActions = function() {
 			allow_dbl = false;
 			current_mode = "textedit";
 			selectorManager.requestSelector(curtext).showGrips(false);
+			// Make selector group accept clicks
+			var sel = selectorManager.requestSelector(curtext).selectorRect;
 			
 			textActions.init();
 			$(curtext).css('cursor', 'text');
@@ -5480,7 +5511,7 @@ var textActions = canvas.textActions = function() {
 		},
 		setInputElem: function(elem) {
 			textinput = elem;
-			$(textinput).blur(hideCursor);
+// 			$(textinput).blur(hideCursor);
 		},
 		clear: function() {
 			current_text = null;
@@ -5562,7 +5593,9 @@ var pathActions = this.pathActions = function() {
 		8: ['x','y','x1','y1'],
 		10: ['x','y','r1','r2','angle','largeArcFlag','sweepFlag'],
 		12: ['x'],
-		14: ['y']
+		14: ['y'],
+		16: ['x','y','x2','y2'],
+		18: ['x','y']
 	};
 	
 	function retPath() {
@@ -7823,6 +7856,94 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 	obj_num++;
 }
 
+// Function: convertToGroup
+// Converts selected/given <use> or child SVG element to a group
+var convertToGroup = this.convertToGroup = function(elem) {
+	if(!elem) {
+		elem = selectedElements[0];
+	}
+	var $elem = $(elem);
+	
+	var batchCmd = new BatchCommand();
+	
+	var ts;
+	
+	if($elem.data('gsvg')) {
+		// Use the gsvg as the new group
+		var svg = elem.firstChild;
+		var pt = $(svg).attr(['x', 'y']);
+		
+		$(elem.firstChild.firstChild).unwrap();
+		$(elem).removeData('gsvg');
+		
+		var tlist = getTransformList(elem);
+		var xform = svgroot.createSVGTransform();
+		xform.setTranslate(pt.x, pt.y);
+		tlist.appendItem(xform);
+		recalculateDimensions(elem);
+		call("selected", [elem]);
+	} else if($elem.data('symbol')) {
+		elem = $elem.data('symbol');
+		
+		ts = $elem.attr('transform');
+		var pos = $elem.attr(['x','y']);
+		
+		// Not ideal, but works
+		ts += "translate(" + pos.x + "," + pos.y + ")";
+		
+		var prev = $elem.prev();
+		
+		// Remove <use> element
+		batchCmd.addSubCommand(new RemoveElementCommand($elem[0], $elem[0].parentNode));
+		$elem.remove();
+		
+		// See if other elements reference this symbol
+		var has_more = $(svgcontent).find('use:data(symbol)').length;
+			
+		var g = svgdoc.createElementNS(svgns, "g");
+		var childs = elem.childNodes;
+		
+		for(var i = 0; i < childs.length; i++) {
+			g.appendChild(childs[i].cloneNode(true));
+		}
+		
+// 		while (elem.hasChildNodes())
+// 			g.appendChild(elem.firstChild.cloneNode(true));
+		if (ts)
+			g.setAttribute("transform", ts);
+		
+		var parent = elem.parentNode;
+		
+		uniquifyElems(g);
+	
+		// now give the g itself a new id
+		g.id = getNextId();
+		
+		prev.after(g);
+		
+		if(parent) {
+			if(!has_more) {
+				// remove symbol/svg element
+				parent.removeChild(elem);
+				batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+			}
+			batchCmd.addSubCommand(new InsertElementCommand(g));
+		}
+	
+		// recalculate dimensions on the top-level children so that unnecessary transforms
+		// are removed
+		walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+		
+		clearSelection();
+		addToSelection([g]);
+		
+		addCommandToHistory(batchCmd);
+		
+	} else {
+		console.log('Unexpected element to ungroup:', elem);
+	}
+}
+
 //   
 // Function: setSvgString
 // This function sets the current drawing as the input SVG XML.
@@ -7879,15 +8000,28 @@ this.setSvgString = function(xmlString) {
 	
 		// Wrap child SVGs in group elements
 		$(svgcontent).find('svg').each(function() {
+			// Skip if it's in a <defs>
+			if($(this).closest('defs').length) return;
+		
 			uniquifyElems(this);
 		
 			// Check if it already has a gsvg group
 			var pa = this.parentNode;
-			if(pa.children.length === 1 && pa.nodeName === 'g') {
+			if(pa.childNodes.length === 1 && pa.nodeName === 'g') {
 				$(pa).data('gsvg', this);
 				pa.id = pa.id || getNextId();
 			} else {
 				groupSvgElem(this);
+			}
+		});
+		
+		// Set ref element for <use> elements
+		$(svgcontent).find('use').each(function() {
+			var id = this.getAttributeNS(xlinkns,"href").substr(1);
+			var ref_elem = getElem(id);
+			$(this).data('ref', ref_elem);
+			if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
+				$(this).data('symbol', ref_elem);
 			}
 		});
 		
@@ -8013,12 +8147,11 @@ this.setSvgString = function(xmlString) {
 };
 
 // Function: importSvgString
-// This function imports the input SVG XML into the current layer in the drawing
+// This function imports the input SVG XML as a <symbol> in the <defs>, then adds a
+// <use> to the current layer.
 //
 // Parameters:
 // xmlString - The SVG as XML text.
-// toElements - Boolean indicating whether or not to convert the SVG to a group
-// with children
 //
 // Returns:
 // This function returns false if the import was unsuccessful, true otherwise.
@@ -8029,8 +8162,7 @@ this.setSvgString = function(xmlString) {
 // arbitrary transform lists, but makes some assumptions about how the transform list 
 // was obtained
 // * import should happen in top-left of current zoomed viewport	
-// * create a new layer for the imported SVG
-this.importSvgString = function(xmlString, toElements) {
+this.importSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
 		var newDoc = Utils.text2xml(xmlString);
@@ -8040,11 +8172,11 @@ this.importSvgString = function(xmlString, toElements) {
 		var batchCmd = new BatchCommand("Change Source");
 
 		// import new svg document into our document
-		var importedNode = svgdoc.importNode(newDoc.documentElement, true);
+		var svg = svgdoc.importNode(newDoc.documentElement, true);
 	
-		var innerw = convertToNum('width', importedNode.getAttribute("width")),
-			innerh = convertToNum('height', importedNode.getAttribute("height")),
-			innervb = importedNode.getAttribute("viewBox"),
+		var innerw = convertToNum('width', svg.getAttribute("width")),
+			innerh = convertToNum('height', svg.getAttribute("height")),
+			innervb = svg.getAttribute("viewBox"),
 			// if no explicit viewbox, create one out of the width and height
 			vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
 		for (var j = 0; j < 4; ++j)
@@ -8064,79 +8196,40 @@ this.importSvgString = function(xmlString, toElements) {
 		
 		// Hack to make recalculateDimensions understand how to scale
 		ts = "translate(0) " + ts + " translate(0)";
-	
-		if(!toElements) {
-			var elem = $(importedNode).appendTo(current_layer)[0];
-			groupSvgElem(elem);
-			clearSelection();
-			
-			var g = elem.parentNode;
-			
-			g.setAttribute("transform", ts);
-			recalculateDimensions(g);
-			
-			addToSelection([g]);
-			
-			return;
-		}
+		
+		// Uncomment this once Firefox has fixed their symbol bug:
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
+// 		var symbol = svgdoc.createElementNS(svgns, "symbol");
+// 		while (svg.firstChild) {
+// 			symbol.appendChild(svg.firstChild);
+// 		}
+// 		var attrs = svg.attributes;
+// 		for(var i=0; i < attrs.length; i++) {
+// 			var attr = attrs[i];
+// 			symbol.setAttribute(attr.nodeName, attr.nodeValue);
+// 		}
+		var symbol = svg;
+		symbol.id = getNextId();
+		
+		var use_el = svgdoc.createElementNS(svgns, "use");
+		use_el.id = getNextId();
+		use_el.setAttributeNS(xlinkns, "xlink:href", "#" + symbol.id);
+		findDefs().appendChild(symbol);
+		current_layer.appendChild(use_el);
+		clearSelection();
+		
+		use_el.setAttribute("transform", ts);
+		recalculateDimensions(use_el);
+		$(use_el).data('symbol', symbol);
+		addToSelection([use_el]);
+		return true;
+
 		
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
 // 				if (vb[0] != 0 || vb[1] != 0)
 // 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 
-		// add all children of the imported <svg> to the <g> we create
-		var g = svgdoc.createElementNS(svgns, "g");
-		while (importedNode.hasChildNodes())
-			g.appendChild(importedNode.firstChild);
-		if (ts)
-			g.setAttribute("transform", ts);
-		
-		uniquifyElems(g);
 
-		// now give the g itself a new id
-		g.id = getNextId();
-		
-		current_layer.appendChild(g);
-		
-		// change image href vals if possible
-//        	$(svgcontent).find('image').each(function() {
-//        		var image = this;
-//        		preventClickDefault(image);
-//        		var val = this.getAttributeNS(xlinkns, "href");
-//				if(val.indexOf('data:') === 0) {
-//					// Check if an SVG-edit data URI
-//					var m = val.match(/svgedit_url=(.*?);/);
-//					if(m) {
-//						var url = decodeURIComponent(m[1]);
-//						$(new Image()).load(function() {
-//							image.setAttributeNS(xlinkns,'xlink:href',url);
-//						}).attr('src',url);
-//					}
-//				}
-//        		// Add to encodableImages if it loads
-//        		canvas.embedImage(val);
-//        	});
-		
-		
-		// recalculate dimensions on the top-level children so that unnecessary transforms
-		// are removed
-		walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
-		
-		
-		batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
-
-		// reset zoom - TODO: why?
-//			current_zoom = 1;
-		
-		// identify layers
-//			identifyLayers();
-		
-		// reset transform lists
-		svgTransformLists = {};
-		clearSelection();
-		
-		addCommandToHistory(batchCmd);
-		call("changed", [svgcontent]);
 	} catch(e) {
 		console.log(e);
 		return false;
@@ -8614,7 +8707,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1636 $)";
+	return "svgcanvas.js ($Rev: 1653 $)";
 };
 
 // Function: setUiStrings
@@ -8636,15 +8729,55 @@ this.setConfig = function(opts) {
 }
 
 // Function: getDocumentTitle
-// Returns the current document title or an empty string if not found
-this.getDocumentTitle = function() {
-	var childs = svgcontent.childNodes;
+// Returns the current group/SVG's title contents
+this.getTitle = function(elem) {
+	elem = elem || selectedElements[0];
+	if(!elem) return;
+	elem = $(elem).data('gsvg') || $(elem).data('symbol') || elem;
+	var childs = elem.childNodes;
 	for (var i=0; i<childs.length; i++) {
 		if(childs[i].nodeName == 'title') {
 			return childs[i].textContent;
 		}
 	}
 	return '';
+}
+
+// Function: setGroupTitle
+// Sets the group/SVG's title content
+// TODO: Combine this with setDocumentTitle
+this.setGroupTitle = function(val) {
+	var elem = selectedElements[0];
+	elem = $(elem).data('gsvg') || elem;
+	
+	var ts = $(elem).children('title');
+	
+	var batchCmd = new BatchCommand("Set Label");
+	
+	if(!val.length) {
+		// Remove title element
+		batchCmd.addSubCommand(new RemoveElementCommand(ts[0], elem));
+		ts.remove();
+	} else if(ts.length) {
+		// Change title contents
+		var title = ts[0];
+		batchCmd.addSubCommand(new ChangeElementCommand(title, {'#text': title.textContent}));
+		title.textContent = val;
+	} else {
+		// Add title element
+		title = svgdoc.createElementNS(svgns, "title");
+		title.textContent = val;
+		$(elem).prepend(title);
+		batchCmd.addSubCommand(new InsertElementCommand(title));
+	}
+
+	addCommandToHistory(batchCmd);
+}
+
+// Function: getDocumentTitle
+// Returns the current document title or an empty string if not found
+this.getDocumentTitle = function() {
+	return canvas.getTitle(svgcontent);
 }
 
 // Function: setDocumentTitle
@@ -9357,6 +9490,9 @@ this.setBold = function(b) {
 	{
 		changeSelectedAttribute("font-weight", b ? "bold" : "normal");
 	}
+	if(!selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getItalic
@@ -9386,6 +9522,9 @@ this.setItalic = function(i) {
 	{
 		changeSelectedAttribute("font-style", i ? "italic" : "normal");
 	}
+	if(!selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getFontFamily
@@ -9402,6 +9541,9 @@ this.getFontFamily = function() {
 this.setFontFamily = function(val) {
 	cur_text.font_family = val;
 	changeSelectedAttribute("font-family", val);
+	if(selectedElements[0] && !selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getFontSize
@@ -9417,8 +9559,10 @@ this.getFontSize = function() {
 // val - Float with the new font size
 this.setFontSize = function(val) {
 	cur_text.font_size = val;
-	textActions.toSelectMode();
 	changeSelectedAttribute("font-size", val);
+	if(!selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getText
@@ -9723,7 +9867,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		if (elem == null) continue;
 		
 		// Go into "select" mode for text changes
-		if(current_mode === "textedit" && attr !== "#text") {
+		if(current_mode === "textedit" && attr !== "#text" && elem.textContent.length) {
 			textActions.toSelectMode(elem);
 		}
 		
@@ -9771,7 +9915,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
 			if(elem.nodeName == 'text') {
-				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
+				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1 && elem.textContent) {
 					elem = ffClone(elem);
 				}
 			}
@@ -9899,10 +10043,17 @@ this.groupSelectedElements = function() {
 // significant recalculations to apply group's transforms, etc to its children
 this.ungroupSelectedElement = function() {
 	var g = selectedElements[0];
+	if($(g).data('gsvg') || $(g).data('symbol')) {
+		// Is svg, so actually convert to group
+
+		convertToGroup(g);
+		return;
+	}
 	if (g.tagName == "g") {
+	
 		var batchCmd = new BatchCommand("Ungroup Elements");
 		var parent = g.parentNode;
-		var anchor = g.previousSibling;
+		var anchor = g.nextSibling;
 		var children = new Array(g.childNodes.length);
 		var xform = g.getAttribute("transform");
 		// get consolidated matrix
@@ -9926,6 +10077,14 @@ this.ungroupSelectedElement = function() {
 			var elem = g.firstChild;
 			var oldNextSibling = elem.nextSibling;
 			var oldParent = elem.parentNode;
+			
+			// Remove child title elements
+			if(elem.tagName == 'title') {
+				batchCmd.addSubCommand(new RemoveElementCommand(elem, oldParent));
+				oldParent.removeChild(elem);
+				continue;
+			}
+			
 			children[i++] = elem = parent.insertBefore(elem, anchor);
 			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
 			
@@ -9973,6 +10132,9 @@ this.ungroupSelectedElement = function() {
 			}
 			
 			var chtlist = getTransformList(elem);
+			
+			// Hopefully not a problem to add this. Necessary for elements like <desc/>
+			if(!chtlist) continue;
 			
 			if (glist.numberOfItems) {
 				// TODO: if the group's transform is just a rotate, we can always transfer the
