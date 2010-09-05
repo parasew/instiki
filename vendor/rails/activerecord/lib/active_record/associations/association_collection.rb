@@ -234,8 +234,9 @@ module ActiveRecord
       # See destroy for more info.
       def destroy_all
         load_target
-        destroy(@target)
-        reset_target!
+        destroy(@target).tap do
+          reset_target!
+        end
       end
 
       def create(attrs = {})
@@ -349,7 +350,17 @@ module ActiveRecord
             begin
               if !loaded?
                 if @target.is_a?(Array) && @target.any?
-                  @target = find_target + @target.find_all {|t| t.new_record? }
+                  @target = find_target.map do |f|
+                    i = @target.index(f)
+                    if i
+                      @target.delete_at(i).tap do |t|
+                        keys = ["id"] + t.changes.keys + (f.attribute_names - t.attribute_names)
+                        t.attributes = f.attributes.except(*keys)
+                      end
+                    else
+                      f
+                    end
+                  end + @target
                 else
                   @target = find_target
                 end
@@ -364,6 +375,17 @@ module ActiveRecord
         end
         
         def method_missing(method, *args)
+          case method.to_s
+          when 'find_or_create'
+            return find(:first, :conditions => args.first) || create(args.first)
+          when /^find_or_create_by_(.*)$/
+            rest = $1
+            return  send("find_by_#{rest}", *args) ||
+                    method_missing("create_by_#{rest}", *args)
+          when /^create_by_(.*)$/
+            return create($1.split('_and_').zip(args).inject({}) { |h,kv| k,v=kv ; h[k] = v ; h })
+          end
+
           if @target.respond_to?(method) || (!@reflection.klass.respond_to?(method) && Class.respond_to?(method))
             if block_given?
               super { |*block_args| yield(*block_args) }
@@ -411,7 +433,14 @@ module ActiveRecord
           callback(:before_add, record)
           yield(record) if block_given?
           @target ||= [] unless loaded?
-          @target << record unless @reflection.options[:uniq] && @target.include?(record)
+          index = @target.index(record)
+          unless @reflection.options[:uniq] && index
+            if index
+              @target[index] = record
+            else
+             @target << record
+            end
+          end 
           callback(:after_add, record)
           set_inverse_instance(record, @owner)
           record

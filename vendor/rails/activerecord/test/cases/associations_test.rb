@@ -18,6 +18,8 @@ require 'models/person'
 require 'models/reader'
 require 'models/parrot'
 require 'models/pirate'
+require 'models/ship'
+require 'models/ship_part'
 require 'models/treasure'
 require 'models/price_estimate'
 require 'models/club'
@@ -28,6 +30,23 @@ require 'models/sponsor'
 class AssociationsTest < ActiveRecord::TestCase
   fixtures :accounts, :companies, :developers, :projects, :developers_projects,
            :computers, :people, :readers
+
+  def test_loading_the_association_target_should_keep_child_records_marked_for_destruction
+    ship = Ship.create!(:name => "The good ship Dollypop")
+    part = ship.parts.create!(:name => "Mast")
+    part.mark_for_destruction
+    ship.parts.send(:load_target)
+    assert ship.parts[0].marked_for_destruction?
+  end
+
+  def test_loading_the_association_target_should_load_most_recent_attributes_for_child_records_marked_for_destruction
+    ship = Ship.create!(:name => "The good ship Dollypop")
+    part = ship.parts.create!(:name => "Mast")
+    part.mark_for_destruction
+    ShipPart.find(part.id).update_attribute(:name, 'Deck')
+    ship.parts.send(:load_target)
+    assert_equal 'Deck', ship.parts[0].name
+  end
 
   def test_include_with_order_works
     assert_nothing_raised {Account.find(:first, :order => 'id', :include => :firm)}
@@ -73,6 +92,16 @@ class AssociationsTest < ActiveRecord::TestCase
       assert_queries(0) { assert_not_nil firm.clients.each {} }
       assert_queries(1) { assert_not_nil firm.clients(true).each {} }
     end
+  end
+  
+  def test_using_limitable_reflections_helper
+    using_limitable_reflections = lambda { |reflections| ActiveRecord::Base.send :using_limitable_reflections?, reflections }
+    belongs_to_reflections = [Tagging.reflect_on_association(:tag), Tagging.reflect_on_association(:super_tag)]
+    has_many_reflections = [Tag.reflect_on_association(:taggings), Developer.reflect_on_association(:projects)]
+    mixed_reflections = (belongs_to_reflections + has_many_reflections).uniq
+    assert using_limitable_reflections.call(belongs_to_reflections), "Belong to associations are limitable"
+    assert !using_limitable_reflections.call(has_many_reflections), "All has many style associations are not limitable"
+    assert !using_limitable_reflections.call(mixed_reflections), "No collection associations (has many style) should pass"
   end
 
   def test_storing_in_pstore
