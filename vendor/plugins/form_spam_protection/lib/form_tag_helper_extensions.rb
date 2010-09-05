@@ -4,7 +4,7 @@ module ActionView
     module TagHelper
       # Now that form_tag accepts blocks, it was easier to alias tag when name == :form
       def tag_with_form_spam_protection(name, *args)
-        returning tag_without_form_spam_protection(name, *args) do |out|
+        tag_without_form_spam_protection(name, *args).tap do |out|
           if name == :form && @protect_form_from_spam
             session[:form_keys] ||= {}
             form_key = Digest::SHA1.hexdigest(self.object_id.to_s + rand.to_s)

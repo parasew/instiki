@@ -229,9 +229,9 @@ END_THM
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>A</mi><mo>\342\253\275</mo><mi>B</} +
+        %{MathML'><mi>A</mi><mi>\342\200\246</mi><mo>\342\253\275</mo><mi>B</} +
         %{mi></math></p>},
-        "equation $A\\sslash B$")
+        "equation $A\\dots\\sslash B$")
 
       assert_markup_parsed_as(
         %{<p>boxed equation <math class='maruku-mathml' } +

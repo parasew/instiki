@@ -9,6 +9,11 @@ require 'models/developer'
 class NamedScopeTest < ActiveRecord::TestCase
   fixtures :posts, :authors, :topics, :comments, :author_addresses
 
+  def test_named_scope_with_STI
+    assert_equal 5,Post.with_type_self.count
+    assert_equal 1,SpecialPost.with_type_self.count
+  end
+
   def test_implements_enumerable
     assert !Topic.find(:all).empty?
 
@@ -265,7 +270,7 @@ class NamedScopeTest < ActiveRecord::TestCase
   end
 
   def test_rand_should_select_a_random_object_from_proxy
-    assert Topic.approved.random_element.is_a?(Topic)
+    assert Topic.approved.sample.is_a?(Topic)
   end
 
   def test_should_use_where_in_query_for_named_scope
