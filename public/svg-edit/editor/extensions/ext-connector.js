@@ -256,8 +256,9 @@ svgEditor.addExtension("Connector", function(S) {
 		
 		svgCanvas.moveSelectedElements = function() {
 			svgCanvas.removeFromSelection($(conn_sel).toArray());
-			mse.apply(this, arguments);
+			var cmd = mse.apply(this, arguments);
 			updateConnectors();
+			return cmd;
 		}
 		
 		se_ns = svgCanvas.getEditorNS();
@@ -486,6 +487,12 @@ svgEditor.addExtension("Connector", function(S) {
 			}
 		},
 		selectedChanged: function(opts) {
+			// TODO: Find better way to skip operations if no connectors are in use
+			if(!$(svgcontent).find(conn_sel).length) return;
+			
+			if(svgCanvas.getMode() == 'connector') {
+				svgCanvas.setMode('select');
+			}
 			
 			// Use this to update the current selected elements
 			selElems = opts.elems;

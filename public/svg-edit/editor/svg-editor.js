@@ -11,6 +11,8 @@
  */
 
 (function() { 
+	// TODO: Find out what causes bugs in jQuery animate for IE9
+	if($.browser.msie) $.fx.off = true;
 	
 	if(!window.svgEditor) window.svgEditor = function($) {
 		var svgCanvas;
@@ -46,10 +48,12 @@
 				langPath: 'locale/',
 				extPath: 'extensions/',
 				jGraduatePath: 'jgraduate/images/',
-				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-imagelib.js', 'ext-itex.js'],
+				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-imagelib.js','ext-grid.js', 'ext-itex.js'],
 				initTool: 'select',
 				wireframe: false,
-				colorPickerCSS: null
+				colorPickerCSS: null,
+				gridSnapping: false,
+				snappingStep: 5
 			},
 			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
@@ -435,13 +439,14 @@
 			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4",
 			           ];
 	
-				isMac = false, //(navigator.platform.indexOf("Mac") != -1);
-				modKey = "", //(isMac ? "meta+" : "ctrl+");
+				isMac = (navigator.platform.indexOf("Mac") != -1);
+				modKey = (isMac ? "meta+" : "ctrl+"); // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
 				Utils = svgCanvas.Utils,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
+				canv_menu = $("#cmenu_canvas"),
 				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1;
@@ -496,9 +501,12 @@
 			}());
 			
 			var setSelectMode = function() {
-				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-				$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
-				$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
+				var curr = $('.tool_button_current');
+				if(curr[0].id !== 'tool_select') {
+					curr.removeClass('tool_button_current').addClass('tool_button');
+					$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
+					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
+				}
 				svgCanvas.setMode('select');
 			};
 			
@@ -539,6 +547,15 @@
 				
 				// Opens the SVG in new window, with warning about Mozilla bug #308590 when applicable
 				
+				var ua = navigator.userAgent;
+
+				// Chrome 5 (and 6?) don't allow saving, show source instead ( http://code.google.com/p/chromium/issues/detail?id=46735 )
+				// IE9 doesn't allow standalone Data URLs ( https://connect.microsoft.com/IE/feedback/details/542600/data-uri-images-fail-when-loaded-by-themselves )
+				if((~ua.indexOf('Chrome') && $.browser.version >= 533) || ~ua.indexOf('MSIE')) {
+					showSourceEditor(0,true);
+					return;	
+				}
+				
 				var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 				
 				// Alert will only appear the first time saved OR the first time the bug is encountered
@@ -548,7 +565,7 @@
 					var note = uiStrings.saveFromBrowser.replace('%s', 'SVG');
 					
 					// Check if FF and has <defs/>
-					if(navigator.userAgent.indexOf('Gecko/') !== -1) {
+					if(ua.indexOf('Gecko/') !== -1) {
 						if(svg.indexOf('<defs') !== -1) {
 							note += "\n\n" + uiStrings.defsFailOnSave;
 							$.pref('save_notice_done', 'all');
@@ -576,25 +593,25 @@
 				
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
-				canvg(c, data.svg);
-				var datauri = c.toDataURL('image/png');
-				exportWindow.location.href = datauri;
-				
-				var done = $.pref('export_notice_done');
-				if(done !== "all") {
-					var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
-					
-					// Check if there's issues
-					if(issues.length) {
-						var pre = "\n \u2022 ";
-						note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
-					} 
-					
-					// Note that this will also prevent the notice even though new issues may appear later.
-					// May want to find a way to deal with that without annoying the user
-					$.pref('export_notice_done', 'all'); 
-					exportWindow.alert(note);
-				}
+				canvg(c, data.svg, {renderCallback: function() {
+					var datauri = c.toDataURL('image/png');
+					exportWindow.location.href = datauri;
+					var done = $.pref('export_notice_done');
+					if(done !== "all") {
+						var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
+						
+						// Check if there's issues
+						if(issues.length) {
+							var pre = "\n \u2022 ";
+							note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
+						} 
+						
+						// Note that this will also prevent the notice even though new issues may appear later.
+						// May want to find a way to deal with that without annoying the user
+						$.pref('export_notice_done', 'all'); 
+						exportWindow.alert(note);
+					}
+				}});
 			};
 			
 			// called when we've selected a different element
@@ -610,7 +627,6 @@
 					// select mode and this event fires - we need our UI to be in sync
 					
 					if (mode != "multiselect" && !is_node) {
-						setSelectMode();
 						updateToolbar();
 					} 
 					
@@ -628,6 +644,10 @@
 		
 			// called when any element has changed
 			var elementChanged = function(window,elems) {
+				if(svgCanvas.getMode() == "select") {
+					setSelectMode();
+				}
+				
 				for (var i = 0; i < elems.length; ++i) {
 					var elem = elems[i];
 					
@@ -712,7 +732,7 @@
 									opts.fn();
 								}
 								if(opts.icon) {
-									var icon = $.getSvgIcon(opts.icon).clone();
+									var icon = $.getSvgIcon(opts.icon, true);
 								} else {
 									// 
 									var icon = $(opts.sel).children().eq(0).clone();
@@ -1345,10 +1365,8 @@
 					
 					if(svgCanvas.addedNew) {
 						if(elname == 'image') {
-							var xlinkNS = "http://www.w3.org/1999/xlink";
-							var href = elem.getAttributeNS(xlinkNS, "href");
 							// Prompt for URL if not a data URL
-							if(href.indexOf('data:') !== 0) {
+							if(svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
 							}
 						} else if(elname == 'text') {
@@ -1455,9 +1473,7 @@
 							}
 						} // text
 						else if(el_name == 'image') {
-							var xlinkNS="http://www.w3.org/1999/xlink";
-							var href = elem.getAttributeNS(xlinkNS, "href");
-							setImageURL(href);
+							setImageURL(svgCanvas.getHref(elem));
 						} // image
 						else if(el_name == 'g' || el_name == 'use') {
 							$('#container_panel').show();
@@ -1476,6 +1492,8 @@
 				} // if (elem != null)
 				else if (multiselected) {
 					$('#multiselected_panel').show();
+				} else {
+					$('#cmenu_canvas li').disableContextMenuItems('#delete,#cut,#copy,#move_up,#move_down');
 				}
 				
 				// update history buttons
@@ -1497,6 +1515,9 @@
 				if ( (elem && !is_node)	|| multiselected) {
 					// update the selected elements' layer
 					$('#selLayerNames').removeAttr('disabled').val(currentLayer);
+					
+					// Enable regular menu options
+					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_down,#move_up');
 				}
 				else {
 					$('#selLayerNames').attr('disabled', 'disabled');
@@ -1766,7 +1787,9 @@
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
 				// when a tool is selected, we should deselect any currently selected elements
-				svgCanvas.clearSelection();
+				if(button !== '#tool_select') {
+					svgCanvas.clearSelection();
+				}
 				return true;
 			};
 			
@@ -1851,8 +1874,11 @@
 					}
 					on_button = false;
 				}).mousedown(function(evt) {
-					var islib = $(evt.target).closest('div.tools_flyout').length;
-					if(!islib) $('.tools_flyout:visible').fadeOut();
+// 					$(".contextMenu").hide();
+// 					console.log('cm', $(evt.target).closest('.contextMenu'));
+				
+					var islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
+					if(!islib) $('.tools_flyout:visible,.contextMenu').fadeOut(250);
 				});
 				
 				overlay.bind('mousedown',function() {
@@ -2197,15 +2223,33 @@
 				}
 			};
 		
+			var cutSelected = function() {
+				if (selectedElement != null || multiselected) {
+					svgCanvas.cutSelectedElements();
+				}
+			};
+			
+			var copySelected = function() {
+				if (selectedElement != null || multiselected) {
+					svgCanvas.copySelectedElements();
+				}
+			};
+			
 			var moveToTopSelected = function() {
 				if (selectedElement != null) {
 					svgCanvas.moveToTopSelectedElement();
 				}
 			};
-		
+			
 			var moveToBottomSelected = function() {
 				if (selectedElement != null) {
 					svgCanvas.moveToBottomSelectedElement();
+				}
+			};
+			
+			var moveUpDownSelected = function(dir) {
+				if (selectedElement != null) {
+					svgCanvas.moveUpDownSelected(dir);
 				}
 			};
 
@@ -2422,9 +2466,13 @@
 				$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : "");
 			}
 		
-			var showSourceEditor = function(){
+			var showSourceEditor = function(e, forSaving){
 				if (editingsource) return;
 				editingsource = true;
+				
+				$('#save_output_btns').toggle(!!forSaving);
+				$('#tool_source_back').toggle(!forSaving);
+				
 				var str = svgCanvas.getSvgString();
 				$('#svg_source_textarea').val(str);
 				$('#svg_source_editor').fadeIn();
@@ -2462,6 +2510,12 @@
 				if(!canvas_bg) blocks.eq(0).addClass(cur_bg);
 				if(url) {
 					$('#canvas_bg_url').val(url);
+				}
+				$('grid_snapping_step').attr('value', curConfig.snappingStep);
+				if (curConfig.gridSnapping == true) {
+				    $('#grid_snapping_on').attr('checked', 'checked');
+				} else {
+				    $('#grid_snapping_on').removeAttr('checked');
 				}
 				
 				$('#svg_docprops').fadeIn();
@@ -2549,6 +2603,10 @@
 				// set icon size
 				setIconSize($('#iconsize').val());
 				
+				// set grid setting
+				curConfig.gridSnapping = $('#grid_snapping_on').attr('checked');
+				curConfig.snappingStep = $('#grid_snapping_step').val();
+
 				updateCanvas();
 				hideDocProperties();
 			};
@@ -2563,25 +2621,18 @@
 			}
 			
 			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
-				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id) : icon_id;
+				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id, true) : icon_id;
 				if(!icon) {
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
 				}
-				icon = icon.clone();
-				$(elem).empty().append(icon);
-// 				if(forcedSize) {
-// 					var obj = {};
-// 					obj[elem + ' .svg_icon'] = forcedSize;
-// 					$.resizeSvgIcons(obj);
-// 				} else {
-// 					var size = curPrefs.iconsize;
-// 					if(size && size !== 'm') {
-// 						var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
-// 						obj[elem + ' .svg_icon'] = icon_sizes[size];
-// 						$.resizeSvgIcons(obj);
-// 					}
-// 				}
+				try {
+					icon = icon.clone();
+					$(elem).empty().append(icon);
+				} catch(e) {
+// 					icon = svgCanvas.copyElem(icon[0]);
+				}
+				
 			}
 		
 			var ua_prefix;
@@ -2908,7 +2959,9 @@
 			$('#change_image_url').click(promptImgURL);
 			
 			function promptImgURL() {
-				$.prompt(uiStrings.enterNewImgURL, default_img_url, function(url) {
+				var curhref = svgCanvas.getHref(selectedElement);
+				curhref = curhref.indexOf("data:") === 0?"":curhref;
+				$.prompt(uiStrings.enterNewImgURL, curhref, function(url) {
 					if(url) setImageURL(url);
 				});
 			}
@@ -2945,9 +2998,11 @@
 				var i = shortcutButtons.length;
 				while (i--) {
 					var button = document.getElementById(shortcutButtons[i]);
-					var title = button.title;
-					var index = title.indexOf("Ctrl+");
-					button.title = [title.substr(0,index), "Cmd+", title.substr(index+5)].join('');
+					if (button != null) {
+						var title = button.title;
+						var index = title.indexOf("Ctrl+");
+						button.title = [title.substr(0, index), "Cmd+", title.substr(index + 5)].join('');
+					}
 				}
 			}
 			
@@ -3059,44 +3114,71 @@
 		
 				operaRepaint();
 			};
-		
-			// set up gradients to be used for the buttons
-			var svgdocbox = new DOMParser().parseFromString(
-				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
-				fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
-				<linearGradient id="gradbox_">\
-						<stop stop-color="#000" offset="0.0"/>\
-						<stop stop-color="#FF0000" offset="1.0"/>\
-				</linearGradient></svg>', 'text/xml');
-		
-			var boxgrad = svgdocbox.getElementById('gradbox_');
-			boxgrad.id = 'gradbox_fill';
-			svgdocbox.documentElement.setAttribute('width',16.5);
-			$('#fill_color').append( document.importNode(svgdocbox.documentElement,true) );
 			
-			boxgrad.id = 'gradbox_stroke';	
-			svgdocbox.documentElement.setAttribute('width',16.5);
-			$('#stroke_color').append( document.importNode(svgdocbox.documentElement,true) );
-			$('#stroke_color rect').attr({
-				'fill': '#' + curConfig.initStroke.color,
-				'opacity': curConfig.initStroke.opacity
-			});
-			
-			$('#stroke_width').val(curConfig.initStroke.width);
-			$('#group_opacity').val(curConfig.initOpacity * 100);
-			
-			// Use this SVG elem to test vectorEffect support
-			var test_el = svgdocbox.documentElement.firstChild;
-			test_el.setAttribute('style','vector-effect:non-scaling-stroke');
-			var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
-			test_el.removeAttribute('style');
-			
-			// Use this to test support for blur element. Seems to work to test support in Webkit
-			var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-			if(typeof blur_test.stdDeviationX === "undefined") {
-				$('#tool_blur').hide();
+			if(window.DOMParser) {
+				// set up gradients to be used for the buttons
+				var svgdocbox = new DOMParser().parseFromString(
+					'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
+					fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
+					<linearGradient id="gradbox_">\
+							<stop stop-color="#000" offset="0.0"/>\
+							<stop stop-color="#FF0000" offset="1.0"/>\
+					</linearGradient></svg>', 'text/xml');
+				var docElem = svgdocbox.documentElement;
+
+
+				var boxgrad = svgdocbox.getElementById('gradbox_');
+				boxgrad.id = 'gradbox_fill';
+				docElem.setAttribute('width',16.5);
+				$('#fill_color').append( document.importNode(docElem,true) );
+				
+				boxgrad.id = 'gradbox_stroke';	
+				docElem.setAttribute('width',16.5);
+				$('#stroke_color').append( document.importNode(docElem,true) );
+				$('#stroke_color rect').attr({
+					'fill': '#' + curConfig.initStroke.color,
+					'opacity': curConfig.initStroke.opacity
+				});
+				
+				$('#stroke_width').val(curConfig.initStroke.width);
+				$('#group_opacity').val(curConfig.initOpacity * 100);
+				
+				// Use this SVG elem to test vectorEffect support
+				var test_el = docElem.firstChild;
+				test_el.setAttribute('style','vector-effect:non-scaling-stroke');
+				var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
+				test_el.removeAttribute('style');
+				
+				// Use this to test support for blur element. Seems to work to test support in Webkit
+				var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+				if(typeof blur_test.stdDeviationX === "undefined") {
+					$('#tool_blur').hide();
+				}
+				$(blur_test).remove();
+			} else {
+				var svgns = "http://www.w3.org/2000/svg";
+				var svgdocbox = document.createElementNS(svgns, 'svg');
+				var rect = svgCanvas.addSvgElementFromJson({
+					element: 'rect',
+					attr: {
+						width: '100%',
+						height: '100%',
+						fill: '#' + curConfig.initFill.color,
+						opacity: curConfig.initFill.opacity
+					}
+				});
+				svgdocbox.appendChild(rect);
+				var linearGradient = svgCanvas.addSvgElementFromJson({
+					element: 'linearGradient',
+					attr: {
+						id: 'gradbox_'
+					}
+				});
+				svgdocbox.appendChild(linearGradient);
+				var docElem = svgdocbox;
 			}
-			$(blur_test).remove();
+		
+
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
@@ -3499,17 +3581,17 @@
 					{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
 					{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
 					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
-					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey+'N', true]},
-					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
+					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
+					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: ['S', true]},
 					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
-					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: [modKey+'O', true]},
+					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
 					{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
 					{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 					{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
 					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: [modKey+'P', true]},
+					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: ['P', true]},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -3520,10 +3602,10 @@
 					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'shift+up'},
 					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'shift+down'},
 					{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
-					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: [modKey+'Z', true]},
-					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: [modKey+'Y', true]},
-					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: [modKey+'C', true]},
-					{sel:'#tool_group', fn: clickGroup, evt: 'click', key: [modKey+'G', true]},
+					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
+					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
+					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['C', true]},
+					{sel:'#tool_group', fn: clickGroup, evt: 'click', key: ['G', true]},
 					{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
 					{sel:'#tool_unlink_use', fn: clickGroup, evt: 'click'},
 					{sel:'[id^=tool_align]', fn: clickAlign, evt: 'click'},
@@ -3532,15 +3614,18 @@
 		// 			{sel:'#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
 					{sel:'#tool_bold', fn: clickBold, evt: 'mousedown'},
 					{sel:'#tool_italic', fn: clickItalic, evt: 'mousedown'},
-					{sel:'#sidepanel_handle', fn: toggleSidePanel, key: [modKey+'X']},
+					{sel:'#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
+					{sel:'#copy_save_done', fn: cancelOverlays, evt: 'click'},
 					
 					// Shortcuts not associated with buttons
 					{key: 'shift+left', fn: function(){rotateSelected(0)}},
 					{key: 'shift+right', fn: function(){rotateSelected(1)}},
 					{key: 'shift+O', fn: selectPrev},
 					{key: 'shift+P', fn: selectNext},
-					{key: ['ctrl+up', true], fn: function(){zoomImage(2);}},
-					{key: ['ctrl+down', true], fn: function(){zoomImage(.5);}},
+					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
+					{key: [modKey+'down', true], fn: function(){zoomImage(.5);}},
+					{key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
+					{key: [modKey+']', true], fn: function(){moveUpDownSelected('Up');}},
 					{key: ['up', true], fn: function(){moveSelected(0,-1);}},
 					{key: ['down', true], fn: function(){moveSelected(0,1);}},
 					{key: ['left', true], fn: function(){moveSelected(-1,0);}},
@@ -3705,6 +3790,48 @@
 			$('#blur').SpinButton({ step: .1, min: 0, max: 10, callback: changeBlur });
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 			
+			$("#workarea").contextMenu({
+					menu: 'cmenu_canvas',
+					inSpeed: 0
+				},
+				function(action, el, pos) {
+					switch ( action ) {
+						case 'delete':
+							deleteSelected();
+							break;
+						case 'cut':
+							cutSelected();
+							break;
+						case 'copy':
+							copySelected();
+							break;
+						case 'paste':
+							svgCanvas.pasteElements();
+							break;
+						case 'paste_in_place':
+							svgCanvas.pasteElements('in_place');
+							break;
+						case 'move_down':
+							moveUpDownSelected('Down');
+							break;
+						case 'move_up':
+							moveUpDownSelected('Up');
+							break;
+
+					}
+					
+					if(svgCanvas.clipBoard.length) {
+						canv_menu.enableContextMenuItems('#paste,#paste_in_place');
+					}
+			});
+			
+			$('.contextMenu li').mousedown(function(ev) {
+				ev.preventDefault();
+			})
+			
+			$('#cmenu_canvas li').disableContextMenu();
+			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
+			
 			window.onbeforeunload = function() { 
 				// Suppress warning if page is empty 
 				if(undoMgr.getUndoStackSize() === 0) {
@@ -3835,7 +3962,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1659 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1706 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
@@ -3996,7 +4123,7 @@
 		Editor.addExtension = function() {
 			var args = arguments;
 			$(function() {
-				svgCanvas.addExtension.apply(this, args);
+				if(svgCanvas) svgCanvas.addExtension.apply(this, args);
 			});
 		};
 

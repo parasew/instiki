@@ -190,7 +190,7 @@
 	padding: 0px;
 	padding-left: 2px;
 	padding-right: 2px;
-	width: 106px;
+	width: 123px;
 	height: 20px;
 	border-right: 1px solid #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
@@ -212,6 +212,10 @@
 	margin-right: 3px;
 }
 
+#svg_editor .layer_button:last-child {
+	margin-right: 0;
+}
+
 #svg_editor .layer_buttonpressed {
 	width: 14px;
 	height: 14px;
@@ -226,7 +230,7 @@
 #svg_editor #layerlist {
 	margin: 1px;
 	padding: 0px;
-	width: 110px;
+	width: 127px;
 	border-collapse: collapse;	
 	border: 1px solid #808080;
 	background-color: #FFFFFF;
@@ -444,16 +448,7 @@
 	fill: #FFF !important;
 }
 
-#svg_editor #selected_panel,
-#svg_editor #multiselected_panel,
-#svg_editor #g_panel,
-#svg_editor #rect_panel,
-#svg_editor #circle_panel,
-#svg_editor #ellipse_panel,
-#svg_editor #line_panel,
-#svg_editor #image_panel,
-#svg_editor #text_panel,
-#svg_editor #path_node_panel {
+#tools_top div[id$="_panel"]:not(#editor_panel):not(#history_panel) {
 	display: none;
 }
 
@@ -934,6 +929,16 @@ span.zoom_tool {
 	z-index: 6;
 }
 
+#save_output_btns {
+	display: none;
+	text-align: left;
+}
+
+#save_output_btns p {
+	margin: .5em 1.5em;
+	display: inline-block;
+}
+
 #bg_blocks {
 	overflow: auto;
 	margin-left: 30px;
@@ -1005,8 +1010,9 @@ span.zoom_tool {
 	color: #444;
 }
 
-#canvas_title {
+#canvas_title, #canvas_bg_url {
 	display: block;
+	width: 96%;
 }
 
 #svg_source_editor #svg_source_textarea {
@@ -1214,4 +1220,76 @@ span.zoom_tool {
 	-webkit-border-radius: 0px;	
 }
 
+/* Generic context menu styles */
+.contextMenu {
+	position: absolute;
+	z-index: 99999;
+	border: solid 1px rgba(0,0,0,.33);
+	background: rgba(255,255,255,.95);
+	padding: 5px 0;
+	margin: 0px;
+	display: none;
+	font: 14px/17px Lucida Sans, Helvetica, Verdana, sans-serif;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-moz-box-shadow: 2px 5px 10px rgba(0,0,0,.3);
+	-webkit-box-shadow: 2px 5px 10px rgba(0,0,0,.3);
+	box-shadow: 2px 5px 10px rgba(0,0,0,.3);
+}
+
+.contextMenu LI {
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+.contextMenu A {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	color: #222;
+	text-decoration: none;
+	display: block;
+	line-height: 20px;
+	height: 20px;
+	background-position: 6px center;
+	background-repeat: no-repeat;
+	outline: none;
+	padding: 0px 15px 1px 20px;
+}
+
+.contextMenu LI.hover A {
+	background-color: #2e5dea;
+	color: white;
+	cursor: default;
+}
+
+.contextMenu LI.disabled A {
+	color: #999;
+}
+
+.contextMenu LI.hover.disabled A {
+	background-color: transparent;
+}
+
+.contextMenu LI.separator {
+	border-top: solid 1px #E3E3E3;
+	padding-top: 5px;
+	margin-top: 5px;
+}
+
+/*
+	Adding Icons
+	
+	You can add icons to the context menu by adding
+	classes to the respective LI element(s)
+*/
+/*
+
+.contextMenu LI.edit A { background-image: url(images/page_white_edit.png); }
+.contextMenu LI.cut A { background-image: url(images/cut.png); }
+.contextMenu LI.copy A { background-image: url(images/page_white_copy.png); }
+.contextMenu LI.paste A { background-image: url(images/page_white_paste.png); }
+.contextMenu LI.delete A { background-image: url(images/page_white_delete.png); }
+.contextMenu LI.quit A { background-image: url(images/door.png); }
+*/
 foreignObject {line-height:1.0}
