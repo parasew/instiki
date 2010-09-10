@@ -128,7 +128,40 @@ $(function() {
 
 
 (function($) {
-	var svg_icons = {};
+	function makeSVG(el) {
+		// manually create a copy of the element
+		var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
+		$.each(el.attributes, function(i, attr) {
+			var ns = attr.namespaceURI;
+			if(ns) {
+				new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
+			} else {
+				new_el.setAttribute(attr.nodeName, attr.nodeValue);
+			}
+			if(attr.nodeName == 'transform') {
+				
+				console.log('val1:', attr.nodeValue);
+				console.log('val2:', new_el.getAttribute('transform'));
+			}
+		});
+	
+		// now create copies of all children
+		$.each(el.childNodes, function(i, child) {
+			switch(child.nodeType) {
+				case 1: // element node
+					new_el.appendChild(makeSVG(child));
+					break;
+				case 3: // text node
+					new_el.textContent = child.nodeValue;
+					break;
+				default:
+					break;
+			}
+		});
+		return new_el;
+	}
+
+	var svg_icons = {}, fixIDs;
 
 	$.svgIcons = function(file, opts) {
 		var svgns = "http://www.w3.org/2000/svg",
@@ -168,7 +201,19 @@ $(function() {
 							});
 						} else {
 							if(err.responseXML) {
+								// Is there a non-ActiveX solution in IE9?
 								svgdoc = err.responseXML;
+
+								if(!svgdoc.childNodes.length) {
+									if(window.ActiveXObject) { 
+										svgdoc = new ActiveXObject("Microsoft.XMLDOM");
+										svgdoc.loadXML(err.responseText);
+									} else {
+										$(useFallback);
+									}
+								} else {
+									$(useFallback);									
+								}
 								$(function() {
 									getIcons('ajax');
 								});							
@@ -220,20 +265,29 @@ $(function() {
 					}
 				}
 			});
-			elems = $(svgdoc.firstChild).children(); //.getElementsByTagName('foreignContent');
-			var testSrc = data_pre + 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
 			
-			testImg = $(new Image()).attr({
-				src: testSrc,
-				width: 0,
-				height: 0
-			}).appendTo('body')
-			.load(function () {
-				// Safari 4 crashes, Opera and Chrome don't
-				makeIcons(!isSafari);
-			}).error(function () {
-				makeIcons();
-			});
+			elems = $(svgdoc.firstChild).children(); //.getElementsByTagName('foreignContent');
+			
+			if(!opts.no_img) {
+			
+				var testSrc = data_pre + 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
+				
+				testImg = $(new Image()).attr({
+					src: testSrc,
+					width: 0,
+					height: 0
+				}).appendTo('body')
+				.load(function () {
+					// Safari 4 crashes, Opera and Chrome don't
+					makeIcons(!isSafari);
+				}).error(function () {
+					makeIcons();
+				});
+			} else {
+				setTimeout(function() {
+					if(!icons_made) makeIcons();
+				},500);
+			}
 		}
 		
 		function makeIcons(toImage, fallback) {
@@ -290,9 +344,12 @@ $(function() {
 					var id = elem.getAttribute('id');
 					if(id == 'svg_eof') return;
 					holder = $('#' + id);
-			
-					var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
-					var svgroot = svgdoc.createElementNS(svgns, "svg");
+					if(elem.getElementsByTagNameNS) {
+						var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
+					} else {
+						var svg = elem.getElementsByTagName('svg')[0];
+					}
+					var svgroot = document.createElementNS(svgns, "svg");
 					svgroot.setAttributeNS(svgns, 'viewBox', [0,0,icon_w,icon_h].join(' '));
 					
 					// Make flexible by converting width/height to viewBox
@@ -318,7 +375,13 @@ $(function() {
 					// With cloning, causes issue in Opera/Win/Non-EN
 					if(!isOpera) svg = svg.cloneNode(true);
 					
-					svgroot.appendChild(svg);
+					// TODO: Figure out why makeSVG is necessary for IE9
+					try {
+						svgroot.appendChild(svg);
+					} catch(e) {
+						// For IE9
+						svgroot.appendChild(makeSVG(svg));
+					}
 			
 					if(toImage) {
 						// Without cloning, Safari will crash
@@ -339,8 +402,12 @@ $(function() {
 				$.each(opts.placement, function(sel, id) {
 					if(!svg_icons[id]) return;
 					$(sel).each(function(i) {
-						var copy = svg_icons[id].clone();
-						if(i > 0 && !toImage) copy = fixIDs(copy, i, true);
+						// TODO: Figure out why makeSVG is necessary for IE9
+						try {
+							var copy = svg_icons[id].clone();
+						} catch(e) {
+							var copy = makeSVG(svg_icons[id][0]);
+						}
 						setIcon($(this), copy, id);
 					})
 				});
@@ -348,18 +415,16 @@ $(function() {
 			if(!fallback) {
 				if(toImage) temp_holder.remove();
 				if(data_el) data_el.remove();
-				testImg.remove();
+				if(testImg) testImg.remove();
 			}
-
 			if(opts.resize) $.resizeSvgIcons(opts.resize);
-
 			icons_made = true;
 			
 			if(opts.callback) opts.callback(svg_icons);
 			
 		}
 		
-		function fixIDs(svg_el, svg_num, force) {
+		fixIDs = function(svg_el, svg_num, force) {
 			var defs = svg_el.find('defs');
 			if(!defs.length) return svg_el;
 			
@@ -433,7 +498,13 @@ $(function() {
 		}
 	}
 	
-	$.getSvgIcon = function(id) { return svg_icons[id]; }
+	$.getSvgIcon = function(id, uniqueClone) { 
+		var icon = svg_icons[id];
+		if(uniqueClone) {
+			icon = fixIDs(icon, 0, true).clone(true);
+		}
+		return icon; 
+	}
 	
 	$.resizeSvgIcons = function(obj) {
 		// FF2 and older don't detect .svg_icon, so we change it detect svg elems instead
