@@ -1370,6 +1370,7 @@ var SelectorManager;
 			mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
 			mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
 			mgr.selectorGripsGroup = svgdoc.createElementNS(svgns, "g");
+			mgr.selectorGripsGroup.setAttribute('display','none');
 			svgroot.appendChild(mgr.selectorParentGroup);
 			mgr.selectorParentGroup.appendChild(mgr.selectorGripsGroup);
 			mgr.selectorMap = {};
@@ -9014,7 +9015,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1712 $)";
+	return "svgcanvas.js ($Rev: 1714 $)";
 };
 
 // Function: setUiStrings
