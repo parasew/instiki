@@ -1,6 +1,6 @@
 # fortran.rb -- a free-form Fortran module for the Ruby Syntax library
 #
-# Copyright (C) 2009 Jason Blevins
+# Copyright (C) 2009-2010 Jason Blevins
 # License: 3-clause BSD (the same as Syntax itself)
 
 require 'syntax'
@@ -12,66 +12,72 @@ class Fortran < Tokenizer
 
     # Fortran keywords
     LC_KEYWORDS =
-        %w{ access assign backspace blank block call close common
-            continue data dimension direct do else endif enddo end entry eof
-            equivalence err exist external file fmt form format formatted
-            function go to if implicit include inquire intrinsic iostat
-            logical named namelist nextrec number open opened parameter pause
-            print program read rec recl return rewind sequential status stop
-            subroutine then type unformatted unit write save } + 
+        %w{ assign backspace call close common continue data dimension do
+            else end endfile endif enddo entry equivalence external
+            format function goto if implicit inquire intrinsic open
+            parameter pause print program read return rewind
+            save stop subroutine then write } +
+        [ "block data", "go to" ] +
     # Fortran 90 keywords
         %w{ allocate allocatable case contains cycle deallocate
-            elsewhere exit interface intent module only operator
-            optional pointer private procedure public result recursive
-            select sequence target use while where } +
+            elsewhere exit include interface intent module namelist nullify
+            only operator optional pointer private procedure public
+            result recursive select sequence target type use while where } +
     # Fortran 95 keywords
         %w{ elemental forall pure } +
     # Fortran 2003 keywords
-        %w{ abstract asynchronous bind class delegate static reference
-            round decimal sign encoding iomsg endfile nextrec pending
-            pass protected associate flush decorate extends extensible
-            generic non_overridable enum enumerator typealias move_alloc
-            volatile }
+        %w{ abstract associate asynchronous bind class deferred enum enumerator
+            extends final flush generic import non_overridable nopass pass
+            protected value volatile wait } +
+    # Fortran 2008 keywords
+        %w{ block codimension concurrent contiguous critical submodule
+            lock unlock } +
+        [ "error stop", "sync all", "sync images", "sync memory" ]
 
     # List of identifiers recognized as types
-    LC_TYPES =
-        %w{ character double integer real precision complex }
+    LC_TYPES = [ "character", "complex", "logical", "integer", "real",
+                 "double precision" ]
 
     # Fortran intrinsic procedures
     LC_INTRINSICS = %w{
         abs achar acos acosh adjustl adjustr aimag
         aint all allocated anint any asin asinh
-        associated atan atan2 atanh
+        associated atan atan2 atanh atomic_define atomic_ref
         bessel_j0 bessel_j1 bessel_jn
         bessel_y0 bessel_y1 bessel_yn
         bit_size btest
+        bge bgt ble blt
         c_associated c_f_pointer c_f_procpointer
         c_funloc c_loc c_sizeof
         ceiling char cmplx command_argument_count
+        compiler_version compiler_options
         conjg cos cosh count cpu_time cshift
         date_and_time dble digits dim dot_product dprod
+        dshiftl dshiftr
         eoshift epsilon erf erfc erfc_scaled exp exponent
-        float floor fraction
+        execute_command_line extends_type_of
+        findloc float floor fraction
         gamma get_command get_command_argument
         get_environment_variable
         huge hypot
-        iachar iand ibclr ibits ibset ichar int ior
-        is_iostat_end is_iostat_eor ishft ishftc
+        iachar iall iand iany ibclr ibits ibset ichar image_index
+        int ior iparity is_contiguous is_iostat_end is_iostat_eor
+        ishft ishftc
         kind
-        lbound leadz len len_trim lge lgt lle llt
+        lbound lcobound leadz len len_trim lge lgt lle llt
         log log10 log_gamma logical
-        matmul max maxexponent maxloc maxval merge
+        maskl maskr matmul max maxexponent maxloc maxval merge merge_bits
         min minexponent minloc minval mod modulo
         move_alloc mvbits
-        nearest new_line nint not null
-        pack precision present product
+        nearest new_line nint norm2 not null num_images
+        pack parity popcnt poppar precision present product
         radix random_number random_seed range real
         repeat reshape rrspacing
-        scale scan selected_char_kind selected_int_kind
-        selected_real_kind set_exponent shape sign
-        sin sinh size sngl spacing spread sqrt sum system_clock
-        tan tanh tiny trailz transfer transpose trim
-        ubound unpack
+        same_type_as scale scan selected_char_kind selected_int_kind
+        selected_real_kind set_exponent shape shiftl shiftr sign
+        sin sinh size sngl spacing spread sqrt storage_size sum system_clock
+        tan tanh this_image tiny trailz transfer transpose trim
+        ubound ucobound unpack
         verify
     }
 
