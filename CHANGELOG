@@ -1,5 +1,6 @@
 N.B.: You *must* run
 
+     ruby bundle
      rake upgrade_instiki
 
 after installing the new software, to enjoy the benefits of this new version.
@@ -11,19 +12,41 @@ New Features:
 
 * WYSIWYG SVG editing (via SVG-edit)
 * One-click S5 templates
+* Itex2MML is now a Rubygem. Latest is itextomml-1.4.2.
+* Rails Metal itex endpoint
+* HTML5 support
+* Support IALs on Markdown list items
+* Updated to Rails 2.3.9 and Erubis ( now at 2.6.6)
+* Updated for Rack 1.2.1, sqlite3-ruby 1.3.1
+* Manage dependencies using Bundler. Before running Instiki for the first time
+  (and whenever you update), run
+  
+     ruby bundle
+     rake upgrade_instiki
+
+  from the instiki directory.
 
 Bugs Fixed:
 
+* Works with Ruby 1.9.2
+* Fixed a bug in non-Latin WikiWord processing. (Reported by Alexander Hambug)
+* Fixed Cyrillic WikiWord support.
+* More informative dnsbl lookup responses (suggested by Toby Bartels)
+* Fixed a bug in LaTeX output
+* No longer conflicts with sqlite3-ruby 1.3.x Rubygem
+* Fixed some Category listing bugs
+* Fixed an escaping bug in 'new' and 'edit' templates. (Reported by Toby Bartels)
 * Allow special characters ('.', '/', etc) in page names.
 * Fix BlahTeX/PNG path, so equations render in diff and
   previous revision pages.
-* Fix HTML Export feature so that o uploaded files are
+* Fix HTML Export feature so that uploaded files are
   included, stylesheets load, etc.
 * Uploaded files inclided in Markup Export.
 * Fix Print View, so that uploaded images work.
 * Fix some more Ruby 1.9 isues.
 * Prevent page from being renamed to null.
 * Fix Migration to work under PostgreSQL (from J. Zellman).
+* Updated vendored plugins
 
 ------------------------------------------------------------------------------
 * 0.18.1

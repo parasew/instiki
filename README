@@ -1,7 +1,7 @@
 
 = Instiki
 
-Instiki is a wiki clone so pretty and easy to set up, you'll wonder if it’s really a wiki. Runs on Rails and focuses on portability and stability. Supports file uploads, PDF export, RSS, multiple users and password protection. Some use Instiki as a CMS (Content Management System) because of it's ability to export static pages.
+Instiki is a wiki clone so pretty and easy to set up, you'll wonder if it’s really a wiki. Runs on Rails and focuses on portability and stability. Supports file uploads, PDF export, RSS, multiple users and password protection. Some use Instiki as a CMS (Content Management System) because of its ability to export static pages.
 
 Instiki lowers the barriers of interest for when you might consider using a wiki. It's so simple to get running that you'll find yourself using it for anything -- taking notes, brainstorming, organizing a gathering.
 
@@ -15,33 +15,31 @@ Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms
 
 == 3 easy Steps to get the Instiki experience
 
-  Step 1. Get Ruby, Download Instiki
+  Step 1. Get Ruby and Instiki, run "ruby bundle"
   Step 2. Run "instiki"
   Step 3. Chuckle... "There's no step three!" (TM)
  
 
 == Details
 
-You need at least Ruby Version 1.8.4 installed on your System. The second dependency is a Database System, but don't worry, maybe you are already served.
+You need at least Ruby Version 1.8.6 installed on your System. The second dependency is a Database System, but don't worry, maybe you are already served.
 
 
 === If you are on Windows
 
 - Get the *Ruby One-Click Installer - Windows* http://rubyforge.org/projects/rubyinstaller
+- Get Development Kit http://github.com/oneclick/rubyinstaller/wiki/development-kit
+- In the Instiki directory, execute "ruby bundle"
 - double-click instiki.bat or instiki.cmd and there you go!
-
-if you are running Windows 95, 98 or ME and cannot get instiki to run, try Version 0.11.pl1 which is the last instiki Version to support that old-style OS's. Please update to some Unix-OS or complain to the Ruby on Rails List at http://www.ruby-forum.com/forum/3 (Rails does not support your old Windows.)
-
 
 === If you are on Mac OSX
 
 On Leopard, you are all set.
+- run "ruby bundle" via command-line in the directory.
+- run "ruby instiki" and there you go!
 
 Tiger ships with a really old Ruby Version (1.8.2) and a broken Readline Library you have to
 - use the Ruby One-Click-Installer for OSX ( http://rubyosx.com ) if you don't already have macports' Ruby
-- make sure you read http://instiki.5uper.net/instiki/show/SQLite+issues+on+OSX
-- run "ruby instiki.rb" via command-line in the directory 
-
 
 === If you are on Linux
 
@@ -50,6 +48,7 @@ Tiger ships with a really old Ruby Version (1.8.2) and a broken Readline Library
 
 - get Ruby for your System, compile if nessesary: http://ruby-lang.org
 - get SQLite or compile from http://sqlite.org (you can also use mysql or any other supported database system if you want)
+- run "ruby bundle"
 - run instiki
 
 You're now running a perfectly suitable wiki on port 2500 that'll present you with one-step setup, followed by a textarea for the home page on http://localhost:2500
@@ -68,10 +67,12 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 * Five markup choices:
    Markdown-based choices [http://daringfireball.net/projects/markdown/syntax]:
      Markdown+itex2MML (the default; requires itex2MML) 
-     Markdown+BlahTeX/PNG (requires blahtex and a working TeX installation
+     Markdown+BlahTeX/PNG (requires blahtex and a working TeX installation)
      Markdown
    Textile [http://www.textism.com/tools/textile]
    RDoc [http://rdoc.sourceforge.net/doc]
+* Support for Math (using itex syntax [http://golem.ph.utexas.edu/~distler/blog/itex2MMLcommands.html]) 
+* Support for WYSIWYG SVG editing -- embed SVG graphics right in your wiki page.
 * Embedded webserver: uses Mongrel (if installed), or the bundled WEBrick webserver (if not).
 * Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
 * Color diffs: Track changes through revisions
@@ -87,56 +88,19 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 
  * See CHANGELOG
 
-== Migrating from Instiki 0.11-0.12 to 0.16.3
+== Migrating from Instiki 0.11-0.18 to 0.19
 
+   ruby bundle
    rake upgrade_instiki
-
-== Migrating Instiki 0.10.2 storage to Instiki 0.11.0 database
-
-1. Install Instiki 0.11 and check that it works (you should be able to create a web, edit and save a HomePage)
-2. Execute 
-      ruby script\import_storage \
-          -t /full/path/to/instiki0.10/storage \
-          -i /full/path/to/instiki0.10/installation \
-          -d sqlite (or mysql, or postgres, depending on what you use) \
-          -o instiki_import.sql
-   for example (Windows):
-   ruby script\import_storage -t c:\instiki-0.10.2\storage\2500 -i c:\instiki-0.10.2 -d sqlite -o instiki_import.sql
-3. This will produce instiki_import.sql file in the current working directory. 
-   Open it in a text editor and inspect carefully.
-4. Connect to your production database (e.g., 'sqlite3 db\prod.db'), 
-   and have it execute instiki_import.sql (e.g., '.read instiki_import.sql')
-5. Execute ruby script\reset_references 
-   (this script parses all pages for crosslinks between them, so it may take a few minutes)
-6. Restart Instiki
-7. Go over some pages, especially those with a lot of complex markup, and see if anything is broken.
-
-The most common migration problem is this: if you open All Pages and see a lot of orphaned pages, 
-you forgot to run ruby script\reset_references after importing the data.
-
-
-===Upgrading from Instiki-AR Beta 1
-
-In Beta 2, we switch to ActiveRecord:Migrations. Therefore:
-1. Back up your production database.
-2. Open command-line session to your database and execute: 
-  create table schema_info (version integer(11)); 
-  insert into schema_info (version) values (1);
-3. Go back to the shell, change directory to the new Instiki and execute "rake migrate".
-
-Step 2 creates a table that tells to ActiveRecord:Migrations that the current version 
-of this database is 1 (corresponding to Beta 1), and step 3 makes it up-to-date with
-the current version of Instiki.
-
-
+   
 == Download the latest release from:
 
 * http://rubyforge.org/project/showfiles.php?group_id=186
 
 
-== Visit the "official" Instiki wiki:
+== Visit the Instiki wiki:
 
-* http://instiki.org
+* http://golem.ph.utexas.edu/wiki/instiki/
 
 
 == License:
