@@ -1,0 +1,1180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>bundler-1.0.0 Documentation</title>
+
+	<link type="text/css" media="screen" href="rdoc.css" rel="stylesheet" />
+
+	<script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/thickbox-compressed.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/quicksearch.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/darkfish.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+<body class="indexpage">
+
+	
+	<h1>bundler-1.0.0 Documentation</h1>
+
+	
+	<p>This is the API documentation for 'bundler-1.0.0 Documentation'.</p>
+	
+
+	
+	
+	<h2>Files</h2>
+	<ul>
+		
+			<li class="file"><a href="lib/bundler/man/bundle.html">bundle</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-config.html">bundle-config</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-install.html">bundle-install</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-package.html">bundle-package</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-update.html">bundle-update</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+		
+			<li class="file"><a href="lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+		
+			<li class="file"><a href="lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+		
+	</ul>
+	
+
+	<h2 id="classes">Classes/Modules</h2>
+	<ul>
+		
+		<li class="module"><a href="Bundler.html">Bundler</a></li>
+		
+		<li class="class"><a href="Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+		
+		<li class="class"><a href="Bundler/CLI.html">Bundler::CLI</a></li>
+		
+		<li class="class"><a href="Bundler/Definition.html">Bundler::Definition</a></li>
+		
+		<li class="class"><a href="Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+		
+		<li class="class"><a href="Bundler/Dependency.html">Bundler::Dependency</a></li>
+		
+		<li class="class"><a href="Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+		
+		<li class="class"><a href="Bundler/Dsl.html">Bundler::Dsl</a></li>
+		
+		<li class="class"><a href="Bundler/DslError.html">Bundler::DslError</a></li>
+		
+		<li class="class"><a href="Bundler/Environment.html">Bundler::Environment</a></li>
+		
+		<li class="class"><a href="Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+		
+		<li class="module"><a href="Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+		
+		<li class="class"><a href="Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+		
+		<li class="class"><a href="Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+		
+		<li class="class"><a href="Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+		
+		<li class="class"><a href="Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+		
+		<li class="class"><a href="Bundler/GitError.html">Bundler::GitError</a></li>
+		
+		<li class="class"><a href="Bundler/Graph.html">Bundler::Graph</a></li>
+		
+		<li class="class"><a href="Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+		
+		<li class="class"><a href="Bundler/Index.html">Bundler::Index</a></li>
+		
+		<li class="class"><a href="Bundler/Installer.html">Bundler::Installer</a></li>
+		
+		<li class="class"><a href="Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+		
+		<li class="class"><a href="Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+		
+		<li class="class"><a href="Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+		
+		<li class="class"><a href="Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+		
+		<li class="module"><a href="Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+		
+		<li class="class"><a href="Bundler/PathError.html">Bundler::PathError</a></li>
+		
+		<li class="class"><a href="Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+		
+		<li class="class"><a href="Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+		
+		<li class="class"><a href="Bundler/Resolver.html">Bundler::Resolver</a></li>
+		
+		<li class="class"><a href="Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+		
+		<li class="class"><a href="Bundler/Runtime.html">Bundler::Runtime</a></li>
+		
+		<li class="class"><a href="Bundler/Settings.html">Bundler::Settings</a></li>
+		
+		<li class="module"><a href="Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+		
+		<li class="module"><a href="Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+		
+		<li class="module"><a href="Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+		
+		<li class="module"><a href="Bundler/Source.html">Bundler::Source</a></li>
+		
+		<li class="class"><a href="Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+		
+		<li class="class"><a href="Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+		
+		<li class="class"><a href="Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+		
+		<li class="class"><a href="Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+		
+		<li class="class"><a href="Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+		
+		<li class="class"><a href="Bundler/UI.html">Bundler::UI</a></li>
+		
+		<li class="class"><a href="Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+		
+		<li class="class"><a href="Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+		
+		<li class="class"><a href="Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+		
+		<li class="class"><a href="Thor.html">Thor</a></li>
+		
+		<li class="module"><a href="Thor/Actions.html">Thor::Actions</a></li>
+		
+		<li class="module"><a href="Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+		
+		<li class="module"><a href="Thor/Base.html">Thor::Base</a></li>
+		
+		<li class="module"><a href="Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+		
+		<li class="class"><a href="Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+		
+		<li class="class"><a href="Thor/Error.html">Thor::Error</a></li>
+		
+		<li class="class"><a href="Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+		
+		<li class="module"><a href="Thor/Invocation.html">Thor::Invocation</a></li>
+		
+		<li class="module"><a href="Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+		
+		<li class="class"><a href="Thor/InvocationError.html">Thor::InvocationError</a></li>
+		
+		<li class="class"><a href="Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+		
+		<li class="class"><a href="Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+		
+		<li class="module"><a href="Thor/Shell.html">Thor::Shell</a></li>
+		
+		<li class="class"><a href="Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+		
+		<li class="class"><a href="Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+		
+		<li class="class"><a href="Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+		
+		<li class="class"><a href="Thor/Task.html">Thor::Task</a></li>
+		
+		<li class="class"><a href="Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+		
+		<li class="class"><a href="Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+		
+		<li class="module"><a href="Thor/Util.html">Thor::Util</a></li>
+		
+		<li class="module"><a href="Gem.html">Gem</a></li>
+		
+		<li class="class"><a href="Gem/Dependency.html">Gem::Dependency</a></li>
+		
+		<li class="class"><a href="Gem/Platform.html">Gem::Platform</a></li>
+		
+		<li class="class"><a href="Gem/Specification.html">Gem::Specification</a></li>
+		
+	</ul>
+
+	<h2 id="methods">Methods</h2>
+	<ul>
+		
+			<li><a href="Bundler.html#method-c-app_cache">::app_cache &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-app_config_path">::app_config_path &mdash; Bundler</a></li>
+		
+			<li><a href="Thor.html#method-c-banner">::banner &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-bin_path">::bin_path &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/Index.html#method-c-build">::build &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-c-build">::build &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler.html#method-c-bundle_path">::bundle_path &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-cache">::cache &mdash; Bundler</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-camel_case">::camel_case &mdash; Thor::Util</a></li>
+		
+			<li><a href="Thor.html#method-c-check_unknown_options%21">::check_unknown_options! &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-configure">::configure &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-configure_gem_home_and_path">::configure_gem_home_and_path &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-default_gemfile">::default_gemfile &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-default_lockfile">::default_lockfile &mdash; Bundler</a></li>
+		
+			<li><a href="Thor.html#method-c-default_task">::default_task &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-definition">::definition &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-c-deprecate">::deprecate &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Thor.html#method-c-desc">::desc &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-environment">::environment &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-c-evaluate">::evaluate &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-find_by_namespace">::find_by_namespace &mdash; Thor::Util</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-find_class_and_task_by_namespace">::find_class_and_task_by_namespace &mdash; Thor::Util</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-c-from_lock">::from_lock &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-c-from_lock">::from_lock &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-c-from_lock">::from_lock &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-globs_for">::globs_for &mdash; Thor::Util</a></li>
+		
+			<li><a href="Thor.html#method-c-help">::help &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-home">::home &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/Installer.html#method-c-install">::install &mdash; Bundler::Installer</a></li>
+		
+			<li><a href="Bundler.html#method-c-install_path">::install_path &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-c-install_tasks">::install_tasks &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler.html#method-c-load">::load &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-load_gemspec">::load_gemspec &mdash; Bundler</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-load_thorfile">::load_thorfile &mdash; Thor::Util</a></li>
+		
+			<li><a href="Thor.html#method-c-long_desc">::long_desc &mdash; Thor</a></li>
+		
+			<li><a href="Thor.html#method-c-map">::map &mdash; Thor</a></li>
+		
+			<li><a href="Thor.html#method-c-method_option">::method_option &mdash; Thor</a></li>
+		
+			<li><a href="Thor.html#method-c-method_options">::method_options &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-mkdir_p">::mkdir_p &mdash; Bundler</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-namespace_from_thor_class">::namespace_from_thor_class &mdash; Thor::Util</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-namespaces_in_content">::namespaces_in_content &mdash; Thor::Util</a></li>
+		
+			<li><a href="Bundler/VersionConflict.html#method-c-new">::new &mdash; Bundler::VersionConflict</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-c-new">::new &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/GraphNode.html#method-c-new">::new &mdash; Bundler::GraphNode</a></li>
+		
+			<li><a href="Bundler/DepProxy.html#method-c-new">::new &mdash; Bundler::DepProxy</a></li>
+		
+			<li><a href="Thor/DynamicTask.html#method-c-new">::new &mdash; Thor::DynamicTask</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-c-new">::new &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/RemoteSpecification.html#method-c-new">::new &mdash; Bundler::RemoteSpecification</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-c-new">::new &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Thor/Actions.html#method-c-new">::new &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-c-new">::new &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-c-new">::new &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/UI/RGProxy.html#method-c-new">::new &mdash; Bundler::UI::RGProxy</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-c-new">::new &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-c-new">::new &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/LockfileParser.html#method-c-new">::new &mdash; Bundler::LockfileParser</a></li>
+		
+			<li><a href="Thor/Shell.html#method-c-new">::new &mdash; Thor::Shell</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-c-new">::new &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-c-new">::new &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Thor/Task.html#method-c-new">::new &mdash; Thor::Task</a></li>
+		
+			<li><a href="Bundler/Graph.html#method-c-new">::new &mdash; Bundler::Graph</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-c-new">::new &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Source/Path/Installer.html#method-c-new">::new &mdash; Bundler::Source::Path::Installer</a></li>
+		
+			<li><a href="Thor/Base.html#method-c-new">::new &mdash; Thor::Base</a></li>
+		
+			<li><a href="Bundler/Index.html#method-c-new">::new &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-c-new">::new &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/UI/Shell.html#method-c-new">::new &mdash; Bundler::UI::Shell</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-c-new">::new &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-c-new">::new &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-c-new">::new &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Thor.html#method-c-printable_tasks">::printable_tasks &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-read_file">::read_file &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-require">::require &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-requires_sudo%3F">::requires_sudo? &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-c-resolve">::resolve &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler.html#method-c-root">::root &mdash; Bundler</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-ruby_command">::ruby_command &mdash; Thor::Util</a></li>
+		
+			<li><a href="Bundler.html#method-c-ruby_scope">::ruby_scope &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-settings">::settings &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-setup">::setup &mdash; Bundler</a></li>
+		
+			<li><a href="Thor/Base.html#method-c-shell">::shell &mdash; Thor::Base</a></li>
+		
+			<li><a href="Thor/Base.html#method-c-shell%3D">::shell= &mdash; Thor::Base</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-snake_case">::snake_case &mdash; Thor::Util</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-c-source_root">::source_root &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler.html#method-c-specs_path">::specs_path &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/BundlerError.html#method-c-status_code">::status_code &mdash; Bundler::BundlerError</a></li>
+		
+			<li><a href="Thor/Base.html#method-c-subclass_files">::subclass_files &mdash; Thor::Base</a></li>
+		
+			<li><a href="Thor/Base.html#method-c-subclasses">::subclasses &mdash; Thor::Base</a></li>
+		
+			<li><a href="Thor.html#method-c-subcommand">::subcommand &mdash; Thor</a></li>
+		
+			<li><a href="Thor.html#method-c-subcommand_help">::subcommand_help &mdash; Thor</a></li>
+		
+			<li><a href="Thor.html#method-c-subcommands">::subcommands &mdash; Thor</a></li>
+		
+			<li><a href="Bundler.html#method-c-sudo">::sudo &mdash; Bundler</a></li>
+		
+			<li><a href="Thor.html#method-c-task_help">::task_help &mdash; Thor</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-thor_classes_in">::thor_classes_in &mdash; Thor::Util</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-thor_root">::thor_root &mdash; Thor::Util</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-thor_root_glob">::thor_root_glob &mdash; Thor::Util</a></li>
+		
+			<li><a href="Bundler.html#method-c-tmp">::tmp &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-ui">::ui &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-upgrade_lockfile">::upgrade_lockfile &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler.html#method-c-user_bundle_path">::user_bundle_path &mdash; Bundler</a></li>
+		
+			<li><a href="Thor/Util.html#method-c-user_home">::user_home &mdash; Thor::Util</a></li>
+		
+			<li><a href="Bundler.html#method-c-with_clean_env">::with_clean_env &mdash; Bundler</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-%3C%3C">#<< &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/DepProxy.html#method-i-%3D%3D">#== &mdash; Bundler::DepProxy</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-%3D%3D">#== &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-%3D%3D">#== &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-%3D%3D">#== &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-%3D%3D">#== &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-%5B%5D">#[] &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-%5B%5D">#[] &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-%5B%5D">#[] &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-%5B%5D%3D">#[]= &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-%5B%5D%3D">#[]= &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-__dependencies">#__dependencies &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-i-__materialize__">#__materialize__ &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Bundler/RemoteSpecification.html#method-i-__swap__">#__swap__ &mdash; Bundler::RemoteSpecification</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-_deprecated_options">#_deprecated_options &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-_normalize_hash">#_normalize_hash &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-_normalize_options">#_normalize_options &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/RemoteSpecification.html#method-i-_remote_specification">#_remote_specification &mdash; Bundler::RemoteSpecification</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-activate_platform">#activate_platform &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-add_bundler_dependencies">#add_bundler_dependencies &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-add_file">#add_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-add_remote">#add_remote &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Thor/Actions/ClassMethods.html#method-i-add_runtime_options%21">#add_runtime_options! &mdash; Thor::Actions::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-all">#all &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-all_tasks">#all_tasks &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-allow_git_ops%3F">#allow_git_ops? &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-allow_sudo%3F">#allow_sudo? &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-append_file">#append_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-apply">#apply &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-argument">#argument &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-arguments">#arguments &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Thor/Shell/HTML.html#method-i-ask">#ask &mdash; Thor::Shell::HTML</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-ask">#ask &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-base_name">#base_name &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/UI/Shell.html#method-i-be_quiet%21">#be_quiet! &mdash; Bundler::UI::Shell</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-build_gem">#build_gem &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-built_gem_path">#built_gem_path &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-cache">#cache &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-cache">#cache &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-cache">#cache &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-cache">#cache &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Runtime.html#method-i-cache">#cache &mdash; Bundler::Runtime</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-cache_path">#cache_path &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Runtime.html#method-i-cache_path">#cache_path &mdash; Bundler::Runtime</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-cached%21">#cached! &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-cached%21">#cached! &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-cached%3F">#cached? &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-cached_gem">#cached_gem &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-cached_specs">#cached_specs &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-check">#check &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-check_unknown_options%21">#check_unknown_options! &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-checkout">#checkout &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-chmod">#chmod &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-class_option">#class_option &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-class_options">#class_options &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-clean%3F">#clean? &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-clean_load_path">#clean_load_path &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-clean_req">#clean_req &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-config">#config &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/UI/Shell.html#method-i-confirm">#confirm &mdash; Bundler::UI::Shell</a></li>
+		
+			<li><a href="Bundler/UI.html#method-i-confirm">#confirm &mdash; Bundler::UI</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-console">#console &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-converge_dependencies">#converge_dependencies &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-converge_locked_specs">#converge_locked_specs &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-converge_sources">#converge_sources &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-copy_file">#copy_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-create_file">#create_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-cripple_rubygems">#cripple_rubygems &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-current_dependencies">#current_dependencies &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-current_dependencies">#current_dependencies &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-current_env%3F">#current_env? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-current_platform%3F">#current_platform? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-debug">#debug &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/UI/Shell.html#method-i-debug">#debug &mdash; Bundler::UI::Shell</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-default_gemfile">#default_gemfile &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-default_lockfile">#default_lockfile &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-delete">#delete &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-dependencies">#dependencies &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/Runtime.html#method-i-dependencies_for">#dependencies_for &mdash; Bundler::Runtime</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-dependencies_to_gemfile">#dependencies_to_gemfile &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-destination_root">#destination_root &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-destination_root%3D">#destination_root= &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-directory">#directory &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-download_gem_from_uri">#download_gem_from_uri &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-dynamic_width">#dynamic_width &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-dynamic_width_stty">#dynamic_width_stty &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-dynamic_width_tput">#dynamic_width_tput &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-each">#each &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-each">#each &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-empty%3F">#empty? &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-empty_directory">#empty_directory &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-ensure_equivalent_gemfile_and_lockfile">#ensure_equivalent_gemfile_and_lockfile &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-env">#env &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/DepProxy.html#method-i-eql%3F">#eql? &mdash; Bundler::DepProxy</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-eql%3F">#eql? &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-eql%3F">#eql? &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-eql%3F">#eql? &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-error">#error &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/UI.html#method-i-error">#error &mdash; Bundler::UI</a></li>
+		
+			<li><a href="Bundler/UI/Shell.html#method-i-error">#error &mdash; Bundler::UI::Shell</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-error_message">#error_message &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-exec">#exec &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-exit_on_failure%3F">#exit_on_failure? &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-expand_dependencies">#expand_dependencies &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-expanded_dependencies">#expanded_dependencies &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-fetch">#fetch &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-fetch_all_remote_specs">#fetch_all_remote_specs &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/RemoteSpecification.html#method-i-fetch_platform">#fetch_platform &mdash; Bundler::RemoteSpecification</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-fetch_specs">#fetch_specs &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-file_collision">#file_collision &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-find_gemfile">#find_gemfile &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-find_in_source_paths">#find_in_source_paths &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-for">#for &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-for%3F">#for? &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Thor/Task.html#method-i-formatted_usage">#formatted_usage &mdash; Thor::Task</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-from_superclass">#from_superclass &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-full_gem_path">#full_gem_path &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Bundler/RemoteSpecification.html#method-i-full_name">#full_name &mdash; Bundler::RemoteSpecification</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-i-full_name">#full_name &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-gem">#gem &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-gem">#gem &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-gem">#gem &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-gem_message">#gem_message &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-gem_platforms">#gem_platforms &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-gemspec">#gemspec &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-generate_bin">#generate_bin &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Source/Path/Installer.html#method-i-generate_bin">#generate_bin &mdash; Bundler::Source::Path::Installer</a></li>
+		
+			<li><a href="Bundler/Installer.html#method-i-generate_bundler_executable_stubs">#generate_bundler_executable_stubs &mdash; Bundler::Installer</a></li>
+		
+			<li><a href="Bundler/GemHelpers.html#method-i-generic">#generic &mdash; Bundler::GemHelpers</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-get">#get &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-git">#git &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-git">#git &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-git_push">#git_push &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-git_version">#git_version &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-global_config_file">#global_config_file &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-group">#group &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-group">#group &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Graph.html#method-i-groups">#groups &mdash; Bundler::Graph</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-groups">#groups &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-groups">#groups &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-gsub_file">#gsub_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-guard_already_tagged">#guard_already_tagged &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-guard_clean">#guard_clean &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Thor/Task.html#method-i-handle_argument_error%3F">#handle_argument_error? &mdash; Thor::Task</a></li>
+		
+			<li><a href="Thor/Task.html#method-i-handle_no_method_error%3F">#handle_no_method_error? &mdash; Thor::Task</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-has_revision_cached%3F">#has_revision_cached? &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-hash">#hash &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/DepProxy.html#method-i-hash">#hash &mdash; Bundler::DepProxy</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-hash">#hash &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Gem/Platform.html#method-i-hash">#hash &mdash; Gem::Platform</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-have_groff%3F">#have_groff? &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Thor.html#method-i-help">#help &mdash; Thor</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-help">#help &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Thor/Task.html#method-i-hidden%3F">#hidden? &mdash; Thor::Task</a></li>
+		
+			<li><a href="Thor/HiddenTask.html#method-i-hidden%3F">#hidden? &mdash; Thor::HiddenTask</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-in_bundle%3F">#in_bundle? &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-in_cache">#in_cache &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-in_locked_deps%3F">#in_locked_deps? &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-in_root">#in_root &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-index">#index &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-index">#index &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/UI/Shell.html#method-i-info">#info &mdash; Bundler::UI::Shell</a></li>
+		
+			<li><a href="Bundler/UI.html#method-i-info">#info &mdash; Bundler::UI</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-inherited">#inherited &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-init">#init &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-initialize_copy">#initialize_copy &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-initialize_copy">#initialize_copy &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-inject_into_class">#inject_into_class &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-inject_into_file">#inject_into_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-inside">#inside &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-inspect">#inspect &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-install">#install &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-install">#install &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-install">#install &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-install">#install &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-install">#install &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-install_gem">#install_gem &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-installed_specs">#installed_specs &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Thor/Invocation.html#method-i-invoke">#invoke &mdash; Thor::Invocation</a></li>
+		
+			<li><a href="Thor/Invocation.html#method-i-invoke_with_padding">#invoke_with_padding &mdash; Thor::Invocation</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-jruby%3F">#jruby? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-key_for">#key_for &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-length">#length &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-load_paths">#load_paths &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-load_spec_files">#load_spec_files &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-load_spec_files">#load_spec_files &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-loaded_from">#loaded_from &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-local_config_file">#local_config_file &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-local_specs">#local_specs &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-locate_gem">#locate_gem &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-locations">#locations &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-lock">#lock &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-lock">#lock &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-lock">#lock &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-lookup">#lookup &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/MatchPlatform.html#method-i-match_platform">#match_platform &mdash; Bundler::MatchPlatform</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-materialize">#materialize &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-merge">#merge &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-merge_remotes">#merge_remotes &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-method_added">#method_added &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/RemoteSpecification.html#method-i-method_missing">#method_missing &mdash; Bundler::RemoteSpecification</a></li>
+		
+			<li><a href="Bundler/DepProxy.html#method-i-method_missing">#method_missing &mdash; Bundler::DepProxy</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-i-method_missing">#method_missing &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-missing_specs">#missing_specs &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-mri%3F">#mri? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-mri_18%3F">#mri_18? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-mri_19%3F">#mri_19? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-mswin%3F">#mswin? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-name">#name &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-name">#name &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-name">#name &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-name">#name &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-name">#name &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-namespace">#namespace &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-new_platform%3F">#new_platform? &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-new_specs">#new_specs &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-no%3F">#no? &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-no_sources%3F">#no_sources? &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-no_tasks">#no_tasks &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Graph.html#method-i-nodes">#nodes &mdash; Bundler::Graph</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-nondevelopment_dependencies">#nondevelopment_dependencies &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-normalize_uri">#normalize_uri &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Thor/Task.html#method-i-not_debugging%3F">#not_debugging? &mdash; Thor::Task</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-open">#open &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-options">#options &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-package">#package &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-padding%3D">#padding= &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/LockfileParser.html#method-i-parse_dependency">#parse_dependency &mdash; Bundler::LockfileParser</a></li>
+		
+			<li><a href="Bundler/LockfileParser.html#method-i-parse_platform">#parse_platform &mdash; Bundler::LockfileParser</a></li>
+		
+			<li><a href="Bundler/LockfileParser.html#method-i-parse_source">#parse_source &mdash; Bundler::LockfileParser</a></li>
+		
+			<li><a href="Bundler/LockfileParser.html#method-i-parse_spec">#parse_spec &mdash; Bundler::LockfileParser</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-path">#path &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-path">#path &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-path">#path &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-perform_git_push">#perform_git_push &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-platforms">#platforms &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/Graph.html#method-i-populate">#populate &mdash; Bundler::Graph</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-prepend_file">#prepend_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-pretty_dep">#pretty_dep &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-pretty_values_for">#pretty_values_for &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-print_options">#print_options &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-print_table">#print_table &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-print_wrapped">#print_wrapped &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/Runtime.html#method-i-prune_cache">#prune_cache &mdash; Bundler::Runtime</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-relative_path">#relative_path &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-relative_to_original_destination_root">#relative_to_original_destination_root &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-release_gem">#release_gem &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-remote%21">#remote! &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-remote%21">#remote! &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-remote_specs">#remote_specs &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-remove_argument">#remove_argument &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-remove_class_option">#remove_class_option &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-remove_dir">#remove_dir &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-remove_file">#remove_file &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-remove_task">#remove_task &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-removed_specs">#removed_specs &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-requested_dependencies">#requested_dependencies &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-requested_specs">#requested_specs &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-requested_specs">#requested_specs &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/Runtime.html#method-i-require">#require &mdash; Bundler::Runtime</a></li>
+		
+			<li><a href="Gem/Dependency.html#method-i-required_by">#required_by &mdash; Gem::Dependency</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-required_by">#required_by &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Thor/Task.html#method-i-required_options">#required_options &mdash; Thor::Task</a></li>
+		
+			<li><a href="Gem/Dependency.html#method-i-requirement">#requirement &mdash; Gem::Dependency</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-resolve">#resolve &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-resolve">#resolve &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-resolve_remotely%21">#resolve_remotely! &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-resolve_requirement">#resolve_requirement &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-resolve_with_cache%21">#resolve_with_cache! &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-i-respond_to%3F">#respond_to? &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Bundler/SharedHelpers.html#method-i-reverse_rubygems_kernel_mixin">#reverse_rubygems_kernel_mixin &mdash; Bundler::SharedHelpers</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-revision">#revision &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-rg_full_gem_path">#rg_full_gem_path &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-rg_loaded_from">#rg_loaded_from &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-ruby%3F">#ruby? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-ruby_18%3F">#ruby_18? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-ruby_19%3F">#ruby_19? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-rubygem_push">#rubygem_push &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-rubygems_source">#rubygems_source &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Thor/Task.html#method-i-run">#run &mdash; Thor::Task</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-run">#run &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/DynamicTask.html#method-i-run">#run &mdash; Thor::DynamicTask</a></li>
+		
+			<li><a href="Bundler/Installer.html#method-i-run">#run &mdash; Bundler::Installer</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-run_ruby_script">#run_ruby_script &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-i-satisfies%3F">#satisfies? &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-satisfies_locked_spec%3F">#satisfies_locked_spec? &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/UI/RGProxy.html#method-i-say">#say &mdash; Bundler::UI::RGProxy</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-say">#say &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-say_status">#say_status &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-search">#search &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-search">#search &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-search_by_dependency">#search_by_dependency &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-search_by_spec">#search_by_spec &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-search_for_all_platforms">#search_for_all_platforms &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Thor/Shell/Color.html#method-i-set_color">#set_color &mdash; Thor::Shell::Color</a></li>
+		
+			<li><a href="Thor/Shell/HTML.html#method-i-set_color">#set_color &mdash; Thor::Shell::HTML</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-set_global">#set_global &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-set_key">#set_key &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Runtime.html#method-i-setup">#setup &mdash; Bundler::Runtime</a></li>
+		
+			<li><a href="Bundler/Runtime.html#method-i-setup_environment">#setup_environment &mdash; Bundler::Runtime</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-sh">#sh &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-sh_with_code">#sh_with_code &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Thor/Shell.html#method-i-shell">#shell &mdash; Thor::Shell</a></li>
+		
+			<li><a href="Thor/Shell.html#method-i-shell%3D">#shell= &mdash; Thor::Shell</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-shortref_for_display">#shortref_for_display &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-shortref_for_path">#shortref_for_path &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-should_include%3F">#should_include? &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-show">#show &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-sorted">#sorted &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-sorted_sources">#sorted_sources &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-source">#source &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-source">#source &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-source_paths">#source_paths &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Actions/ClassMethods.html#method-i-source_paths">#source_paths &mdash; Thor::Actions::ClassMethods</a></li>
+		
+			<li><a href="Thor/Actions/ClassMethods.html#method-i-source_paths_for_search">#source_paths_for_search &mdash; Thor::Actions::ClassMethods</a></li>
+		
+			<li><a href="Thor/Actions/ClassMethods.html#method-i-source_root">#source_root &mdash; Thor::Actions::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-sources">#sources &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-specs">#specs &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-specs">#specs &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-specs">#specs &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-specs">#specs &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-specs">#specs &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-specs_for">#specs_for &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-start">#start &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-start">#start &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-successify">#successify &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-sudo">#sudo &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-tag_version">#tag_version &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-tagged_sha">#tagged_sha &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Thor/Base/ClassMethods.html#method-i-tasks">#tasks &mdash; Thor::Base::ClassMethods</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-template">#template &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-terminal_width">#terminal_width &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Thor/Actions.html#method-i-thor">#thor &mdash; Thor::Actions</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-to_a">#to_a &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/Dsl.html#method-i-to_definition">#to_definition &mdash; Bundler::Dsl</a></li>
+		
+			<li><a href="Gem/Specification.html#method-i-to_gemfile">#to_gemfile &mdash; Gem::Specification</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-to_hash">#to_hash &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Gem/Dependency.html#method-i-to_lock">#to_lock &mdash; Gem::Dependency</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-to_lock">#to_lock &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-i-to_lock">#to_lock &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-to_lock">#to_lock &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Definition.html#method-i-to_lock">#to_lock &mdash; Bundler::Definition</a></li>
+		
+			<li><a href="Bundler/Dependency.html#method-i-to_lock">#to_lock &mdash; Bundler::Dependency</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-to_lock">#to_lock &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-to_s">#to_s &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Bundler/Source/Rubygems.html#method-i-to_s">#to_s &mdash; Bundler::Source::Rubygems</a></li>
+		
+			<li><a href="Bundler/Source/Path.html#method-i-to_s">#to_s &mdash; Bundler::Source::Path</a></li>
+		
+			<li><a href="Bundler/LazySpecification.html#method-i-to_s">#to_s &mdash; Bundler::LazySpecification</a></li>
+		
+			<li><a href="Bundler/DepProxy.html#method-i-to_s">#to_s &mdash; Bundler::DepProxy</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-to_s">#to_s &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-to_specs">#to_specs &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Gem/Dependency.html#method-i-to_yaml_properties">#to_yaml_properties &mdash; Gem::Dependency</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-truncate">#truncate &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-tsort_each_child">#tsort_each_child &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-tsort_each_node">#tsort_each_node &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/DepProxy.html#method-i-type">#type &mdash; Bundler::DepProxy</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-unix%3F">#unix? &mdash; Thor::Shell::Basic</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-unlock">#unlock &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-unlock%21">#unlock! &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-update">#update &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Environment.html#method-i-update">#update &mdash; Bundler::Environment</a></li>
+		
+			<li><a href="Bundler/Source/Git.html#method-i-uri_hash">#uri_hash &mdash; Bundler::Source::Git</a></li>
+		
+			<li><a href="Bundler/Index.html#method-i-use">#use &mdash; Bundler::Index</a></li>
+		
+			<li><a href="Bundler/SpecSet.html#method-i-valid_for%3F">#valid_for? &mdash; Bundler::SpecSet</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-version">#version &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Resolver/SpecGroup.html#method-i-version">#version &mdash; Bundler::Resolver::SpecGroup</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-version">#version &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/Resolver.html#method-i-version_conflict">#version_conflict &mdash; Bundler::Resolver</a></li>
+		
+			<li><a href="Bundler/GemHelper.html#method-i-version_tag">#version_tag &mdash; Bundler::GemHelper</a></li>
+		
+			<li><a href="Bundler/Graph.html#method-i-viz">#viz &mdash; Bundler::Graph</a></li>
+		
+			<li><a href="Bundler/CLI.html#method-i-viz">#viz &mdash; Bundler::CLI</a></li>
+		
+			<li><a href="Bundler/UI/Shell.html#method-i-warn">#warn &mdash; Bundler::UI::Shell</a></li>
+		
+			<li><a href="Bundler/UI.html#method-i-warn">#warn &mdash; Bundler::UI</a></li>
+		
+			<li><a href="Thor/Shell.html#method-i-with_padding">#with_padding &mdash; Thor::Shell</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-without">#without &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Bundler/Settings.html#method-i-without%3D">#without= &mdash; Bundler::Settings</a></li>
+		
+			<li><a href="Thor/Shell/Basic.html#method-i-yes%3F">#yes? &mdash; Thor::Shell::Basic</a></li>
+		
+	</ul>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+</body>
+</html>

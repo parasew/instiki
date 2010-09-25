@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Module: Thor::Base</title>
+
+	<link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="module">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../lib/bundler/vendor/thor/base_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/base.rb">lib/bundler/vendor/thor/base.rb</a></li>
+					
+						<li><a href="../lib/bundler/vendor/thor/shell_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/shell.rb">lib/bundler/vendor/thor/shell.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+
+			<!-- Namespace Contents -->
+			
+			<div id="namespace-list-section" class="section">
+				<h3 class="section-header">Namespace</h3>
+				<ul class="link-list">
+					
+					<li><span class="type">MODULE</span> <a href="Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-c-new">::new</a></li>
+					
+					<li><a href="#method-c-shell">::shell</a></li>
+					
+					<li><a href="#method-c-shell%3D">::shell=</a></li>
+					
+					<li><a href="#method-c-subclass_files">::subclass_files</a></li>
+					
+					<li><a href="#method-c-subclasses">::subclasses</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../Thor.html">Thor</a></li>
+				
+					<li><a href="../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../Gem.html">Gem</a></li>
+				
+					<li><a href="../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="module">Thor::Base</h1>
+
+		<div id="description">
+			
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+		<div id="attribute-method-details" class="method-section section">
+			<h3 class="section-header">Attributes</h3>
+
+			
+			<div id="options-attribute-method" class="method-detail">
+				<a name="options"></a>
+				
+				<a name="options="></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">options</span><span
+						class="attribute-access-type">[RW]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+		</div>
+		
+
+		<!-- Methods -->
+		
+		<div id="public-class-method-details" class="method-section section">
+			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="new-method" class="method-detail ">
+				<a name="method-c-new"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">new</span><span
+						class="method-args">(args=[], options={}, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+It receives arguments in an Array and two hashes, one for options and other
+for configuration.
+</p>
+<p>
+Notice that it does not check if all required arguments were supplied. It
+should be done by the parser.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">args<Array[Object]></td><td><p>
+An array of objects. The objects are applied to their respective accessors
+declared with <tt>argument</tt>.
+</p>
+</td></tr>
+<tr><td valign="top">options<Hash></td><td><p>
+An options hash that will be available as self.options. The hash given is
+converted to a hash with indifferent access, magic predicates
+(options.skip?) and then frozen.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+Configuration for this <a href="../Thor.html">Thor</a> class.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="new-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 40</span>
+40:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">args</span>=[], <span class="ruby-identifier">options</span>={}, <span class="ruby-identifier">config</span>={})
+41:       <span class="ruby-identifier">args</span> = <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Arguments</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">arguments</span>, <span class="ruby-identifier">args</span>)
+42:       <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span> <span class="ruby-identifier">send</span>(<span class="ruby-node">&quot;#{key}=&quot;</span>, <span class="ruby-identifier">value</span>) }
+43: 
+44:       <span class="ruby-identifier">parse_options</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">class_options</span>
+45: 
+46:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+47:         <span class="ruby-identifier">task_options</span>  = <span class="ruby-identifier">config</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value">:task_options</span>) <span class="ruby-comment cmt"># hook for start</span>
+48:         <span class="ruby-identifier">parse_options</span> = <span class="ruby-identifier">parse_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">task_options</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">task_options</span>
+49:         <span class="ruby-identifier">array_options</span>, <span class="ruby-identifier">hash_options</span> = <span class="ruby-identifier">options</span>, {}
+50:       <span class="ruby-keyword kw">else</span>
+51:         <span class="ruby-identifier">array_options</span>, <span class="ruby-identifier">hash_options</span> = [], <span class="ruby-identifier">options</span>
+52:       <span class="ruby-keyword kw">end</span>
+53: 
+54:       <span class="ruby-identifier">opts</span> = <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Options</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">parse_options</span>, <span class="ruby-identifier">hash_options</span>)
+55:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">options</span> = <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">array_options</span>)
+56:       <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">check_unknown!</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">check_unknown_options?</span>(<span class="ruby-identifier">config</span>)
+57:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="shell-method" class="method-detail ">
+				<a name="method-c-shell"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">shell</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the shell used in all <a href="../Thor.html">Thor</a> classes. If
+you are in a Unix platform it will use a colored log, otherwise it will use
+a basic one without color.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="shell-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/shell.rb, line 8</span>
+ 8:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">shell</span>
+ 9:       <span class="ruby-ivar">@shell</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'THOR_SHELL'</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'THOR_SHELL'</span>].<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+10:         <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Shell</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'THOR_SHELL'</span>])
+11:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">RbConfig</span><span class="ruby-operator">::</span><span class="ruby-constant">CONFIG</span>[<span class="ruby-value str">'host_os'</span>] <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/mswin|mingw/</span>
+12:         <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Shell</span><span class="ruby-operator">::</span><span class="ruby-constant">Basic</span>
+13:       <span class="ruby-keyword kw">else</span>
+14:         <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Shell</span><span class="ruby-operator">::</span><span class="ruby-constant">Color</span>
+15:       <span class="ruby-keyword kw">end</span>
+16:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="shell--method" class="method-detail ">
+				<a name="method-c-shell%3D"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">shell=</span><span
+						class="method-args">(klass)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Sets the shell used in all <a href="../Thor.html">Thor</a> classes.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="shell--source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/shell.rb, line 20</span>
+20:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">shell=</span>(<span class="ruby-identifier">klass</span>)
+21:       <span class="ruby-ivar">@shell</span> = <span class="ruby-identifier">klass</span>
+22:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="subclass-files-method" class="method-detail ">
+				<a name="method-c-subclass_files"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">subclass_files</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the files where the subclasses are kept.
+</p>
+<h4>Returns</h4>
+<p>
+Hash[path<String> => Class]
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="subclass-files-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 80</span>
+80:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">subclass_files</span>
+81:         <span class="ruby-ivar">@subclass_files</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>{ <span class="ruby-operator">|</span><span class="ruby-identifier">h</span>,<span class="ruby-identifier">k</span><span class="ruby-operator">|</span> <span class="ruby-identifier">h</span>[<span class="ruby-identifier">k</span>] = [] }
+82:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="subclasses-method" class="method-detail ">
+				<a name="method-c-subclasses"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">subclasses</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the classes that inherits from <a href="../Thor.html">Thor</a> or
+Thor::Group.
+</p>
+<h4>Returns</h4>
+<p>
+Array[Class]
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="subclasses-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 71</span>
+71:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">subclasses</span>
+72:         <span class="ruby-ivar">@subclasses</span> <span class="ruby-operator">||=</span> []
+73:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Module: Thor::Invocation</title>
+
+	<link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="module">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../lib/bundler/vendor/thor/invocation_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/invocation.rb">lib/bundler/vendor/thor/invocation.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+
+			<!-- Namespace Contents -->
+			
+			<div id="namespace-list-section" class="section">
+				<h3 class="section-header">Namespace</h3>
+				<ul class="link-list">
+					
+					<li><span class="type">MODULE</span> <a href="Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-i-invoke">#invoke</a></li>
+					
+					<li><a href="#method-i-invoke_with_padding">#invoke_with_padding</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../Thor.html">Thor</a></li>
+				
+					<li><a href="../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../Gem.html">Gem</a></li>
+				
+					<li><a href="../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="module">Thor::Invocation</h1>
+
+		<div id="description">
+			
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+
+		<!-- Methods -->
+		
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="invoke-method" class="method-detail ">
+				<a name="method-i-invoke"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">invoke</span><span
+						class="method-args">(name=nil, *args)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a name and invokes it. The name can be a string (either
+&#8220;task&#8221; or &#8220;namespace:task&#8221;), a <a
+href="Task.html">Thor::Task</a>, a Class or a <a
+href="../Thor.html">Thor</a> instance. If the task cannot be guessed by
+name, it can also be supplied as second argument.
+</p>
+<p>
+You can also supply the arguments, options and configuration values for the
+task to be invoked, if none is given, the same values used to initialize
+the invoker are used to initialize the invoked.
+</p>
+<p>
+When no name is given, it will invoke the default task of the current
+class.
+</p>
+<h4>Examples</h4>
+<pre>
+  class A &lt; Thor
+    def foo
+      invoke :bar
+      invoke &quot;b:hello&quot;, [&quot;José&quot;]
+    end
+
+    def bar
+      invoke &quot;b:hello&quot;, [&quot;José&quot;]
+    end
+  end
+
+  class B &lt; Thor
+    def hello(name)
+      puts &quot;hello #{name}&quot;
+    end
+  end
+</pre>
+<p>
+You can notice that the method &#8220;foo&#8221; above invokes two tasks:
+&#8220;bar&#8221;, which belongs to the same class and &#8220;hello&#8221;
+which belongs to the class B.
+</p>
+<p>
+By using an invocation system you ensure that a task is invoked only once.
+In the example above, invoking &#8220;foo&#8221; will invoke
+&#8220;b:hello&#8221; just once, even if it&#8217;s invoked later by
+&#8220;bar&#8221; method.
+</p>
+<p>
+When class A invokes class B, all arguments used on A initialization are
+supplied to B. This allows lazy parse of options. Let&#8217;s suppose you
+have some rspec tasks:
+</p>
+<pre>
+  class Rspec &lt; Thor::Group
+    class_option :mock_framework, :type =&gt; :string, :default =&gt; :rr
+
+    def invoke_mock_framework
+      invoke &quot;rspec:#{options[:mock_framework]}&quot;
+    end
+  end
+</pre>
+<p>
+As you noticed, it invokes the given mock framework, which might have its
+own options:
+</p>
+<pre>
+  class Rspec::RR &lt; Thor::Group
+    class_option :style, :type =&gt; :string, :default =&gt; :mock
+  end
+</pre>
+<p>
+Since it&#8217;s not rspec concern to parse mock framework options, when RR
+is invoked all options are parsed again, so RR can extract only the options
+that it&#8217;s going to use.
+</p>
+<p>
+If you want Rspec::RR to be initialized with its own set of options, you
+have to do that explicitely:
+</p>
+<pre>
+  invoke &quot;rspec:rr&quot;, [], :style =&gt; :foo
+</pre>
+<p>
+Besides giving an instance, you can also give a class to invoke:
+</p>
+<pre>
+  invoke Rspec::RR, [], :style =&gt; :foo</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="invoke-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/invocation.rb, line 96</span>
+ 96:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">invoke</span>(<span class="ruby-identifier">name</span>=<span class="ruby-keyword kw">nil</span>, *<span class="ruby-identifier">args</span>)
+ 97:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">nil?</span>
+ 98:         <span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;[Thor] Calling invoke() without argument is deprecated. Please use invoke_all instead.\n#{caller.join(&quot;\n&quot;)}&quot;</span>
+ 99:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">invoke_all</span>
+100:       <span class="ruby-keyword kw">end</span>
+101: 
+102:       <span class="ruby-identifier">args</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-keyword kw">nil</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">||</span> <span class="ruby-constant">NilClass</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>
+103:       <span class="ruby-identifier">task</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>
+104: 
+105:       <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">task</span> = <span class="ruby-identifier">_retrieve_class_and_task</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">task</span>)
+106:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Expected Thor class, got #{klass}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">klass</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>
+107: 
+108:       <span class="ruby-identifier">args</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">config</span> = <span class="ruby-identifier">_parse_initialization_options</span>(<span class="ruby-identifier">args</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">config</span>)
+109:       <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">send</span>(<span class="ruby-value">:dispatch</span>, <span class="ruby-identifier">task</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">config</span>)
+110:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="invoke-with-padding-method" class="method-detail ">
+				<a name="method-i-invoke_with_padding"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">invoke_with_padding</span><span
+						class="method-args">(*args)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Invokes using shell padding.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="invoke-with-padding-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/invocation.rb, line 128</span>
+128:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">invoke_with_padding</span>(*<span class="ruby-identifier">args</span>)
+129:       <span class="ruby-identifier">with_padding</span> { <span class="ruby-identifier">invoke</span>(*<span class="ruby-identifier">args</span>) }
+130:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

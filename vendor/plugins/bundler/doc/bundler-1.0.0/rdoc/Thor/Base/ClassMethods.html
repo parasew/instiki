@@ -1,0 +1,1363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Module: Thor::Base::ClassMethods</title>
+
+	<link rel="stylesheet" href="../../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="module">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#classes">Classes</a>
+          <a href="../../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../../lib/bundler/vendor/thor/base_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/base.rb">lib/bundler/vendor/thor/base.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+
+			<!-- Namespace Contents -->
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-i-all_tasks">#all_tasks</a></li>
+					
+					<li><a href="#method-i-argument">#argument</a></li>
+					
+					<li><a href="#method-i-arguments">#arguments</a></li>
+					
+					<li><a href="#method-i-check_unknown_options%21">#check_unknown_options!</a></li>
+					
+					<li><a href="#method-i-class_option">#class_option</a></li>
+					
+					<li><a href="#method-i-class_options">#class_options</a></li>
+					
+					<li><a href="#method-i-exit_on_failure%3F">#exit_on_failure?</a></li>
+					
+					<li><a href="#method-i-from_superclass">#from_superclass</a></li>
+					
+					<li><a href="#method-i-group">#group</a></li>
+					
+					<li><a href="#method-i-inherited">#inherited</a></li>
+					
+					<li><a href="#method-i-method_added">#method_added</a></li>
+					
+					<li><a href="#method-i-namespace">#namespace</a></li>
+					
+					<li><a href="#method-i-no_tasks">#no_tasks</a></li>
+					
+					<li><a href="#method-i-print_options">#print_options</a></li>
+					
+					<li><a href="#method-i-remove_argument">#remove_argument</a></li>
+					
+					<li><a href="#method-i-remove_class_option">#remove_class_option</a></li>
+					
+					<li><a href="#method-i-remove_task">#remove_task</a></li>
+					
+					<li><a href="#method-i-start">#start</a></li>
+					
+					<li><a href="#method-i-tasks">#tasks</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../../Thor.html">Thor</a></li>
+				
+					<li><a href="../../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../../Gem.html">Gem</a></li>
+				
+					<li><a href="../../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="module">Thor::Base::ClassMethods</h1>
+
+		<div id="description">
+			
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+		<div id="attribute-method-details" class="method-section section">
+			<h3 class="section-header">Attributes</h3>
+
+			
+			<div id="debugging-attribute-method" class="method-detail">
+				<a name="debugging"></a>
+				
+				<a name="debugging="></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">debugging</span><span
+						class="attribute-access-type">[RW]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+		</div>
+		
+
+		<!-- Methods -->
+		
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="all-tasks-method" class="method-detail ">
+				<a name="method-i-all_tasks"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">all_tasks</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the tasks for this <a href="../../Thor.html">Thor</a> class and all
+subclasses.
+</p>
+<h4>Returns</h4>
+<table>
+<tr><td valign="top">OrderedHash</td><td><p>
+An ordered hash with tasks names as keys and <a
+href="../Task.html">Thor::Task</a> objects as values.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="all-tasks-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 294</span>
+294:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">all_tasks</span>
+295:         <span class="ruby-ivar">@all_tasks</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">from_superclass</span>(<span class="ruby-value">:all_tasks</span>, <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">CoreExt</span><span class="ruby-operator">::</span><span class="ruby-constant">OrderedHash</span>.<span class="ruby-identifier">new</span>)
+296:         <span class="ruby-ivar">@all_tasks</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">tasks</span>)
+297:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="argument-method" class="method-detail ">
+				<a name="method-i-argument"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">argument</span><span
+						class="method-args">(name, options={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Adds an argument to the class and creates an attr_accessor for it.
+</p>
+<p>
+Arguments are different from options in several aspects. The first one is
+how they are parsed from the command line, arguments are retrieved from
+position:
+</p>
+<pre>
+  thor task NAME
+</pre>
+<p>
+Instead of:
+</p>
+<pre>
+  thor task --name=NAME
+</pre>
+<p>
+Besides, arguments are used inside your code as an accessor
+(self.argument), while options are all kept in a hash (self.options).
+</p>
+<p>
+Finally, arguments cannot have type :default or :boolean but can be
+optional (supplying :optional => :true or :required => false), although you
+cannot have a required argument after a non-required argument. If you try
+it, an error is raised.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">name<Symbol></td><td><p>
+The name of the argument.
+</p>
+</td></tr>
+<tr><td valign="top">options<Hash></td><td><p>
+Described below.
+</p>
+</td></tr>
+</table>
+<h4>Options</h4>
+<p>
+:desc     - Description for the argument. :required - If the argument is
+required or not. :optional - If the argument is optional or not. :type    
+- The type of the argument, can be :string, :hash, :array, :numeric.
+:default  - Default value for this argument. It cannot be required and have
+default values. :banner   - String to show on usage notes.
+</p>
+<h4>Errors</h4>
+<table>
+<tr><td valign="top">ArgumentError</td><td><p>
+Raised if you supply a required argument after a non required one.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="argument-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 160</span>
+160:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">argument</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+161:         <span class="ruby-identifier">is_thor_reserved_word?</span>(<span class="ruby-identifier">name</span>, <span class="ruby-value">:argument</span>)
+162:         <span class="ruby-identifier">no_tasks</span> { <span class="ruby-identifier">attr_accessor</span> <span class="ruby-identifier">name</span> }
+163: 
+164:         <span class="ruby-identifier">required</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-value">:optional</span>)
+165:           <span class="ruby-operator">!</span><span class="ruby-identifier">options</span>[<span class="ruby-value">:optional</span>]
+166:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-value">:required</span>)
+167:           <span class="ruby-identifier">options</span>[<span class="ruby-value">:required</span>]
+168:         <span class="ruby-keyword kw">else</span>
+169:           <span class="ruby-identifier">options</span>[<span class="ruby-value">:default</span>].<span class="ruby-identifier">nil?</span>
+170:         <span class="ruby-keyword kw">end</span>
+171: 
+172:         <span class="ruby-identifier">remove_argument</span> <span class="ruby-identifier">name</span>
+173: 
+174:         <span class="ruby-identifier">arguments</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">argument</span><span class="ruby-operator">|</span>
+175:           <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">argument</span>.<span class="ruby-identifier">required?</span>
+176:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;You cannot have #{name.to_s.inspect} as required argument after &quot;</span> <span class="ruby-operator">&lt;&lt;</span>
+177:                                <span class="ruby-node">&quot;the non-required argument #{argument.human_name.inspect}.&quot;</span>
+178:         <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">required</span>
+179: 
+180:         <span class="ruby-identifier">arguments</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Argument</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>[<span class="ruby-value">:desc</span>], <span class="ruby-identifier">required</span>, <span class="ruby-identifier">options</span>[<span class="ruby-value">:type</span>],
+181:                                               <span class="ruby-identifier">options</span>[<span class="ruby-value">:default</span>], <span class="ruby-identifier">options</span>[<span class="ruby-value">:banner</span>])
+182:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="arguments-method" class="method-detail ">
+				<a name="method-i-arguments"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">arguments</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns this class arguments, looking up in the ancestors chain.
+</p>
+<h4>Returns</h4>
+<p>
+Array[Thor::Argument]
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="arguments-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 189</span>
+189:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">arguments</span>
+190:         <span class="ruby-ivar">@arguments</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">from_superclass</span>(<span class="ruby-value">:arguments</span>, [])
+191:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="check-unknown-options--method" class="method-detail ">
+				<a name="method-i-check_unknown_options%21"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">check_unknown_options!</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+If you want to raise an error for unknown options, call
+check_unknown_options! This is disabled by default to allow dynamic
+invocations.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="check-unknown-options--source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 113</span>
+113:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">check_unknown_options!</span>
+114:         <span class="ruby-ivar">@check_unknown_options</span> = <span class="ruby-keyword kw">true</span>
+115:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="class-option-method" class="method-detail ">
+				<a name="method-i-class_option"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">class_option</span><span
+						class="method-args">(name, options={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Adds an option to the set of class options
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">name<Symbol></td><td><p>
+The name of the argument.
+</p>
+</td></tr>
+<tr><td valign="top">options<Hash></td><td><p>
+Described below.
+</p>
+</td></tr>
+</table>
+<h4>Options</h4>
+<p>
+:desc     - Description for the argument. :required - If the argument is
+required or not. :default  - Default value for this argument. :group    -
+The group for this options. Use by class options to output options in
+different levels. :aliases  - Aliases for this option. :type     - The type
+of the argument, can be :string, :hash, :array, :numeric or :boolean.
+:banner   - String to show on usage notes.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="class-option-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 223</span>
+223:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">class_option</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>={})
+224:         <span class="ruby-identifier">build_option</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">class_options</span>)
+225:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="class-options-method" class="method-detail ">
+				<a name="method-i-class_options"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">class_options</span><span
+						class="method-args">(options=nil)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Adds a bunch of options to the set of class options.
+</p>
+<pre>
+  class_options :foo =&gt; false, :bar =&gt; :required, :baz =&gt; :string
+</pre>
+<p>
+If you prefer more detailed declaration, check class_option.
+</p>
+<h4>Parameters</h4>
+<p>
+Hash[Symbol => Object]
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="class-options-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 202</span>
+202:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">class_options</span>(<span class="ruby-identifier">options</span>=<span class="ruby-keyword kw">nil</span>)
+203:         <span class="ruby-ivar">@class_options</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">from_superclass</span>(<span class="ruby-value">:class_options</span>, {})
+204:         <span class="ruby-identifier">build_options</span>(<span class="ruby-identifier">options</span>, <span class="ruby-ivar">@class_options</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>
+205:         <span class="ruby-ivar">@class_options</span>
+206:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="group-method" class="method-detail ">
+				<a name="method-i-group"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">group</span><span
+						class="method-args">(name=nil)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Defines the group. This is used when thor list is invoked so you can
+specify that only tasks from a pre-defined group will be shown. Defaults to
+standard.
+</p>
+<h4>Parameters</h4>
+<p>
+name<String|Symbol>
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="group-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 269</span>
+269:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">group</span>(<span class="ruby-identifier">name</span>=<span class="ruby-keyword kw">nil</span>)
+270:         <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">name</span>
+271:           <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">nil</span>
+272:             <span class="ruby-ivar">@group</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">from_superclass</span>(<span class="ruby-value">:group</span>, <span class="ruby-value str">'standard'</span>)
+273:           <span class="ruby-keyword kw">else</span>
+274:             <span class="ruby-ivar">@group</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+275:         <span class="ruby-keyword kw">end</span>
+276:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="namespace-method" class="method-detail ">
+				<a name="method-i-namespace"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">namespace</span><span
+						class="method-args">(name=nil)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Sets the namespace for the <a href="../../Thor.html">Thor</a> or
+Thor::Group class. By default the namespace is retrieved from the class
+name. If your <a href="../../Thor.html">Thor</a> class is named
+Scripts::MyScript, the help method, for example, will be called as:
+</p>
+<pre>
+  thor scripts:my_script -h
+</pre>
+<p>
+If you change the namespace:
+</p>
+<pre>
+  namespace :my_scripts
+</pre>
+<p>
+You change how your tasks are invoked:
+</p>
+<pre>
+  thor my_scripts -h
+</pre>
+<p>
+Finally, if you change your namespace to default:
+</p>
+<pre>
+  namespace :default
+</pre>
+<p>
+Your tasks can be invoked with a shortcut. Instead of:
+</p>
+<pre>
+  thor :my_task</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="namespace-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 369</span>
+369:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">namespace</span>(<span class="ruby-identifier">name</span>=<span class="ruby-keyword kw">nil</span>)
+370:         <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">name</span>
+371:         <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">nil</span>
+372:           <span class="ruby-ivar">@namespace</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Util</span>.<span class="ruby-identifier">namespace_from_thor_class</span>(<span class="ruby-keyword kw">self</span>)
+373:         <span class="ruby-keyword kw">else</span>
+374:           <span class="ruby-ivar">@namespace</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+375:         <span class="ruby-keyword kw">end</span>
+376:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="no-tasks-method" class="method-detail ">
+				<a name="method-i-no_tasks"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">no_tasks</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+All methods defined inside the given block are not added as tasks.
+</p>
+<p>
+So you can do:
+</p>
+<pre>
+  class MyScript &lt; Thor
+    no_tasks do
+      def this_is_not_a_task
+      end
+    end
+  end
+</pre>
+<p>
+You can also add the method and remove it from the task list:
+</p>
+<pre>
+  class MyScript &lt; Thor
+    def this_is_not_a_task
+    end
+    remove_task :this_is_not_a_task
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="no-tasks-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 340</span>
+340:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">no_tasks</span>
+341:         <span class="ruby-ivar">@no_tasks</span> = <span class="ruby-keyword kw">true</span>
+342:         <span class="ruby-keyword kw">yield</span>
+343:       <span class="ruby-keyword kw">ensure</span>
+344:         <span class="ruby-ivar">@no_tasks</span> = <span class="ruby-keyword kw">false</span>
+345:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="remove-argument-method" class="method-detail ">
+				<a name="method-i-remove_argument"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">remove_argument</span><span
+						class="method-args">(*names)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Removes a previous defined argument. If :undefine is given, undefine
+accessors as well.
+</p>
+<h4>Paremeters</h4>
+<table>
+<tr><td valign="top">names<Array></td><td><p>
+Arguments to be removed
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  remove_argument :foo
+  remove_argument :foo, :bar, :baz, :undefine =&gt; true</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="remove-argument-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 238</span>
+238:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">remove_argument</span>(*<span class="ruby-identifier">names</span>)
+239:         <span class="ruby-identifier">options</span> = <span class="ruby-identifier">names</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">names</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+240: 
+241:         <span class="ruby-identifier">names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+242:           <span class="ruby-identifier">arguments</span>.<span class="ruby-identifier">delete_if</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span> }
+243:           <span class="ruby-identifier">undef_method</span> <span class="ruby-identifier">name</span>, <span class="ruby-node">&quot;#{name}=&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:undefine</span>]
+244:         <span class="ruby-keyword kw">end</span>
+245:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="remove-class-option-method" class="method-detail ">
+				<a name="method-i-remove_class_option"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">remove_class_option</span><span
+						class="method-args">(*names)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Removes a previous defined class option.
+</p>
+<h4>Paremeters</h4>
+<table>
+<tr><td valign="top">names<Array></td><td><p>
+Class options to be removed
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  remove_class_option :foo
+  remove_class_option :foo, :bar, :baz</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="remove-class-option-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 257</span>
+257:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">remove_class_option</span>(*<span class="ruby-identifier">names</span>)
+258:         <span class="ruby-identifier">names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+259:           <span class="ruby-identifier">class_options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">name</span>)
+260:         <span class="ruby-keyword kw">end</span>
+261:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="remove-task-method" class="method-detail ">
+				<a name="method-i-remove_task"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">remove_task</span><span
+						class="method-args">(*names)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Removes a given task from this <a href="../../Thor.html">Thor</a> class.
+This is usually done if you are inheriting from another class and
+don&#8217;t want it to be available anymore.
+</p>
+<p>
+By default it only remove the mapping to the task. But you can supply
+:undefine => true to undefine the method from the class as well.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">name<Symbol|String></td><td><p>
+The name of the task to be removed
+</p>
+</td></tr>
+<tr><td valign="top">options<Hash></td><td><p>
+You can give :undefine => true if you want tasks the method to be undefined
+from the class as well.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="remove-task-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 311</span>
+311:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">remove_task</span>(*<span class="ruby-identifier">names</span>)
+312:         <span class="ruby-identifier">options</span> = <span class="ruby-identifier">names</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">names</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+313: 
+314:         <span class="ruby-identifier">names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+315:           <span class="ruby-identifier">tasks</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>)
+316:           <span class="ruby-identifier">all_tasks</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>)
+317:           <span class="ruby-identifier">undef_method</span> <span class="ruby-identifier">name</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:undefine</span>]
+318:         <span class="ruby-keyword kw">end</span>
+319:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="start-method" class="method-detail ">
+				<a name="method-i-start"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">start</span><span
+						class="method-args">(given_args=ARGV, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Parses the task and options from the given args, instantiate the class and
+invoke the task. This method is used when the arguments must be parsed from
+an array. If you are inside Ruby and want to use a <a
+href="../../Thor.html">Thor</a> class, you can simply initialize it:
+</p>
+<pre>
+  script = MyScript.new(args, options, config)
+  script.invoke(:task, first_arg, second_arg, third_arg)</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="start-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 386</span>
+386:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">start</span>(<span class="ruby-identifier">given_args</span>=<span class="ruby-constant">ARGV</span>, <span class="ruby-identifier">config</span>={})
+387:         <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">debugging</span> = <span class="ruby-identifier">given_args</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;--debug&quot;</span>)
+388:         <span class="ruby-identifier">config</span>[<span class="ruby-value">:shell</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">shell</span>.<span class="ruby-identifier">new</span>
+389:         <span class="ruby-identifier">dispatch</span>(<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">given_args</span>.<span class="ruby-identifier">dup</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">config</span>)
+390:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+391:         <span class="ruby-identifier">debugging</span> <span class="ruby-operator">?</span> (<span class="ruby-identifier">raise</span> <span class="ruby-identifier">e</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">config</span>[<span class="ruby-value">:shell</span>].<span class="ruby-identifier">error</span>(<span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+392:         <span class="ruby-identifier">exit</span>(<span class="ruby-value">1</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">exit_on_failure?</span>
+393:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="tasks-method" class="method-detail ">
+				<a name="method-i-tasks"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">tasks</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the tasks for this <a href="../../Thor.html">Thor</a> class.
+</p>
+<h4>Returns</h4>
+<table>
+<tr><td valign="top">OrderedHash</td><td><p>
+An ordered hash with tasks names as keys and <a
+href="../Task.html">Thor::Task</a> objects as values.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="tasks-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 284</span>
+284:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">tasks</span>
+285:         <span class="ruby-ivar">@tasks</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">CoreExt</span><span class="ruby-operator">::</span><span class="ruby-constant">OrderedHash</span>.<span class="ruby-identifier">new</span>
+286:       <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="protected-instance-method-details" class="method-section section">
+			<h3 class="section-header">Protected Instance Methods</h3>
+
+		
+			<div id="exit-on-failure--method" class="method-detail ">
+				<a name="method-i-exit_on_failure%3F"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">exit_on_failure?</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+A flag that makes the process exit with status 1 if any error happens.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="exit-on-failure--source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 530</span>
+530:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">exit_on_failure?</span>
+531:           <span class="ruby-keyword kw">false</span>
+532:         <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="from-superclass-method" class="method-detail ">
+				<a name="method-i-from_superclass"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">from_superclass</span><span
+						class="method-args">(method, default=nil)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Retrieves a value from superclass. If it reaches the baseclass, returns
+default.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="from-superclass-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 520</span>
+520:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">from_superclass</span>(<span class="ruby-identifier">method</span>, <span class="ruby-identifier">default</span>=<span class="ruby-keyword kw">nil</span>)
+521:           <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">baseclass</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">superclass</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">method</span>, <span class="ruby-keyword kw">true</span>)
+522:             <span class="ruby-identifier">default</span>
+523:           <span class="ruby-keyword kw">else</span>
+524:             <span class="ruby-identifier">value</span> = <span class="ruby-identifier">superclass</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">method</span>)
+525:             <span class="ruby-identifier">value</span>.<span class="ruby-identifier">dup</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>
+526:           <span class="ruby-keyword kw">end</span>
+527:         <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="inherited-method" class="method-detail ">
+				<a name="method-i-inherited"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">inherited</span><span
+						class="method-args">(klass)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Everytime someone inherits from a <a href="../../Thor.html">Thor</a> class,
+register the klass and file into baseclass.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="inherited-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 494</span>
+494:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">inherited</span>(<span class="ruby-identifier">klass</span>)
+495:           <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">register_klass_file</span>(<span class="ruby-identifier">klass</span>)
+496:         <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="method-added-method" class="method-detail ">
+				<a name="method-i-method_added"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">method_added</span><span
+						class="method-args">(meth)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Fire this callback whenever a method is added. Added methods are tracked as
+tasks by invoking the create_task method.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="method-added-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 500</span>
+500:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">method_added</span>(<span class="ruby-identifier">meth</span>)
+501:           <span class="ruby-identifier">meth</span> = <span class="ruby-identifier">meth</span>.<span class="ruby-identifier">to_s</span>
+502: 
+503:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">meth</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;initialize&quot;</span>
+504:             <span class="ruby-identifier">initialize_added</span>
+505:             <span class="ruby-keyword kw">return</span>
+506:           <span class="ruby-keyword kw">end</span>
+507: 
+508:           <span class="ruby-comment cmt"># Return if it's not a public instance method</span>
+509:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">public_instance_methods</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">meth</span>) <span class="ruby-operator">||</span>
+510:                         <span class="ruby-identifier">public_instance_methods</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">meth</span>.<span class="ruby-identifier">to_sym</span>)
+511: 
+512:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@no_tasks</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">create_task</span>(<span class="ruby-identifier">meth</span>)
+513: 
+514:           <span class="ruby-identifier">is_thor_reserved_word?</span>(<span class="ruby-identifier">meth</span>, <span class="ruby-value">:task</span>)
+515:           <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">register_klass_file</span>(<span class="ruby-keyword kw">self</span>)
+516:         <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="print-options-method" class="method-detail ">
+				<a name="method-i-print_options"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">print_options</span><span
+						class="method-args">(shell, options, group_name=nil)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a set of options and print them.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="print-options-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/base.rb, line 430</span>
+430:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">print_options</span>(<span class="ruby-identifier">shell</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">group_name</span>=<span class="ruby-keyword kw">nil</span>)
+431:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">empty?</span>
+432: 
+433:           <span class="ruby-identifier">list</span> = []
+434:           <span class="ruby-identifier">padding</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">collect</span>{ <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">o</span>.<span class="ruby-identifier">aliases</span>.<span class="ruby-identifier">size</span> }.<span class="ruby-identifier">max</span>.<span class="ruby-identifier">to_i</span> * <span class="ruby-value">4</span>
+435: 
+436:           <span class="ruby-identifier">options</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">option</span><span class="ruby-operator">|</span>
+437:             <span class="ruby-identifier">item</span> = [ <span class="ruby-identifier">option</span>.<span class="ruby-identifier">usage</span>(<span class="ruby-identifier">padding</span>) ]
+438:             <span class="ruby-identifier">item</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">option</span>.<span class="ruby-identifier">description</span> <span class="ruby-operator">?</span> <span class="ruby-node">&quot;# #{option.description}&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>)
+439: 
+440:             <span class="ruby-identifier">list</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">item</span>
+441:             <span class="ruby-identifier">list</span> <span class="ruby-operator">&lt;&lt;</span> [ <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-node">&quot;# Default: #{option.default}&quot;</span> ] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">option</span>.<span class="ruby-identifier">show_default?</span>
+442:           <span class="ruby-keyword kw">end</span>
+443: 
+444:           <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">say</span>(<span class="ruby-identifier">group_name</span> <span class="ruby-operator">?</span> <span class="ruby-node">&quot;#{group_name} options:&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;Options:&quot;</span>)
+445:           <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">print_table</span>(<span class="ruby-identifier">list</span>, <span class="ruby-value">:ident</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">2</span>)
+446:           <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;&quot;</span>
+447:         <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

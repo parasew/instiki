@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>File: bundle-update.txt [bundler-1.0.0 Documentation]</title>
+
+	<link type="text/css" media="screen" href="../../../rdoc.css" rel="stylesheet" />
+
+	<script src="../../../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+</head>
+
+<body class="file">
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../../../index.html">Home</a>
+          <a href="../../../index.html#classes">Classes</a>
+          <a href="../../../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../../../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../../../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../../../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../../../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../../../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../../../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../../../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../../../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../../../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../../../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../../../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../../../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../../../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../../../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../../../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../../../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../../../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../../../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../../../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../../../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../../../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../../../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../../../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../../../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../../../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../../../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../../../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../../../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../../../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../../../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../../../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../../../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../../../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../../../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../../../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../../../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../../../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../../../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../../../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../../../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../../../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../../../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../../../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../../../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../../../Thor.html">Thor</a></li>
+				
+					<li><a href="../../../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../../../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../../../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../../../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../../../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../../../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../../../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../../../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../../../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../../../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../../../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../../../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../../../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../../../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../../../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../../../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../../../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../../../Gem.html">Gem</a></li>
+				
+					<li><a href="../../../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../../../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../../../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<p>
+BUNDLE-UPDATE(1)                                             
+BUNDLE-UPDATE(1)
+</p>
+<p>
+NAME
+</p>
+<pre>
+       bundle-update - Update your gems to the latest available versions
+</pre>
+<p>
+SYNOPSIS
+</p>
+<pre>
+       bundle update *gems [--source=NAME]
+</pre>
+<p>
+DESCRIPTION
+</p>
+<pre>
+       Update  the  gems specified (all gems, if none are specified), ignoring
+       the previously installed gems specified in the  Gemfile.lock.  In  gen-
+       eral, you should use bundle install(1) bundle-install.1.html to install
+       the same exact gems and versions across machines.
+
+       You would use bundle update to explicitly update the version of a  gem.
+</pre>
+<p>
+OPTIONS
+</p>
+<pre>
+       --source=&lt;name&gt;
+              The  name  of a :git or :path source used in the Gemfile(5). For
+              instance,       with       a        :git        source        of
+              http://github.com/rails/rails.git,  you would call bundle update
+              --source rails
+</pre>
+<p>
+UPDATING ALL GEMS
+</p>
+<pre>
+       If you run bundle update with no parameters, bundler  will  ignore  any
+       previously  installed  gems and resolve all dependencies again based on
+       the latest versions of all gems available in the sources.
+
+       Consider the following Gemfile(5):
+
+           source &quot;http://rubygems.org&quot;
+
+           gem &quot;rails&quot;, &quot;3.0.0.rc&quot;
+           gem &quot;nokogiri&quot;
+
+       When you run bundle install(1) bundle-install.1.html  the  first  time,
+       bundler  will  resolve  all  of the dependencies, all the way down, and
+       install what you need:
+
+           Fetching source index for http://rubygems.org/
+           Installing rake (0.8.7)
+           Installing abstract (1.0.0)
+           Installing activesupport (3.0.0.rc)
+           Installing builder (2.1.2)
+           Installing i18n (0.4.1)
+           Installing activemodel (3.0.0.rc)
+           Installing erubis (2.6.6)
+           Installing rack (1.2.1)
+           Installing rack-mount (0.6.9)
+           Installing rack-test (0.5.4)
+           Installing tzinfo (0.3.22)
+           Installing actionpack (3.0.0.rc)
+           Installing mime-types (1.16)
+           Installing polyglot (0.3.1)
+           Installing treetop (1.4.8)
+           Installing mail (2.2.5)
+           Installing actionmailer (3.0.0.rc)
+           Installing arel (0.4.0)
+           Installing activerecord (3.0.0.rc)
+           Installing activeresource (3.0.0.rc)
+           Installing bundler (1.0.0.rc.3)
+           Installing nokogiri (1.4.3.1) with native extensions
+           Installing thor (0.14.0)
+           Installing railties (3.0.0.rc)
+           Installing rails (3.0.0.rc)
+
+           Your bundle is complete! Use `bundle show [gemname]` to see where a bundled gem is installed.
+
+       As you can see, even though you have just two gems in  the  Gemfile(5),
+       your  application  actually  needs  25  different gems in order to run.
+       Bundler remembers the exact versions it installed in Gemfile.lock.  The
+       next  time  you  run  bundle  install(1) bundle-install.1.html, bundler
+       skips the dependency resolution  and  installs  the  same  gems  as  it
+       installed last time.
+
+       After  checking in the Gemfile.lock into version control and cloning it
+       on another machine,  running  bundle  install(1)  bundle-install.1.html
+       will  still  install  the  gems that you installed last time. You don't
+       need to worry that a new release of erubis or mail changes the gems you
+       use.
+
+       However,  from  time to time, you might want to update the gems you are
+       using to the newest versions that still match the  gems  in  your  Gem-
+       file(5).
+
+       To  do this, run bundle update, which will ignore the Gemfile.lock, and
+       resolve all the dependencies again. Keep in mind that this process  can
+       result  in  a  significantly different set of the 25 gems, based on the
+       requirements of new gems that the gem authors released since  the  last
+       time you ran bundle update.
+</pre>
+<p>
+UPDATING A LIST OF GEMS
+</p>
+<pre>
+       Sometimes, you want to update a single gem in the Gemfile(5), and leave
+       the rest of the gems that you specified locked to the versions  in  the
+       Gemfile.lock.
+
+       For  instance,  in  the  scenario above, imagine that nokogiri releases
+       version 1.4.4, and you want to update it without updating Rails and all
+       of its dependencies. To do this, run bundle update nokogiri.
+
+       Bundler  will  update  nokogiri  and any of its dependencies, but leave
+       alone Rails and its dependencies.
+</pre>
+<p>
+OVERLAPPING DEPENDENCIES
+</p>
+<pre>
+       Sometimes, multiple gems declared in your Gemfile(5) are  satisfied  by
+       the  same  second-level  dependency. For instance, consider the case of
+       thin and rack-perftools-profiler.
+
+           source &quot;http://rubygems.org&quot;
+
+           gem &quot;thin&quot;
+           gem &quot;rack-perftools-profiler&quot;
+
+       The thin gem depends on  rack  &gt;=  1.0,  while  rack-perftools-profiler
+       depends on rack ~&gt; 1.0. If you run bundle install, you get:
+
+           Fetching source index for http://rubygems.org/
+           Installing daemons (1.1.0)
+           Installing eventmachine (0.12.10) with native extensions
+           Installing open4 (1.0.1)
+           Installing perftools.rb (0.4.7) with native extensions
+           Installing rack (1.2.1)
+           Installing rack-perftools_profiler (0.0.2)
+           Installing thin (1.2.7) with native extensions
+           Using bundler (1.0.0.rc.3)
+
+       In this case, the two gems have their own set of dependencies, but they
+       share rack in common. If you  run  bundle  update  thin,  bundler  will
+       update  daemons, eventmachine and rack, which are dependencies of thin,
+       but  not   open4   or   perftools.rb,   which   are   dependencies   of
+       rack-perftools_profiler.  Note that bundle update thin will update rack
+       even though it's also a dependency of rack-perftools_profiler.
+
+       In short, when you update a  gem  using  bundle  update,  bundler  will
+       update  all  dependencies  of  that  gem, including those that are also
+       dependencies of another gem.
+
+       In this scenario, updating the thin version manually in the Gemfile(5),
+       and  then  running  bundle  install(1)  bundle-install.1.html will only
+       update daemons and eventmachine, but not rack.  For  more  information,
+       see  the  CONSERVATIVE  UPDATING  section  of  bundle  install(1)  bun-
+       dle-install.1.html.
+</pre>
+<p>
+RECOMMENDED WORKFLOW
+</p>
+<pre>
+       In general, when working with an application managed with bundler,  you
+       should use the following workflow:
+
+       o   After you create your Gemfile(5) for the first time, run
+
+           $ bundle install
+
+       o   Check the resulting Gemfile.lock into version control
+
+           $ git add Gemfile.lock
+
+       o   When  checking  out this repository on another development machine,
+           run
+
+           $ bundle install
+
+       o   When checking out this repository on a deployment machine, run
+
+           $ bundle install --deployment
+
+       o   After changing the Gemfile(5) to reflect a  new  or  update  depen-
+           dency, run
+
+           $ bundle install
+
+       o   Make sure to check the updated Gemfile.lock into version control
+
+           $ git add Gemfile.lock
+
+       o   If bundle install(1) bundle-install.1.html reports a conflict, man-
+           ually update the specific gems that you changed in the Gemfile(5)
+
+           $ bundle update rails thin
+
+       o   If you want to update all the gems to the latest possible  versions
+           that still match the gems listed in the Gemfile(5), run
+
+           $ bundle update
+
+                                  August 2010                 BUNDLE-UPDATE(1)</pre>
+
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+</body>
+</html>
+
