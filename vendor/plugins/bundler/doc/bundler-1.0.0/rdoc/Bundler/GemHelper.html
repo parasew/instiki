@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Class: Bundler::GemHelper</title>
+
+	<link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="class">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../lib/bundler/gem_helper_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/gem_helper.rb">lib/bundler/gem_helper.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+			<div id="parent-class-section" class="section">
+				<h3 class="section-header">Parent</h3>
+				
+				<p class="link">Object</p>
+				
+			</div>
+			
+
+			<!-- Namespace Contents -->
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-c-install_tasks">::install_tasks</a></li>
+					
+					<li><a href="#method-c-new">::new</a></li>
+					
+					<li><a href="#method-i-build_gem">#build_gem</a></li>
+					
+					<li><a href="#method-i-built_gem_path">#built_gem_path</a></li>
+					
+					<li><a href="#method-i-clean%3F">#clean?</a></li>
+					
+					<li><a href="#method-i-git_push">#git_push</a></li>
+					
+					<li><a href="#method-i-guard_already_tagged">#guard_already_tagged</a></li>
+					
+					<li><a href="#method-i-guard_clean">#guard_clean</a></li>
+					
+					<li><a href="#method-i-install">#install</a></li>
+					
+					<li><a href="#method-i-install_gem">#install_gem</a></li>
+					
+					<li><a href="#method-i-name">#name</a></li>
+					
+					<li><a href="#method-i-perform_git_push">#perform_git_push</a></li>
+					
+					<li><a href="#method-i-release_gem">#release_gem</a></li>
+					
+					<li><a href="#method-i-rubygem_push">#rubygem_push</a></li>
+					
+					<li><a href="#method-i-sh">#sh</a></li>
+					
+					<li><a href="#method-i-sh_with_code">#sh_with_code</a></li>
+					
+					<li><a href="#method-i-tag_version">#tag_version</a></li>
+					
+					<li><a href="#method-i-tagged_sha">#tagged_sha</a></li>
+					
+					<li><a href="#method-i-version">#version</a></li>
+					
+					<li><a href="#method-i-version_tag">#version_tag</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../Thor.html">Thor</a></li>
+				
+					<li><a href="../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../Gem.html">Gem</a></li>
+				
+					<li><a href="../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="class">Bundler::GemHelper</h1>
+
+		<div id="description">
+			
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+		<div id="attribute-method-details" class="method-section section">
+			<h3 class="section-header">Attributes</h3>
+
+			
+			<div id="spec-path-attribute-method" class="method-detail">
+				<a name="spec_path"></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">spec_path</span><span
+						class="attribute-access-type">[R]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+			<div id="base-attribute-method" class="method-detail">
+				<a name="base"></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">base</span><span
+						class="attribute-access-type">[R]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+			<div id="gemspec-attribute-method" class="method-detail">
+				<a name="gemspec"></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">gemspec</span><span
+						class="attribute-access-type">[R]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+		</div>
+		
+
+		<!-- Methods -->
+		
+		<div id="public-class-method-details" class="method-section section">
+			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="install-tasks-method" class="method-detail ">
+				<a name="method-c-install_tasks"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">install_tasks</span><span
+						class="method-args">(opts = nil)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="install-tasks-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 7</span>
+ 7:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">install_tasks</span>(<span class="ruby-identifier">opts</span> = <span class="ruby-keyword kw">nil</span>)
+ 8:       <span class="ruby-identifier">dir</span> = <span class="ruby-identifier">caller</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-regexp re">/Rakefile:/</span>}[<span class="ruby-regexp re">/^(.*?)\/Rakefile:/</span>, <span class="ruby-value">1</span>]
+ 9:       <span class="ruby-constant">GemHelper</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">dir</span>, <span class="ruby-identifier">opts</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">opts</span>[<span class="ruby-value">:name</span>]).<span class="ruby-identifier">install</span>
+10:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="new-method" class="method-detail ">
+				<a name="method-c-new"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">new</span><span
+						class="method-args">(base, name = nil)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="new-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 14</span>
+14:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">base</span>, <span class="ruby-identifier">name</span> = <span class="ruby-keyword kw">nil</span>)
+15:       <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span> = <span class="ruby-constant">UI</span><span class="ruby-operator">::</span><span class="ruby-constant">Shell</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Shell</span><span class="ruby-operator">::</span><span class="ruby-constant">Color</span>.<span class="ruby-identifier">new</span>)
+16:       <span class="ruby-ivar">@base</span> = <span class="ruby-identifier">base</span>
+17:       <span class="ruby-identifier">gemspecs</span> = <span class="ruby-identifier">name</span> <span class="ruby-operator">?</span> [<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">base</span>, <span class="ruby-node">&quot;#{name}.gemspec&quot;</span>)] <span class="ruby-operator">:</span> <span class="ruby-constant">Dir</span>[<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">base</span>, <span class="ruby-value str">&quot;*.gemspec&quot;</span>)]
+18:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Unable to determine name from existing gemspec. Use :name =&gt; 'gemname' in #install_tasks to manually set it.&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">gemspecs</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+19:       <span class="ruby-ivar">@spec_path</span> = <span class="ruby-identifier">gemspecs</span>.<span class="ruby-identifier">first</span>
+20:       <span class="ruby-ivar">@gemspec</span> = <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">load_gemspec</span>(<span class="ruby-ivar">@spec_path</span>)
+21:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="build-gem-method" class="method-detail ">
+				<a name="method-i-build_gem"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">build_gem</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="build-gem-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 40</span>
+40:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">build_gem</span>
+41:       <span class="ruby-identifier">file_name</span> = <span class="ruby-keyword kw">nil</span>
+42:       <span class="ruby-identifier">sh</span>(<span class="ruby-node">&quot;gem build #{spec_path}&quot;</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">out</span>, <span class="ruby-identifier">err</span><span class="ruby-operator">|</span>
+43:         <span class="ruby-identifier">raise</span> <span class="ruby-identifier">err</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">err</span>[<span class="ruby-regexp re">/ERROR/</span>]
+44:         <span class="ruby-identifier">file_name</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">built_gem_path</span>)
+45:         <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">base</span>, <span class="ruby-value str">'pkg'</span>))
+46:         <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mv</span>(<span class="ruby-identifier">built_gem_path</span>, <span class="ruby-value str">'pkg'</span>)
+47:         <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span>.<span class="ruby-identifier">confirm</span> <span class="ruby-node">&quot;#{name} #{version} built to pkg/#{file_name}&quot;</span>
+48:       }
+49:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">base</span>, <span class="ruby-value str">'pkg'</span>, <span class="ruby-identifier">file_name</span>)
+50:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="install-method" class="method-detail ">
+				<a name="method-i-install"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">install</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="install-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 23</span>
+23:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">install</span>
+24:       <span class="ruby-identifier">desc</span> <span class="ruby-node">&quot;Build #{name}-#{version}.gem into the pkg directory&quot;</span>
+25:       <span class="ruby-identifier">task</span> <span class="ruby-value str">'build'</span> <span class="ruby-keyword kw">do</span>
+26:         <span class="ruby-identifier">build_gem</span>
+27:       <span class="ruby-keyword kw">end</span>
+28: 
+29:       <span class="ruby-identifier">desc</span> <span class="ruby-node">&quot;Build and install #{name}-#{version}.gem into system gems&quot;</span>
+30:       <span class="ruby-identifier">task</span> <span class="ruby-value str">'install'</span> <span class="ruby-keyword kw">do</span>
+31:         <span class="ruby-identifier">install_gem</span>
+32:       <span class="ruby-keyword kw">end</span>
+33: 
+34:       <span class="ruby-identifier">desc</span> <span class="ruby-node">&quot;Create tag #{version_tag} and build and push #{name}-#{version}.gem to Rubygems&quot;</span>
+35:       <span class="ruby-identifier">task</span> <span class="ruby-value str">'release'</span> <span class="ruby-keyword kw">do</span>
+36:         <span class="ruby-identifier">release_gem</span>
+37:       <span class="ruby-keyword kw">end</span>
+38:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="install-gem-method" class="method-detail ">
+				<a name="method-i-install_gem"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">install_gem</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="install-gem-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 52</span>
+52:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">install_gem</span>
+53:       <span class="ruby-identifier">built_gem_path</span> = <span class="ruby-identifier">build_gem</span>
+54:       <span class="ruby-identifier">out</span>, <span class="ruby-identifier">err</span>, <span class="ruby-identifier">code</span> = <span class="ruby-identifier">sh_with_code</span>(<span class="ruby-node">&quot;gem install #{built_gem_path}&quot;</span>)
+55:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">err</span>[<span class="ruby-regexp re">/ERROR/</span>]
+56:         <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span>.<span class="ruby-identifier">error</span> <span class="ruby-identifier">err</span>
+57:       <span class="ruby-keyword kw">else</span>
+58:         <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span>.<span class="ruby-identifier">confirm</span> <span class="ruby-node">&quot;#{name} (#{version}) installed&quot;</span>
+59:       <span class="ruby-keyword kw">end</span>
+60:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="release-gem-method" class="method-detail ">
+				<a name="method-i-release_gem"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">release_gem</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="release-gem-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 62</span>
+62:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">release_gem</span>
+63:       <span class="ruby-identifier">guard_clean</span>
+64:       <span class="ruby-identifier">guard_already_tagged</span>
+65:       <span class="ruby-identifier">built_gem_path</span> = <span class="ruby-identifier">build_gem</span>
+66:       <span class="ruby-identifier">tag_version</span> {
+67:         <span class="ruby-identifier">git_push</span>
+68:         <span class="ruby-identifier">rubygem_push</span>(<span class="ruby-identifier">built_gem_path</span>)
+69:       }
+70:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="protected-instance-method-details" class="method-section section">
+			<h3 class="section-header">Protected Instance Methods</h3>
+
+		
+			<div id="built-gem-path-method" class="method-detail ">
+				<a name="method-i-built_gem_path"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">built_gem_path</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="built-gem-path-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 78</span>
+78:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">built_gem_path</span>
+79:       <span class="ruby-constant">Dir</span>[<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">base</span>, <span class="ruby-node">&quot;#{name}-*.gem&quot;</span>)].<span class="ruby-identifier">sort_by</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">mtime</span>(<span class="ruby-identifier">f</span>)}.<span class="ruby-identifier">last</span>
+80:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="clean--method" class="method-detail ">
+				<a name="method-i-clean%3F"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">clean?</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="clean--source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 103</span>
+103:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clean?</span>
+104:       <span class="ruby-identifier">sh</span>(<span class="ruby-value str">&quot;git ls-files -dm&quot;</span>).<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;\n&quot;</span>).<span class="ruby-identifier">size</span>.<span class="ruby-identifier">zero?</span>
+105:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="git-push-method" class="method-detail ">
+				<a name="method-i-git_push"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">git_push</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="git-push-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 82</span>
+82:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">git_push</span>
+83:       <span class="ruby-identifier">perform_git_push</span>
+84:       <span class="ruby-identifier">perform_git_push</span> <span class="ruby-value str">' --tags'</span>
+85:       <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span>.<span class="ruby-identifier">confirm</span> <span class="ruby-value str">&quot;Pushed git commits and tags&quot;</span>
+86:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="guard-already-tagged-method" class="method-detail ">
+				<a name="method-i-guard_already_tagged"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">guard_already_tagged</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="guard-already-tagged-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 93</span>
+93:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">guard_already_tagged</span>
+94:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">sh</span>(<span class="ruby-value str">'git tag'</span>).<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/\n/</span>).<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">version_tag</span>)
+95:         <span class="ruby-identifier">raise</span>(<span class="ruby-value str">&quot;This tag has already been committed to the repo.&quot;</span>)
+96:       <span class="ruby-keyword kw">end</span>
+97:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="guard-clean-method" class="method-detail ">
+				<a name="method-i-guard_clean"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">guard_clean</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="guard-clean-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 99</span>
+ 99:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">guard_clean</span>
+100:       <span class="ruby-identifier">clean?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">raise</span>(<span class="ruby-value str">&quot;There are files that need to be committed first.&quot;</span>)
+101:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="name-method" class="method-detail ">
+				<a name="method-i-name"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">name</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="name-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 129</span>
+129:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">name</span>
+130:       <span class="ruby-identifier">gemspec</span>.<span class="ruby-identifier">name</span>
+131:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="perform-git-push-method" class="method-detail ">
+				<a name="method-i-perform_git_push"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">perform_git_push</span><span
+						class="method-args">(options = '')</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="perform-git-push-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 88</span>
+88:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">perform_git_push</span>(<span class="ruby-identifier">options</span> = <span class="ruby-value str">''</span>)
+89:       <span class="ruby-identifier">out</span>, <span class="ruby-identifier">err</span>, <span class="ruby-identifier">code</span> = <span class="ruby-identifier">sh_with_code</span> <span class="ruby-node">&quot;git push --quiet#{options}&quot;</span>
+90:       <span class="ruby-identifier">raise</span> <span class="ruby-identifier">err</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">err</span> <span class="ruby-operator">==</span> <span class="ruby-value str">''</span>
+91:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="rubygem-push-method" class="method-detail ">
+				<a name="method-i-rubygem_push"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">rubygem_push</span><span
+						class="method-args">(path)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="rubygem-push-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 73</span>
+73:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rubygem_push</span>(<span class="ruby-identifier">path</span>)
+74:       <span class="ruby-identifier">sh</span>(<span class="ruby-node">&quot;gem push #{path}&quot;</span>)
+75:       <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span>.<span class="ruby-identifier">confirm</span> <span class="ruby-node">&quot;Pushed #{name} #{version} to rubygems.org&quot;</span>
+76:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="sh-method" class="method-detail ">
+				<a name="method-i-sh"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">sh</span><span
+						class="method-args">(cmd, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="sh-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 133</span>
+133:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sh</span>(<span class="ruby-identifier">cmd</span>, &amp;<span class="ruby-identifier">block</span>)
+134:       <span class="ruby-identifier">out</span>, <span class="ruby-identifier">err</span>, <span class="ruby-identifier">code</span> = <span class="ruby-identifier">sh_with_code</span>(<span class="ruby-identifier">cmd</span>, &amp;<span class="ruby-identifier">block</span>)
+135:       <span class="ruby-identifier">code</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">out</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">raise</span>(<span class="ruby-identifier">out</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">err</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">out</span>)
+136:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="sh-with-code-method" class="method-detail ">
+				<a name="method-i-sh_with_code"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">sh_with_code</span><span
+						class="method-args">(cmd, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="sh-with-code-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 138</span>
+138:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sh_with_code</span>(<span class="ruby-identifier">cmd</span>, &amp;<span class="ruby-identifier">block</span>)
+139:       <span class="ruby-identifier">outbuf</span>, <span class="ruby-identifier">errbuf</span> = <span class="ruby-value str">''</span>, <span class="ruby-value str">''</span>
+140:       <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span>(<span class="ruby-identifier">base</span>) {
+141:         <span class="ruby-identifier">stdin</span>, <span class="ruby-identifier">stdout</span>, <span class="ruby-identifier">stderr</span> = *<span class="ruby-constant">Open3</span>.<span class="ruby-identifier">popen3</span>(<span class="ruby-identifier">cmd</span>)
+142:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$?</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+143:           <span class="ruby-identifier">outbuf</span>, <span class="ruby-identifier">errbuf</span> = <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">read</span>, <span class="ruby-identifier">stderr</span>.<span class="ruby-identifier">read</span>
+144:           <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">outbuf</span>, <span class="ruby-identifier">errbuf</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+145:         <span class="ruby-keyword kw">end</span>
+146:       }
+147:       [<span class="ruby-identifier">outbuf</span>, <span class="ruby-identifier">errbuf</span>, <span class="ruby-identifier">$?</span>]
+148:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="tag-version-method" class="method-detail ">
+				<a name="method-i-tag_version"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">tag_version</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="tag-version-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 107</span>
+107:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">tag_version</span>
+108:       <span class="ruby-identifier">sh</span> <span class="ruby-node">&quot;git tag -am 'Version #{version}' #{version_tag}&quot;</span>
+109:       <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span>.<span class="ruby-identifier">confirm</span> <span class="ruby-node">&quot;Tagged #{tagged_sha} with #{version_tag}&quot;</span>
+110:       <span class="ruby-keyword kw">yield</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+111:     <span class="ruby-keyword kw">rescue</span>
+112:       <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">ui</span>.<span class="ruby-identifier">error</span> <span class="ruby-node">&quot;Untagged #{tagged_sha} with #{version_tag} due to error&quot;</span>
+113:       <span class="ruby-identifier">sh</span> <span class="ruby-node">&quot;git tag -d #{version_tag}&quot;</span>
+114:       <span class="ruby-identifier">raise</span>
+115:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="tagged-sha-method" class="method-detail ">
+				<a name="method-i-tagged_sha"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">tagged_sha</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="tagged-sha-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 117</span>
+117:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">tagged_sha</span>
+118:       <span class="ruby-identifier">sh</span>(<span class="ruby-node">&quot;git show-ref --tags #{version_tag}&quot;</span>).<span class="ruby-identifier">split</span>(<span class="ruby-value str">' '</span>).<span class="ruby-identifier">first</span>[<span class="ruby-value">0</span>, <span class="ruby-value">8</span>]
+119:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="version-method" class="method-detail ">
+				<a name="method-i-version"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">version</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="version-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 121</span>
+121:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version</span>
+122:       <span class="ruby-identifier">gemspec</span>.<span class="ruby-identifier">version</span>
+123:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="version-tag-method" class="method-detail ">
+				<a name="method-i-version_tag"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">version_tag</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="version-tag-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/gem_helper.rb, line 125</span>
+125:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">version_tag</span>
+126:       <span class="ruby-node">&quot;v#{version}&quot;</span>
+127:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

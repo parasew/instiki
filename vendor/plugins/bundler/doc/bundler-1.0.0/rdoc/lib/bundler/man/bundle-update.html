@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>File: bundle-update [bundler-1.0.0 Documentation]</title>
+
+	<link type="text/css" media="screen" href="../../../rdoc.css" rel="stylesheet" />
+
+	<script src="../../../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+</head>
+
+<body class="file">
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../../../index.html">Home</a>
+          <a href="../../../index.html#classes">Classes</a>
+          <a href="../../../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../../../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../../../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../../../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../../../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../../../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../../../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../../../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../../../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../../../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../../../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../../../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../../../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../../../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../../../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../../../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../../../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../../../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../../../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../../../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../../../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../../../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../../../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../../../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../../../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../../../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../../../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../../../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../../../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../../../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../../../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../../../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../../../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../../../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../../../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../../../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../../../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../../../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../../../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../../../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../../../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../../../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../../../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../../../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../../../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../../../Thor.html">Thor</a></li>
+				
+					<li><a href="../../../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../../../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../../../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../../../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../../../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../../../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../../../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../../../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../../../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../../../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../../../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../../../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../../../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../../../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../../../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../../../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../../../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../../../Gem.html">Gem</a></li>
+				
+					<li><a href="../../../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../../../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../../../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<p>
+." generated with Ronn/v0.7.3 ." <a
+href="http://github.com/rtomayko/ronn/tree/0.7.3">github.com/rtomayko/ronn/tree/0.7.3</a>
+. .TH &#8220;BUNDLE-UPDATE&#8221; &#8220;1&#8221; &#8220;August 2010&#8221;
+&#8220;&#8221; &#8220;&#8221; . .SH &#8220;NAME&#8221; fBbundle-updatefR -
+Update your gems to the latest available versions . .SH
+&#8220;SYNOPSIS&#8221; fBbundle updatefR fI*gemsfR [-\-source=NAME] . .SH
+&#8220;DESCRIPTION&#8221; Update the gems specified (all gems, if none are
+specified), ignoring the previously installed gems specified in the
+fBGemfile.lockfR. In general, you should use bundle install(1)
+fIbundle-install.1.htmlfR to install the same exact gems and versions
+across machines. . .P You would use fBbundle updatefR to explicitly update
+the version of a gem. . .SH &#8220;OPTIONS&#8221; . .TP
+fB-\-source=<name>fR The name of a fB:gitfR or fB:pathfR source used in the
+Gemfile(5). For instance, with a fB:gitfR source of fB<a
+href="http://github\.com/rails/rails\.git\fR">github\.com/rails/rails\.git\fR</a>,
+you would call fBbundle update -\-source railsfR . .SH &#8220;UPDATING ALL
+GEMS&#8221; If you run fBbundle updatefR with no parameters, bundler will
+ignore any previously installed gems and resolve all dependencies again
+based on the latest versions of all gems available in the sources. . .P
+Consider the following Gemfile(5): . .IP &#8220;&#8221; 4 . .nf
+</p>
+<p>
+source &#8220;<a href="http://rubygems\.org">rubygems\.org</a>&#8220;
+</p>
+<p>
+gem &#8220;rails&#8221;, &#8220;3.0.0.rc&#8221; gem &#8220;nokogiri&#8221;
+. .fi . .IP &#8220;&#8221; 0 . .P When you run bundle install(1)
+fIbundle-install.1.htmlfR the first time, bundler will resolve all of the
+dependencies, all the way down, and install what you need: . .IP
+&#8220;&#8221; 4 . .nf
+</p>
+<p>
+Fetching source index for <a href="http://rubygems\.org">rubygems\.org</a>/
+Installing rake (0.8.7) Installing abstract (1.0.0) Installing
+activesupport (3.0.0.rc) Installing builder (2.1.2) Installing i18n (0.4.1)
+Installing activemodel (3.0.0.rc) Installing erubis (2.6.6) Installing rack
+(1.2.1) Installing rack-mount (0.6.9) Installing rack-test (0.5.4)
+Installing tzinfo (0.3.22) Installing actionpack (3.0.0.rc) Installing
+mime-types (1.16) Installing polyglot (0.3.1) Installing treetop (1.4.8)
+Installing mail (2.2.5) Installing actionmailer (3.0.0.rc) Installing arel
+(0.4.0) Installing activerecord (3.0.0.rc) Installing activeresource
+(3.0.0.rc) Installing bundler (1.0.0.rc.3) Installing nokogiri (1.4.3.1)
+with native extensions Installing thor (0.14.0) Installing railties
+(3.0.0.rc) Installing rails (3.0.0.rc)
+</p>
+<p>
+Your bundle is complete! Use `bundle show [gemname]` to see where a bundled
+gem is installed. . .fi . .IP &#8220;&#8221; 0 . .P As you can see, even
+though you have just two gems in the Gemfile(5), your application actually
+needs 25 different gems in order to run. <a
+href="../../../Bundler.html">Bundler</a> remembers the exact versions it
+installed in fBGemfile.lockfR. The next time you run bundle install(1)
+fIbundle-install.1.htmlfR, bundler skips the dependency resolution and
+installs the same gems as it installed last time. . .P After checking in
+the fBGemfile.lockfR into version control and cloning it on another
+machine, running bundle install(1) fIbundle-install.1.htmlfR will fIstillfR
+install the gems that you installed last time. You don't need to worry that
+a new release of fBerubisfR or fBmailfR changes the gems you use. . .P
+However, from time to time, you might want to update the gems you are using
+to the newest versions that still match the gems in your Gemfile(5). . .P
+To do this, run fBbundle updatefR, which will ignore the fBGemfile.lockfR,
+and resolve all the dependencies again. Keep in mind that this process can
+result in a significantly different set of the 25 gems, based on the
+requirements of new gems that the gem authors released since the last time
+you ran fBbundle updatefR. . .SH &#8220;UPDATING A LIST OF GEMS&#8221;
+Sometimes, you want to update a single gem in the Gemfile(5), and leave the
+rest of the gems that you specified locked to the versions in the
+fBGemfile.lockfR. . .P For instance, in the scenario above, imagine that
+fBnokogirifR releases version fB1.4.4fR, and you want to update it
+fIwithoutfR updating Rails and all of its dependencies. To do this, run
+fBbundle update nokogirifR. . .P <a
+href="../../../Bundler.html">Bundler</a> will update fBnokogirifR and any
+of its dependencies, but leave alone Rails and its dependencies. . .SH
+&#8220;OVERLAPPING DEPENDENCIES&#8221; Sometimes, multiple gems declared in
+your Gemfile(5) are satisfied by the same second-level dependency. For
+instance, consider the case of fBthinfR and fBrack-perftools-profilerfR. .
+.IP &#8220;&#8221; 4 . .nf
+</p>
+<p>
+source &#8220;<a href="http://rubygems\.org">rubygems\.org</a>&#8220;
+</p>
+<p>
+gem &#8220;thin&#8221; gem &#8220;rack-perftools-profiler&#8221; . .fi .
+.IP &#8220;&#8221; 0 . .P The fBthinfR gem depends on fBrack >= 1.0fR,
+while fBrack-perftools-profilerfR depends on fBrack ~> 1.0fR. If you run
+bundle install, you get: . .IP &#8220;&#8221; 4 . .nf
+</p>
+<p>
+Fetching source index for <a href="http://rubygems\.org">rubygems\.org</a>/
+Installing daemons (1.1.0) Installing eventmachine (0.12.10) with native
+extensions Installing open4 (1.0.1) Installing perftools.rb (0.4.7) with
+native extensions Installing rack (1.2.1) Installing
+rack-perftools_profiler (0.0.2) Installing thin (1.2.7) with native
+extensions Using bundler (1.0.0.rc.3) . .fi . .IP &#8220;&#8221; 0 . .P In
+this case, the two gems have their own set of dependencies, but they share
+fBrackfR in common. If you run fBbundle update thinfR, bundler will update
+fBdaemonsfR, fBeventmachinefR and fBrackfR, which are dependencies of
+fBthinfR, but not fBopen4fR or fBperftools.rbfR, which are dependencies of
+fBrack-perftools_profiler\fR. Note that fBbundle update thinfR will update
+fBrackfR even though it's fIalsofR a dependency of
+fBrack-perftools_profiler\fR. . .P fBIn shortfR, when you update a gem
+using fBbundle updatefR, bundler will update all dependencies of that gem,
+including those that are also dependencies of another gem. . .P In this
+scenario, updating the fBthinfR version manually in the Gemfile(5), and
+then running bundle install(1) fIbundle-install.1.htmlfR will only update
+fBdaemonsfR and fBeventmachinefR, but not fBrackfR. For more information,
+see the fBCONSERVATIVE UPDATINGfR section of bundle install(1)
+fIbundle-install.1.htmlfR. . .SH &#8220;RECOMMENDED WORKFLOW&#8221; In
+general, when working with an application managed with bundler, you should
+use the following workflow: . .IP &#8220;(bu&#8221; 4 After you create your
+Gemfile(5) for the first time, run . .IP $ bundle install . .IP
+&#8220;(bu&#8221; 4 Check the resulting fBGemfile.lockfR into version
+control . .IP $ git add Gemfile.lock . .IP &#8220;(bu&#8221; 4 When
+checking out this repository on another development machine, run . .IP $
+bundle install . .IP &#8220;(bu&#8221; 4 When checking out this repository
+on a deployment machine, run . .IP $ bundle install -\-deployment . .IP
+&#8220;(bu&#8221; 4 After changing the Gemfile(5) to reflect a new or
+update dependency, run . .IP $ bundle install . .IP &#8220;(bu&#8221; 4
+Make sure to check the updated fBGemfile.lockfR into version control . .IP
+$ git add Gemfile.lock . .IP &#8220;(bu&#8221; 4 If bundle install(1)
+fIbundle-install.1.htmlfR reports a conflict, manually update the specific
+gems that you changed in the Gemfile(5) . .IP $ bundle update rails thin .
+.IP &#8220;(bu&#8221; 4 If you want to update all the gems to the latest
+possible versions that still match the gems listed in the Gemfile(5), run .
+.IP $ bundle update . .IP &#8220;&#8221; 0
+</p>
+
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+</body>
+</html>
+

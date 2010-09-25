@@ -1,0 +1,1945 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Module: Thor::Actions</title>
+
+	<link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="module">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../lib/bundler/vendor/thor/actions/create_file_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/actions/create_file.rb">lib/bundler/vendor/thor/actions/create_file.rb</a></li>
+					
+						<li><a href="../lib/bundler/vendor/thor/actions/directory_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/actions/directory.rb">lib/bundler/vendor/thor/actions/directory.rb</a></li>
+					
+						<li><a href="../lib/bundler/vendor/thor/actions/empty_directory_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/actions/empty_directory.rb">lib/bundler/vendor/thor/actions/empty_directory.rb</a></li>
+					
+						<li><a href="../lib/bundler/vendor/thor/actions/file_manipulation_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/actions/file_manipulation.rb">lib/bundler/vendor/thor/actions/file_manipulation.rb</a></li>
+					
+						<li><a href="../lib/bundler/vendor/thor/actions/inject_into_file_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/actions/inject_into_file.rb">lib/bundler/vendor/thor/actions/inject_into_file.rb</a></li>
+					
+						<li><a href="../lib/bundler/vendor/thor/actions_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/actions.rb">lib/bundler/vendor/thor/actions.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+
+			<!-- Namespace Contents -->
+			
+			<div id="namespace-list-section" class="section">
+				<h3 class="section-header">Namespace</h3>
+				<ul class="link-list">
+					
+					<li><span class="type">MODULE</span> <a href="Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+					
+					<li><span class="type">CLASS</span> <a href="Actions/CreateFile.html">Thor::Actions::CreateFile</a></li>
+					
+					<li><span class="type">CLASS</span> <a href="Actions/Directory.html">Thor::Actions::Directory</a></li>
+					
+					<li><span class="type">CLASS</span> <a href="Actions/EmptyDirectory.html">Thor::Actions::EmptyDirectory</a></li>
+					
+					<li><span class="type">CLASS</span> <a href="Actions/InjectIntoFile.html">Thor::Actions::InjectIntoFile</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-c-new">::new</a></li>
+					
+					<li><a href="#method-i-add_file">#add_file</a></li>
+					
+					<li><a href="#method-i-append_file">#append_file</a></li>
+					
+					<li><a href="#method-i-apply">#apply</a></li>
+					
+					<li><a href="#method-i-chmod">#chmod</a></li>
+					
+					<li><a href="#method-i-copy_file">#copy_file</a></li>
+					
+					<li><a href="#method-i-create_file">#create_file</a></li>
+					
+					<li><a href="#method-i-destination_root">#destination_root</a></li>
+					
+					<li><a href="#method-i-destination_root%3D">#destination_root=</a></li>
+					
+					<li><a href="#method-i-directory">#directory</a></li>
+					
+					<li><a href="#method-i-empty_directory">#empty_directory</a></li>
+					
+					<li><a href="#method-i-find_in_source_paths">#find_in_source_paths</a></li>
+					
+					<li><a href="#method-i-get">#get</a></li>
+					
+					<li><a href="#method-i-gsub_file">#gsub_file</a></li>
+					
+					<li><a href="#method-i-in_root">#in_root</a></li>
+					
+					<li><a href="#method-i-inject_into_class">#inject_into_class</a></li>
+					
+					<li><a href="#method-i-inject_into_file">#inject_into_file</a></li>
+					
+					<li><a href="#method-i-inside">#inside</a></li>
+					
+					<li><a href="#method-i-prepend_file">#prepend_file</a></li>
+					
+					<li><a href="#method-i-relative_to_original_destination_root">#relative_to_original_destination_root</a></li>
+					
+					<li><a href="#method-i-remove_dir">#remove_dir</a></li>
+					
+					<li><a href="#method-i-remove_file">#remove_file</a></li>
+					
+					<li><a href="#method-i-run">#run</a></li>
+					
+					<li><a href="#method-i-run_ruby_script">#run_ruby_script</a></li>
+					
+					<li><a href="#method-i-source_paths">#source_paths</a></li>
+					
+					<li><a href="#method-i-template">#template</a></li>
+					
+					<li><a href="#method-i-thor">#thor</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../Thor.html">Thor</a></li>
+				
+					<li><a href="../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../Gem.html">Gem</a></li>
+				
+					<li><a href="../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="module">Thor::Actions</h1>
+
+		<div id="description">
+			
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+		<div id="attribute-method-details" class="method-section section">
+			<h3 class="section-header">Attributes</h3>
+
+			
+			<div id="behavior-attribute-method" class="method-detail">
+				<a name="behavior"></a>
+				
+				<a name="behavior="></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">behavior</span><span
+						class="attribute-access-type">[RW]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+		</div>
+		
+
+		<!-- Methods -->
+		
+		<div id="public-class-method-details" class="method-section section">
+			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="new-method" class="method-detail ">
+				<a name="method-c-new"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">new</span><span
+						class="method-args">(args=[], options={}, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Extends initializer to add more configuration options.
+</p>
+<h4>Configuration</h4>
+<table>
+<tr><td valign="top">behavior<Symbol></td><td><p>
+The actions default behavior. Can be :invoke or :revoke. It also accepts
+:force, :skip and :pretend to set the behavior and the respective option.
+</p>
+</td></tr>
+<tr><td valign="top"><a href="Actions.html#method-i-destination_root">destination_root</a><String></td><td><p>
+The root directory needed for some actions.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="new-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 72</span>
+72:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">args</span>=[], <span class="ruby-identifier">options</span>={}, <span class="ruby-identifier">config</span>={})
+73:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">behavior</span> = <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">config</span>[<span class="ruby-value">:behavior</span>].<span class="ruby-identifier">to_s</span>
+74:         <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;force&quot;</span>, <span class="ruby-value str">&quot;skip&quot;</span>
+75:           <span class="ruby-identifier">_cleanup_options_and_set</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">config</span>[<span class="ruby-value">:behavior</span>])
+76:           <span class="ruby-value">:invoke</span>
+77:         <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;revoke&quot;</span>
+78:           <span class="ruby-value">:revoke</span>
+79:         <span class="ruby-keyword kw">else</span>
+80:           <span class="ruby-value">:invoke</span>
+81:       <span class="ruby-keyword kw">end</span>
+82: 
+83:       <span class="ruby-keyword kw">super</span>
+84:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">destination_root</span> = <span class="ruby-identifier">config</span>[<span class="ruby-value">:destination_root</span>]
+85:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="add-file-method" class="method-detail method-alias">
+				<a name="method-i-add_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">add_file</span><span
+						class="method-args">(destination, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+				</div>
+
+				
+
+				
+				<div class="aliases">
+          Alias for: <a href="Actions.html#method-i-create_file">create_file</a>
+				</div>
+				
+			</div>
+
+		
+			<div id="append-file-method" class="method-detail ">
+				<a name="method-i-append_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">append_file</span><span
+						class="method-args">(path, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Append text to a file. Since it depends on <a
+href="Actions.html#method-i-inject_into_file">inject_into_file</a>,
+it&#8217;s reversible.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">path<String></td><td><p>
+path of the file to be changed
+</p>
+</td></tr>
+<tr><td valign="top">data<String></td><td><p>
+the data to append to the file, can be also given as a block.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Example</h4>
+<pre>
+  append_file 'config/environments/test.rb', 'config.gem &quot;rspec&quot;'
+
+  append_file 'config/environments/test.rb' do
+    'config.gem &quot;rspec&quot;'
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="append-file-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 149</span>
+149:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">append_file</span>(<span class="ruby-identifier">path</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+150:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+151:       <span class="ruby-identifier">config</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:before</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-regexp re">/\z/</span>)
+152:       <span class="ruby-identifier">inject_into_file</span>(<span class="ruby-identifier">path</span>, *(<span class="ruby-identifier">args</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">config</span>), &amp;<span class="ruby-identifier">block</span>)
+153:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="apply-method" class="method-detail ">
+				<a name="method-i-apply"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">apply</span><span
+						class="method-args">(path, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Loads an external file and execute it in the instance binding.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">path<String></td><td><p>
+The path to the file to execute. Can be a web address or a relative path
+from the source root.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  apply &quot;http://gist.github.com/103208&quot;
+
+  apply &quot;recipes/jquery.rb&quot;</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="apply-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 191</span>
+191:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">apply</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">config</span>={})
+192:       <span class="ruby-identifier">verbose</span> = <span class="ruby-identifier">config</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-value">:verbose</span>, <span class="ruby-keyword kw">true</span>)
+193:       <span class="ruby-identifier">is_uri</span>  = <span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^https?\:\/\//</span>
+194:       <span class="ruby-identifier">path</span>    = <span class="ruby-identifier">find_in_source_paths</span>(<span class="ruby-identifier">path</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">is_uri</span>
+195: 
+196:       <span class="ruby-identifier">say_status</span> <span class="ruby-value">:apply</span>, <span class="ruby-identifier">path</span>, <span class="ruby-identifier">verbose</span>
+197:       <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">padding</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">verbose</span>
+198: 
+199:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">is_uri</span>
+200:         <span class="ruby-identifier">contents</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value str">&quot;Accept&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;application/x-thor-template&quot;</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">io</span><span class="ruby-operator">|</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">read</span> }
+201:       <span class="ruby-keyword kw">else</span>
+202:         <span class="ruby-identifier">contents</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">path</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">io</span><span class="ruby-operator">|</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">read</span> }
+203:       <span class="ruby-keyword kw">end</span>
+204: 
+205:       <span class="ruby-identifier">instance_eval</span>(<span class="ruby-identifier">contents</span>, <span class="ruby-identifier">path</span>)
+206:       <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">padding</span> <span class="ruby-operator">-=</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">verbose</span>
+207:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="chmod-method" class="method-detail ">
+				<a name="method-i-chmod"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">chmod</span><span
+						class="method-args">(path, mode, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Changes the mode of the given file or directory.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">mode<Integer></td><td><p>
+the file mode
+</p>
+</td></tr>
+<tr><td valign="top">path<String></td><td><p>
+the name of the file to change mode
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Example</h4>
+<pre>
+  chmod &quot;script/*&quot;, 0755</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="chmod-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 106</span>
+106:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">chmod</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">mode</span>, <span class="ruby-identifier">config</span>={})
+107:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">behavior</span> <span class="ruby-operator">==</span> <span class="ruby-value">:invoke</span>
+108:       <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">destination_root</span>)
+109:       <span class="ruby-identifier">say_status</span> <span class="ruby-value">:chmod</span>, <span class="ruby-identifier">relative_to_original_destination_root</span>(<span class="ruby-identifier">path</span>), <span class="ruby-identifier">config</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-value">:verbose</span>, <span class="ruby-keyword kw">true</span>)
+110:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">chmod_R</span>(<span class="ruby-identifier">mode</span>, <span class="ruby-identifier">path</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:pretend</span>]
+111:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="copy-file-method" class="method-detail ">
+				<a name="method-i-copy_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">copy_file</span><span
+						class="method-args">(source, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Copies the file from the relative source to the relative destination. If
+the destination is not given it&#8217;s assumed to be equal to the source.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">source<String></td><td><p>
+the relative path to the source root.
+</p>
+</td></tr>
+<tr><td valign="top">destination<String></td><td><p>
+the relative path to the destination root.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  copy_file &quot;README&quot;, &quot;doc/README&quot;
+
+  copy_file &quot;doc/README&quot;</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="copy-file-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 21</span>
+21:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">copy_file</span>(<span class="ruby-identifier">source</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+22:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+23:       <span class="ruby-identifier">destination</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">source</span>
+24:       <span class="ruby-identifier">source</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">find_in_source_paths</span>(<span class="ruby-identifier">source</span>.<span class="ruby-identifier">to_s</span>))
+25: 
+26:       <span class="ruby-identifier">create_file</span> <span class="ruby-identifier">destination</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">config</span> <span class="ruby-keyword kw">do</span>
+27:         <span class="ruby-identifier">content</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">binread</span>(<span class="ruby-identifier">source</span>)
+28:         <span class="ruby-identifier">content</span> = <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">content</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+29:         <span class="ruby-identifier">content</span>
+30:       <span class="ruby-keyword kw">end</span>
+31:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="create-file-method" class="method-detail ">
+				<a name="method-i-create_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">create_file</span><span
+						class="method-args">(destination, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Create a new file relative to the destination root with the given data,
+which is the return value of a block or a data string.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">destination<String></td><td><p>
+the relative path to the destination root.
+</p>
+</td></tr>
+<tr><td valign="top">data<String|NilClass></td><td><p>
+the data to append to the file.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  create_file &quot;lib/fun_party.rb&quot; do
+    hostname = ask(&quot;What is the virtual hostname I should use?&quot;)
+    &quot;vhost.name = #{hostname}&quot;
+  end
+
+  create_file &quot;config/apach.conf&quot;, &quot;your apache config&quot;</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="create-file-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/create_file.rb, line 23</span>
+23:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_file</span>(<span class="ruby-identifier">destination</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+24:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+25:       <span class="ruby-identifier">data</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>
+26:       <span class="ruby-identifier">action</span> <span class="ruby-constant">CreateFile</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">destination</span>, <span class="ruby-identifier">block</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">data</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">config</span>)
+27:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+				<div class="aliases">
+					Also aliased as: <a href="Actions.html#method-i-add_file">add_file</a>
+				</div>
+				
+
+				
+			</div>
+
+		
+			<div id="destination-root-method" class="method-detail ">
+				<a name="method-i-destination_root"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">destination_root</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the root for this thor class (also aliased as destination root).
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="destination-root-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 99</span>
+ 99:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">destination_root</span>
+100:       <span class="ruby-ivar">@destination_stack</span>.<span class="ruby-identifier">last</span>
+101:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="destination-root--method" class="method-detail ">
+				<a name="method-i-destination_root%3D"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">destination_root=</span><span
+						class="method-args">(root)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Sets the root for this thor class. Relatives path are added to the
+directory where the script was invoked and expanded.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="destination-root--source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 106</span>
+106:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">destination_root=</span>(<span class="ruby-identifier">root</span>)
+107:       <span class="ruby-ivar">@destination_stack</span> <span class="ruby-operator">||=</span> []
+108:       <span class="ruby-ivar">@destination_stack</span>[<span class="ruby-value">0</span>] = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">root</span> <span class="ruby-operator">||</span> <span class="ruby-value str">''</span>)
+109:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="directory-method" class="method-detail ">
+				<a name="method-i-directory"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">directory</span><span
+						class="method-args">(source, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Copies recursively the files from source directory to root directory. If
+any of the files finishes with .tt, it&#8217;s considered to be a template
+and is placed in the destination without the extension .tt. If any empty
+directory is found, it&#8217;s copied and all .<a
+href="Actions.html#method-i-empty_directory">empty_directory</a> files are
+ignored. Remember that file paths can also be encoded, let&#8217;s suppose
+a doc directory with the following files:
+</p>
+<pre>
+  doc/
+    components/.empty_directory
+    README
+    rdoc.rb.tt
+    %app_name%.rb
+</pre>
+<p>
+When invoked as:
+</p>
+<pre>
+  directory &quot;doc&quot;
+</pre>
+<p>
+It will create a doc directory in the destination with the following files
+(assuming that the app_name is &#8220;blog&#8221;):
+</p>
+<pre>
+  doc/
+    components/
+    README
+    rdoc.rb
+    blog.rb
+</pre>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">source<String></td><td><p>
+the relative path to the source root.
+</p>
+</td></tr>
+<tr><td valign="top">destination<String></td><td><p>
+the relative path to the destination root.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status. If :recursive => false, does
+not look for paths recursively.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  directory &quot;doc&quot;
+  directory &quot;doc&quot;, &quot;docs&quot;, :recursive =&gt; false</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="directory-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/directory.rb, line 43</span>
+43:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">directory</span>(<span class="ruby-identifier">source</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+44:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+45:       <span class="ruby-identifier">destination</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">source</span>
+46:       <span class="ruby-identifier">action</span> <span class="ruby-constant">Directory</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">source</span>, <span class="ruby-identifier">config</span>, &amp;<span class="ruby-identifier">block</span>)
+47:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="empty-directory-method" class="method-detail ">
+				<a name="method-i-empty_directory"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">empty_directory</span><span
+						class="method-args">(destination, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Creates an empty directory.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">destination<String></td><td><p>
+the relative path to the destination root.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  empty_directory &quot;doc&quot;</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="empty-directory-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/empty_directory.rb, line 14</span>
+14:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">empty_directory</span>(<span class="ruby-identifier">destination</span>, <span class="ruby-identifier">config</span>={})
+15:       <span class="ruby-identifier">action</span> <span class="ruby-constant">EmptyDirectory</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">destination</span>, <span class="ruby-identifier">config</span>)
+16:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="find-in-source-paths-method" class="method-detail ">
+				<a name="method-i-find_in_source_paths"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">find_in_source_paths</span><span
+						class="method-args">(file)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a file or directory and search for it in the source paths.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="find-in-source-paths-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 127</span>
+127:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">find_in_source_paths</span>(<span class="ruby-identifier">file</span>)
+128:       <span class="ruby-identifier">relative_root</span> = <span class="ruby-identifier">relative_to_original_destination_root</span>(<span class="ruby-identifier">destination_root</span>, <span class="ruby-keyword kw">false</span>)
+129: 
+130:       <span class="ruby-identifier">source_paths</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">source</span><span class="ruby-operator">|</span>
+131:         <span class="ruby-identifier">source_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">file</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">relative_root</span>))
+132:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">source_file</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">source_file</span>)
+133:       <span class="ruby-keyword kw">end</span>
+134: 
+135:       <span class="ruby-identifier">message</span> = <span class="ruby-node">&quot;Could not find #{file.inspect} in any of your source paths. &quot;</span>
+136: 
+137:       <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">source_root</span>
+138:         <span class="ruby-identifier">message</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;Please invoke #{self.class.name}.source_root(PATH) with the PATH containing your templates. &quot;</span>
+139:       <span class="ruby-keyword kw">end</span>
+140: 
+141:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">source_paths</span>.<span class="ruby-identifier">empty?</span>
+142:         <span class="ruby-identifier">message</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;Currently you have no source paths.&quot;</span>
+143:       <span class="ruby-keyword kw">else</span>
+144:         <span class="ruby-identifier">message</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;Your current source paths are: \n#{source_paths.join(&quot;\n&quot;)}&quot;</span>
+145:       <span class="ruby-keyword kw">end</span>
+146: 
+147:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">Error</span>, <span class="ruby-identifier">message</span>
+148:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="get-method" class="method-detail ">
+				<a name="method-i-get"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">get</span><span
+						class="method-args">(source, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Gets the content at the given address and places it at the given relative
+destination. If a block is given instead of destination, the content of the
+url is yielded and used as location.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">source<String></td><td><p>
+the address of the given content.
+</p>
+</td></tr>
+<tr><td valign="top">destination<String></td><td><p>
+the relative path to the destination root.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  get &quot;http://gist.github.com/103208&quot;, &quot;doc/README&quot;
+
+  get &quot;http://gist.github.com/103208&quot; do |content|
+    content.split(&quot;\n&quot;).first
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="get-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 50</span>
+50:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">source</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+51:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+52:       <span class="ruby-identifier">destination</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>
+53: 
+54:       <span class="ruby-identifier">source</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">find_in_source_paths</span>(<span class="ruby-identifier">source</span>.<span class="ruby-identifier">to_s</span>)) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">source</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^http\:\/\//</span>
+55:       <span class="ruby-identifier">render</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">source</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">input</span><span class="ruby-operator">|</span> <span class="ruby-identifier">input</span>.<span class="ruby-identifier">binmode</span>.<span class="ruby-identifier">read</span> }
+56: 
+57:       <span class="ruby-identifier">destination</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+58:         <span class="ruby-identifier">block</span>.<span class="ruby-identifier">arity</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">render</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>
+59:       <span class="ruby-keyword kw">else</span>
+60:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">source</span>)
+61:       <span class="ruby-keyword kw">end</span>
+62: 
+63:       <span class="ruby-identifier">create_file</span> <span class="ruby-identifier">destination</span>, <span class="ruby-identifier">render</span>, <span class="ruby-identifier">config</span>
+64:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="gsub-file-method" class="method-detail ">
+				<a name="method-i-gsub_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">gsub_file</span><span
+						class="method-args">(path, flag, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Run a regular expression replacement on a file.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">path<String></td><td><p>
+path of the file to be changed
+</p>
+</td></tr>
+<tr><td valign="top">flag<Regexp|String></td><td><p>
+the regexp or string to be replaced
+</p>
+</td></tr>
+<tr><td valign="top">replacement<String></td><td><p>
+the replacement, can be also given as a block
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Example</h4>
+<pre>
+  gsub_file 'app/controllers/application_controller.rb', /#\s*(filter_parameter_logging :password)/, '\1'
+
+  gsub_file 'README', /rake/, :green do |match|
+    match &lt;&lt; &quot; no more. Use thor!&quot;
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="gsub-file-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 194</span>
+194:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">gsub_file</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">flag</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+195:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">behavior</span> <span class="ruby-operator">==</span> <span class="ruby-value">:invoke</span>
+196:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+197: 
+198:       <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">destination_root</span>)
+199:       <span class="ruby-identifier">say_status</span> <span class="ruby-value">:gsub</span>, <span class="ruby-identifier">relative_to_original_destination_root</span>(<span class="ruby-identifier">path</span>), <span class="ruby-identifier">config</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-value">:verbose</span>, <span class="ruby-keyword kw">true</span>)
+200: 
+201:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:pretend</span>]
+202:         <span class="ruby-identifier">content</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">binread</span>(<span class="ruby-identifier">path</span>)
+203:         <span class="ruby-identifier">content</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-identifier">flag</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+204:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value str">'wb'</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">content</span>) }
+205:       <span class="ruby-keyword kw">end</span>
+206:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="in-root-method" class="method-detail ">
+				<a name="method-i-in_root"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">in_root</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Goes to the root and execute the given block.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="in-root-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 175</span>
+175:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">in_root</span>
+176:       <span class="ruby-identifier">inside</span>(<span class="ruby-ivar">@destination_stack</span>.<span class="ruby-identifier">first</span>) { <span class="ruby-keyword kw">yield</span> }
+177:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="inject-into-class-method" class="method-detail ">
+				<a name="method-i-inject_into_class"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">inject_into_class</span><span
+						class="method-args">(path, klass, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Injects text right after the class definition. Since it depends on <a
+href="Actions.html#method-i-inject_into_file">inject_into_file</a>,
+it&#8217;s reversible.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">path<String></td><td><p>
+path of the file to be changed
+</p>
+</td></tr>
+<tr><td valign="top">klass<String|Class></td><td><p>
+the class to be manipulated
+</p>
+</td></tr>
+<tr><td valign="top">data<String></td><td><p>
+the data to append to the class, can be also given as a block.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  inject_into_class &quot;app/controllers/application_controller.rb&quot;, &quot;  filter_parameter :password\n&quot;
+
+  inject_into_class &quot;app/controllers/application_controller.rb&quot;, ApplicationController do
+    &quot;  filter_parameter :password\n&quot;
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="inject-into-class-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 172</span>
+172:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">inject_into_class</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">klass</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+173:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+174:       <span class="ruby-identifier">config</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:after</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">/class #{klass}\n|class #{klass} .*\n/</span>)
+175:       <span class="ruby-identifier">inject_into_file</span>(<span class="ruby-identifier">path</span>, *(<span class="ruby-identifier">args</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">config</span>), &amp;<span class="ruby-identifier">block</span>)
+176:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="inject-into-file-method" class="method-detail ">
+				<a name="method-i-inject_into_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">inject_into_file</span><span
+						class="method-args">(destination, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Injects the given content into a file. Different from <a
+href="Actions.html#method-i-gsub_file">gsub_file</a>, this method is
+reversible.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">destination<String></td><td><p>
+Relative path to the destination root
+</p>
+</td></tr>
+<tr><td valign="top">data<String></td><td><p>
+Data to add to the file. Can be given as a block.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status and the flag for injection
+(:after or :before) or :force => true for  insert two or more times the
+same content.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  inject_into_file &quot;config/environment.rb&quot;, &quot;config.gem :thor&quot;, :after =&gt; &quot;Rails::Initializer.run do |config|\n&quot;
+
+  inject_into_file &quot;config/environment.rb&quot;, :after =&gt; &quot;Rails::Initializer.run do |config|\n&quot; do
+    gems = ask &quot;Which gems would you like to add?&quot;
+    gems.split(&quot; &quot;).map{ |gem| &quot;  config.gem :#{gem}&quot; }.join(&quot;\n&quot;)
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="inject-into-file-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/inject_into_file.rb, line 25</span>
+25:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">inject_into_file</span>(<span class="ruby-identifier">destination</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+26:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+27:         <span class="ruby-identifier">data</span>, <span class="ruby-identifier">config</span> = <span class="ruby-identifier">block</span>, <span class="ruby-identifier">args</span>.<span class="ruby-identifier">shift</span>
+28:       <span class="ruby-keyword kw">else</span>
+29:         <span class="ruby-identifier">data</span>, <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">shift</span>, <span class="ruby-identifier">args</span>.<span class="ruby-identifier">shift</span>
+30:       <span class="ruby-keyword kw">end</span>
+31:       <span class="ruby-identifier">action</span> <span class="ruby-constant">InjectIntoFile</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">destination</span>, <span class="ruby-identifier">data</span>, <span class="ruby-identifier">config</span>)
+32:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="inside-method" class="method-detail ">
+				<a name="method-i-inside"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">inside</span><span
+						class="method-args">(dir='', config={}, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Do something in the root or on a provided subfolder. If a relative path is
+given it&#8217;s referenced from the current root. The full path is yielded
+to the block you provide. The path is set back to the previous path when
+the method exits.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">dir<String></td><td><p>
+the directory to move to.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => true to log and use padding.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="inside-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 159</span>
+159:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">inside</span>(<span class="ruby-identifier">dir</span>=<span class="ruby-value str">''</span>, <span class="ruby-identifier">config</span>={}, &amp;<span class="ruby-identifier">block</span>)
+160:       <span class="ruby-identifier">verbose</span> = <span class="ruby-identifier">config</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-value">:verbose</span>, <span class="ruby-keyword kw">false</span>)
+161: 
+162:       <span class="ruby-identifier">say_status</span> <span class="ruby-value">:inside</span>, <span class="ruby-identifier">dir</span>, <span class="ruby-identifier">verbose</span>
+163:       <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">padding</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">verbose</span>
+164:       <span class="ruby-ivar">@destination_stack</span>.<span class="ruby-identifier">push</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">dir</span>, <span class="ruby-identifier">destination_root</span>)
+165: 
+166:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span>(<span class="ruby-identifier">destination_root</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">destination_root</span>)
+167:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">cd</span>(<span class="ruby-identifier">destination_root</span>) { <span class="ruby-identifier">block</span>.<span class="ruby-identifier">arity</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">destination_root</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">yield</span> }
+168: 
+169:       <span class="ruby-ivar">@destination_stack</span>.<span class="ruby-identifier">pop</span>
+170:       <span class="ruby-identifier">shell</span>.<span class="ruby-identifier">padding</span> <span class="ruby-operator">-=</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">verbose</span>
+171:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="prepend-file-method" class="method-detail ">
+				<a name="method-i-prepend_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">prepend_file</span><span
+						class="method-args">(path, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Prepend text to a file. Since it depends on <a
+href="Actions.html#method-i-inject_into_file">inject_into_file</a>,
+it&#8217;s reversible.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">path<String></td><td><p>
+path of the file to be changed
+</p>
+</td></tr>
+<tr><td valign="top">data<String></td><td><p>
+the data to prepend to the file, can be also given as a block.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Example</h4>
+<pre>
+  prepend_file 'config/environments/test.rb', 'config.gem &quot;rspec&quot;'
+
+  prepend_file 'config/environments/test.rb' do
+    'config.gem &quot;rspec&quot;'
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="prepend-file-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 128</span>
+128:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">prepend_file</span>(<span class="ruby-identifier">path</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+129:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+130:       <span class="ruby-identifier">config</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-value">:after</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-regexp re">/\A/</span>)
+131:       <span class="ruby-identifier">inject_into_file</span>(<span class="ruby-identifier">path</span>, *(<span class="ruby-identifier">args</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">config</span>), &amp;<span class="ruby-identifier">block</span>)
+132:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="relative-to-original-destination-root-method" class="method-detail ">
+				<a name="method-i-relative_to_original_destination_root"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">relative_to_original_destination_root</span><span
+						class="method-args">(path, remove_dot=true)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the given path relative to the absolute root (ie, root where the
+script started).
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="relative-to-original-destination-root-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 114</span>
+114:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">relative_to_original_destination_root</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">remove_dot</span>=<span class="ruby-keyword kw">true</span>)
+115:       <span class="ruby-identifier">path</span> = <span class="ruby-identifier">path</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-ivar">@destination_stack</span>[<span class="ruby-value">0</span>], <span class="ruby-value str">'.'</span>)
+116:       <span class="ruby-identifier">remove_dot</span> <span class="ruby-operator">?</span> (<span class="ruby-identifier">path</span>[<span class="ruby-value">2</span><span class="ruby-operator">..</span><span class="ruby-value">1</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">''</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">path</span>
+117:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="remove-dir-method" class="method-detail method-alias">
+				<a name="method-i-remove_dir"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">remove_dir</span><span
+						class="method-args">(path, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+				</div>
+
+				
+
+				
+				<div class="aliases">
+          Alias for: <a href="Actions.html#method-i-remove_file">remove_file</a>
+				</div>
+				
+			</div>
+
+		
+			<div id="remove-file-method" class="method-detail ">
+				<a name="method-i-remove_file"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">remove_file</span><span
+						class="method-args">(path, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Removes a file at the given location.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">path<String></td><td><p>
+path of the file to be changed
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Example</h4>
+<pre>
+  remove_file 'README'
+  remove_file 'app/controllers/application_controller.rb'</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="remove-file-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 219</span>
+219:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">remove_file</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">config</span>={})
+220:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">behavior</span> <span class="ruby-operator">==</span> <span class="ruby-value">:invoke</span>
+221:       <span class="ruby-identifier">path</span>  = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">destination_root</span>)
+222: 
+223:       <span class="ruby-identifier">say_status</span> <span class="ruby-value">:remove</span>, <span class="ruby-identifier">relative_to_original_destination_root</span>(<span class="ruby-identifier">path</span>), <span class="ruby-identifier">config</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-value">:verbose</span>, <span class="ruby-keyword kw">true</span>)
+224:       <span class="ruby-operator">::</span><span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm_rf</span>(<span class="ruby-identifier">path</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">options</span>[<span class="ruby-value">:pretend</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">path</span>)
+225:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+				<div class="aliases">
+					Also aliased as: <a href="Actions.html#method-i-remove_dir">remove_dir</a>
+				</div>
+				
+
+				
+			</div>
+
+		
+			<div id="run-method" class="method-detail ">
+				<a name="method-i-run"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">run</span><span
+						class="method-args">(command, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Executes a command returning the contents of the command.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">command<String></td><td><p>
+the command to be executed.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status. Specify :with to append an
+executable to command executation.
+</p>
+</td></tr>
+</table>
+<h4>Example</h4>
+<pre>
+  inside('vendor') do
+    run('ln -s ~/edge rails')
+  end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="run-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 222</span>
+222:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run</span>(<span class="ruby-identifier">command</span>, <span class="ruby-identifier">config</span>={})
+223:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">behavior</span> <span class="ruby-operator">==</span> <span class="ruby-value">:invoke</span>
+224: 
+225:       <span class="ruby-identifier">destination</span> = <span class="ruby-identifier">relative_to_original_destination_root</span>(<span class="ruby-identifier">destination_root</span>, <span class="ruby-keyword kw">false</span>)
+226:       <span class="ruby-identifier">desc</span> = <span class="ruby-node">&quot;#{command} from #{destination.inspect}&quot;</span>
+227: 
+228:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">config</span>[<span class="ruby-value">:with</span>]
+229:         <span class="ruby-identifier">desc</span> = <span class="ruby-node">&quot;#{File.basename(config[:with].to_s)} #{desc}&quot;</span>
+230:         <span class="ruby-identifier">command</span> = <span class="ruby-node">&quot;#{config[:with]} #{command}&quot;</span>
+231:       <span class="ruby-keyword kw">end</span>
+232: 
+233:       <span class="ruby-identifier">say_status</span> <span class="ruby-value">:run</span>, <span class="ruby-identifier">desc</span>, <span class="ruby-identifier">config</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-value">:verbose</span>, <span class="ruby-keyword kw">true</span>)
+234:       <span class="ruby-node">`#{command}`</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:pretend</span>]
+235:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="run-ruby-script-method" class="method-detail ">
+				<a name="method-i-run_ruby_script"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">run_ruby_script</span><span
+						class="method-args">(command, config={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Executes a ruby script (taking into account WIN32 platform quirks).
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">command<String></td><td><p>
+the command to be executed.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="run-ruby-script-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 243</span>
+243:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run_ruby_script</span>(<span class="ruby-identifier">command</span>, <span class="ruby-identifier">config</span>={})
+244:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">behavior</span> <span class="ruby-operator">==</span> <span class="ruby-value">:invoke</span>
+245:       <span class="ruby-identifier">run</span> <span class="ruby-identifier">command</span>, <span class="ruby-identifier">config</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">:with</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Util</span>.<span class="ruby-identifier">ruby_command</span>)
+246:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="source-paths-method" class="method-detail ">
+				<a name="method-i-source_paths"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">source_paths</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Holds source paths in instance so they can be manipulated.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="source-paths-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 121</span>
+121:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">source_paths</span>
+122:       <span class="ruby-ivar">@source_paths</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">source_paths_for_search</span>
+123:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="template-method" class="method-detail ">
+				<a name="method-i-template"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">template</span><span
+						class="method-args">(source, *args, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Gets an ERB template at the relative source, executes it and makes a copy
+at the relative destination. If the destination is not given it&#8217;s
+assumed to be equal to the source removing .tt from the filename.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">source<String></td><td><p>
+the relative path to the source root.
+</p>
+</td></tr>
+<tr><td valign="top">destination<String></td><td><p>
+the relative path to the destination root.
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  template &quot;README&quot;, &quot;doc/README&quot;
+
+  template &quot;doc/README&quot;</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="template-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions/file_manipulation.rb, line 81</span>
+81:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">template</span>(<span class="ruby-identifier">source</span>, *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+82:       <span class="ruby-identifier">config</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+83:       <span class="ruby-identifier">destination</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">source</span>
+84: 
+85:       <span class="ruby-identifier">source</span>  = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">find_in_source_paths</span>(<span class="ruby-identifier">source</span>.<span class="ruby-identifier">to_s</span>))
+86:       <span class="ruby-identifier">context</span> = <span class="ruby-identifier">instance_eval</span>(<span class="ruby-value str">'binding'</span>)
+87: 
+88:       <span class="ruby-identifier">create_file</span> <span class="ruby-identifier">destination</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">config</span> <span class="ruby-keyword kw">do</span>
+89:         <span class="ruby-identifier">content</span> = <span class="ruby-constant">ERB</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">binread</span>(<span class="ruby-identifier">source</span>), <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">'-'</span>).<span class="ruby-identifier">result</span>(<span class="ruby-identifier">context</span>)
+90:         <span class="ruby-identifier">content</span> = <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">content</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+91:         <span class="ruby-identifier">content</span>
+92:       <span class="ruby-keyword kw">end</span>
+93:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="thor-method" class="method-detail ">
+				<a name="method-i-thor"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">thor</span><span
+						class="method-args">(task, *args)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Run a thor command. A hash of options can be given and it&#8217;s converted
+to switches.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">task<String></td><td><p>
+the task to be invoked
+</p>
+</td></tr>
+<tr><td valign="top">args<Array></td><td><p>
+arguments to the task
+</p>
+</td></tr>
+<tr><td valign="top">config<Hash></td><td><p>
+give :verbose => false to not log the status. Other options are given as
+parameter to <a href="../Thor.html">Thor</a>.
+</p>
+</td></tr>
+</table>
+<h4>Examples</h4>
+<pre>
+  thor :install, &quot;http://gist.github.com/103208&quot;
+  #=&gt; thor install http://gist.github.com/103208
+
+  thor :list, :all =&gt; true, :substring =&gt; 'rails'
+  #=&gt; thor list --all --substring=rails</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="thor-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/actions.rb, line 265</span>
+265:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">thor</span>(<span class="ruby-identifier">task</span>, *<span class="ruby-identifier">args</span>)
+266:       <span class="ruby-identifier">config</span>  = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+267:       <span class="ruby-identifier">verbose</span> = <span class="ruby-identifier">config</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-value">:verbose</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">config</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value">:verbose</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">true</span>
+268:       <span class="ruby-identifier">pretend</span> = <span class="ruby-identifier">config</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-value">:pretend</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">config</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value">:pretend</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">false</span>
+269: 
+270:       <span class="ruby-identifier">args</span>.<span class="ruby-identifier">unshift</span> <span class="ruby-identifier">task</span>
+271:       <span class="ruby-identifier">args</span>.<span class="ruby-identifier">push</span> <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Options</span>.<span class="ruby-identifier">to_switches</span>(<span class="ruby-identifier">config</span>)
+272:       <span class="ruby-identifier">command</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>).<span class="ruby-identifier">strip</span>
+273: 
+274:       <span class="ruby-identifier">run</span> <span class="ruby-identifier">command</span>, <span class="ruby-value">:with</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">:thor</span>, <span class="ruby-value">:verbose</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">verbose</span>, <span class="ruby-value">:pretend</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">pretend</span>
+275:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

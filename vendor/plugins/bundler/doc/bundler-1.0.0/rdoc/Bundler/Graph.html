@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Class: Bundler::Graph</title>
+
+	<link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="class">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../lib/bundler/graph_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/graph.rb">lib/bundler/graph.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+			<div id="parent-class-section" class="section">
+				<h3 class="section-header">Parent</h3>
+				
+				<p class="link">Object</p>
+				
+			</div>
+			
+
+			<!-- Namespace Contents -->
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-c-new">::new</a></li>
+					
+					<li><a href="#method-i-groups">#groups</a></li>
+					
+					<li><a href="#method-i-nodes">#nodes</a></li>
+					
+					<li><a href="#method-i-populate">#populate</a></li>
+					
+					<li><a href="#method-i-viz">#viz</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../Thor.html">Thor</a></li>
+				
+					<li><a href="../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../Gem.html">Gem</a></li>
+				
+					<li><a href="../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="class">Bundler::Graph</h1>
+
+		<div id="description">
+			
+		</div>
+
+		<!-- Constants -->
+		
+		<div id="constants-list" class="section">
+			<h3 class="section-header">Constants</h3>
+			<dl>
+			
+				<dt><a name="USER_OPTIONS">USER_OPTIONS</a></dt>
+				
+				<dd class="description"></dd>
+				
+			
+			</dl>
+		</div>
+		
+
+		<!-- Attributes -->
+		
+
+		<!-- Methods -->
+		
+		<div id="public-class-method-details" class="method-section section">
+			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="new-method" class="method-detail ">
+				<a name="method-c-new"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">new</span><span
+						class="method-args">(env)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="new-source">
+<pre>
+   <span class="ruby-comment cmt"># File lib/bundler/graph.rb, line 6</span>
+6:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">env</span>)
+7:       <span class="ruby-ivar">@env</span> = <span class="ruby-identifier">env</span>
+8:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="groups-method" class="method-detail ">
+				<a name="method-i-groups"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">groups</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="groups-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/graph.rb, line 15</span>
+15:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">groups</span>
+16:       <span class="ruby-identifier">populate</span>
+17:       <span class="ruby-ivar">@groups</span>
+18:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="nodes-method" class="method-detail ">
+				<a name="method-i-nodes"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">nodes</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="nodes-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/graph.rb, line 10</span>
+10:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nodes</span>
+11:       <span class="ruby-identifier">populate</span>
+12:       <span class="ruby-ivar">@nodes</span>
+13:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="viz-method" class="method-detail ">
+				<a name="method-i-viz"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">viz</span><span
+						class="method-args">(output_file, show_gem_versions = false, show_dependency_requirements = false)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="viz-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/graph.rb, line 20</span>
+20:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">viz</span>(<span class="ruby-identifier">output_file</span>, <span class="ruby-identifier">show_gem_versions</span> = <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">show_dependency_requirements</span> = <span class="ruby-keyword kw">false</span>)
+21:       <span class="ruby-identifier">require</span> <span class="ruby-value str">'graphviz'</span>
+22:       <span class="ruby-identifier">populate</span>
+23: 
+24:       <span class="ruby-identifier">graph_viz</span> = <span class="ruby-constant">GraphViz</span><span class="ruby-operator">::</span><span class="ruby-identifier">new</span>(<span class="ruby-value str">'Gemfile'</span>, {<span class="ruby-value">:concentrate</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>, <span class="ruby-value">:dpi</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">65</span> } )
+25:       <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">edge</span>[<span class="ruby-value">:fontname</span>] = <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">node</span>[<span class="ruby-value">:fontname</span>] = <span class="ruby-value str">'Arial, Helvetica, SansSerif'</span>
+26:       <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">edge</span>[<span class="ruby-value">:fontsize</span>] = <span class="ruby-value">12</span>
+27: 
+28:       <span class="ruby-identifier">viz_nodes</span> = {}
+29: 
+30:       <span class="ruby-comment cmt"># populate all of the nodes</span>
+31:       <span class="ruby-identifier">nodes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">node</span><span class="ruby-operator">|</span>
+32:         <span class="ruby-identifier">label</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">dup</span>
+33:         <span class="ruby-identifier">label</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;\n#{node.version}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">show_gem_versions</span>
+34:         <span class="ruby-identifier">options</span> = { <span class="ruby-value">:label</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">label</span> }
+35:         <span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge!</span>( <span class="ruby-constant">USER_OPTIONS</span> ) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">node</span>.<span class="ruby-identifier">is_user</span>
+36:         <span class="ruby-identifier">viz_nodes</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">add_node</span>( <span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span> )
+37:       <span class="ruby-keyword kw">end</span>
+38: 
+39:       <span class="ruby-identifier">group_nodes</span> = {}
+40:       <span class="ruby-ivar">@groups</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">dependencies</span><span class="ruby-operator">|</span>
+41:         <span class="ruby-identifier">group_nodes</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">add_node</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>, { <span class="ruby-value">:shape</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'folder'</span>, <span class="ruby-value">:fontsize</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">16</span> }.<span class="ruby-identifier">merge</span>(<span class="ruby-constant">USER_OPTIONS</span>))
+42:         <span class="ruby-identifier">dependencies</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dependency</span><span class="ruby-operator">|</span>
+43:           <span class="ruby-identifier">options</span> = { <span class="ruby-value">:weight</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">2</span> }
+44:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">show_dependency_requirements</span> <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">requirement</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;&gt;= 0&quot;</span>)
+45:             <span class="ruby-identifier">options</span>[<span class="ruby-value">:label</span>] = <span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">requirement</span>.<span class="ruby-identifier">to_s</span>
+46:           <span class="ruby-keyword kw">end</span>
+47:           <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">add_edge</span>( <span class="ruby-identifier">group_nodes</span>[<span class="ruby-identifier">name</span>], <span class="ruby-identifier">viz_nodes</span>[<span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">name</span>], <span class="ruby-identifier">options</span> )
+48:         <span class="ruby-keyword kw">end</span>
+49:       <span class="ruby-keyword kw">end</span>
+50: 
+51:       <span class="ruby-ivar">@groups</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">group</span><span class="ruby-operator">|</span> <span class="ruby-identifier">group</span> <span class="ruby-operator">!=</span> <span class="ruby-value">:default</span> }.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">group</span><span class="ruby-operator">|</span>
+52:         <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">add_edge</span>( <span class="ruby-identifier">group_nodes</span>[<span class="ruby-identifier">group</span>], <span class="ruby-identifier">group_nodes</span>[<span class="ruby-value">:default</span>], { <span class="ruby-value">:weight</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">2</span> } )
+53:       <span class="ruby-keyword kw">end</span>
+54: 
+55:       <span class="ruby-identifier">viz_nodes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">node</span><span class="ruby-operator">|</span>
+56:         <span class="ruby-identifier">nodes</span>[<span class="ruby-identifier">name</span>].<span class="ruby-identifier">dependencies</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dependency</span><span class="ruby-operator">|</span>
+57:           <span class="ruby-identifier">options</span> = { }
+58:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">nodes</span>[<span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">name</span>].<span class="ruby-identifier">is_user</span>
+59:             <span class="ruby-identifier">options</span>[<span class="ruby-value">:constraint</span>] = <span class="ruby-keyword kw">false</span>
+60:           <span class="ruby-keyword kw">end</span>
+61:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">show_dependency_requirements</span> <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">requirement</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;&gt;= 0&quot;</span>)
+62:             <span class="ruby-identifier">options</span>[<span class="ruby-value">:label</span>] = <span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">requirement</span>.<span class="ruby-identifier">to_s</span>
+63:           <span class="ruby-keyword kw">end</span>
+64: 
+65:           <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">add_edge</span>( <span class="ruby-identifier">node</span>, <span class="ruby-identifier">viz_nodes</span>[<span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">name</span>], <span class="ruby-identifier">options</span> )
+66:         <span class="ruby-keyword kw">end</span>
+67:       <span class="ruby-keyword kw">end</span>
+68: 
+69:       <span class="ruby-identifier">graph_viz</span>.<span class="ruby-identifier">output</span>( <span class="ruby-value">:png</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">output_file</span> )
+70:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="private-instance-method-details" class="method-section section">
+			<h3 class="section-header">Private Instance Methods</h3>
+
+		
+			<div id="populate-method" class="method-detail ">
+				<a name="method-i-populate"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">populate</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="populate-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/graph.rb, line 74</span>
+ 74:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">populate</span>
+ 75:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@populated</span>
+ 76: 
+ 77:       <span class="ruby-comment cmt"># hash of name =&gt; GraphNode</span>
+ 78:       <span class="ruby-ivar">@nodes</span> = {}
+ 79:       <span class="ruby-ivar">@groups</span> = {}
+ 80: 
+ 81:       <span class="ruby-comment cmt"># Populate @nodes</span>
+ 82:       <span class="ruby-ivar">@env</span>.<span class="ruby-identifier">specs</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@nodes</span>[<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">name</span>] = <span class="ruby-constant">GraphNode</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">version</span>) }
+ 83: 
+ 84:       <span class="ruby-comment cmt"># For gems in Gemfile, add details</span>
+ 85:       <span class="ruby-ivar">@env</span>.<span class="ruby-identifier">current_dependencies</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dependency</span><span class="ruby-operator">|</span>
+ 86:         <span class="ruby-identifier">node</span> = <span class="ruby-ivar">@nodes</span>[<span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">name</span>]
+ 87:         <span class="ruby-identifier">node</span>.<span class="ruby-identifier">is_user</span> = <span class="ruby-keyword kw">true</span>
+ 88: 
+ 89:         <span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">groups</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">group</span><span class="ruby-operator">|</span>
+ 90:           <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@groups</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-identifier">group</span>
+ 91:             <span class="ruby-identifier">group</span> = <span class="ruby-ivar">@groups</span>[<span class="ruby-identifier">group</span>]
+ 92:           <span class="ruby-keyword kw">else</span>
+ 93:             <span class="ruby-identifier">group</span> = <span class="ruby-ivar">@groups</span>[<span class="ruby-identifier">group</span>] = []
+ 94:           <span class="ruby-keyword kw">end</span>
+ 95:           <span class="ruby-identifier">group</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dependency</span>
+ 96:         <span class="ruby-keyword kw">end</span>
+ 97:       <span class="ruby-keyword kw">end</span>
+ 98: 
+ 99:       <span class="ruby-comment cmt"># walk though a final time and add edges</span>
+100:       <span class="ruby-ivar">@env</span>.<span class="ruby-identifier">specs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span>
+101: 
+102:         <span class="ruby-identifier">from</span> = <span class="ruby-ivar">@nodes</span>[<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">name</span>]
+103:         <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">runtime_dependencies</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dependency</span><span class="ruby-operator">|</span>
+104:           <span class="ruby-identifier">from</span>.<span class="ruby-identifier">dependencies</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dependency</span>
+105:         <span class="ruby-keyword kw">end</span>
+106: 
+107:       <span class="ruby-keyword kw">end</span>
+108: 
+109:       <span class="ruby-ivar">@nodes</span>.<span class="ruby-identifier">freeze</span>
+110:       <span class="ruby-ivar">@groups</span>.<span class="ruby-identifier">freeze</span>
+111:       <span class="ruby-ivar">@populated</span> = <span class="ruby-keyword kw">true</span>
+112:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

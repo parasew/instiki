@@ -1,0 +1,984 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Module: Thor::Util</title>
+
+	<link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="module">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../lib/bundler/vendor/thor/util_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/bundler/vendor/thor/util.rb">lib/bundler/vendor/thor/util.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+
+			<!-- Namespace Contents -->
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-c-camel_case">::camel_case</a></li>
+					
+					<li><a href="#method-c-find_by_namespace">::find_by_namespace</a></li>
+					
+					<li><a href="#method-c-find_class_and_task_by_namespace">::find_class_and_task_by_namespace</a></li>
+					
+					<li><a href="#method-c-globs_for">::globs_for</a></li>
+					
+					<li><a href="#method-c-load_thorfile">::load_thorfile</a></li>
+					
+					<li><a href="#method-c-namespace_from_thor_class">::namespace_from_thor_class</a></li>
+					
+					<li><a href="#method-c-namespaces_in_content">::namespaces_in_content</a></li>
+					
+					<li><a href="#method-c-ruby_command">::ruby_command</a></li>
+					
+					<li><a href="#method-c-snake_case">::snake_case</a></li>
+					
+					<li><a href="#method-c-thor_classes_in">::thor_classes_in</a></li>
+					
+					<li><a href="#method-c-thor_root">::thor_root</a></li>
+					
+					<li><a href="#method-c-thor_root_glob">::thor_root_glob</a></li>
+					
+					<li><a href="#method-c-user_home">::user_home</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../Thor.html">Thor</a></li>
+				
+					<li><a href="../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../Gem.html">Gem</a></li>
+				
+					<li><a href="../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="module">Thor::Util</h1>
+
+		<div id="description">
+			<p>
+This module holds several utilities:
+</p>
+<p>
+1) Methods to convert thor namespaces to constants and vice-versa.
+</p>
+<pre>
+  Thor::Utils.namespace_from_thor_class(Foo::Bar::Baz) #=&gt; &quot;foo:bar:baz&quot;
+</pre>
+<p>
+2) Loading thor files and sandboxing:
+</p>
+<pre>
+  Thor::Utils.load_thorfile(&quot;~/.thor/foo&quot;)</pre>
+
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+
+		<!-- Methods -->
+		
+		<div id="public-class-method-details" class="method-section section">
+			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="camel-case-method" class="method-detail ">
+				<a name="method-c-camel_case"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">camel_case</span><span
+						class="method-args">(str)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a string and convert it to camel case. <a
+href="Util.html#method-c-camel_case">camel_case</a> returns CamelCase.
+</p>
+<h4>Parameters</h4>
+<p>
+String
+</p>
+<h4>Returns</h4>
+<p>
+String
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="camel-case-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 104</span>
+104:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">camel_case</span>(<span class="ruby-identifier">str</span>)
+105:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">str</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">!~</span> <span class="ruby-regexp re">/_/</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/[A-Z]+.*/</span>
+106:       <span class="ruby-identifier">str</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'_'</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-identifier">i</span>.<span class="ruby-identifier">capitalize</span> }.<span class="ruby-identifier">join</span>
+107:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="find-by-namespace-method" class="method-detail ">
+				<a name="method-c-find_by_namespace"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">find_by_namespace</span><span
+						class="method-args">(namespace)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a namespace and search for it in the <a
+href="Base.html">Thor::Base</a> subclasses.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">namespace<String></td><td><p>
+The namespace to search for.
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="find-by-namespace-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 24</span>
+24:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">find_by_namespace</span>(<span class="ruby-identifier">namespace</span>)
+25:       <span class="ruby-identifier">namespace</span> = <span class="ruby-node">&quot;default#{namespace}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">namespace</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">namespace</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^:/</span>
+26:       <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">subclasses</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span><span class="ruby-operator">|</span> <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">namespace</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">namespace</span> }
+27:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="find-class-and-task-by-namespace-method" class="method-detail ">
+				<a name="method-c-find_class_and_task_by_namespace"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">find_class_and_task_by_namespace</span><span
+						class="method-args">(namespace, fallback = true)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a namespace and tries to retrieve a <a
+href="../Thor.html">Thor</a> or Thor::Group class from it. It first
+searches for a class using the all the given namespace, if it&#8217;s not
+found, removes the highest entry and searches for the class again. If
+found, returns the highest entry as the class name.
+</p>
+<h4>Examples</h4>
+<pre>
+  class Foo::Bar &lt; Thor
+    def baz
+    end
+  end
+
+  class Baz::Foo &lt; Thor::Group
+  end
+
+  Thor::Util.namespace_to_thor_class(&quot;foo:bar&quot;)     #=&gt; Foo::Bar, nil # will invoke default task
+  Thor::Util.namespace_to_thor_class(&quot;baz:foo&quot;)     #=&gt; Baz::Foo, nil
+  Thor::Util.namespace_to_thor_class(&quot;foo:bar:baz&quot;) #=&gt; Foo::Bar, &quot;baz&quot;
+</pre>
+<h4>Parameters</h4>
+<p>
+namespace<String>
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="find-class-and-task-by-namespace-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 131</span>
+131:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">find_class_and_task_by_namespace</span>(<span class="ruby-identifier">namespace</span>, <span class="ruby-identifier">fallback</span> = <span class="ruby-keyword kw">true</span>)
+132:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">namespace</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-value">::</span>) <span class="ruby-comment cmt"># look for a namespaced task</span>
+133:         <span class="ruby-identifier">pieces</span> = <span class="ruby-identifier">namespace</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;:&quot;</span>)
+134:         <span class="ruby-identifier">task</span>   = <span class="ruby-identifier">pieces</span>.<span class="ruby-identifier">pop</span>
+135:         <span class="ruby-identifier">klass</span>  = <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Util</span>.<span class="ruby-identifier">find_by_namespace</span>(<span class="ruby-identifier">pieces</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;:&quot;</span>))
+136:       <span class="ruby-keyword kw">end</span>
+137:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">klass</span> <span class="ruby-comment cmt"># look for a Thor::Group with the right name</span>
+138:         <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">task</span> = <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Util</span>.<span class="ruby-identifier">find_by_namespace</span>(<span class="ruby-identifier">namespace</span>), <span class="ruby-keyword kw">nil</span>
+139:       <span class="ruby-keyword kw">end</span>
+140:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">klass</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">fallback</span> <span class="ruby-comment cmt"># try a task in the default namespace</span>
+141:         <span class="ruby-identifier">task</span> = <span class="ruby-identifier">namespace</span>
+142:         <span class="ruby-identifier">klass</span> = <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Util</span>.<span class="ruby-identifier">find_by_namespace</span>(<span class="ruby-value str">''</span>)
+143:       <span class="ruby-keyword kw">end</span>
+144:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">task</span>
+145:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="globs-for-method" class="method-detail ">
+				<a name="method-c-globs_for"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">globs_for</span><span
+						class="method-args">(path)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Where to look for <a href="../Thor.html">Thor</a> files.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="globs-for-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 210</span>
+210:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">globs_for</span>(<span class="ruby-identifier">path</span>)
+211:       [<span class="ruby-node">&quot;#{path}/Thorfile&quot;</span>, <span class="ruby-node">&quot;#{path}/*.thor&quot;</span>, <span class="ruby-node">&quot;#{path}/tasks/*.thor&quot;</span>, <span class="ruby-node">&quot;#{path}/lib/tasks/*.thor&quot;</span>]
+212:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="load-thorfile-method" class="method-detail ">
+				<a name="method-c-load_thorfile"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">load_thorfile</span><span
+						class="method-args">(path, content=nil, debug=false)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a path and load the thor file in the path. The file is evaluated
+inside the sandbox to avoid namespacing conflicts.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="load-thorfile-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 150</span>
+150:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">load_thorfile</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">content</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">debug</span>=<span class="ruby-keyword kw">false</span>)
+151:       <span class="ruby-identifier">content</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">binread</span>(<span class="ruby-identifier">path</span>)
+152: 
+153:       <span class="ruby-keyword kw">begin</span>
+154:         <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Sandbox</span>.<span class="ruby-identifier">class_eval</span>(<span class="ruby-identifier">content</span>, <span class="ruby-identifier">path</span>)
+155:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+156:         <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;WARNING: unable to load thorfile #{path.inspect}: #{e.message}&quot;</span>
+157:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">debug</span>
+158:           <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> *<span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>
+159:         <span class="ruby-keyword kw">else</span>
+160:           <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">first</span>
+161:         <span class="ruby-keyword kw">end</span>
+162:       <span class="ruby-keyword kw">end</span>
+163:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="namespace-from-thor-class-method" class="method-detail ">
+				<a name="method-c-namespace_from_thor_class"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">namespace_from_thor_class</span><span
+						class="method-args">(constant)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a constant and converts it to a <a href="../Thor.html">Thor</a>
+namespace. Since <a href="../Thor.html">Thor</a> tasks can be added to a
+sandbox, this method is also responsable for removing the sandbox
+namespace.
+</p>
+<p>
+This method should not be used in general because it&#8217;s used to deal
+with older versions of <a href="../Thor.html">Thor</a>. On current
+versions, if you need to get the namespace from a class, just call
+namespace on it.
+</p>
+<h4>Parameters</h4>
+<table>
+<tr><td valign="top">constant<Object></td><td><p>
+The constant to be converted to the thor path.
+</p>
+</td></tr>
+</table>
+<h4>Returns</h4>
+<table>
+<tr><td valign="top">String</td><td><p>
+If we receive Foo::Bar::Baz it returns &#8220;foo:bar:baz&#8220;
+</p>
+</td></tr>
+</table>
+					
+
+					
+					<div class="method-source-code"
+						id="namespace-from-thor-class-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 43</span>
+43:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">namespace_from_thor_class</span>(<span class="ruby-identifier">constant</span>)
+44:       <span class="ruby-identifier">constant</span> = <span class="ruby-identifier">constant</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/^Thor::Sandbox::/</span>, <span class="ruby-value str">&quot;&quot;</span>)
+45:       <span class="ruby-identifier">constant</span> = <span class="ruby-identifier">snake_case</span>(<span class="ruby-identifier">constant</span>).<span class="ruby-identifier">squeeze</span>(<span class="ruby-value str">&quot;:&quot;</span>)
+46:       <span class="ruby-identifier">constant</span>
+47:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="namespaces-in-content-method" class="method-detail ">
+				<a name="method-c-namespaces_in_content"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">namespaces_in_content</span><span
+						class="method-args">(contents, file=__FILE__)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Given the contents, evaluate it inside the sandbox and returns the
+namespaces defined in the sandbox.
+</p>
+<h4>Parameters</h4>
+<p>
+contents<String>
+</p>
+<h4>Returns</h4>
+<p>
+Array[Object]
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="namespaces-in-content-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 58</span>
+58:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">namespaces_in_content</span>(<span class="ruby-identifier">contents</span>, <span class="ruby-identifier">file</span>=<span class="ruby-keyword kw">__FILE__</span>)
+59:       <span class="ruby-identifier">old_constants</span> = <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">subclasses</span>.<span class="ruby-identifier">dup</span>
+60:       <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">subclasses</span>.<span class="ruby-identifier">clear</span>
+61: 
+62:       <span class="ruby-identifier">load_thorfile</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">contents</span>)
+63: 
+64:       <span class="ruby-identifier">new_constants</span> = <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">subclasses</span>.<span class="ruby-identifier">dup</span>
+65:       <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">subclasses</span>.<span class="ruby-identifier">replace</span>(<span class="ruby-identifier">old_constants</span>)
+66: 
+67:       <span class="ruby-identifier">new_constants</span>.<span class="ruby-identifier">map!</span>{ <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">namespace</span> }
+68:       <span class="ruby-identifier">new_constants</span>.<span class="ruby-identifier">compact!</span>
+69:       <span class="ruby-identifier">new_constants</span>
+70:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="ruby-command-method" class="method-detail ">
+				<a name="method-c-ruby_command"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">ruby_command</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Return the path to the ruby interpreter taking into account multiple
+installations and windows extensions.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="ruby-command-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 217</span>
+217:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">ruby_command</span>
+218:       <span class="ruby-ivar">@ruby_command</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">begin</span>
+219:         <span class="ruby-identifier">ruby</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">RbConfig</span><span class="ruby-operator">::</span><span class="ruby-constant">CONFIG</span>[<span class="ruby-value str">'bindir'</span>], <span class="ruby-constant">RbConfig</span><span class="ruby-operator">::</span><span class="ruby-constant">CONFIG</span>[<span class="ruby-value str">'ruby_install_name'</span>])
+220:         <span class="ruby-identifier">ruby</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">RbConfig</span><span class="ruby-operator">::</span><span class="ruby-constant">CONFIG</span>[<span class="ruby-value str">'EXEEXT'</span>]
+221: 
+222:         <span class="ruby-comment cmt"># escape string in case path to ruby executable contain spaces.</span>
+223:         <span class="ruby-identifier">ruby</span>.<span class="ruby-identifier">sub!</span>(<span class="ruby-regexp re">/.*\s.*/</span>, <span class="ruby-value str">'&quot;\&amp;&quot;'</span>)
+224:         <span class="ruby-identifier">ruby</span>
+225:       <span class="ruby-keyword kw">end</span>
+226:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="snake-case-method" class="method-detail ">
+				<a name="method-c-snake_case"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">snake_case</span><span
+						class="method-args">(str)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Receives a string and convert it to snake case. SnakeCase returns
+snake_case.
+</p>
+<h4>Parameters</h4>
+<p>
+String
+</p>
+<h4>Returns</h4>
+<p>
+String
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="snake-case-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 90</span>
+90:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">snake_case</span>(<span class="ruby-identifier">str</span>)
+91:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">downcase</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^[A-Z_]+$/</span>
+92:       <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\B[A-Z]/</span>, <span class="ruby-value str">'_\&amp;'</span>).<span class="ruby-identifier">squeeze</span>(<span class="ruby-value str">'_'</span>) <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/_*(.*)/</span>
+93:       <span class="ruby-keyword kw">return</span> <span class="ruby-node">$+</span>.<span class="ruby-identifier">downcase</span>
+94:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="thor-classes-in-method" class="method-detail ">
+				<a name="method-c-thor_classes_in"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">thor_classes_in</span><span
+						class="method-args">(klass)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the thor classes declared inside the given class.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="thor-classes-in-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 74</span>
+74:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">thor_classes_in</span>(<span class="ruby-identifier">klass</span>)
+75:       <span class="ruby-identifier">stringfied_constants</span> = <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">constants</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">to_s</span> }
+76:       <span class="ruby-constant">Thor</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">subclasses</span>.<span class="ruby-identifier">select</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">subclass</span><span class="ruby-operator">|</span>
+77:         <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">subclass</span>.<span class="ruby-identifier">name</span>
+78:         <span class="ruby-identifier">stringfied_constants</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">subclass</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-node">&quot;#{klass.name}::&quot;</span>, <span class="ruby-value str">''</span>))
+79:       <span class="ruby-keyword kw">end</span>
+80:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="thor-root-method" class="method-detail ">
+				<a name="method-c-thor_root"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">thor_root</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the root where thor files are located, dependending on the OS.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="thor-root-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 189</span>
+189:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">thor_root</span>
+190:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">user_home</span>, <span class="ruby-value str">&quot;.thor&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\/</span>, <span class="ruby-value str">'/'</span>)
+191:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="thor-root-glob-method" class="method-detail ">
+				<a name="method-c-thor_root_glob"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">thor_root_glob</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns the files in the thor root. On Windows <a
+href="Util.html#method-c-thor_root">thor_root</a> will be something like
+this:
+</p>
+<pre>
+  C:\Documents and Settings\james\.thor
+</pre>
+<p>
+If we don&#8217;t gsub the \ character, Dir.glob will fail.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="thor-root-glob-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 200</span>
+200:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">thor_root_glob</span>
+201:       <span class="ruby-identifier">files</span> = <span class="ruby-constant">Dir</span>[<span class="ruby-node">&quot;#{thor_root}/*&quot;</span>]
+202: 
+203:       <span class="ruby-identifier">files</span>.<span class="ruby-identifier">map!</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+204:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span>(<span class="ruby-identifier">file</span>) <span class="ruby-operator">?</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">file</span>, <span class="ruby-value str">&quot;main.thor&quot;</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">file</span>
+205:       <span class="ruby-keyword kw">end</span>
+206:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="user-home-method" class="method-detail ">
+				<a name="method-c-user_home"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">user_home</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="user-home-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/bundler/vendor/thor/util.rb, line 165</span>
+165:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">user_home</span>
+166:       <span class="ruby-identifier">@@user_home</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;HOME&quot;</span>]
+167:         <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;HOME&quot;</span>]
+168:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;USERPROFILE&quot;</span>]
+169:         <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;USERPROFILE&quot;</span>]
+170:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;HOMEDRIVE&quot;</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;HOMEPATH&quot;</span>]
+171:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;HOMEDRIVE&quot;</span>], <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;HOMEPATH&quot;</span>])
+172:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;APPDATA&quot;</span>]
+173:         <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;APPDATA&quot;</span>]
+174:       <span class="ruby-keyword kw">else</span>
+175:         <span class="ruby-keyword kw">begin</span>
+176:           <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-value str">&quot;~&quot;</span>)
+177:         <span class="ruby-keyword kw">rescue</span>
+178:           <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">ALT_SEPARATOR</span>
+179:             <span class="ruby-value str">&quot;C:/&quot;</span>
+180:           <span class="ruby-keyword kw">else</span>
+181:             <span class="ruby-value str">&quot;/&quot;</span>
+182:           <span class="ruby-keyword kw">end</span>
+183:         <span class="ruby-keyword kw">end</span>
+184:       <span class="ruby-keyword kw">end</span>
+185:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>File: gemfile.5.txt [bundler-1.0.0 Documentation]</title>
+
+	<link type="text/css" media="screen" href="../../../rdoc.css" rel="stylesheet" />
+
+	<script src="../../../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+</head>
+
+<body class="file">
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../../../index.html">Home</a>
+          <a href="../../../index.html#classes">Classes</a>
+          <a href="../../../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle.html">bundle</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-config.html">bundle-config</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-config_txt.html">bundle-config.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-exec.html">bundle-exec</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-exec_txt.html">bundle-exec.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-install.html">bundle-install</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-install_txt.html">bundle-install.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-package.html">bundle-package</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-package_txt.html">bundle-package.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-update.html">bundle-update</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle-update_txt.html">bundle-update.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/bundle_txt.html">bundle.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/man/gemfile_5_txt.html">gemfile.5.txt</a></li>
+				
+					<li class="file"><a href="../../../lib/bundler/templates/Gemfile.html">Gemfile</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../../../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../../../Bundler.html">Bundler</a></li>
+				
+					<li><a href="../../../Bundler/BundlerError.html">Bundler::BundlerError</a></li>
+				
+					<li><a href="../../../Bundler/CLI.html">Bundler::CLI</a></li>
+				
+					<li><a href="../../../Bundler/Definition.html">Bundler::Definition</a></li>
+				
+					<li><a href="../../../Bundler/DepProxy.html">Bundler::DepProxy</a></li>
+				
+					<li><a href="../../../Bundler/Dependency.html">Bundler::Dependency</a></li>
+				
+					<li><a href="../../../Bundler/DeprecatedError.html">Bundler::DeprecatedError</a></li>
+				
+					<li><a href="../../../Bundler/Dsl.html">Bundler::Dsl</a></li>
+				
+					<li><a href="../../../Bundler/DslError.html">Bundler::DslError</a></li>
+				
+					<li><a href="../../../Bundler/Environment.html">Bundler::Environment</a></li>
+				
+					<li><a href="../../../Bundler/GemHelper.html">Bundler::GemHelper</a></li>
+				
+					<li><a href="../../../Bundler/GemHelpers.html">Bundler::GemHelpers</a></li>
+				
+					<li><a href="../../../Bundler/GemNotFound.html">Bundler::GemNotFound</a></li>
+				
+					<li><a href="../../../Bundler/GemfileError.html">Bundler::GemfileError</a></li>
+				
+					<li><a href="../../../Bundler/GemfileNotFound.html">Bundler::GemfileNotFound</a></li>
+				
+					<li><a href="../../../Bundler/GemspecError.html">Bundler::GemspecError</a></li>
+				
+					<li><a href="../../../Bundler/GitError.html">Bundler::GitError</a></li>
+				
+					<li><a href="../../../Bundler/Graph.html">Bundler::Graph</a></li>
+				
+					<li><a href="../../../Bundler/GraphNode.html">Bundler::GraphNode</a></li>
+				
+					<li><a href="../../../Bundler/Index.html">Bundler::Index</a></li>
+				
+					<li><a href="../../../Bundler/Installer.html">Bundler::Installer</a></li>
+				
+					<li><a href="../../../Bundler/InvalidOption.html">Bundler::InvalidOption</a></li>
+				
+					<li><a href="../../../Bundler/InvalidSpecSet.html">Bundler::InvalidSpecSet</a></li>
+				
+					<li><a href="../../../Bundler/LazySpecification.html">Bundler::LazySpecification</a></li>
+				
+					<li><a href="../../../Bundler/LockfileParser.html">Bundler::LockfileParser</a></li>
+				
+					<li><a href="../../../Bundler/MatchPlatform.html">Bundler::MatchPlatform</a></li>
+				
+					<li><a href="../../../Bundler/PathError.html">Bundler::PathError</a></li>
+				
+					<li><a href="../../../Bundler/ProductionError.html">Bundler::ProductionError</a></li>
+				
+					<li><a href="../../../Bundler/RemoteSpecification.html">Bundler::RemoteSpecification</a></li>
+				
+					<li><a href="../../../Bundler/Resolver.html">Bundler::Resolver</a></li>
+				
+					<li><a href="../../../Bundler/Resolver/SpecGroup.html">Bundler::Resolver::SpecGroup</a></li>
+				
+					<li><a href="../../../Bundler/Runtime.html">Bundler::Runtime</a></li>
+				
+					<li><a href="../../../Bundler/Settings.html">Bundler::Settings</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers.html">Bundler::SharedHelpers</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers/Gem.html">Bundler::SharedHelpers::Gem</a></li>
+				
+					<li><a href="../../../Bundler/SharedHelpers/Gem/SourceIndex.html">Bundler::SharedHelpers::Gem::SourceIndex</a></li>
+				
+					<li><a href="../../../Bundler/Source.html">Bundler::Source</a></li>
+				
+					<li><a href="../../../Bundler/Source/Git.html">Bundler::Source::Git</a></li>
+				
+					<li><a href="../../../Bundler/Source/Path.html">Bundler::Source::Path</a></li>
+				
+					<li><a href="../../../Bundler/Source/Path/Installer.html">Bundler::Source::Path::Installer</a></li>
+				
+					<li><a href="../../../Bundler/Source/Rubygems.html">Bundler::Source::Rubygems</a></li>
+				
+					<li><a href="../../../Bundler/SpecSet.html">Bundler::SpecSet</a></li>
+				
+					<li><a href="../../../Bundler/UI.html">Bundler::UI</a></li>
+				
+					<li><a href="../../../Bundler/UI/RGProxy.html">Bundler::UI::RGProxy</a></li>
+				
+					<li><a href="../../../Bundler/UI/Shell.html">Bundler::UI::Shell</a></li>
+				
+					<li><a href="../../../Bundler/VersionConflict.html">Bundler::VersionConflict</a></li>
+				
+					<li><a href="../../../Thor.html">Thor</a></li>
+				
+					<li><a href="../../../Thor/Actions.html">Thor::Actions</a></li>
+				
+					<li><a href="../../../Thor/Actions/ClassMethods.html">Thor::Actions::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/Base.html">Thor::Base</a></li>
+				
+					<li><a href="../../../Thor/Base/ClassMethods.html">Thor::Base::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/DynamicTask.html">Thor::DynamicTask</a></li>
+				
+					<li><a href="../../../Thor/Error.html">Thor::Error</a></li>
+				
+					<li><a href="../../../Thor/HiddenTask.html">Thor::HiddenTask</a></li>
+				
+					<li><a href="../../../Thor/Invocation.html">Thor::Invocation</a></li>
+				
+					<li><a href="../../../Thor/Invocation/ClassMethods.html">Thor::Invocation::ClassMethods</a></li>
+				
+					<li><a href="../../../Thor/InvocationError.html">Thor::InvocationError</a></li>
+				
+					<li><a href="../../../Thor/MalformattedArgumentError.html">Thor::MalformattedArgumentError</a></li>
+				
+					<li><a href="../../../Thor/RequiredArgumentMissingError.html">Thor::RequiredArgumentMissingError</a></li>
+				
+					<li><a href="../../../Thor/Shell.html">Thor::Shell</a></li>
+				
+					<li><a href="../../../Thor/Shell/Basic.html">Thor::Shell::Basic</a></li>
+				
+					<li><a href="../../../Thor/Shell/Color.html">Thor::Shell::Color</a></li>
+				
+					<li><a href="../../../Thor/Shell/HTML.html">Thor::Shell::HTML</a></li>
+				
+					<li><a href="../../../Thor/Task.html">Thor::Task</a></li>
+				
+					<li><a href="../../../Thor/UndefinedTaskError.html">Thor::UndefinedTaskError</a></li>
+				
+					<li><a href="../../../Thor/UnknownArgumentError.html">Thor::UnknownArgumentError</a></li>
+				
+					<li><a href="../../../Thor/Util.html">Thor::Util</a></li>
+				
+					<li><a href="../../../Gem.html">Gem</a></li>
+				
+					<li><a href="../../../Gem/Dependency.html">Gem::Dependency</a></li>
+				
+					<li><a href="../../../Gem/Platform.html">Gem::Platform</a></li>
+				
+					<li><a href="../../../Gem/Specification.html">Gem::Specification</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<p>
+GEMFILE(5)                                                         
+GEMFILE(5)
+</p>
+<p>
+NAME
+</p>
+<pre>
+       Gemfile - A format for describing gem dependencies for Ruby programs
+</pre>
+<p>
+SYNOPSIS
+</p>
+<pre>
+       A Gemfile describes the gem dependencies required to execute associated
+       Ruby code.
+
+       Place the Gemfile in the root of the directory containing  the  associ-
+       ated  code.  For instance, in a Rails application, place the Gemfile in
+       the same directory as the Rakefile.
+</pre>
+<p>
+SYNTAX
+</p>
+<pre>
+       A Gemfile is evaluated as Ruby code, in a context which makes available
+       a number of methods used to describe the gem requirements.
+</pre>
+<p>
+SOURCES (source)
+</p>
+<pre>
+       At  the  top of the Gemfile, add one line for each Rubygems source that
+       might contain the gems listed in the Gemfile.
+
+           source &quot;http://rubygems.org&quot;
+           source &quot;http://gems.github.com&quot;
+
+       Each of these _source_s MUST be a valid Rubygems repository.
+</pre>
+<p>
+GEMS (gem)
+</p>
+<pre>
+       Specify gem requirements using the gem method, with the following argu-
+       ments. All parameters are OPTIONAL unless otherwise specified.
+
+   NAME (required)
+       For each gem requirement, list a single gem line.
+
+           gem &quot;nokogiri&quot;
+
+   VERSION
+       Each gem MAY have one or more version specifiers.
+
+           gem &quot;nokogiri&quot;, &quot;&gt;= 1.4.2&quot;
+           gem &quot;RedCloth&quot;, &quot;&gt;= 4.1.0&quot;, &quot;&lt; 4.2.0&quot;
+
+   REQUIRE AS (:require)
+       Each  gem  MAY specify its main file, which should be used when autore-
+       quiring (Bundler.require).
+
+           gem &quot;sqlite3-ruby&quot;, :require =&gt; &quot;sqlite3&quot;
+
+       This defaults to the name of the gem itself. For  instance,  these  are
+       identical:
+
+           gem &quot;nokogiri&quot;
+           gem &quot;nokogiri&quot;, :require =&gt; &quot;nokogiri&quot;
+
+   GROUPS (:group or :groups)
+       Each  gem  MAY  specify  membership in one or more groups. Any gem that
+       does not specify membership in any  group  is  placed  in  the  default
+       group.
+
+           gem &quot;rspec&quot;, :group =&gt; :test
+           gem &quot;wirble&quot;, :groups =&gt; [:development, :test]
+
+       The  Bundler  runtime  allows  its  two main methods, Bundler.setup and
+       Bundler.require, to limit their impact to particular groups.
+
+           # setup adds gems to Ruby's load path
+           Bundler.setup                    # defaults to all groups
+           require &quot;bundler/setup&quot;          # same as Bundler.setup
+           Bundler.setup(:default)          # only set up the _default_ group
+           Bundler.setup(:test)             # only set up the _test_ group (but `not` _default_)
+           Bundler.setup(:default, :test)   # set up the _default_ and _test_ groups, but no others
+
+           # require requires all of the gems in the specified groups
+           Bundler.require                  # defaults to just the _default_ group
+           Bundler.require(:default)        # identical
+           Bundler.require(:default, :test) # requires the _default_ and _test_ groups
+           Bundler.require(:test)           # requires just the _test_ group
+
+       The Bundler CLI allows you to specify a list of groups whose gems  bun-
+       dle  install  should  not install with the --without option. To specify
+       multiple groups to ignore, specify a list of groups separated  by  spa-
+       ces.
+
+           bundle install --without test
+           bundle install --without development test
+
+       After running bundle install --without test, bundler will remember that
+       you excluded the test group in the last installation. The next time you
+       run  bundle  install, without any --without option, bundler will recall
+       it.
+
+       Also, calling Bundler.setup with  no  parameters,  or  calling  require
+       &quot;bundler/setup&quot;  will setup all groups except for the ones you excluded
+       via --without (since they are obviously not available).
+
+       Note that on bundle install, bundler downloads and evaluates all  gems,
+       in  order to create a single canonical list of all of the required gems
+       and their dependencies. This means that you cannot list different  ver-
+       sions  of  the  same  gems  in  different groups. For more details, see
+       Understanding Bundler http://gembundler.com/v1.0/understanding.html.
+
+   PLATFORMS (:platforms)
+       If a gem should only be used in a particular platform or set  of  plat-
+       forms,  you  can  specify  them. Platforms are essentially identical to
+       groups, except that you do not need to use the  --without  install-time
+       flag to exclude groups of gems for other platforms.
+
+       There are a number of Gemfile platforms:
+
+       ruby   C Ruby (MRI) or Rubinius, but NOT Windows
+
+       ruby_18
+              ruby AND version 1.8
+
+       ruby_19
+              ruby AND version 1.9
+
+       mri    Same as ruby, but not Rubinius
+
+       mri_18 mri AND version 1.8
+
+       mri_19 mri AND version 1.9
+
+       jruby  JRuby
+
+       mswin  Windows
+
+       As with groups, you can specify one or more platforms:
+
+           gem &quot;weakling&quot;,   :platforms =&gt; :jruby
+           gem &quot;ruby-debug&quot;, :platforms =&gt; :mri_18
+           gem &quot;nokogiri&quot;,   :platforms =&gt; [:mri_18, :jruby]
+
+       All   operations   involving  groups  (bundle  install,  Bundler.setup,
+       Bundler.require) behave exactly the same as if any groups not  matching
+       the current platform were explicitly excluded.
+
+   GIT (:git)
+       If necessary, you can specify that a gem is located at a particular git
+       repository.       The       repository       can       be        public
+       (http://github.com/rails/rails.git)              or             private
+       (git@github.com:rails/rails.git). If the  repository  is  private,  the
+       user  that you use to run bundle install MUST have the appropriate keys
+       available in their $HOME/.ssh.
+
+       Git repositories are specified using the  :git  parameter.  The  group,
+       platforms,  and  require  options  are available and behave exactly the
+       same as they would for a normal gem.
+
+           gem &quot;rails&quot;, :git =&gt; &quot;git://github.com/rails/rails.git&quot;
+
+       A git repository SHOULD have at least one file,  at  the  root  of  the
+       directory  containing  the  gem, with the extension .gemspec. This file
+       MUST contain a valid gem specification, as expected by  the  gem  build
+       command.  It MUST NOT have any dependencies, other than on the files in
+       the git repository itself and any built-in  functionality  of  Ruby  or
+       Rubygems.
+
+       If  a  git repository does not have a .gemspec, bundler will attempt to
+       create one, but it will not contain any dependencies, executables, or C
+       extension  compilation  instructions. As a result, it may fail to prop-
+       erly integrate into your application.
+
+       If a git repository does have a .gemspec for the gem  you  attached  it
+       to,  a version specifier, if provided, means that the git repository is
+       only valid if the .gemspec specifies a  version  matching  the  version
+       specifier. If not, bundler will print a warning.
+
+           gem &quot;rails&quot;, &quot;2.3.8&quot;, :git =&gt; &quot;git://github.com/rails/rails.git&quot;
+           # bundle install will fail, because the .gemspec in the rails
+           # repository's master branch specifies version 3.0.0
+
+       If  a  git repository does not have a .gemspec for the gem you attached
+       it to, a version specifier MUST be provided. Bundler will use this ver-
+       sion in the simple .gemspec it creates.
+
+       Git repositories support a number of additional options.
+
+       branch, tag, and ref
+              You  MUST only specify at most one of these options. The default
+              is :branch =&gt; &quot;master&quot;
+
+       submodules
+              Specify :submodules =&gt; true to cause bundler to expand any  sub-
+              modules included in the git repository
+
+       If  a  git repository contains multiple .gemspecs, each .gemspec repre-
+       sents a gem located at the same place in the file system as  the  .gem-
+       spec.
+
+           |~rails                   [git root]
+           | |-rails.gemspec         [rails gem located here]
+           |~actionpack
+           | |-actionpack.gemspec    [actionpack gem located here]
+           |~activesupport
+           | |-activesupport.gemspec [activesupport gem located here]
+
+       To  install  a  gem located in a git repository, bundler changes to the
+       directory containing the gemspec, runs gem build name.gemspec and  then
+       installs the resulting gem. The gem build command, which comes standard
+       with Rubygems, evaluates the .gemspec in the context of  the  directory
+       in which it is located.
+
+   PATH (:path)
+       You  can  specify that a gem is located in a particular location on the
+       file system. Relative paths are resolved relative to the directory con-
+       taining the Gemfile.
+
+       Similar  to the semantics of the :git option, the :path option requires
+       that the directory in question either contains a .gemspec for the  gem,
+       or that you specify an explicit version that bundler should use.
+
+       Unlike  :git,  bundler does not compile C extensions for gems specified
+       as paths.
+
+           gem &quot;rails&quot;, :path =&gt; &quot;vendor/rails&quot;
+</pre>
+<p>
+BLOCK FORM OF GIT, PATH, GROUP and PLATFORMS
+</p>
+<pre>
+       The :git, :path, :group, and :platforms options may  be  applied  to  a
+       group of gems by using block form.
+
+           git &quot;git://github.com/rails/rails.git&quot; do
+             gem &quot;activesupport&quot;
+             gem &quot;actionpack&quot;
+           end
+
+           platforms :ruby do
+             gem &quot;ruby-debug&quot;
+             gem &quot;sqlite3-ruby&quot;
+           end
+
+           group :development do
+             gem &quot;wirble&quot;
+             gem &quot;faker&quot;
+           end
+
+       In  the  case of the git block form, the :ref, :branch, :tag, and :sub-
+       modules options may be passed to the git method, and all  gems  in  the
+       block will inherit those options.
+</pre>
+<p>
+SOURCE PRIORITY
+</p>
+<pre>
+       When  attempting  to locate a gem to satisfy a gem requirement, bundler
+       uses the following priority order:
+
+       1.  The source explicitly attached to the gem (using :path or :git)
+
+       2.  For implicit gems (dependencies of explicit gems), any git or  path
+           repository otherwise declared. This results in bundler prioritizing
+           the ActiveSupport gem from the Rails git repository over ones  from
+           rubygems.org
+
+       3.  The  sources  specified via source, in the order in which they were
+           declared in the Gemfile.
+
+                                  August 2010                       GEMFILE(5)</pre>
+
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+</body>
+</html>
+
