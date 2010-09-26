@@ -196,7 +196,7 @@
 	border-bottom: 1px solid #FFFFFF;
 	border-left: 1px solid #808080;
 	border-top: 1px solid #808080;
-	overflow: auto;
+	overflow: hidden;
 }
 
 #svg_editor .layer_button {
@@ -454,6 +454,28 @@
 
 #svg_editor #multiselected_panel .selected_tool {
 	vertical-align: 12px;
+}
+
+#cur_context_panel {
+	position: absolute;
+	top: 70px;
+	left: -10px;
+	right: -2px;
+	overflow: auto;
+	border: 1px solid #777;
+	border-bottom: none;
+	border-right: none;
+	padding-left: 5px;
+	font-size: 12px;
+}
+
+#svg_editor #cur_context_panel a {
+	float: none;
+	text-decoration: none;
+}
+
+#svg_editor #cur_context_panel a:hover {
+	text-decoration: underline;
 }
 
 #svg_editor #tools_top > div, #tools_top {
@@ -1241,6 +1263,12 @@ span.zoom_tool {
 	list-style: none;
 	padding: 0px;
 	margin: 0px;
+}
+
+.contextMenu .shortcut {
+	width: 80px;           
+	text-align:right;
+	float:right;
 }
 
 .contextMenu A {

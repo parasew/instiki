@@ -31,7 +31,9 @@ svgEditor.addExtension("shapes", function() {
 		electronics: 'Electronics',
 		math: 'Mathematical',
 		music: 'Music',
-		misc: 'Miscellaneous'
+		misc: 'Miscellaneous',
+		raphael_1: 'raphaeljs.com set 1',
+		raphael_2: 'raphaeljs.com set 2'
 	};
 	
 	var library = {
@@ -90,7 +92,9 @@ svgEditor.addExtension("shapes", function() {
 			$('#shape_buttons').html('Loading...');
 			$.getJSON('extensions/shapelib/' + cat_id + '.json', function(result, textStatus) {
 				cur_lib = library[cat_id] = {
-					data: result.data
+					data: result.data,
+					size: result.size,
+					fill: result.fill
 				}
 				makeButtons(cat_id, result);
 				loadIcons();
@@ -104,9 +108,14 @@ svgEditor.addExtension("shapes", function() {
 	}
 	
 	function makeButtons(cat, shapes) {
-	
+		var size = cur_lib.size || 300;
+		var fill = cur_lib.fill || false;
+		var off = size * .05;
+		var vb = [-off, -off, size + off*2, size + off*2].join(' ');
+		var stroke = fill ? 0: (size/30);
+		
 		var shape_icon = new DOMParser().parseFromString(
-			'<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="-10 -10 320 320"><path fill="none" stroke="#000000" stroke-width="10" /><\/svg><\/svg>',
+			'<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="'+(fill?'#333':'none')+'" stroke="#000000" stroke-width="' + stroke + '" /><\/svg><\/svg>',
 			'text/xml');
 
 		var width = 24;
@@ -366,8 +375,6 @@ svgEditor.addExtension("shapes", function() {
 					started: false
 				}
 			}
-			
-			canv.clearSelection();
 			
 			return {
 				keep: true,

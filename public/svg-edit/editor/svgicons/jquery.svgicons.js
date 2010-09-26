@@ -128,39 +128,6 @@ $(function() {
 
 
 (function($) {
-	function makeSVG(el) {
-		// manually create a copy of the element
-		var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
-		$.each(el.attributes, function(i, attr) {
-			var ns = attr.namespaceURI;
-			if(ns) {
-				new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
-			} else {
-				new_el.setAttribute(attr.nodeName, attr.nodeValue);
-			}
-			if(attr.nodeName == 'transform') {
-				
-				console.log('val1:', attr.nodeValue);
-				console.log('val2:', new_el.getAttribute('transform'));
-			}
-		});
-	
-		// now create copies of all children
-		$.each(el.childNodes, function(i, child) {
-			switch(child.nodeType) {
-				case 1: // element node
-					new_el.appendChild(makeSVG(child));
-					break;
-				case 3: // text node
-					new_el.textContent = child.nodeValue;
-					break;
-				default:
-					break;
-			}
-		});
-		return new_el;
-	}
-
 	var svg_icons = {}, fixIDs;
 
 	$.svgIcons = function(file, opts) {
@@ -177,18 +144,22 @@ $(function() {
 				var data_el = $('<object data="' + file + '" type=image/svg+xml>').appendTo('body').hide();
 				try {
 					svgdoc = data_el[0].contentDocument;
-					// TODO: IE still loads this, shouldn't even bother.
 					data_el.load(getIcons);
 					getIcons(0, true); // Opera will not run "load" event if file is already cached
 				} catch(err1) {
 					useFallback();
 				}
 			} else {
+				var parser = new DOMParser();
 				$.ajax({
 					url: file,
-					dataType: 'xml',
+					dataType: 'string',
 					success: function(data) {
-						svgdoc = data;
+						if(!data) {
+							$(useFallback);
+							return;
+						}
+						svgdoc = parser.parseFromString(data, "text/xml");
 						$(function() {
 							getIcons('ajax');
 						});
@@ -201,17 +172,9 @@ $(function() {
 							});
 						} else {
 							if(err.responseXML) {
-								// Is there a non-ActiveX solution in IE9?
-								svgdoc = err.responseXML;
+								svgdoc = parser.parseFromString(err.responseXML, "text/xml");
 
 								if(!svgdoc.childNodes.length) {
-									if(window.ActiveXObject) { 
-										svgdoc = new ActiveXObject("Microsoft.XMLDOM");
-										svgdoc.loadXML(err.responseText);
-									} else {
-										$(useFallback);
-									}
-								} else {
 									$(useFallback);									
 								}
 								$(function() {
@@ -245,26 +208,6 @@ $(function() {
 				}
 				data_loaded = true;
 			}
-			// Clean source SVGs (mostly for Inkscape files)
-			// TODO: Find a way to do this without crashing Safari (when converting to IMG)
-			$(svgdoc).find('metadata').remove().end()
-				.find('*').each(function(i, el) {
-				if(el.nodeName.indexOf(':') != -1) {
-					$(el).remove();
-				}
-				var attrs = $.extend(false, el.attributes, {});
-				for(i in attrs) {
-					var attr = attrs[i];
-					var fullattr = attr.prefix?attr.prefix + ':' + attr.localName:'';
-					if(attr.prefix) {
-						el.removeAttribute(attr.localName); // for Opera
-						el.removeAttribute(fullattr); // for Webkit
-					} 
-					if(fullattr == 'xlink:href') {
-						el.setAttribute('xlink:href', attr.nodeValue);
-					}
-				}
-			});
 			
 			elems = $(svgdoc.firstChild).children(); //.getElementsByTagName('foreignContent');
 			
@@ -290,35 +233,35 @@ $(function() {
 			}
 		}
 		
+		var setIcon = function(target, icon, id, setID) {
+			if(isOpera) icon.css('visibility','hidden');
+			if(opts.replace) {
+				if(setID) icon.attr('id',id);
+				var cl = target.attr('class');
+				if(cl) icon.attr('class','svg_icon '+cl);
+				target.replaceWith(icon);
+			} else {
+				
+				target.append(icon);
+			}
+			if(isOpera) {
+				setTimeout(function() {
+					icon.removeAttr('style');
+				},1);
+			}
+		}
+		
+		var addIcon = function(icon, id) {
+			if(opts.id_match === undefined || opts.id_match !== false) {
+				setIcon(holder, icon, id, true);
+			}
+			svg_icons[id] = icon;
+		}
+		
 		function makeIcons(toImage, fallback) {
 			if(icons_made) return;
 			if(opts.no_img) toImage = false;
 			var holder;
-			
-			var setIcon = function(target, icon, id, setID) {
-				if(isOpera) icon.css('visibility','hidden');
-				if(opts.replace) {
-					if(setID) icon.attr('id',id);
-					var cl = target.attr('class');
-					if(cl) icon.attr('class','svg_icon '+cl);
-					target.replaceWith(icon);
-				} else {
-					
-					target.append(icon);
-				}
-				if(isOpera) {
-					setTimeout(function() {
-						icon.removeAttr('style');
-					},1);
-				}
-			}
-			
-			var addIcon = function(icon, id) {
-				if(opts.id_match === undefined || opts.id_match !== false) {
-					setIcon(holder, icon, id, true);
-				}
-				svg_icons[id] = icon;
-			}
 			
 			if(toImage) {
 				var temp_holder = $(document.createElement('div'));
@@ -340,15 +283,13 @@ $(function() {
 					addIcon(icon, id);
 				});
 			} else {
-				$.each(elems, function(i, elem) {
-					var id = elem.getAttribute('id');
-					if(id == 'svg_eof') return;
+				var len = elems.length;
+				for(var i = 0; i < len; i++) {
+					var elem = elems[i];
+					var id = elem.id;
+					if(id === 'svg_eof') break;
 					holder = $('#' + id);
-					if(elem.getElementsByTagNameNS) {
-						var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
-					} else {
-						var svg = elem.getElementsByTagName('svg')[0];
-					}
+					var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
 					var svgroot = document.createElementNS(svgns, "svg");
 					svgroot.setAttributeNS(svgns, 'viewBox', [0,0,icon_w,icon_h].join(' '));
 					
@@ -363,25 +304,18 @@ $(function() {
 						svg.setAttribute('viewBox', [0,0,w,h].join(' '));
 					}
 					
-					$(svgroot).attr({
-						"xmlns": svgns,
-						"width": icon_w,
-						"height": icon_h,
-						"xmlns:xlink": xlinkns,
-						"class": 'svg_icon'
-					});
+					// Not using jQuery to be a bit faster
+					svgroot.setAttribute('xmlns', svgns);
+					svgroot.setAttribute('width', icon_w);
+					svgroot.setAttribute('height', icon_h);
+					svgroot.setAttribute("xmlns:xlink", xlinkns);
+					svgroot.setAttribute("class", 'svg_icon');
 
 					// Without cloning, Firefox will make another GET request.
 					// With cloning, causes issue in Opera/Win/Non-EN
 					if(!isOpera) svg = svg.cloneNode(true);
 					
-					// TODO: Figure out why makeSVG is necessary for IE9
-					try {
-						svgroot.appendChild(svg);
-					} catch(e) {
-						// For IE9
-						svgroot.appendChild(makeSVG(svg));
-					}
+					svgroot.appendChild(svg);
 			
 					if(toImage) {
 						// Without cloning, Safari will crash
@@ -395,19 +329,16 @@ $(function() {
 						var icon = fixIDs($(svgroot), i);
 					}
 					addIcon(icon, id);
-				});
+				}
+
 			}
 			
 			if(opts.placement) {
 				$.each(opts.placement, function(sel, id) {
 					if(!svg_icons[id]) return;
 					$(sel).each(function(i) {
-						// TODO: Figure out why makeSVG is necessary for IE9
-						try {
-							var copy = svg_icons[id].clone();
-						} catch(e) {
-							var copy = makeSVG(svg_icons[id][0]);
-						}
+						var copy = svg_icons[id].clone();
+						if(i > 0 && !toImage) copy = fixIDs(copy, i, true);
 						setIcon($(this), copy, id);
 					})
 				});
@@ -419,9 +350,8 @@ $(function() {
 			}
 			if(opts.resize) $.resizeSvgIcons(opts.resize);
 			icons_made = true;
-			
+
 			if(opts.callback) opts.callback(svg_icons);
-			
 		}
 		
 		fixIDs = function(svg_el, svg_num, force) {
@@ -434,18 +364,18 @@ $(function() {
 				if(isOpera) no_dupes = false; // Opera didn't clone svg_el, so not reliable
 				// if(!force && no_dupes) return;
 				var new_id = 'x' + id + svg_num + i;
-				$(this).attr('id', new_id);			
-	
+				this.id = new_id;
+
 				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
-					$(this).attr('fill', 'url(#' + new_id + ')');
+					this.setAttribute('fill', 'url(#' + new_id + ')');
 				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
-					$(this).attr('stroke', 'url(#' + new_id + ')');
+					this.setAttribute('stroke', 'url(#' + new_id + ')');
 				}).end().find('use').each(function() {
 					if(this.getAttribute('xlink:href') == '#' + id) {
 						this.setAttributeNS(xlinkns,'href','#' + new_id);
 					}
 				}).end().find('[filter="url(#' + id + ')"]').each(function() {
-					$(this).attr('filter', 'url(#' + new_id + ')');
+					this.setAttribute('filter', 'url(#' + new_id + ')');
 				});
 			});
 			return svg_el;

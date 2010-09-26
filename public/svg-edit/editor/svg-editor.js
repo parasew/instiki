@@ -11,8 +11,6 @@
  */
 
 (function() { 
-	// TODO: Find out what causes bugs in jQuery animate for IE9
-	if($.browser.msie) $.fx.off = true;
 	
 	if(!window.svgEditor) window.svgEditor = function($) {
 		var svgCanvas;
@@ -53,7 +51,7 @@
 				wireframe: false,
 				colorPickerCSS: null,
 				gridSnapping: false,
-				snappingStep: 5
+				snappingStep: 10
 			},
 			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
@@ -175,6 +173,20 @@
 		}
 
 		Editor.init = function() {
+			// For external openers
+			(function() {
+				// let the opener know SVG Edit is ready
+				var w = window.opener;
+				if (w) {
+			    		try {
+						var svgEditorReadyEvent = w.document.createEvent("Event");
+						svgEditorReadyEvent.initEvent("svgEditorReady", true, true);
+						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
+			    		}
+					catch(e) {}
+				}
+			})();
+
 			(function() {
 				// Load config/data from URL if given
 				var urldata = $.deparam.querystring(true);
@@ -229,9 +241,9 @@
 			}
 			
 			// Load extensions
-			// Bit of a hack to run extensions in local Opera
-			if(window.opera && document.location.protocol === 'file:') {
-				setTimeout(extFunc, 1000);
+			// Bit of a hack to run extensions in local Opera/IE9
+			if(document.location.protocol === 'file:') {
+				setTimeout(extFunc, 100);
 			} else {
 				extFunc();
 			}
@@ -359,6 +371,7 @@
 					
 					'#layer_up':'go_up',
 					'#layer_down':'go_down',
+					'#layer_moreopts':'context_menu',
 					'#layerlist td.layervis':'eye',
 					
 					'#tool_source_save,#tool_docprops_save':'ok',
@@ -447,9 +460,11 @@
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				canv_menu = $("#cmenu_canvas"),
+				layer_menu = $("#cmenu_layers"),
 				show_save_warning = false, 
 				exportWindow = null, 
-				tool_scale = 1;
+				tool_scale = 1,
+				ui_context = 'toolbars';
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -502,7 +517,7 @@
 			
 			var setSelectMode = function() {
 				var curr = $('.tool_button_current');
-				if(curr[0].id !== 'tool_select') {
+				if(curr.length && curr[0].id !== 'tool_select') {
 					curr.removeClass('tool_button_current').addClass('tool_button');
 					$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
 					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
@@ -534,6 +549,8 @@
 			var multiselected = false;
 			var editingsource = false;
 			var docprops = false;
+			var cur_context = '';
+			var orig_title = $('title:first').text();
 			
 			var fillPaint = new $.jGraduate.Paint({solidColor: curConfig.initFill.color});
 			var strokePaint = new $.jGraduate.Paint({solidColor: curConfig.initStroke.color});
@@ -617,6 +634,7 @@
 			// called when we've selected a different element
 			var selectedChanged = function(window,elems) {
 				var mode = svgCanvas.getMode();
+				if(mode === "select") setSelectMode();
 				var is_node = (mode == "pathedit");
 				// if elems[1] is present, then we have more than one element
 				selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
@@ -703,6 +721,51 @@
 					setSelectMode();
 				}
 				zoomDone();
+			}
+			
+			$('#cur_context_panel').delegate('a', 'click', function() {
+				var link = $(this);
+				if(link.attr('data-root')) {
+					svgCanvas.leaveContext();
+				} else {
+					svgCanvas.setContext(link.text());
+				}
+				return false;
+			});
+			
+			var contextChanged = function(win, context) {
+				$('#workarea,#sidepanels').css('top', context?100:75);
+				if(cur_context && !context) {
+					// Back to normal
+					workarea[0].scrollTop -= 25;
+				} else if(!cur_context && context) {
+					workarea[0].scrollTop += 25;
+				}
+				
+				var link_str = '';
+				if(context) {
+					var str = '';
+					link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentLayer() + '</a>';
+					
+					$(context).parentsUntil('#svgcontent > g').andSelf().each(function() {
+						if(this.id) {
+							str += ' > ' + this.id;
+							if(this !== context) {
+								link_str += ' > <a href="#">' + this.id + '</a>';
+							} else {
+								link_str += ' > ' + this.id;
+							}
+						}
+					});
+
+					cur_context = str;
+				} else {
+					cur_context = null;
+				}
+				$('#cur_context_panel').toggle(!!context).html(link_str);
+
+				
+				updateTitle();
 			}
 			
 			var flyout_funcs = {};
@@ -1239,7 +1302,7 @@
 					// prevent undo on these canvas changes
 					svgCanvas.setColor('stroke', strokeColor, true);
 					svgCanvas.setPaintOpacity('stroke', strokeOpacity, true);
-		
+					
 					// update the rect inside #fill_color
 					$("#stroke_color rect").attr({
 						fill: strokeColor,
@@ -1343,6 +1406,7 @@
 					return;
 				}
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
+				var menu_items = $('#cmenu_canvas li');
 				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
 					#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel, #use_panel').hide();
 				if (elem != null) {
@@ -1469,13 +1533,16 @@
 							$('#font_size').val(elem.getAttribute("font-size"));
 							$('#text').val(elem.textContent);
 							if (svgCanvas.addedNew) {
-								$('#text').focus().select();
+								// Timeout needed for IE9
+								setTimeout(function() {
+									$('#text').focus().select();
+								},100);
 							}
 						} // text
 						else if(el_name == 'image') {
 							setImageURL(svgCanvas.getHref(elem));
 						} // image
-						else if(el_name == 'g' || el_name == 'use') {
+						else if(el_name === 'g' || el_name === 'use') {
 							$('#container_panel').show();
 							var title = svgCanvas.getTitle();
 							var label = $('#g_title')[0];
@@ -1489,11 +1556,16 @@
 							}
 						}
 					}
+					menu_items[(el_name === 'g' ? 'en':'dis') + 'ableContextMenuItems']('#ungroup');
+					menu_items[((el_name === 'g' || !multiselected) ? 'dis':'en') + 'ableContextMenuItems']('#group');
 				} // if (elem != null)
 				else if (multiselected) {
 					$('#multiselected_panel').show();
+					menu_items
+						.enableContextMenuItems('#group')
+						.disableContextMenuItems('#ungroup');
 				} else {
-					$('#cmenu_canvas li').disableContextMenuItems('#delete,#cut,#copy,#move_up,#move_down');
+					menu_items.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_up,#move_down');
 				}
 				
 				// update history buttons
@@ -1533,6 +1605,7 @@
 			svgCanvas.bind("saved", saveHandler);
 			svgCanvas.bind("exported", exportHandler);
 			svgCanvas.bind("zoomed", zoomChanged);
+			svgCanvas.bind("contextset", contextChanged);
 			svgCanvas.bind("extension_added", extAdded);
 			svgCanvas.textActions.setInputElem($("#text")[0]);
 		
@@ -1722,11 +1795,12 @@
 				var inp = $('<input type="hidden">');
 				$(this).append(inp);
 				inp.focus().remove();
-			});
-		
-			$('.palette_item').click(function(evt){
-				var picker = (evt.shiftKey ? "stroke" : "fill");
-				var id = (evt.shiftKey ? '#stroke_' : '#fill_');
+			})
+			
+			$('.palette_item').mousedown(function(evt){
+				var right_click = evt.button === 2;
+				var picker = ((evt.shiftKey || right_click) ? "stroke" : "fill");
+				var id = ((evt.shiftKey || right_click) ? '#stroke_' : '#fill_');
 				var color = $(this).attr('data-rgb');
 				var rectbox = document.getElementById("gradbox_"+picker).parentNode.firstChild;
 				var paint = null;
@@ -1761,7 +1835,7 @@
 					}
 				}
 				updateToolButtonState();
-			});
+			}).bind('contextmenu', function(e) {e.preventDefault()});
 		
 			$("#toggle_stroke_tools").toggle(function() {
 				$(".stroke_tool").css('display','table-cell');
@@ -1786,10 +1860,6 @@
 				$('#styleoverrides').text('');
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
-				// when a tool is selected, we should deselect any currently selected elements
-				if(button !== '#tool_select') {
-					svgCanvas.clearSelection();
-				}
 				return true;
 			};
 			
@@ -2115,19 +2185,19 @@
 					$(inp).blur();
 				}
 				
-				// Do not include the #text input, as it needs to remain focused 
-				// when clicking on an SVG text element.
-				$('#svg_editor input:text:not(#text)').focus(function() {
+				$('#svg_editor').find('button, select, input:not(#text)').focus(function() {
 					inp = this;
+					ui_context = 'toolbars';
 					workarea.mousedown(unfocus);
 				}).blur(function() {
+					ui_context = 'canvas';
 					workarea.unbind('mousedown', unfocus);
-					
 					// Go back to selecting text if in textedit mode
 					if(svgCanvas.getMode() == 'textedit') {
 						$('#text').focus();
 					}
 				});
+				
 			}());
 
 			var clickSelect = function() {
@@ -2206,13 +2276,15 @@
 			};
 		
 			var clickText = function(){
-				toolButtonClick('#tool_text');
-				svgCanvas.setMode('text');
+				if (toolButtonClick('#tool_text')) {
+					svgCanvas.setMode('text');
+				}
 			};
 			
 			var clickPath = function(){
-				toolButtonClick('#tool_path');
-				svgCanvas.setMode('path');
+				if (toolButtonClick('#tool_path')) {
+					svgCanvas.setMode('path');
+				}
 			};
 			
 			// Delete is a contextual tool that only appears in the ribbon if
@@ -2267,6 +2339,12 @@
 		
 			var moveSelected = function(dx,dy) {
 				if (selectedElement != null || multiselected) {
+					if(curConfig.gridSnapping) {
+						// Use grid snap value regardless of zoom level
+						var multi = svgCanvas.getZoom() * curConfig.snappingStep;
+						dx *= multi;
+						dy *= multi;
+					}
 					svgCanvas.moveSelectedElements(dx,dy);
 				}
 			};
@@ -2318,9 +2396,8 @@
 				svgCanvas.cycleElement(0);
 			};
 			
-			var rotateSelected = function(cw) {
+			var rotateSelected = function(cw,step) {
 				if (selectedElement == null || multiselected) return;
-				var step = 5;
 				if(!cw) step *= -1;
 				var new_angle = $('#angle').val()*1 + step;
 				svgCanvas.setRotationAngle(new_angle);
@@ -2535,7 +2612,7 @@
 					hideSourceEditor();
 					zoomImage();
 					populateLayers();
-					setTitle(svgCanvas.getDocumentTitle());
+					updateTitle();
 				}
 		
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
@@ -2549,16 +2626,19 @@
 				setSelectMode();		
 			};
 			
-			var setTitle = function(title) {
-				var editor_title = $('title:first').text().split(':')[0];
-				var new_title = editor_title + (title?': ' + title:'');
+			var updateTitle = function(title) {
+				title = title || svgCanvas.getDocumentTitle();
+				var new_title = orig_title + (title?': ' + title:'');
+				if(cur_context) {
+					new_title = new_title + cur_context;
+				}
 				$('title:first').text(new_title);
 			}
 			
 			var saveDocProperties = function(){
 				// set title
 				var new_title = $('#canvas_title').val();
-				setTitle(new_title);
+				updateTitle(new_title);
 				svgCanvas.setDocumentTitle(new_title);
 			
 				// update resolution
@@ -2604,8 +2684,9 @@
 				setIconSize($('#iconsize').val());
 				
 				// set grid setting
-				curConfig.gridSnapping = $('#grid_snapping_on').attr('checked');
+				curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
 				curConfig.snappingStep = $('#grid_snapping_step').val();
+				svgCanvas.setConfig(curConfig);
 
 				updateCanvas();
 				hideDocProperties();
@@ -2626,13 +2707,8 @@
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
 				}
-				try {
-					icon = icon.clone();
-					$(elem).empty().append(icon);
-				} catch(e) {
-// 					icon = svgCanvas.copyElem(icon[0]);
-				}
-				
+
+				$(elem).empty().append(icon);
 			}
 		
 			var ua_prefix;
@@ -2906,7 +2982,12 @@
 		
 			var cancelOverlays = function() {
 				$('#dialog_box').hide();
-				if (!editingsource && !docprops) return;
+				if (!editingsource && !docprops) {
+					if(cur_context) {
+						svgCanvas.leaveContext();
+					}
+					return;
+				};
 		
 				if (editingsource) {
 					var oldString = svgCanvas.getSvgString();
@@ -3115,70 +3196,45 @@
 				operaRepaint();
 			};
 			
-			if(window.DOMParser) {
-				// set up gradients to be used for the buttons
-				var svgdocbox = new DOMParser().parseFromString(
-					'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
-					fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
-					<linearGradient id="gradbox_">\
-							<stop stop-color="#000" offset="0.0"/>\
-							<stop stop-color="#FF0000" offset="1.0"/>\
-					</linearGradient></svg>', 'text/xml');
-				var docElem = svgdocbox.documentElement;
+			// set up gradients to be used for the buttons
+			var svgdocbox = new DOMParser().parseFromString(
+				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
+				fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
+				<linearGradient id="gradbox_">\
+						<stop stop-color="#000" offset="0.0"/>\
+						<stop stop-color="#FF0000" offset="1.0"/>\
+				</linearGradient></svg>', 'text/xml');
+			var docElem = svgdocbox.documentElement;
 
 
-				var boxgrad = svgdocbox.getElementById('gradbox_');
-				boxgrad.id = 'gradbox_fill';
-				docElem.setAttribute('width',16.5);
-				$('#fill_color').append( document.importNode(docElem,true) );
-				
-				boxgrad.id = 'gradbox_stroke';	
-				docElem.setAttribute('width',16.5);
-				$('#stroke_color').append( document.importNode(docElem,true) );
-				$('#stroke_color rect').attr({
-					'fill': '#' + curConfig.initStroke.color,
-					'opacity': curConfig.initStroke.opacity
-				});
-				
-				$('#stroke_width').val(curConfig.initStroke.width);
-				$('#group_opacity').val(curConfig.initOpacity * 100);
-				
-				// Use this SVG elem to test vectorEffect support
-				var test_el = docElem.firstChild;
-				test_el.setAttribute('style','vector-effect:non-scaling-stroke');
-				var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
-				test_el.removeAttribute('style');
-				
-				// Use this to test support for blur element. Seems to work to test support in Webkit
-				var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-				if(typeof blur_test.stdDeviationX === "undefined") {
-					$('#tool_blur').hide();
-				}
-				$(blur_test).remove();
-			} else {
-				var svgns = "http://www.w3.org/2000/svg";
-				var svgdocbox = document.createElementNS(svgns, 'svg');
-				var rect = svgCanvas.addSvgElementFromJson({
-					element: 'rect',
-					attr: {
-						width: '100%',
-						height: '100%',
-						fill: '#' + curConfig.initFill.color,
-						opacity: curConfig.initFill.opacity
-					}
-				});
-				svgdocbox.appendChild(rect);
-				var linearGradient = svgCanvas.addSvgElementFromJson({
-					element: 'linearGradient',
-					attr: {
-						id: 'gradbox_'
-					}
-				});
-				svgdocbox.appendChild(linearGradient);
-				var docElem = svgdocbox;
+			var boxgrad = svgdocbox.getElementById('gradbox_');
+			boxgrad.id = 'gradbox_fill';
+			docElem.setAttribute('width',16.5);
+			$('#fill_color').append( document.importNode(docElem,true) );
+			
+			boxgrad.id = 'gradbox_stroke';	
+			docElem.setAttribute('width',16.5);
+			$('#stroke_color').append( document.importNode(docElem,true) );
+			$('#stroke_color rect').attr({
+				'fill': '#' + curConfig.initStroke.color,
+				'opacity': curConfig.initStroke.opacity
+			});
+			
+			$('#stroke_width').val(curConfig.initStroke.width);
+			$('#group_opacity').val(curConfig.initOpacity * 100);
+			
+			// Use this SVG elem to test vectorEffect support
+			var test_el = docElem.firstChild;
+			test_el.setAttribute('style','vector-effect:non-scaling-stroke');
+			var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
+			test_el.removeAttribute('style');
+			
+			// Use this to test support for blur element. Seems to work to test support in Webkit
+			var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+			if(typeof blur_test.stdDeviationX === "undefined") {
+				$('#tool_blur').hide();
 			}
-		
-
+			$(blur_test).remove();
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
@@ -3237,30 +3293,24 @@
 			});
 			
 			$('#layer_new').click(function() {
-				var curNames = new Array(svgCanvas.getNumLayers());
-				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
+				var i = svgCanvas.getNumLayers();
+				do {
+					var uniqName = uiStrings.layer + " " + ++i;
+				} while(svgCanvas.hasLayer(uniqName));
 				
-				var j = (curNames.length+1);
-				var uniqName = uiStrings.layer + " " + j;
-				while ($.inArray(uniqName, curNames) != -1) {
-					j++;
-					uniqName = uiStrings.layer + " " + j;
-				}
 				$.prompt(uiStrings.enterUniqueLayerName,uniqName, function(newName) {
 					if (!newName) return;
-					if ($.inArray(newName, curNames) != -1) {
+					if (svgCanvas.hasLayer(newName)) {
 						$.alert(uiStrings.dupeLayerName);
 						return;
 					}
 					svgCanvas.createLayer(newName);
 					updateContextPanel();
 					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:first').addClass("layersel");
 				});
 			});
 			
-			$('#layer_delete').click(function() {
+			function deleteLayer() {
 				if (svgCanvas.deleteCurrentLayer()) {
 					updateContextPanel();
 					populateLayers();
@@ -3270,32 +3320,48 @@
 					$('#layerlist tr.layer').removeClass("layersel");
 					$('#layerlist tr.layer:first').addClass("layersel");
 				}
-			});
+			}
 			
-			$('#layer_up').click(function() {
-				// find index position of selected option
-				var curIndex = $('#layerlist tr.layersel').prevAll().length;
-				if (curIndex > 0) {
-					var total = $('#layerlist tr.layer').length;
-					curIndex--;
+			function cloneLayer() {
+				var name = svgCanvas.getCurrentLayer() + ' copy';
+				
+				$.prompt(uiStrings.enterUniqueLayerName, name, function(newName) {
+					if (!newName) return;
+					if (svgCanvas.hasLayer(newName)) {
+						$.alert(uiStrings.dupeLayerName);
+						return;
+					}
+					svgCanvas.cloneLayer(newName);
+					updateContextPanel();
+					populateLayers();
+				});
+			}
+			
+			function mergeLayer() {
+				if($('#layerlist tr.layersel').index() == svgCanvas.getNumLayers()-1) return;
+				svgCanvas.mergeLayer();
+				updateContextPanel();
+				populateLayers();
+			}
+			
+			function moveLayer(pos) {
+				var curIndex = $('#layerlist tr.layersel').index();
+				var total = svgCanvas.getNumLayers();
+				if(curIndex > 0 || curIndex < total-1) {
+					curIndex += pos;
 					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
 					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
 				}
+			}
+		
+			$('#layer_delete').click(deleteLayer);
+			
+			$('#layer_up').click(function() {
+				moveLayer(-1);
 			});
 		
 			$('#layer_down').click(function() {
-				// find index position of selected option
-				var curIndex = $('#layerlist tr.layersel').prevAll().length;
-				var total = $('#layerlist tr.layer').length;
-				if (curIndex < total-1) {
-					curIndex++;
-					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
-					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
-				}
+				moveLayer(1);
 			});
 		
 			$('#layer_rename').click(function() {
@@ -3303,22 +3369,13 @@
 				var oldName = $('#layerlist tr.layersel td.layername').text();
 				$.prompt(uiStrings.enterNewLayerName,"", function(newName) {
 					if (!newName) return;
-					if (oldName == newName) {
-						$.alert(uiStrings.layerHasThatName);
-						return;
-					}
-			
-					var curNames = new Array(svgCanvas.getNumLayers());
-					for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
-					if ($.inArray(newName, curNames) != -1) {
+					if (oldName == newName || svgCanvas.hasLayer(newName)) {
 						$.alert(uiStrings.layerHasThatName);
 						return;
 					}
 					
 					svgCanvas.renameCurrentLayer(newName);
 					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
 				});
 			});
 			
@@ -3440,7 +3497,7 @@
 				}
 				// handle selection of layer
 				$('#layerlist td.layername')
-					.click(function(evt){
+					.mouseup(function(evt){
 						$('#layerlist tr.layer').removeClass("layersel");
 						var row = $(this.parentNode);
 						row.addClass("layersel");
@@ -3618,8 +3675,10 @@
 					{sel:'#copy_save_done', fn: cancelOverlays, evt: 'click'},
 					
 					// Shortcuts not associated with buttons
-					{key: 'shift+left', fn: function(){rotateSelected(0)}},
-					{key: 'shift+right', fn: function(){rotateSelected(1)}},
+					{key: 'ctrl+left', fn: function(){rotateSelected(0,1)}},
+					{key: 'ctrl+right', fn: function(){rotateSelected(1,1)}},
+					{key: 'ctrl+shift+left', fn: function(){rotateSelected(0,5)}},					
+					{key: 'ctrl+shift+right', fn: function(){rotateSelected(1,5)}},
 					{key: 'shift+O', fn: selectPrev},
 					{key: 'shift+P', fn: selectNext},
 					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
@@ -3630,6 +3689,10 @@
 					{key: ['down', true], fn: function(){moveSelected(0,1);}},
 					{key: ['left', true], fn: function(){moveSelected(-1,0);}},
 					{key: ['right', true], fn: function(){moveSelected(1,0);}},
+					{key: 'shift+up', fn: function(){moveSelected(0,-10)}},
+					{key: 'shift+down', fn: function(){moveSelected(0,10)}},
+					{key: 'shift+left', fn: function(){moveSelected(-10,0)}},
+					{key: 'shift+right', fn: function(){moveSelected(10,0)}},
 					{key: 'A', fn: function(){svgCanvas.selectAllInCurrentLayer();}}
 				];
 				
@@ -3716,6 +3779,18 @@
 							function(evt) {$(this).change();evt.preventDefault();}
 						);
 						
+						$(window).bind('keydown', 'tab', function(e) {
+							if(ui_context === 'canvas') {
+								e.preventDefault();
+								selectNext();
+							}
+						}).bind('keydown', 'shift+tab', function(e) {
+							if(ui_context === 'canvas') {
+								e.preventDefault();
+								selectPrev();
+							}
+						});
+						
 						$('#tool_zoom').dblclick(dblclickZoom);
 					},
 					setTitles: function() {
@@ -3780,6 +3855,14 @@
 				if(curConfig.showlayers) {
 					toggleSidePanel();
 				}
+				
+				if(curConfig.gridSnapping) {
+					$('#grid_snapping_on')[0].checked = true;
+				}
+				
+				if(curConfig.snappingStep) {
+					$('#grid_snapping_step').val(curConfig.snappingStep);
+				}
 			});
 			
 			$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
@@ -3811,6 +3894,12 @@
 						case 'paste_in_place':
 							svgCanvas.pasteElements('in_place');
 							break;
+						case 'group':
+							svgCanvas.groupSelectedElements();
+							break;
+						case 'ungroup':         
+							svgCanvas.ungroupSelectedElement();  
+							break;
 						case 'move_down':
 							moveUpDownSelected('Down');
 							break;
@@ -3824,6 +3913,40 @@
 						canv_menu.enableContextMenuItems('#paste,#paste_in_place');
 					}
 			});
+			
+			var lmenu_func = function(action, el, pos) {
+				switch ( action ) {
+					case 'dupe':
+						cloneLayer();
+						break;
+					case 'delete':
+						deleteLayer();
+						break;
+					case 'merge_down':
+						mergeLayer();
+						break;
+					case 'merge_all':
+						svgCanvas.mergeAllLayers();
+						updateContextPanel();
+						populateLayers();
+						break;
+				}
+			}
+			
+			$("#layerlist").contextMenu({
+					menu: 'cmenu_layers',
+					inSpeed: 0
+				},
+				lmenu_func
+			);
+			
+			$("#layer_moreopts").contextMenu({
+					menu: 'cmenu_layers',
+					inSpeed: 0,
+					allowLeft: true
+				},
+				lmenu_func
+			);
 			
 			$('.contextMenu li').mousedown(function(ev) {
 				ev.preventDefault();
@@ -3962,7 +4085,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1706 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1758 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
@@ -3975,48 +4098,47 @@
 // 			var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
 			Editor.putLocale(null, good_langs);
 			
-			// Not sure what this was being used for...commented out until known.
-			// The "message" event listener was interfering with image lib responder
-// 			try{
-// 				json_encode = function(obj){
-// 			  //simple partial JSON encoder implementation
-// 			  if(window.JSON && JSON.stringify) return JSON.stringify(obj);
-// 			  var enc = arguments.callee; //for purposes of recursion
-// 			  if(typeof obj == "boolean" || typeof obj == "number"){
-// 				  return obj+'' //should work...
-// 			  }else if(typeof obj == "string"){
-// 				//a large portion of this is stolen from Douglas Crockford's json2.js
-// 				return '"'+
-// 					  obj.replace(
-// 						/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
-// 					  , function (a) {
-// 						return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-// 					  })
-// 					  +'"'; //note that this isn't quite as purtyful as the usualness
-// 			  }else if(obj.length){ //simple hackish test for arrayish-ness
-// 				for(var i = 0; i < obj.length; i++){
-// 				  obj[i] = enc(obj[i]); //encode every sub-thingy on top
-// 				}
-// 				return "["+obj.join(",")+"]";
-// 			  }else{
-// 				var pairs = []; //pairs will be stored here
-// 				for(var k in obj){ //loop through thingys
-// 				  pairs.push(enc(k)+":"+enc(obj[k])); //key: value
-// 				}
-// 				return "{"+pairs.join(",")+"}" //wrap in the braces
-// 			  }
-// 			}
-// 			  window.addEventListener("message", function(e){
-// 				var cbid = parseInt(e.data.substr(0, e.data.indexOf(";")));
-// 				try{
-// 				e.source.postMessage("SVGe"+cbid+";"+json_encode(eval(e.data)), e.origin);
-// 			  }catch(err){
-// 				e.source.postMessage("SVGe"+cbid+";error:"+err.message, e.origin);
-// 			  }
-// 			}, false)
-// 			}catch(err){
-// 			  window.embed_error = err;
-// 			}
+			// Callback handler for embedapi.js
+ 			try{
+ 				json_encode = function(obj){
+ 			  //simple partial JSON encoder implementation
+ 			  if(window.JSON && JSON.stringify) return JSON.stringify(obj);
+ 			  var enc = arguments.callee; //for purposes of recursion
+ 			  if(typeof obj == "boolean" || typeof obj == "number"){
+ 				  return obj+'' //should work...
+ 			  }else if(typeof obj == "string"){
+ 				//a large portion of this is stolen from Douglas Crockford's json2.js
+ 				return '"'+
+ 					  obj.replace(
+ 						/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
+ 					  , function (a) {
+ 						return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+ 					  })
+ 					  +'"'; //note that this isn't quite as purtyful as the usualness
+ 			  }else if(obj.length){ //simple hackish test for arrayish-ness
+ 				for(var i = 0; i < obj.length; i++){
+ 				  obj[i] = enc(obj[i]); //encode every sub-thingy on top
+ 				}
+ 				return "["+obj.join(",")+"]";
+ 			  }else{
+ 				var pairs = []; //pairs will be stored here
+ 				for(var k in obj){ //loop through thingys
+ 				  pairs.push(enc(k)+":"+enc(obj[k])); //key: value
+ 				}
+ 				return "{"+pairs.join(",")+"}" //wrap in the braces
+ 			  }
+ 			}
+ 			  window.addEventListener("message", function(e){
+ 				var cbid = parseInt(e.data.substr(0, e.data.indexOf(";")));
+ 				try{
+					e.source.postMessage("SVGe"+cbid+";"+json_encode(eval(e.data)), "*");
+ 			  }catch(err){					
+					e.source.postMessage("SVGe"+cbid+";error:"+err.message, "*");
+ 			  }
+ 			}, false)
+ 			}catch(err){
+ 			  window.embed_error = err;
+			}
 			
 		
 		
@@ -4122,6 +4244,9 @@
 		
 		Editor.addExtension = function() {
 			var args = arguments;
+			
+			// Note that we don't want this on Editor.ready since some extensions
+			// may want to run before then (like server_opensave).
 			$(function() {
 				if(svgCanvas) svgCanvas.addExtension.apply(this, args);
 			});
