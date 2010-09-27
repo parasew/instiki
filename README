@@ -22,7 +22,7 @@ Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms
 
 == Details
 
-You need at least Ruby Version 1.8.6 installed on your System. The second dependency is a Database System, but don't worry, maybe you are already served.
+You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your System. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) that Rails supports.
 
 
 === If you are on Windows
@@ -34,8 +34,9 @@ You need at least Ruby Version 1.8.6 installed on your System. The second depend
 
 === If you are on Mac OSX
 
-On Leopard, you are all set.
-- run "ruby bundle" via command-line in the directory.
+On Leopard and Snow Leopard, you are all set.
+- run "sudo gem update --system" via the command-line.
+- run "ruby bundle" in the instiki directory.
 - run "ruby instiki" and there you go!
 
 Tiger ships with a really old Ruby Version (1.8.2) and a broken Readline Library you have to
@@ -47,6 +48,10 @@ Tiger ships with a really old Ruby Version (1.8.2) and a broken Readline Library
 === Any other System
 
 - get Ruby for your System, compile if nessesary: http://ruby-lang.org
+- Depending on the version of Rubygems that came with your Ruby, you may need to
+
+    sudo gem update --system
+    
 - get SQLite or compile from http://sqlite.org (you can also use mysql or any other supported database system if you want)
 - run "ruby bundle"
 - run instiki
@@ -76,7 +81,7 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 * Embedded webserver: uses Mongrel (if installed), or the bundled WEBrick webserver (if not).
 * Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
 * Color diffs: Track changes through revisions
-* Runs on SQLite per default, can be configured to run on PostgreSQL, MySQL, DB2, Firebird, Openbase, Oracle, SQL Server or Sybase
+* Runs on SQLite3 per default, can be configured to run on PostgreSQL, MySQL, DB2, Firebird, Openbase, Oracle, SQL Server or Sybase
 
 
 == Command-line options:
@@ -91,7 +96,7 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 == Migrating from Instiki 0.11-0.18 to 0.19
 
    ruby bundle
-   rake upgrade_instiki
+   ruby bundle exec rake upgrade_instiki
    
 == Download the latest release from:
 
