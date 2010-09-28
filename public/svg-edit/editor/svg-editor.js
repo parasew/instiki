@@ -464,6 +464,8 @@
 				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1,
+				zoomInIcon = 'crosshair',
+				zoomOutIcon = 'crosshair',
 				ui_context = 'toolbars';
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
@@ -523,6 +525,7 @@
 					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
 				}
 				svgCanvas.setMode('select');
+				workarea.css('cursor','auto');
 			};
 			
 			var togglePathEditMode = function(editmode, elems) {
@@ -703,7 +706,6 @@
 					res = svgCanvas.getResolution(),
 					w_area = workarea,
 					canvas_pos = $('#svgcanvas').position();
-				w_area.css('cursor','auto');
 				var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
 				if(!z_info) return;
 				var zoomlevel = z_info.zoom,
@@ -720,6 +722,7 @@
 					// Go to select if a zoom box was drawn
 					setSelectMode();
 				}
+				
 				zoomDone();
 			}
 			
@@ -1565,7 +1568,7 @@
 						.enableContextMenuItems('#group')
 						.disableContextMenuItems('#ungroup');
 				} else {
-					menu_items.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_up,#move_down');
+					menu_items.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
 				}
 				
 				// update history buttons
@@ -1589,7 +1592,7 @@
 					$('#selLayerNames').removeAttr('disabled').val(currentLayer);
 					
 					// Enable regular menu options
-					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_down,#move_up');
+					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
 				}
 				else {
 					$('#selLayerNames').attr('disabled', 'disabled');
@@ -1858,6 +1861,7 @@
 					$('.tools_flyout').fadeOut(fadeFlyouts);
 				}
 				$('#styleoverrides').text('');
+				workarea.css('cursor','auto');
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
 				return true;
@@ -1897,7 +1901,15 @@
 				}).bind('keyup', 'space', function(evt) {
 					evt.preventDefault();
 					svgCanvas.spaceKey = keypan = false;
-				});
+				}).bind('keydown', 'shift', function(evt) {
+					if(svgCanvas.getMode() === 'zoom') {
+						workarea.css('cursor', zoomOutIcon);
+					}
+				}).bind('keyup', 'shift', function(evt) {
+					if(svgCanvas.getMode() === 'zoom') {
+						workarea.css('cursor', zoomInIcon);
+					}
+				})
 			}());
 			
 			
@@ -2263,8 +2275,8 @@
 		
 			var clickZoom = function(){
 				if (toolButtonClick('#tool_zoom')) {
-					workarea.css('cursor','crosshair');
 					svgCanvas.setMode('zoom');
+					workarea.css('cursor', zoomInIcon);
 				}
 			};
 		
@@ -3226,7 +3238,7 @@
 			// Use this SVG elem to test vectorEffect support
 			var test_el = docElem.firstChild;
 			test_el.setAttribute('style','vector-effect:non-scaling-stroke');
-			var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
+			var supportsNonSS = (test_el.style.vectorEffect === 'non-scaling-stroke');
 			test_el.removeAttribute('style');
 			
 			// Use this to test support for blur element. Seems to work to test support in Webkit
@@ -3235,6 +3247,20 @@
 				$('#tool_blur').hide();
 			}
 			$(blur_test).remove();
+			
+			// Test for zoom icon support
+			(function() {
+				var pre = '-' + ua_prefix.toLowerCase() + '-zoom-';
+				var zoom = pre + 'in';
+				workarea.css('cursor', zoom);
+				if(workarea.css('cursor') === zoom) {
+					zoomInIcon = zoom;
+					zoomOutIcon = pre + 'out';
+				}
+				workarea.css('cursor', 'auto');
+			}());
+
+			
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
@@ -3656,8 +3682,8 @@
 					{sel:'#tool_node_delete', fn: deletePathNode, evt: 'click'},
 					{sel:'#tool_openclose_path', fn: opencloseSubPath, evt: 'click'},
 					{sel:'#tool_add_subpath', fn: addSubPath, evt: 'click'},
-					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'shift+up'},
-					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'shift+down'},
+					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'ctrl+shift+]'},
+					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
 					{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
 					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
 					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
@@ -3683,8 +3709,8 @@
 					{key: 'shift+P', fn: selectNext},
 					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
 					{key: [modKey+'down', true], fn: function(){zoomImage(.5);}},
-					{key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
 					{key: [modKey+']', true], fn: function(){moveUpDownSelected('Up');}},
+                                        {key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
 					{key: ['up', true], fn: function(){moveSelected(0,-1);}},
 					{key: ['down', true], fn: function(){moveSelected(0,1);}},
 					{key: ['left', true], fn: function(){moveSelected(-1,0);}},
@@ -3900,11 +3926,17 @@
 						case 'ungroup':         
 							svgCanvas.ungroupSelectedElement();  
 							break;
+                                                case 'move_front':
+                                                        moveToTopSelected();
+                                                        break;
+                                                case 'move_up':
+                                                        moveUpDownSelected('Up');
+                                                        break;
 						case 'move_down':
 							moveUpDownSelected('Down');
 							break;
-						case 'move_up':
-							moveUpDownSelected('Up');
+						case 'move_back':
+							moveToBottomSelected();
 							break;
 
 					}
@@ -4085,7 +4117,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1758 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1762 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
