@@ -22,7 +22,7 @@ Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms
 
 == Details
 
-You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your System. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) that Rails supports.
+You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your System. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
 
 
 === If you are on Windows
