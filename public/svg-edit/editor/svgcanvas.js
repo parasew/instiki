@@ -3705,7 +3705,6 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		var operation = 0;
 		var N = tlist.numberOfItems;
 		
-		
 		// Check if it has a gradient with userSpaceOnUse, in which case
 		// adjust it by recalculating the matrix transform.
 		// TODO: Make this work in Webkit using SVGEditTransformList
@@ -3714,6 +3713,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			if(fill && fill.indexOf('url(') === 0) {
 				var grad = getElem(getUrlFromAttr(fill).substr(1));
 				if(grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
+				
 					//Update the userSpaceOnUse element
 					var grad = $(grad);
 					m = transformListToTransform(tlist).matrix;
@@ -5140,9 +5140,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
 							pathActions.select(t);
 						} // if it was a path
-						else if (selectedElements[0].nodeName == "text" && selectedElements[1] == null) {
-							textActions.select(t, x, y);
-						} // if it was a path
 						// else, if it was selected and this is a shift-click, remove it from selection
 						else if (evt.shiftKey) {
 							if(tempJustSelected != t) {
@@ -5240,7 +5237,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				break;
 			case "text":
 				keep = true;
-				addToSelection([element]);
+				selectOnly([element]);
 				textActions.start(element);
 				break;
 			case "path":
@@ -5320,6 +5317,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			
 		} else if (element != null) {
 			canvas.addedNew = true;
+			
 			var ani_dur = .2, c_ani;
 			if(opac_ani.beginElement && element.getAttribute('opacity') != cur_shape.opacity) {
 				c_ani = $(opac_ani).clone().attr({
@@ -5365,6 +5363,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if(parent === current_group) return;
 		
 		var mouse_target = getMouseTarget(evt);
+		
+		if(mouse_target.tagName === 'text' && current_mode !== 'textedit') {
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
+			textActions.select(mouse_target, pt.x, pt.y);
+		}
 		
 		if(getRotationAngle(mouse_target)) {
 			// Don't do for rotated groups for now
@@ -5438,7 +5441,7 @@ var preventClickDefault = function(img) {
 // Group: Text edit functions
 // Functions relating to editing text elements
 var textActions = canvas.textActions = function() {
-	var curtext, current_text;
+	var curtext;
 	var textinput;
 	var cursor;
 	var selblock;
@@ -5557,7 +5560,6 @@ var textActions = canvas.textActions = function() {
 
 		// No content, so return 0
 		if(chardata.length == 1) return 0;
-		
 		// Determine if cursor should be on left or right of character
 		var charpos = curtext.getCharNumAtPosition(pt);
 		if(charpos < 0) {
@@ -5638,7 +5640,7 @@ var textActions = canvas.textActions = function() {
 	}
 
 	function selectWord(evt) {
-		if(!allow_dbl) return;
+		if(!allow_dbl || !curtext) return;
 	
 		var ept = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = ept.x * current_zoom,
@@ -5662,13 +5664,8 @@ var textActions = canvas.textActions = function() {
 
 	return {
 		select: function(target, x, y) {
-			if (current_text == target) {
-				curtext = target;
-				textActions.toEditMode(x, y);
-			} // going into pathedit mode
-			else {
-				current_text = target;
-			}	
+			curtext = target;
+			textActions.toEditMode(x, y);
 		},
 		start: function(elem) {
 			curtext = elem;
@@ -5712,6 +5709,7 @@ var textActions = canvas.textActions = function() {
 			var sel = selectorManager.requestSelector(curtext).selectorRect;
 			
 			textActions.init();
+
 			$(curtext).css('cursor', 'text');
 			
 // 				if(support.editableText) {
@@ -5763,7 +5761,6 @@ var textActions = canvas.textActions = function() {
 // 			$(textinput).blur(hideCursor);
 		},
 		clear: function() {
-			current_text = null;
 			if(current_mode == "textedit") {
 				textActions.toSelectMode();
 			}
@@ -5821,7 +5818,6 @@ var textActions = canvas.textActions = function() {
 				x: end.x,
 				width: 0
 			});
-			
 			setSelection(textinput.selectionStart, textinput.selectionEnd, true);
 		}
 	}
@@ -8121,6 +8117,57 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 	obj_num++;
 }
 
+// Function convertGradients
+// Converts gradients from userSpaceOnUse to objectBoundingBox
+var convertGradients = this.convertGradients = function(elem) {
+	$(elem).find('linearGradient, radialGradient').each(function() {
+		var grad = this;
+		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
+			// TODO: Support more than one element with this ref by duplicating parent grad
+			var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')],[stroke=url(#' + grad.id + ')]');
+			if(!elems.length) return;
+			
+			// get object's bounding box
+			var bb = elems[0].getBBox();
+			
+			if(grad.tagName === 'linearGradient') {
+				var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
+				
+				$(grad).attr({
+					x1: (g_coords.x1 - bb.x) / bb.width,
+					y1: (g_coords.y1 - bb.y) / bb.height,
+					x2: (g_coords.x2 - bb.x) / bb.width,
+					y2: (g_coords.y2 - bb.y) / bb.height
+				});
+				
+				grad.removeAttribute('gradientUnits');
+			} else {
+				// Note: radialGradient elements cannot be easily converted 
+				// because userSpaceOnUse will keep circular gradients, while
+				// objectBoundingBox will x/y scale the gradient according to
+				// its bbox. 
+				
+				// For now we'll do nothing, though we should probably have
+				// the gradient be updated as the element is moved, as 
+				// inkscape/illustrator do.
+			
+//         				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
+//         				
+// 						$(grad).attr({
+// 							cx: (g_coords.cx - bb.x) / bb.width,
+// 							cy: (g_coords.cy - bb.y) / bb.height,
+// 							r: g_coords.r
+// 						});
+// 						
+// 	        			grad.removeAttribute('gradientUnits');
+			}
+			
+
+		}
+	});
+}
+
+
 // Function: convertToGroup
 // Converts selected/given <use> or child SVG element to a group
 var convertToGroup = this.convertToGroup = function(elem) {
@@ -8194,7 +8241,8 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			}
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
-	
+		convertGradients(g);
+		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
 		walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
@@ -8304,52 +8352,7 @@ this.setSvgString = function(xmlString) {
 			}
 		});
 		
-		// convert gradients with userSpaceOnUse to objectBoundingBox
-		content.find('linearGradient, radialGradient').each(function() {
-			var grad = this;
-			if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
-				// TODO: Support more than one element with this ref by duplicating parent grad
-				var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')],[stroke=url(#' + grad.id + ')]');
-				if(!elems.length) return;
-				
-				// get object's bounding box
-				var bb = elems[0].getBBox();
-				
-				if(grad.tagName === 'linearGradient') {
-					var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
-					
-					$(grad).attr({
-						x1: (g_coords.x1 - bb.x) / bb.width,
-						y1: (g_coords.y1 - bb.y) / bb.height,
-						x2: (g_coords.x2 - bb.x) / bb.width,
-						y2: (g_coords.y1 - bb.y) / bb.height
-					});
-					
-					grad.removeAttribute('gradientUnits');
-				} else {
-					// Note: radialGradient elements cannot be easily converted 
-					// because userSpaceOnUse will keep circular gradients, while
-					// objectBoundingBox will x/y scale the gradient according to
-					// its bbox. 
-					
-					// For now we'll do nothing, though we should probably have
-					// the gradient be updated as the element is moved, as 
-					// inkscape/illustrator do.
-				
-//         				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
-//         				
-// 						$(grad).attr({
-// 							cx: (g_coords.cx - bb.x) / bb.width,
-// 							cy: (g_coords.cy - bb.y) / bb.height,
-// 							r: g_coords.r
-// 						});
-// 						
-// 	        			grad.removeAttribute('gradientUnits');
-				}
-				
-
-			}
-		});
+		convertGradients(content[0]);
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
@@ -8501,6 +8504,7 @@ this.importSvgString = function(xmlString) {
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		setHref(use_el, "#" + symbol.id);
 		findDefs().appendChild(symbol);
+	
 		(current_group || current_layer).appendChild(use_el);
 		use_el.id = getNextId();
 		clearSelection();
@@ -9132,7 +9136,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1759 $)";
+	return "svgcanvas.js ($Rev: 1764 $)";
 };
 
 // Function: setUiStrings
@@ -10648,6 +10652,9 @@ this.ungroupSelectedElement = function() {
 			}
 			
 			var chtlist = getTransformList(elem);
+
+			// Don't process gradient transforms
+			if(~elem.tagName.indexOf('Gradient')) chtlist = null;
 			
 			// Hopefully not a problem to add this. Necessary for elements like <desc/>
 			if(!chtlist) continue;
