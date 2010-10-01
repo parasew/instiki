@@ -142,6 +142,7 @@ class WikiControllerTest < ActionController::TestCase
     
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
+    @tempfile_path.to_s
     begin 
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
@@ -1141,6 +1142,7 @@ class WikiControllerTest < ActionController::TestCase
 % Renames \sqrt as \oldsqrt and redefine root to result in \sqrt[#1]{#2}
 \let\oldroot\root
 \def\root#1#2{\oldroot #1 \of{#2}}
+\renewcommand{\sqrt}[2][]{\oldroot #1 \of{#2}}
 
 % Manually declare the txfonts symbolsC font
 \DeclareSymbolFont{symbolsC}{U}{txsyc}{m}{n}
