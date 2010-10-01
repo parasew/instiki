@@ -97,6 +97,7 @@
 % Renames \sqrt as \oldsqrt and redefine root to result in \sqrt[#1]{#2}
 \let\oldroot\root
 \def\root#1#2{\oldroot #1 \of{#2}}
+\renewcommand{\sqrt}[2][]{\oldroot #1 \of{#2}}
 
 % Manually declare the txfonts symbolsC font
 \DeclareSymbolFont{symbolsC}{U}{txsyc}{m}{n}
