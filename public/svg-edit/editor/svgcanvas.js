@@ -89,8 +89,11 @@ if(window.opera) {
 // config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
-var isOpera = !!window.opera,
-	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
+var userAgent = navigator.userAgent, 
+	// Note: Browser sniffing should only be used if no other detection method is possible
+	isOpera = !!window.opera,
+	isWebkit = userAgent.indexOf("AppleWebKit") >= 0,
+	isGecko = userAgent.indexOf('Gecko/') >= 0,
 	
 	// Object populated later with booleans indicating support for features	
 	support = {},
@@ -406,7 +409,7 @@ var Utils = this.Utils = function() {
 		// Cross-browser compatible method of converting a string to an XML tree
 		// found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 		"text2xml": function(sXML) {
-			if(sXML.indexOf('<svg:svg') !== -1) {
+			if(sXML.indexOf('<svg:svg') >= 0) {
 				sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
 			}
 		
@@ -513,7 +516,7 @@ var svgWhiteListNS = {};
 $.each(svgWhiteList, function(elt,atts){
 	var attNS = {};
 	$.each(atts, function(i, att){
-		if (att.indexOf(':') != -1) {
+		if (att.indexOf(':') >= 0) {
 			var v = att.split(':');
 			attNS[v[1]] = nsRevMap[v[0]];
 		} else {
@@ -559,9 +562,9 @@ var convertToNum, convertToUnit, setUnitAttr;
 			var num = val.substr(0, val.length-1)/100;
 			var res = getResolution();
 			
-			if($.inArray(attr, w_attrs) !== -1) {
+			if(w_attrs.indexOf(attr) >= 0) {
 				return num * res.w;
-			} else if($.inArray(attr, h_attrs) !== -1) {
+			} else if(h_attrs.indexOf(attr) >= 0) {
 				return num * res.h;
 			} else {
 				return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
@@ -594,9 +597,9 @@ var convertToNum, convertToUnit, setUnitAttr;
 					var res = getResolution();
 					unit = '%';
 					val *= 100;
-					if($.inArray(attr, w_attrs) !== -1) {
+					if(w_attrs.indexOf(attr) >= 0) {
 						val = val / res.w;
-					} else if($.inArray(attr, h_attrs) !== -1) {
+					} else if(h_attrs.indexOf(attr) >= 0) {
 						val = val / res.h;
 					} else {
 						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
@@ -621,7 +624,7 @@ var convertToNum, convertToUnit, setUnitAttr;
 	// val - String with the attribute value to check
 	canvas.isValidUnit = function(attr, val) {
 		var valid = false;
-		if($.inArray(attr, unit_attrs) != -1) {
+		if(unit_attrs.indexOf(attr) >= 0) {
 			// True if it's just a number
 			if(!isNaN(val)) {
 				valid = true;
@@ -2134,7 +2137,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 				
 				// Get the BBox from the raw path for these elements
 				var elemNames = ['ellipse','path','line','polyline','polygon'];
-				if($.inArray(elem.tagName, elemNames) != -1) {
+				if(elemNames.indexOf(elem.tagName) >= 0) {
 					bb = good_bb = canvas.convertToPath(elem, true);
 				} else if(elem.tagName == 'rect') {
 					// Look for radius
@@ -2515,7 +2518,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 				while(p--) {
 					var nv = props[p].split(":");
 					// now check that this attribute is supported
-					if (allowedAttrs.indexOf(nv[0]) != -1) {
+					if (allowedAttrs.indexOf(nv[0]) >= 0) {
 						node.setAttribute(nv[0],nv[1]);
 					}
 				}
@@ -2531,8 +2534,8 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 		// (but not for links)
 		var href = getHref(node);
 		if(href && 
-		   $.inArray(node.nodeName, ["filter", "linearGradient", "pattern", 
-									 "radialGradient", "textPath", "use"]) != -1)
+		   ["filter", "linearGradient", "pattern",
+		   "radialGradient", "textPath", "use"].indexOf(node.nodeName) >= 0)
 		{
 			// TODO: we simply check if the first character is a #, is this bullet-proof?
 			if (href[0] != "#") {
@@ -2639,7 +2642,7 @@ var getBBox = this.getBBox = function(elem) {
 		bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
 		bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
 		ret = bb;
-	} else if(~$.inArray(elname, visElems_arr)) {
+	} else if(~visElems_arr.indexOf(elname)) {
 		try { ret = selected.getBBox();} 
 		catch(e) { 
 			// Check if element is child of a foreignObject
@@ -2670,7 +2673,7 @@ var getBBox = this.getBBox = function(elem) {
 // Parameters: 
 // elem - The (text) DOM element to clone
 var ffClone = function(elem) {
-	if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
+	if(isGecko) return elem;
 	var clone = elem.cloneNode(true)
 	elem.parentNode.insertBefore(clone, elem);
 	elem.parentNode.removeChild(elem);
@@ -3216,24 +3219,24 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		var k = tlist.numberOfItems;
 		while (k--) {
 			var xform = tlist.getItem(k);
-			if (xform.type == 0) {
+			if (xform.type === 0) {
 				tlist.removeItem(k);
 			}
 			// remove identity matrices
-			else if (xform.type == 1) {
+			else if (xform.type === 1) {
 				if (isIdentity(xform.matrix)) {
 					tlist.removeItem(k);
 				}
 			}
 			// remove zero-degree rotations
-			else if (xform.type == 4) {
-				if (xform.angle == 0) {
+			else if (xform.type === 4) {
+				if (xform.angle === 0) {
 					tlist.removeItem(k);
 				}
 			}
 		}
 		// End here if all it has is a rotation
-		if(tlist.numberOfItems == 1 && getRotationAngle(selected)) return null;
+		if(tlist.numberOfItems === 1 && getRotationAngle(selected)) return null;
 	}
 	
 	// if this element had no transforms, we are done
@@ -3241,6 +3244,43 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		selected.removeAttribute("transform");
 		return null;
 	}
+
+	// TODO: Make this work for more than 2
+	if (tlist) {
+		var k = tlist.numberOfItems;
+		var mxs = [];
+		while (k--) {
+			var xform = tlist.getItem(k);
+			if (xform.type === 1) {
+				mxs.push([xform.matrix, k]);
+			} else if(mxs.length) {
+				mxs = [];
+			}
+		}
+		if(mxs.length === 2) {
+			var m_new = svgroot.createSVGTransformFromMatrix(matrixMultiply(mxs[1][0], mxs[0][0]));
+			tlist.removeItem(mxs[0][1]);
+			tlist.removeItem(mxs[1][1]);
+			tlist.insertItemBefore(m_new, mxs[1][1]);
+		}
+		
+		// combine matrix + translate
+		k = tlist.numberOfItems;
+		
+		if(k === 2 && tlist.getItem(0).type === 1 && tlist.getItem(1).type === 2) {
+			var mt = svgroot.createSVGTransform();
+			logMatrix(tlist.getItem(0).matrix);
+			logMatrix(transformListToTransform(tlist).matrix);
+			
+			mt.setMatrix(transformListToTransform(tlist).matrix);
+			tlist.clear();
+			tlist.appendItem(mt);
+		}
+	}
+	
+	
+	
+	
 	
 	// Grouped SVG element 
 	var gsvg = $(selected).data('gsvg');
@@ -3503,7 +3543,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						if(child.getAttribute('clip-path')) {
 							// tx, ty
 							var attr = child.getAttribute('clip-path');
-							if($.inArray(attr, clipPaths_done) === -1) {
+							if(clipPaths_done.indexOf(attr) === -1) {
 								updateClipPath(attr, tx, ty);
 								clipPaths_done.push(attr);
 							}							
@@ -3902,9 +3942,6 @@ var isIdentity = function(m) {
 	return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
 }
 
-// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
-// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
-
 // Function: matrixMultiply
 // This function tries to return a SVGMatrix that is the multiplication m1*m2.
 // We also round to zero when it's near zero
@@ -3916,21 +3953,11 @@ var isIdentity = function(m) {
 // The matrix object resulting from the calculation
 var matrixMultiply = this.matrixMultiply = function() {
 	var NEAR_ZERO = 1e-14,
-		multi2 = function(m1, m2) {
-			var m = svgroot.createSVGMatrix();
-			m.a = m1.a*m2.a + m1.c*m2.b;
-			m.b = m1.b*m2.a + m1.d*m2.b,
-			m.c = m1.a*m2.c + m1.c*m2.d,
-			m.d = m1.b*m2.c + m1.d*m2.d,
-			m.e = m1.a*m2.e + m1.c*m2.f + m1.e,
-			m.f = m1.b*m2.e + m1.d*m2.f + m1.f;
-			return m;
-		},
 		args = arguments, i = args.length, m = args[i-1];
 	
 	while(i-- > 1) {
 		var m1 = args[i-1];
-		m = multi2(m1, m);
+		m = m1.multiply(m);
 	}
 	if (Math.abs(m.a) < NEAR_ZERO) m.a = 0;
 	if (Math.abs(m.b) < NEAR_ZERO) m.b = 0;
@@ -4170,8 +4197,7 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 	if (elemsToRemove.length == 0) { return; }
 
 	// find every element and remove it from our array copy
-	var newSelectedItems = new Array(selectedElements.length),
-		newSelectedBBoxes = new Array(selectedBBoxes.length),
+	var newSelectedItems = new Array(selectedElements.length);
 		j = 0,
 		len = selectedElements.length;
 	for (var i = 0; i < len; ++i) {
@@ -4180,7 +4206,6 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 			// keep the item
 			if (elemsToRemove.indexOf(elem) == -1) {
 				newSelectedItems[j] = elem;
-				if (j==0) newSelectedBBoxes[j] = selectedBBoxes[i];
 				j++;
 			}
 			else { // remove the item and its selector
@@ -4190,7 +4215,6 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 	}
 	// the copy becomes the master now
 	selectedElements = newSelectedItems;
-	selectedBBoxes = newSelectedBBoxes;
 };
 
 // Function: selectAllInCurrentLayer
@@ -4273,7 +4297,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// for foreign content, go up until we find the foreignObject
 	// WebKit browsers set the mouse target to the svgcanvas div 
-	if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
+	if ([mathns, htmlns].indexOf(mouse_target.namespaceURI) >= 0 && 
 		mouse_target.id != "svgcanvas") 
 	{
 		while (mouse_target.nodeName != "foreignObject") {
@@ -4284,7 +4308,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// Get the desired mouse_target with jQuery selector-fu
 	// If it's root-like, select the root
-	if($.inArray(mouse_target, [svgroot, container, svgcontent, current_layer]) !== -1) {
+	if([svgroot, container, svgcontent, current_layer].indexOf(mouse_target) >= 0) {
 		return svgroot;
 	}
 	
@@ -4365,7 +4389,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		// This would seem to be unnecessary...
-// 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
+// 		if(['select', 'resize'].indexOf(current_mode) == -1) {
 // 			setGradient();
 // 		}
 		
@@ -4830,13 +4854,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					sy = height ? (height+dy)/height : 1, 
 					sx = width ? (width+dx)/width : 1;
 				// if we are dragging on the north side, then adjust the scale factor and ty
-				if(current_resize_mode.indexOf("n") != -1) {
+				if(current_resize_mode.indexOf("n") >= 0) {
 					sy = height ? (height-dy)/height : 1;
 					ty = height;
 				}
 				
 				// if we dragging on the east side, then adjust the scale factor and tx
-				if(current_resize_mode.indexOf("w") != -1) {
+				if(current_resize_mode.indexOf("w") >= 0) {
 					sx = width ? (width-dx)/width : 1;
 					tx = width;
 				}
@@ -6442,7 +6466,7 @@ var pathActions = this.pathActions = function() {
 				var index = indexes[i];
 				var seg = p.segs[index];
 				if(seg.ptgrip) {
-					if($.inArray(index, p.selected_pts) == -1 && index >= 0) {
+					if(p.selected_pts.indexOf(index) == -1 && index >= 0) {
 						p.selected_pts.push(index);
 					}
 				}
@@ -6466,7 +6490,7 @@ var pathActions = this.pathActions = function() {
 		}
 
 		this.removePtFromSelection = function(index) {
-			var pos = $.inArray(index, p.selected_pts);
+			var pos = p.selected_pts.indexOf(index);
 			if(pos == -1) {
 				return;
 			} 
@@ -7691,7 +7715,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 	while (i--) {
 		var defelem = defelems[i];
 		var id = defelem.id;
-		if($.inArray(id, defelem_uses) == -1) {
+		if(defelem_uses.indexOf(id) == -1) {
 			// Not found, so remove
 			defelem.parentNode.removeChild(defelem);
 			numRemoved++;
@@ -7723,7 +7747,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 	
 	// Keep SVG-Edit comment on top
 	$.each(svgcontent.childNodes, function(i, node) {
-		if(i && node.nodeType == 8 && node.data.indexOf('Created with') != -1) {
+		if(i && node.nodeType == 8 && node.data.indexOf('Created with') >= 0) {
 			svgcontent.insertBefore(node, svgcontent.firstChild);
 		}
 	});
@@ -7815,7 +7839,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 
 				// only serialize attributes we don't use internally
 				if (attrVal != "" && 
-					$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
+					['width','height','xmlns','x','y','viewBox','id','overflow'].indexOf(attr.localName) == -1) 
 				{
 
 					if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
@@ -7830,7 +7854,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 				attr = attrs.item(i);
 				var attrVal = toXml(attr.nodeValue);
 				//remove bogus attributes added by Gecko
-				if ($.inArray(attr.localName, ['-moz-math-font-style', '_moz-math-font-style']) !== -1) continue;
+				if (['-moz-math-font-style', '_moz-math-font-style'].indexOf(attr.localName) >= 0) continue;
 				if (attrVal != "") {
 					if(attrVal.indexOf('pointer-events') === 0) continue;
 					if(attr.localName === "class" && attrVal.indexOf('se_') === 0) continue;
@@ -8071,8 +8095,8 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			var href = getHref(n);
 			// TODO: what if an <image> or <a> element refers to an element internally?
 			if(href && 
-				$.inArray(n.nodeName, ["filter", "linearGradient", "pattern", 
-							 "radialGradient", "textPath", "use"]) != -1)
+				["filter", "linearGradient", "pattern",
+				"radialGradient", "textPath", "use"].indexOf(n.nodeName) >= 0)
 			{
 				var refid = href.substr(1);
 				if (!(refid in ids)) {
@@ -8120,7 +8144,15 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 // Function convertGradients
 // Converts gradients from userSpaceOnUse to objectBoundingBox
 var convertGradients = this.convertGradients = function(elem) {
-	$(elem).find('linearGradient, radialGradient').each(function() {
+	var elems = $(elem).find('linearGradient, radialGradient');
+	if(!elems.length && isWebkit) {
+		// Bug in webkit prevents regular *Gradient selector search
+		elems = $(elem).find('*').filter(function() {
+			return (this.tagName.indexOf('Gradient') >= 0);
+		});
+	}
+	
+	elems.each(function() {
 		var grad = this;
 		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
 			// TODO: Support more than one element with this ref by duplicating parent grad
@@ -8128,7 +8160,7 @@ var convertGradients = this.convertGradients = function(elem) {
 			if(!elems.length) return;
 			
 			// get object's bounding box
-			var bb = elems[0].getBBox();
+			var bb = getBBox(elems[0]);
 			
 			if(grad.tagName === 'linearGradient') {
 				var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
@@ -8199,9 +8231,14 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		ts = $elem.attr('transform');
 		var pos = $elem.attr(['x','y']);
-		
+
+// 		if(ts.length) {
+// 
+// 			ts += " ";
+// 		}
+
 		// Not ideal, but works
-		ts += "translate(" + pos.x + "," + pos.y + ")";
+		ts += "translate(" + (pos.x || 0) + "," + (pos.x || 0) + ")";
 		
 		var prev = $elem.prev();
 		
@@ -8223,6 +8260,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 // 			g.appendChild(elem.firstChild.cloneNode(true));
 		if (ts)
 			g.setAttribute("transform", ts);
+			console.log('t',g.getAttribute('transform'));
 		
 		var parent = elem.parentNode;
 		
@@ -8241,6 +8279,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			}
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
+		
 		convertGradients(g);
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
@@ -8258,7 +8297,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		// TODO: See what ungroupSelectedElement does to absorb matrix
 		canvas.ungroupSelectedElement();
 		canvas.groupSelectedElements();
-		
+// 		
 		addCommandToHistory(batchCmd);
 		
 	} else {
@@ -8339,6 +8378,12 @@ this.setSvgString = function(xmlString) {
 				groupSvgElem(this);
 			}
 		});
+		
+		// For Firefox: Put all gradients in defs
+		if(isGecko) {
+			content.find('linearGradient, radialGradient').appendTo(findDefs());
+		}
+
 		
 		// Set ref element for <use> elements
 		
@@ -8489,16 +8534,23 @@ this.importSvgString = function(xmlString) {
 		
 		// Uncomment this once Firefox has fixed their symbol bug:
 		// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
-// 		var symbol = svgdoc.createElementNS(svgns, "symbol");
-// 		while (svg.firstChild) {
-// 			symbol.appendChild(svg.firstChild);
-// 		}
-// 		var attrs = svg.attributes;
-// 		for(var i=0; i < attrs.length; i++) {
-// 			var attr = attrs[i];
-// 			symbol.setAttribute(attr.nodeName, attr.nodeValue);
-// 		}
-		var symbol = svg;
+		var symbol = svgdoc.createElementNS(svgns, "symbol");
+		var defs = findDefs();
+		
+		while (svg.firstChild) {
+			var first = svg.firstChild;
+			if(isGecko && first.tagName === 'defs') {
+				// Move all gradients into root for Firefox
+				$(first).find('linearGradient, radialGradient').appendTo(defs);
+			}
+			symbol.appendChild(first);
+		}
+		var attrs = svg.attributes;
+		for(var i=0; i < attrs.length; i++) {
+			var attr = attrs[i];
+			symbol.setAttribute(attr.nodeName, attr.nodeValue);
+		}
+// 		var symbol = svg;
 		symbol.id = getNextId();
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
@@ -8577,7 +8629,7 @@ var identifyLayers = function() {
 	// create a new layer and add all the orphans to it
 	if (orphans.length > 0) {
 		var i = 1;
-		while ($.inArray(("Layer " + i), layernames) != -1) { i++; }
+		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
 		var newname = "Layer " + i;
 		current_layer = svgdoc.createElementNS(svgns, "g");
 		var layer_title = svgdoc.createElementNS(svgns, "title");
@@ -9136,7 +9188,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1764 $)";
+	return "svgcanvas.js ($Rev: 1775 $)";
 };
 
 // Function: setUiStrings
@@ -9657,7 +9709,7 @@ this.getStrokeWidth = function() {
 // Parameters:
 // val - A Float indicating the new stroke width value
 this.setStrokeWidth = function(val) {
-	if(val == 0 && $.inArray(current_mode, ['line', 'path']) != -1) {
+	if(val == 0 && ['line', 'path'].indexOf(current_mode) >= 0) {
 		canvas.setStrokeWidth(1);
 		return;
 	}
@@ -10313,7 +10365,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// Set x,y vals on elements that don't have them
-		if((attr == 'x' || attr == 'y') && $.inArray(elem.tagName, ['g', 'polyline', 'path']) != -1) {
+		if((attr == 'x' || attr == 'y') && ['g', 'polyline', 'path'].indexOf(elem.tagName) >= 0) {
 			var bbox = getStrokedBBox([elem]);
 			var diff_x = attr == 'x' ? newValue - bbox.x : 0;
 			var diff_y = attr == 'y' ? newValue - bbox.y : 0;
@@ -10322,7 +10374,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
-		if (elem.tagName == "g" && $.inArray(attr, ['transform', 'opacity', 'filter']) !== -1);
+		if (elem.tagName == "g" && ['transform', 'opacity', 'filter'].indexOf(attr) >= 0);
 		var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 		if (oldval == null)  oldval = "";
 		if (oldval != String(newValue)) {
@@ -10356,7 +10408,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
 			if(elem.nodeName == 'text') {
-				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1 && elem.textContent) {
+				if((newValue+'').indexOf('url') == 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
 					elem = ffClone(elem);
 				}
 			}
@@ -10364,7 +10416,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// codedread: it is now possible for this function to be called with elements
 			// that are not in the selectedElements array, we need to only request a
 			// selector if the element is in that array
-			if ($.inArray(elem, selectedElements) != -1) {
+			if (selectedElements.indexOf(elem) >= 0) {
 				setTimeout(function() {
 					// Due to element replacement, this element may no longer
 					// be part of the DOM
@@ -10566,6 +10618,12 @@ this.ungroupSelectedElement = function() {
 	if($(g).data('gsvg') || $(g).data('symbol')) {
 		// Is svg, so actually convert to group
 
+		convertToGroup(g);
+		return;
+	} else if(g.tagName === 'use') {
+		// Somehow doesn't have data set, so retrieve
+		var symbol = getElem(getHref(g).substr(1));
+		$(g).data('symbol', symbol);
 		convertToGroup(g);
 		return;
 	}
