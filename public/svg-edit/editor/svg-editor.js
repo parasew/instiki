@@ -51,7 +51,8 @@
 				wireframe: false,
 				colorPickerCSS: null,
 				gridSnapping: false,
-				snappingStep: 10
+				snappingStep: 10,
+				showRulers: true
 			},
 			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
@@ -93,7 +94,7 @@
 			if(val) curPrefs[key] = val;
 			key = 'svg-edit-'+key;
 			var host = location.hostname,
-				onweb = host && host.indexOf('.') != -1,
+				onweb = host && host.indexOf('.') >= 0,
 				store = (val != undefined),
 				storage = false;
 			// Some FF versions throw security errors here
@@ -251,7 +252,7 @@
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
 				id_match: false,
-				no_img: true,
+ 				no_img: (!!window.opera), // Opera gives odd behavior w/images
 				fallback_path: curConfig.imgPath,
 				fallback:{
 					'new_image':'clear.png',
@@ -435,6 +436,12 @@
 					});
 					
 					svgEditor.runCallbacks();
+					
+					setTimeout(function() {
+						$('.flyout_arrow_horiz:empty').each(function() {
+							$(this).append($.getSvgIcon('arrow_right').width(5).height(5));
+						});
+					}, 1);
 				}
 			});
 
@@ -452,7 +459,7 @@
 			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4",
 			           ];
 	
-				isMac = (navigator.platform.indexOf("Mac") != -1);
+				isMac = (navigator.platform.indexOf("Mac") >= 0);
 				modKey = (isMac ? "meta+" : "ctrl+"); // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
@@ -646,8 +653,9 @@
 					// unless we're already in always set the mode of the editor to select because
 					// upon creation of a text element the editor is switched into
 					// select mode and this event fires - we need our UI to be in sync
-					
-					if (mode != "multiselect" && !is_node) {
+
+					if (mode !== "multiselect" && !is_node) {
+						// FIXME: This also needs to fire if only one element is selected via multiselect
 						updateToolbar();
 					} 
 					
@@ -738,6 +746,7 @@
 			
 			var contextChanged = function(win, context) {
 				$('#workarea,#sidepanels').css('top', context?100:75);
+				$('#rulers').toggleClass('moved', context);
 				if(cur_context && !context) {
 					// Back to normal
 					workarea[0].scrollTop -= 25;
@@ -1237,7 +1246,7 @@
 					$.svgIcons(svgicons, {
 						w:24, h:24,
 						id_match: false,
-						no_img: true,
+						no_img: (!!window.opera),
 						fallback: fallback_obj,
 						placement: placement_obj,
 						callback: function(icons) {
@@ -1281,7 +1290,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && $.inArray(selectedElement.tagName, ['use', 'image', 'foreignObject', 'g', 'a']) === -1) {
+				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
 				
 					// get opacity values
 					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
@@ -1444,12 +1453,12 @@
 					if(!is_node && currentMode != 'pathedit') {
 						$('#selected_panel').show();
 						// Elements in this array already have coord fields
-						if($.inArray(elname, ['line', 'circle', 'ellipse']) != -1) {
+						if(['line', 'circle', 'ellipse'].indexOf(elname) >= 0) {
 							$('#xy_panel').hide();
 						} else {
 							var x,y;
 							// Get BBox vals for g, polyline and path
-							if($.inArray(elname, ['g', 'polyline', 'path']) != -1) {
+							if(['g', 'polyline', 'path'].indexOf(elname) >= 0) {
 								var bb = svgCanvas.getStrokedBBox([elem]);
 								if(bb) {
 									x = bb.x;
@@ -1465,7 +1474,7 @@
 						}
 						
 						// Elements in this array cannot be converted to a path
-						var no_path = $.inArray(elname, ['image', 'text', 'path', 'g', 'use']) == -1;
+						var no_path = ['image', 'text', 'path', 'g', 'use'].indexOf(elname) == -1;
 						$('#tool_topath').toggle(no_path);
 						$('#tool_reorient').toggle(elname == 'path');
 						$('#tool_reorient').toggleClass('disabled', angle == 0);
@@ -1658,7 +1667,7 @@
 			
 			var changeStrokeWidth = function(ctl) {
 				var val = ctl.value;
-				if(val == 0 && selectedElement && $.inArray(selectedElement.nodeName, ['line', 'polyline']) != -1) {
+				if(val == 0 && selectedElement && ['line', 'polyline'].indexOf(selectedElement.nodeName) >= 0) {
 					val = ctl.value = 1;
 				}
 				svgCanvas.setStrokeWidth(val);
@@ -2698,6 +2707,11 @@
 				// set grid setting
 				curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
 				curConfig.snappingStep = $('#grid_snapping_step').val();
+				curConfig.showRulers = $('#show_rulers')[0].checked;
+				
+				$('#rulers').toggle(curConfig.showRulers);
+				if(curConfig.showRulers) updateRulers();
+				
 				svgCanvas.setConfig(curConfig);
 
 				updateCanvas();
@@ -2714,7 +2728,7 @@
 			}
 			
 			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
-				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id, true) : icon_id;
+				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
 				if(!icon) {
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
@@ -3044,6 +3058,14 @@
 					win_wh[type] = curval;
 				});
 			});
+			
+			(function() {
+				workarea.scroll(function() {
+					$('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
+					$('#ruler_y')[0].scrollTop = workarea[0].scrollTop;
+				});
+
+			}());
 			
 			$('#url_notice').click(function() {
 				$.alert(this.title);
@@ -3433,6 +3455,8 @@
 				workarea.css('right', parseInt(workarea.css('right'))+deltax);
 				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
 				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+				var ruler_x = $('#ruler_x');
+				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
 			}
 			
 			$('#sidepanel_handle')
@@ -3464,9 +3488,11 @@
 				var deltax = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
 				var sidepanels = $('#sidepanels');
 				var layerpanel = $('#layerpanel');
-				workarea.css('right', parseInt(workarea.css('right'))+deltax);
-				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
-				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+				var ruler_x = $('#ruler_x');
+				workarea.css('right', parseInt(workarea.css('right')) + deltax);
+				sidepanels.css('width', parseInt(sidepanels.css('width')) + deltax);
+				layerpanel.css('width', parseInt(layerpanel.css('width')) + deltax);
+				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
 			};
 			
 			// this function highlights the layer passed in (by fading out the other layers)
@@ -4111,13 +4137,115 @@
 					w_area[0].scrollLeft = new_ctr.x - w_orig/2;
 					w_area[0].scrollTop = new_ctr.y - h_orig/2;
 				}
+				
+				if(curConfig.showRulers) {
+					updateRulers(cnvs, zoom);
+					workarea.scroll();
+				}
+			}
+			
+			// Make [1,2,5] array
+			var r_intervals = [];
+			for(var i = .1; i < 1E5; i *= 10) {
+				r_intervals.push(1 * i);
+				r_intervals.push(2 * i);
+				r_intervals.push(5 * i);
+			}
+			
+			function updateRulers(scanvas, zoom) {
+				if(!zoom) zoom = svgCanvas.getZoom();
+				if(!scanvas) scanvas = $("#svgcanvas");
+				
+				var c_elem = svgCanvas.getContentElem();
+				
+				for(var d = 0; d < 2; d++) {
+					var is_x = (d === 0);
+					var dim = is_x ? 'x' : 'y';
+					var lentype = is_x?'width':'height';
+					
+					var content_d = c_elem.getAttribute(dim)-0;
+					
+					var hcanv = $('#ruler_' + dim + ' canvas')[0];
+					// Set the canvas size to the width of the container
+					var len = hcanv[lentype] = scanvas[lentype]();
+					var ctx = hcanv.getContext("2d");
+					
+					var unit = 1; // 1 = 1px
+					
+					// Calculate the main number interval
+					var raw_m = 50 / zoom;
+					
+					var multi = 1;
+					for(var i = 0; i < r_intervals.length; i++) {
+						var num = r_intervals[i];
+						multi = num;
+						if(raw_m <= num) {
+							break;
+						}
+					}
+					
+					var big_int = unit * multi * zoom;
+					
+					ctx.font = "9px sans-serif";
+					
+					var ruler_d = ((content_d / zoom) % multi) * zoom;
+					
+					for (; ruler_d < len; ruler_d += big_int) {
+						var real_d = Math.round((ruler_d) - content_d );
+	
+						var cur_d = Math.round(ruler_d) + .5;
+						if(is_x) {
+							ctx.moveTo(cur_d, 15);
+							ctx.lineTo(cur_d, 0);
+						} else {
+							ctx.moveTo(15, cur_d);
+							ctx.lineTo(0, cur_d);
+						}
+	
+						var label = Math.round(real_d / zoom);
+						
+						// Do anything special for negative numbers?
+// 						var is_neg = label < 0;
+// 						real_d2 = Math.abs(real_d2);
+						
+						// Change 1000s to Ks
+						if(label !== 0 && label !== 1000 && label % 1000 === 0) {
+							label = (label / 1000) + 'K';
+						}
+						
+						if(is_x) {
+							ctx.fillText(label, ruler_d+2, 8);
+						} else {
+							var str = (label+'').split('');
+							for(var i = 0; i < str.length; i++) {
+								ctx.fillText(str[i], 1, (ruler_d+9) + i*9);
+							}
+						}
+						
+						var part = big_int / 10;
+						for(var i = 1; i < 10; i++) {
+							var sub_d = Math.round(ruler_d + part * i) + .5;
+							var line_num = (i % 2)?12:10;
+							if(is_x) {
+								ctx.moveTo(sub_d, 15);
+								ctx.lineTo(sub_d, line_num);
+							} else {
+								ctx.moveTo(15, sub_d);
+								ctx.lineTo(line_num ,sub_d);
+							}
+						}
+					}
+					
+					ctx.strokeStyle = "#000";
+					ctx.stroke();
+				}
 			}
 		
 // 			$(function() {
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1762 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1774 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		

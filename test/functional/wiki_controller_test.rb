@@ -142,6 +142,7 @@ class WikiControllerTest < ActionController::TestCase
     
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
+    # some wacky bug in Ruby 1.9.2p0's Tempfile is fixed by
     @tempfile_path.to_s
     begin 
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
