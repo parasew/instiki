@@ -1069,7 +1069,7 @@ class WikiControllerTest < ActionController::TestCase
 %
 %  \color{} with HTML colorspec
 %  \bgcolor
-%  \array
+%  \array with options (without options, it's equivalent to the matrix environment)
 
 % Of the standard HTML named colors, white, black, red, green, blue and yellow
 % are predefined in the color package. Here are the rest.
@@ -1198,6 +1198,9 @@ class WikiControllerTest < ActionController::TestCase
 \mkern2mu\raise4\p@\hbox{.}\mkern1mu
 \raise7\p@\vbox{\kern7\p@\hbox{.}}\mkern1mu}}
 \makeatother
+
+%% Fix array
+\newcommand{\itexarray}[1]{\begin{matrix}#1\end{matrix}}
 
 %% Renaming existing commands
 \newcommand{\underoverset}[3]{\underset{#1}{\overset{#2}{#3}}}

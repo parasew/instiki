@@ -29,6 +29,7 @@ module MaRuKu
         return str unless self.get_setting(:html_math_engine) == 'itex2mml'
         s = str.gsub("\\mathop{", "\\operatorname{")
         s.gsub!(/\\begin\{svg\}.*?\\end\{svg\}/m, " ")
+        s.gsub!("\\array{","\\itexarray{")
         s.gsub("\\space{", "\\itexspace{")
       end
     end
