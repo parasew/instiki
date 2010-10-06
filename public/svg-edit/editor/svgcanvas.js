@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -447,8 +447,8 @@ var canvas = this,
 	htmlns = "http://www.w3.org/1999/xhtml",
 	mathns = "http://www.w3.org/1998/Math/MathML",
 	
-	// Map of units, those set to 0 are updated later based on calculations
-	unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0},
+	// Map of units, updated later based on px conversion.
+	unit_types = {px: 1},
 
 	//nonce to uniquify id's
 	nonce = Math.floor(Math.random()*100001),
@@ -538,7 +538,7 @@ $(opac_ani).attr({
 // Group: Unit conversion functions
 
 // Set the scope for these functions
-var convertToNum, convertToUnit, setUnitAttr;
+var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 
 (function() {
 	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
@@ -590,7 +590,7 @@ var convertToNum, convertToUnit, setUnitAttr;
 			// New value is a number, so check currently used unit
 			var old_val = elem.getAttribute(attr);
 			
-			if(old_val !== null && isNaN(old_val)) {
+			if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
 				// Old value was a number, so get unit, then convert
 				var unit;
 				if(old_val.substr(-1) === '%') {
@@ -604,9 +604,12 @@ var convertToNum, convertToUnit, setUnitAttr;
 					} else {
 						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
 					}
-
 				} else {
-					unit = old_val.substr(-2);
+					if(curConfig.baseUnit !== 'px') {
+						unit = curConfig.baseUnit;
+					} else {
+						unit = old_val.substr(-2);
+					}
 					val = val / unit_types[unit];
 				}
 				
@@ -654,6 +657,56 @@ var convertToNum, convertToUnit, setUnitAttr;
 		} else valid = true;			
 		
 		return valid;
+	}
+	
+	// Function: getUnits
+	// Returns the unit object with values for each unit
+	canvas.getUnits = function() {
+		return unit_types;
+	}
+	
+	// Function: unitConvertAttrs
+	// Converts all applicable attributes to the given baseUnit
+	unitConvertAttrs = canvas.unitConvertAttrs = function(element) {
+		var elName = element.tagName;
+		var unit = curConfig.baseUnit;
+		var attrs;
+		switch (elName)
+		{
+			case "line":
+				attrs = ['x1', 'x2', 'y1', 'y2'];
+				break;
+			case "circle":
+				attrs = ['cx', 'cy', 'r'];
+				break;
+			case "ellipse":
+				attrs = ['cx', 'cy', 'rx', 'ry'];
+				break;
+			case "foreignObject":
+			case "rect":
+			case "image":
+			case "use":
+				attrs = ['x', 'y', 'width', 'height'];
+				break;
+			case "text":
+				attrs = ['x', 'y'];
+				break;
+		}
+		if(!attrs) return;
+		var len = attrs.length
+		for(var i = 0; i < len; i++) {
+			var attr = attrs[i];
+			var cur = element.getAttribute(attr);
+			if(cur) {
+				if(!isNaN(cur)) {
+					element.setAttribute(attr, (cur / unit_types[unit]) + unit);
+				} else {
+					// Convert existing?
+				}
+			}
+		}
+		
+		
 	}
 	
 })();
@@ -2046,6 +2099,8 @@ var shortFloat = function(val) {
 		return Number(Number(val).toFixed(digits));
 	} else if($.isArray(val)) {
 		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
+	} else {
+		return parseFloat(val).toFixed(digits) - 0;
 	}
 }
 	
@@ -5107,7 +5162,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 		var real_x = x;
 		var real_y = y;
-
+		
+		var useUnit = (curConfig.baseUnit !== 'px');
 		
 		started = false;
 		switch (current_mode)
@@ -5341,6 +5397,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			
 		} else if (element != null) {
 			canvas.addedNew = true;
+			
+			if(useUnit) unitConvertAttrs(element);
 			
 			var ani_dur = .2, c_ani;
 			if(opac_ani.beginElement && element.getAttribute('opacity') != cur_shape.opacity) {
@@ -7800,6 +7858,9 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 // String with the given element as an SVG tag
 var svgToString = this.svgToString = function(elem, indent) {
 	var out = new Array(), toXml = Utils.toXml;
+	
+	var unit = curConfig.baseUnit
+	var unit_re = new RegExp('^-?[\\d\\.]+' + unit + '$');
 
 	if (elem) {
 		cleanupElement(elem);
@@ -7810,7 +7871,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 		
 		for (var i=0; i<indent; i++) out.push(" ");
 		out.push("<"); out.push(elem.nodeName);			
-		if(elem.id == 'svgcontent') {
+		if(elem.id === 'svgcontent') {
 			// Process root element separately
 			var res = getResolution();
 			out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
@@ -7830,6 +7891,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 			});
 			
 			var i = attrs.length;
+			var attr_names = ['width','height','xmlns','x','y','viewBox','id','overflow'];
 			while (i--) {
 				attr = attrs.item(i);
 				var attrVal = toXml(attr.nodeValue);
@@ -7838,8 +7900,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 				if(attr.nodeName.indexOf('xmlns:') === 0) continue;
 
 				// only serialize attributes we don't use internally
-				if (attrVal != "" && 
-					['width','height','xmlns','x','y','viewBox','id','overflow'].indexOf(attr.localName) == -1) 
+				if (attrVal != "" && attr_names.indexOf(attr.localName) == -1) 
 				{
 
 					if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
@@ -7850,11 +7911,12 @@ var svgToString = this.svgToString = function(elem, indent) {
 				}
 			}
 		} else {
+			var moz_attrs = ['-moz-math-font-style', '_moz-math-font-style'];
 			for (var i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
 				var attrVal = toXml(attr.nodeValue);
 				//remove bogus attributes added by Gecko
-				if (['-moz-math-font-style', '_moz-math-font-style'].indexOf(attr.localName) >= 0) continue;
+				if (moz_attrs.indexOf(attr.localName) >= 0) continue;
 				if (attrVal != "") {
 					if(attrVal.indexOf('pointer-events') === 0) continue;
 					if(attr.localName === "class" && attrVal.indexOf('se_') === 0) continue;
@@ -7862,6 +7924,8 @@ var svgToString = this.svgToString = function(elem, indent) {
 					if(attr.localName === 'd') attrVal = pathActions.convertPath(elem, true);
 					if(!isNaN(attrVal)) {
 						attrVal = shortFloat(attrVal);
+					} else if(unit_re.test(attrVal)) {
+						attrVal = shortFloat(attrVal) + unit;
 					}
 					
 					// Embed images when saving 
@@ -8060,6 +8124,9 @@ this.randomizeIds = function() {
 // g - The parent element of the tree to give unique IDs
 var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
+	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
+	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "textPath", "use"];
+	
 	walkTree(g, function(n) {
 		// if it's an element node
 		if (n.nodeType == 1) {
@@ -8075,7 +8142,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			
 			// now search for all attributes on this element that might refer
 			// to other elements
-			$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+			$.each(ref_attrs,function(i,attr) {
 				var attrnode = n.getAttributeNode(attr);
 				if (attrnode) {
 					// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -8094,9 +8161,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			// check xlink:href now
 			var href = getHref(n);
 			// TODO: what if an <image> or <a> element refers to an element internally?
-			if(href && 
-				["filter", "linearGradient", "pattern",
-				"radialGradient", "textPath", "use"].indexOf(n.nodeName) >= 0)
+			if(href && ref_elems.indexOf(n.nodeName) >= 0)
 			{
 				var refid = href.substr(1);
 				if (!(refid in ids)) {
@@ -9188,7 +9253,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1775 $)";
+	return "svgcanvas.js ($Rev: 1777 $)";
 };
 
 // Function: setUiStrings
@@ -10355,6 +10420,9 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 	}
 	var elems = elems || selectedElements;
 	var i = elems.length;
+	var no_xy_elems = ['g', 'polyline', 'path'];
+	var good_g_attrs = ['transform', 'opacity', 'filter'];
+	
 	while (i--) {
 		var elem = elems[i];
 		if (elem == null) continue;
@@ -10365,19 +10433,19 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// Set x,y vals on elements that don't have them
-		if((attr == 'x' || attr == 'y') && ['g', 'polyline', 'path'].indexOf(elem.tagName) >= 0) {
+		if((attr === 'x' || attr === 'y') && no_xy_elems.indexOf(elem.tagName) >= 0) {
 			var bbox = getStrokedBBox([elem]);
-			var diff_x = attr == 'x' ? newValue - bbox.x : 0;
-			var diff_y = attr == 'y' ? newValue - bbox.y : 0;
+			var diff_x = attr === 'x' ? newValue - bbox.x : 0;
+			var diff_y = attr === 'y' ? newValue - bbox.y : 0;
 			canvas.moveSelectedElements(diff_x*current_zoom, diff_y*current_zoom, true);
 			continue;
 		}
 		
-		// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
-		if (elem.tagName == "g" && ['transform', 'opacity', 'filter'].indexOf(attr) >= 0);
-		var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
+		// only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
+		if (elem.tagName === "g" && good_g_attrs.indexOf(attr) >= 0);
+		var oldval = attr === "#text" ? elem.textContent : elem.getAttribute(attr);
 		if (oldval == null)  oldval = "";
-		if (oldval != String(newValue)) {
+		if (oldval !== String(newValue)) {
 			if (attr == "#text") {
 				var old_w = getBBox(elem).width;
 				elem.textContent = newValue;
@@ -11332,10 +11400,18 @@ function disableAdvancedTextEdit() {
 	var rect = document.createElementNS(svgns,'rect');
 	rect.setAttribute('width',"1em");
 	rect.setAttribute('height',"1ex");
+	rect.setAttribute('x',"1in");
 	svgcontent.appendChild(rect);
 	var bb = rect.getBBox();
 	unit_types.em = bb.width;
 	unit_types.ex = bb.height;
+	var inch = bb.x;
+	unit_types['in'] = inch;
+	unit_types.cm = inch / 2.54;
+	unit_types.mm = inch / 25.4;
+	unit_types.pt = inch / 72;
+	unit_types.pc = inch / 6;
+	unit_types['%'] = 0;
 	svgcontent.removeChild(rect);
 }());
 
