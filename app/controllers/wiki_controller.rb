@@ -198,6 +198,11 @@ EOL
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
     end
+    if @tex_content == ''
+      flash[:error] = "You didn't select any pages to export."
+      redirect_to :back
+      return
+    end
     expire_action :controller => 'wiki', :web => @web.address, :action => 'list', :category => params['category']
     render(:layout => 'tex')
   end

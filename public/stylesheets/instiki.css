@@ -420,6 +420,10 @@ font-size: 1em;
 line-height: 1.125;
 }
 
+ul#sortable_pages {
+list-style-type:none;
+padding-left:0;
+}
 ul#sortable_pages li {
 border: 1px solid #FFF;
 }
