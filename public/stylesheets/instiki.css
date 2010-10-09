@@ -215,7 +215,10 @@ margin-right: 30px;
 }
 #allPages h2, #wantedPages h2 {
 font-size: 1.2em;
-} 
+}
+#allPages label {
+font-size: .8em;
+}
 
 .pageType {
 font-size: .75em;
@@ -415,6 +418,13 @@ padding:0;
 textarea#content {
 font-size: 1em;
 line-height: 1.125;
+}
+
+ul#sortable_pages li {
+border: 1px solid #FFF;
+}
+ul#sortable_pages li:hover {
+border: 1px solid blue;
 }
 
 merror {display:inline;font-size:1em;}
