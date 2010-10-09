@@ -19,12 +19,14 @@
 <input type="hidden" name="category" value="<%= params['category'] %>"/>
 <%- end -%>
 <ul id="sortable_pages" style="list-style-type:none">
-  <%- @pages_in_category.each do |page| -%>
+  <% @pages_in_category.each do |page| %>
     <% content_tag_for :li, page do %>
-       <input type="checkbox" name="<%= page.name %>" value="tex"/>
+    
+      <input type="checkbox" name="<%= page.name %>" value="tex"/>       
       <%= link_to_existing_page page, truncate(page.plain_name, :length => 35) %>
     <% end %>
-  <%- end -%>
+
+  <% end %>
 </ul>
 <%= sortable_element('sortable_pages') %>
 <p> Export selected pages (drag to re-order them) to a LaTeX file.
