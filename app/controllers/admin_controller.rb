@@ -138,15 +138,4 @@ class AdminController < ApplicationController
     redirect_to :back
   end
 
-private
-
-  def is_post
-    unless (request.post? || Rails.env.test?)
-      headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-      return false
-    end
-    return true
-  end
-
 end

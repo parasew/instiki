@@ -18,13 +18,13 @@ module FormSpamProtection
         if session[:form_keys].keys.include?(key)
           session[:form_keys][key][1] += 1
           if session[:form_keys][key][1] >= 4
-            render :text => "You cannot resubmit this form again.", :layout => 'error', :status => 403
-            return false
+             flash[:error] = "You cannot resubmit this form again."
+             redirect_to :back
           end
         end
       else
-        render :text => "You must have Javascript on, and cookies enabled, to submit this form.", :layout => 'error', :status => 403
-        return false
+        flash[:error] = "You must have Javascript on, and cookies enabled, to submit this form."
+        redirect_to :back
       end
     end
   end

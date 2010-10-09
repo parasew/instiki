@@ -110,15 +110,6 @@ class FileController < ApplicationController
   
   private 
   
-  def is_post
-    unless (request.post? || Rails.env.test?)
-      headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-      return false
-    end
-    return true
-  end
-
   def import_from_archive(archive)
     logger.info "Importing pages from #{archive}"
     zip = Zip::ZipInputStream.open(archive)

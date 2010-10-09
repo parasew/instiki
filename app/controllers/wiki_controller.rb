@@ -184,6 +184,24 @@ EOL
   def atom_with_headlines
     render_atom(hide_description = true)
   end
+  
+  def tex_list
+    return unless is_post
+    if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
+      @tex_content = ''
+      params.each do |name, p|
+        if p == 'tex' && @web.has_page?(name)
+          @tex_content << "\\section*\{#{name}\}\n\n".as_utf8
+          @tex_content << Maruku.new(@web.page(name).content).to_latex
+        end
+      end
+    else
+      @tex_content = 'TeX export only supported with the Markdown text filters.'
+    end
+    expire_action :controller => 'wiki', :web => @web.address, :action => 'list', :category => params['category']
+    render(:layout => 'tex')
+  end
+
 
   def search
     @query = params['query'].purify
@@ -389,6 +407,7 @@ EOL
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
     end
+    render(:layout => 'tex')
   end
 
   def s5
