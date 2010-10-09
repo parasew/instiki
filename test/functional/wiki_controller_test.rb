@@ -1345,6 +1345,27 @@ Page2 contents $\mathbb{01234}$.
 !, r.body
   end
 
+  def test_tex_list
+    @wiki.write_page('wiki1', 'Page2',
+        "Page2 contents $\\mathbb{01234}$.\n",
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+   r = process('tex_list', 'web' => 'wiki1', 'Page2' => 'tex', 'BogusPage'=> 'tex', 'HomePage' => 'tex')
+    assert_response(:success)
+    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + %q!\section*{Page2}
+
+Page2 contents $\mathbb{01234}$.
+
+\section*{HomePage}
+
+HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere --{} see SmartEngine in that SmartEngineGUI
+
+
+
+
+\end{document}
+!, r.body  
+  end
+
   def test_web_list
     another_wiki = @wiki.create_web('Another Wiki', 'another_wiki')
     
