@@ -1,1 +1,253 @@
+\documentclass[12pt,titlepage]{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+<%- if @tex_content =~  /\\mathbb\{[^}]*[a-z0-9]+[^}]*\}/ -%>
+\usepackage{mathbbol}
+<% end -%>
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{hyperref}
+
+%----Macros----------
+%
+% Unresolved issues:
+%
+%  \righttoleftarrow
+%  \lefttorightarrow
+%
+%  \color{} with HTML colorspec
+%  \bgcolor
+%  \array with options (without options, it's equivalent to the matrix environment)
+
+% Of the standard HTML named colors, white, black, red, green, blue and yellow
+% are predefined in the color package. Here are the rest.
+\definecolor{aqua}{rgb}{0, 1.0, 1.0}
+\definecolor{fuschia}{rgb}{1.0, 0, 1.0}
+\definecolor{gray}{rgb}{0.502, 0.502, 0.502}
+\definecolor{lime}{rgb}{0, 1.0, 0}
+\definecolor{maroon}{rgb}{0.502, 0, 0}
+\definecolor{navy}{rgb}{0, 0, 0.502}
+\definecolor{olive}{rgb}{0.502, 0.502, 0}
+\definecolor{purple}{rgb}{0.502, 0, 0.502}
+\definecolor{silver}{rgb}{0.753, 0.753, 0.753}
+\definecolor{teal}{rgb}{0, 0.502, 0.502}
+
+% Because of conflicts, \space and \mathop are converted to
+% \itexspace and \operatorname during preprocessing.
+
+% itex: \space{ht}{dp}{wd}
+%
+% Height and baseline depth measurements are in units of tenths of an ex while
+% the width is measured in tenths of an em.
+\makeatletter
+\newdimen\itex@wd%
+\newdimen\itex@dp%
+\newdimen\itex@thd%
+\def\itexspace#1#2#3{\itex@wd=#3em%
+\itex@wd=0.1\itex@wd%
+\itex@dp=#2ex%
+\itex@dp=0.1\itex@dp%
+\itex@thd=#1ex%
+\itex@thd=0.1\itex@thd%
+\advance\itex@thd\the\itex@dp%
+\makebox[\the\itex@wd]{\rule[-\the\itex@dp]{0cm}{\the\itex@thd}}}
+\makeatother
+
+% \tensor and \multiscript
+\makeatletter
+\newif\if@sup
+\newtoks\@sups
+\def\append@sup#1{\edef\act{\noexpand\@sups={\the\@sups #1}}\act}%
+\def\reset@sup{\@supfalse\@sups={}}%
+\def\mk@scripts#1#2{\if #2/ \if@sup ^{\the\@sups}\fi \else%
+  \ifx #1_ \if@sup ^{\the\@sups}\reset@sup \fi {}_{#2}%
+  \else \append@sup#2 \@suptrue \fi%
+  \expandafter\mk@scripts\fi}
+\def\tensor#1#2{\reset@sup#1\mk@scripts#2_/}
+\def\multiscripts#1#2#3{\reset@sup{}\mk@scripts#1_/#2%
+  \reset@sup\mk@scripts#3_/}
+\makeatother
+
+% \slash
+\makeatletter
+\newbox\slashbox \setbox\slashbox=\hbox{$/$}
+\def\itex@pslash#1{\setbox\@tempboxa=\hbox{$#1$}
+  \@tempdima=0.5\wd\slashbox \advance\@tempdima 0.5\wd\@tempboxa
+  \copy\slashbox \kern-\@tempdima \box\@tempboxa}
+\def\slash{\protect\itex@pslash}
+\makeatother
+
+% math-mode versions of \rlap, etc
+% from Alexander Perlis, "A complement to \smash, \llap, and lap"
+%   http://math.arizona.edu/~aprl/publications/mathclap/
+\def\clap#1{\hbox to 0pt{\hss#1\hss}}
+\def\mathllap{\mathpalette\mathllapinternal}
+\def\mathrlap{\mathpalette\mathrlapinternal}
+\def\mathclap{\mathpalette\mathclapinternal}
+\def\mathllapinternal#1#2{\llap{$\mathsurround=0pt#1{#2}$}}
+\def\mathrlapinternal#1#2{\rlap{$\mathsurround=0pt#1{#2}$}}
+\def\mathclapinternal#1#2{\clap{$\mathsurround=0pt#1{#2}$}}
+
+% Renames \sqrt as \oldsqrt and redefine root to result in \sqrt[#1]{#2}
+\let\oldroot\root
+\def\root#1#2{\oldroot #1 \of{#2}}
+\renewcommand{\sqrt}[2][]{\oldroot #1 \of{#2}}
+
+% Manually declare the txfonts symbolsC font
+\DeclareSymbolFont{symbolsC}{U}{txsyc}{m}{n}
+\SetSymbolFont{symbolsC}{bold}{U}{txsyc}{bx}{n}
+\DeclareFontSubstitution{U}{txsyc}{m}{n}
+
+% Manually declare the stmaryrd font
+\DeclareSymbolFont{stmry}{U}{stmry}{m}{n}
+\SetSymbolFont{stmry}{bold}{U}{stmry}{b}{n}
+
+% Declare specific arrows from txfonts without loading the full package
+\makeatletter
+\def\re@DeclareMathSymbol#1#2#3#4{%
+    \let#1=\undefined
+    \DeclareMathSymbol{#1}{#2}{#3}{#4}}
+\re@DeclareMathSymbol{\neArrow}{\mathrel}{symbolsC}{116}
+\re@DeclareMathSymbol{\neArr}{\mathrel}{symbolsC}{116}
+\re@DeclareMathSymbol{\seArrow}{\mathrel}{symbolsC}{117}
+\re@DeclareMathSymbol{\seArr}{\mathrel}{symbolsC}{117}
+\re@DeclareMathSymbol{\nwArrow}{\mathrel}{symbolsC}{118}
+\re@DeclareMathSymbol{\nwArr}{\mathrel}{symbolsC}{118}
+\re@DeclareMathSymbol{\swArrow}{\mathrel}{symbolsC}{119}
+\re@DeclareMathSymbol{\swArr}{\mathrel}{symbolsC}{119}
+\re@DeclareMathSymbol{\nequiv}{\mathrel}{symbolsC}{46}
+\re@DeclareMathSymbol{\Perp}{\mathrel}{symbolsC}{121}
+\re@DeclareMathSymbol{\Vbar}{\mathrel}{symbolsC}{121}
+\re@DeclareMathSymbol{\sslash}{\mathrel}{stmry}{12}
+\re@DeclareMathSymbol{\invamp}{\mathrel}{symbolsC}{77}
+\re@DeclareMathSymbol{\parr}{\mathrel}{symbolsC}{77}
+\makeatother
+
+% Widecheck
+\makeatletter
+\DeclareRobustCommand\widecheck[1]{{\mathpalette\@widecheck{#1}}}
+\def\@widecheck#1#2{%
+    \setbox\z@\hbox{\m@th$#1#2$}%
+    \setbox\tw@\hbox{\m@th$#1%
+       \widehat{%
+          \vrule\@width\z@\@height\ht\z@
+          \vrule\@height\z@\@width\wd\z@}$}%
+    \dp\tw@-\ht\z@
+    \@tempdima\ht\z@ \advance\@tempdima2\ht\tw@ \divide\@tempdima\thr@@
+    \setbox\tw@\hbox{%
+       \raise\@tempdima\hbox{\scalebox{1}[-1]{\lower\@tempdima\box
+\tw@}}}%
+    {\ooalign{\box\tw@ \cr \box\z@}}}
+\makeatother
+
+% udots (taken from yhmath)
+\makeatletter
+\def\udots{\mathinner{\mkern2mu\raise\p@\hbox{.}
+\mkern2mu\raise4\p@\hbox{.}\mkern1mu
+\raise7\p@\vbox{\kern7\p@\hbox{.}}\mkern1mu}}
+\makeatother
+
+%% Fix array
+\newcommand{\itexarray}[1]{\begin{matrix}#1\end{matrix}}
+
+%% Renaming existing commands
+\newcommand{\underoverset}[3]{\underset{#1}{\overset{#2}{#3}}}
+\newcommand{\widevec}{\overrightarrow}
+\newcommand{\darr}{\downarrow}
+\newcommand{\nearr}{\nearrow}
+\newcommand{\nwarr}{\nwarrow}
+\newcommand{\searr}{\searrow}
+\newcommand{\swarr}{\swarrow}
+\newcommand{\curvearrowbotright}{\curvearrowright}
+\newcommand{\uparr}{\uparrow}
+\newcommand{\downuparrow}{\updownarrow}
+\newcommand{\duparr}{\updownarrow}
+\newcommand{\updarr}{\updownarrow}
+\newcommand{\gt}{>}
+\newcommand{\lt}{<}
+\newcommand{\map}{\mapsto}
+\newcommand{\embedsin}{\hookrightarrow}
+\newcommand{\Alpha}{A}
+\newcommand{\Beta}{B}
+\newcommand{\Zeta}{Z}
+\newcommand{\Eta}{H}
+\newcommand{\Iota}{I}
+\newcommand{\Kappa}{K}
+\newcommand{\Mu}{M}
+\newcommand{\Nu}{N}
+\newcommand{\Rho}{P}
+\newcommand{\Tau}{T}
+\newcommand{\Upsi}{\Upsilon}
+\newcommand{\omicron}{o}
+\newcommand{\lang}{\langle}
+\newcommand{\rang}{\rangle}
+\newcommand{\Union}{\bigcup}
+\newcommand{\Intersection}{\bigcap}
+\newcommand{\Oplus}{\bigoplus}
+\newcommand{\Otimes}{\bigotimes}
+\newcommand{\Wedge}{\bigwedge}
+\newcommand{\Vee}{\bigvee}
+\newcommand{\coproduct}{\coprod}
+\newcommand{\product}{\prod}
+\newcommand{\closure}{\overline}
+\newcommand{\integral}{\int}
+\newcommand{\doubleintegral}{\iint}
+\newcommand{\tripleintegral}{\iiint}
+\newcommand{\quadrupleintegral}{\iiiint}
+\newcommand{\conint}{\oint}
+\newcommand{\contourintegral}{\oint}
+\newcommand{\infinity}{\infty}
+\newcommand{\bottom}{\bot}
+\newcommand{\minusb}{\boxminus}
+\newcommand{\plusb}{\boxplus}
+\newcommand{\timesb}{\boxtimes}
+\newcommand{\intersection}{\cap}
+\newcommand{\union}{\cup}
+\newcommand{\Del}{\nabla}
+\newcommand{\odash}{\circleddash}
+\newcommand{\negspace}{\!}
+\newcommand{\widebar}{\overline}
+\newcommand{\textsize}{\normalsize}
+\renewcommand{\scriptsize}{\scriptstyle}
+\newcommand{\scriptscriptsize}{\scriptscriptstyle}
+\newcommand{\mathfr}{\mathfrak}
+\newcommand{\statusline}[2]{#2}
+\newcommand{\tooltip}[2]{#2}
+\newcommand{\toggle}[2]{#2}
+
+% Theorem Environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{cor}{Corollary}
+\newtheorem*{utheorem}{Theorem}
+\newtheorem*{ulemma}{Lemma}
+\newtheorem*{uprop}{Proposition}
+\newtheorem*{ucor}{Corollary}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{example}{Example}
+\newtheorem*{udefn}{Definition}
+\newtheorem*{uexample}{Example}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{note}{Note}
+\newtheorem*{uremark}{Remark}
+\newtheorem*{unote}{Note}
+
+%-------------------------------------------------------------------
+
+\begin{document}
+
+%-------------------------------------------------------------------
+
 <%= @content_for_layout %>
+
+\end{document}

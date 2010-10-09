@@ -190,7 +190,7 @@ class ApplicationController < ActionController::Base
     response.charset = 'utf-8'
     if %w(atom_with_content atom_with_headlines).include?(action_name)
       response.content_type = Mime::ATOM
-    elsif %w(tex).include?(action_name)
+    elsif %w(tex tex_list).include?(action_name)
       response.content_type = Mime::TEXT
     elsif xhtml_enabled?
       if request.user_agent =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
@@ -244,6 +244,17 @@ class ApplicationController < ActionController::Base
     cookies[CGI.escape(@web_name)] == @web.password or
     password_check(params['password']) or
     (@web.published? and action_name == 's5')
+  end
+
+  def is_post
+    unless (request.post? || Rails.env.test?)
+      layout = 'error'
+      layout = false if %w(tex tex_list).include?(action_name)
+      headers['Allow'] = 'POST'
+      render(:status => 405, :text => 'You must use an HTTP POST', :layout => layout)
+      return false
+    end
+    return true
   end
 
 end

@@ -10,6 +10,28 @@
   </h2>
 <%- end -%>
 
+<% if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) -%>
+<% form_tag({ :controller => 'wiki', :action => 'tex_list', :web => @web.address },
+             {'method' => 'post', 'accept-charset' => 'utf-8' }) do
+%>
+<div>
+<% if params['category'] -%>
+<input type="hidden" name="category" value="<%= params['category'] %>"/>
+<%- end -%>
+<ul style="list-style-type:none">
+  <%- @pages_in_category.each do |page| -%>
+    <li>
+      <input type="checkbox" name="<%= page.name %>" value="tex"/>
+      <%= link_to_existing_page page, truncate(page.plain_name, :length => 35) %>
+    </li>
+  <%- end -%>
+</ul>
+<p> Export selected pages to a LaTeX file.
+<%= submit_tag("Export") %>
+</p>
+</div>
+<%- end -%>
+<%- else -%>
 <ul>
   <%- @pages_in_category.each do |page| -%>
     <li>
@@ -17,6 +39,7 @@
     </li>
   <%- end -%>
 </ul>
+<%- end -%>
 
 <%- if @web.count_pages? -%>
   <% total_chars = @pages_in_category.characters %>
