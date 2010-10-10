@@ -1349,7 +1349,8 @@ Page2 contents $\mathbb{01234}$.
     @wiki.write_page('wiki1', 'Page2',
         "Page2 contents $\\mathbb{01234}$.\n",
         Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
-   r = process('tex_list', 'web' => 'wiki1', 'Page2' => 'tex', 'BogusPage'=> 'tex', 'HomePage' => 'tex')
+    @request.env['RAW_POST_DATA'] = "_form_key=353106ff8c8466727ee5338baaa0640c87c9b0d6&Page2=tex&BogusPage=tex&HomePage=tex&commit=Export"
+    r = process('tex_list', 'web' => 'wiki1', 'Page2' => 'tex', 'BogusPage'=> 'tex', 'HomePage' => 'tex')
     assert_response(:success)
     assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + %q!\section*{Page2}
 
