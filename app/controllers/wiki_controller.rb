@@ -189,7 +189,9 @@ EOL
     return unless is_post
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       @tex_content = ''
-      params.each do |name, p|
+      # Ruby 1.9.x has ordered hashes; 1.8.x doesn't. So let's just parse the query ourselves.
+      ordered_params = ActiveSupport::OrderedHash[*request.raw_post.split('&').collect {|k_v| k_v.split('=').each {|x| CGI::unescape(x)}}.flatten]
+      ordered_params.each do |name, p|
         if p == 'tex' && @web.has_page?(name)
           @tex_content << "\\section*\{#{name}\}\n\n".as_utf8
           @tex_content << Maruku.new(@web.page(name).content).to_latex
@@ -303,11 +305,7 @@ EOL
 
   def save
     render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil?
-    unless (request.post? || Rails.env.test?)
-      headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST', :layout => 'error')
-      return
-    end
+    return unless is_post
     author_name = params['author'].purify
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
     
