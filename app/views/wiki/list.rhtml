@@ -28,7 +28,7 @@
 
   <% end %>
 </ul>
-<%= sortable_element('sortable_pages') %>
+<%= sortable_element('sortable_pages', {:onUpdate => 'function(){}'}) %>
 <label for="commit"> Export selected pages (drag to re-order them) to a LaTeX file.</label>
 <%= submit_tag("Export") %>
 </div>

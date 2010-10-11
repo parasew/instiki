@@ -1346,13 +1346,13 @@ Page2 contents $\mathbb{01234}$.
   end
 
   def test_tex_list
-    @wiki.write_page('wiki1', 'Page2',
+    @wiki.write_page('wiki1', "Ch\303\242timent & Page",
         "Page2 contents $\\mathbb{01234}$.\n",
         Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
-    @request.env['RAW_POST_DATA'] = "_form_key=353106ff8c8466727ee5338baaa0640c87c9b0d6&Page2=tex&BogusPage=tex&HomePage=tex&commit=Export"
+    @request.env['RAW_POST_DATA'] = "_form_key=353106ff8c8466727ee5338baaa0640c87c9b0d6&Ch%C3%A2timent+%26+Page=tex&BogusPage=tex&HomePage=tex&commit=Export"
     r = process('tex_list', 'web' => 'wiki1', 'Page2' => 'tex', 'BogusPage'=> 'tex', 'HomePage' => 'tex')
     assert_response(:success)
-    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + %q!\section*{Page2}
+    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + %q!\section*{Châtiment \\& Page}
 
 Page2 contents $\mathbb{01234}$.
 
