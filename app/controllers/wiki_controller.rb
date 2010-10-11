@@ -190,10 +190,10 @@ EOL
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       @tex_content = ''
       # Ruby 1.9.x has ordered hashes; 1.8.x doesn't. So let's just parse the query ourselves.
-      ordered_params = ActiveSupport::OrderedHash[*request.raw_post.split('&').collect {|k_v| k_v.split('=').each {|x| CGI::unescape(x)}}.flatten]
+      ordered_params = ActiveSupport::OrderedHash[*request.raw_post.split('&').collect {|k_v| k_v.split('=').collect {|x| CGI::unescape(x)}}.flatten]
       ordered_params.each do |name, p|
         if p == 'tex' && @web.has_page?(name)
-          @tex_content << "\\section*\{#{name}\}\n\n".as_utf8
+          @tex_content << "\\section*\{#{Maruku.new(name).to_latex.strip}\}\n\n"
           @tex_content << Maruku.new(@web.page(name).content).to_latex
         end
       end
