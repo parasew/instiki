@@ -207,10 +207,15 @@
 
 					svgEditor.setConfig(urldata);
 					
-					// FIXME: This is null if Data URL ends with '='. 
 					var src = urldata.source;
 					var qstr = $.param.querystring();
-
+					
+					if(!src) { // urldata.source may have been null if it ended with '='
+						if(qstr.indexOf('source=data:') >= 0) {
+							src = qstr.match(/source=(data:[^&]*)/)[1];
+						}
+					}
+					
 					if(src) {
 						if(src.indexOf("data:") === 0) {
 							// plusses get replaced by spaces, so re-insert
@@ -474,7 +479,9 @@
 				tool_scale = 1,
 				zoomInIcon = 'crosshair',
 				zoomOutIcon = 'crosshair',
-				ui_context = 'toolbars';
+				ui_context = 'toolbars',
+				orig_source = '',
+				paintBox = {fill: null, stroke:null};
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -564,9 +571,6 @@
 			var cur_context = '';
 			var orig_title = $('title:first').text();
 			
-			var fillPaint = new $.jGraduate.Paint({solidColor: curConfig.initFill.color});
-			var strokePaint = new $.jGraduate.Paint({solidColor: curConfig.initStroke.color});
-		
 			var saveHandler = function(window,svg) {
 				show_save_warning = false;
 			
@@ -584,7 +588,6 @@
 					showSourceEditor(0,true);
 					return;	
 				}
-				
 				var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 				
 				// Alert will only appear the first time saved OR the first time the bug is encountered
@@ -656,8 +659,7 @@
 					// upon creation of a text element the editor is switched into
 					// select mode and this event fires - we need our UI to be in sync
 
-					if (mode !== "multiselect" && !is_node) {
-						// FIXME: This also needs to fire if only one element is selected via multiselect
+					if (!is_node) {
 						updateToolbar();
 					} 
 					
@@ -675,7 +677,8 @@
 		
 			// called when any element has changed
 			var elementChanged = function(window,elems) {
-				if(svgCanvas.getMode() == "select") {
+				var mode = svgCanvas.getMode();
+				if(mode === "select") {
 					setSelectMode();
 				}
 				
@@ -683,7 +686,7 @@
 					var elem = elems[i];
 					
 					// if the element changed was the svg, then it could be a resolution change
-					if (elem && elem.tagName == "svg") {
+					if (elem && elem.tagName === "svg") {
 						populateLayers();
 						updateCanvas();
 					} 
@@ -705,6 +708,12 @@
 				// we tell it to skip focusing the text control if the
 				// text element was previously in focus
 				updateContextPanel();
+				
+				// In the event a gradient was flipped:
+				if(selectedElement && mode === "select") {
+					paintBox.fill.update();
+					paintBox.stroke.update();
+				}
 				
 				svgCanvas.runExtensions("elementChanged", {
 					elems: elems
@@ -780,6 +789,12 @@
 
 				
 				updateTitle();
+			}
+			
+			// Makes sure the current selected paint is available to work with
+			var prepPaints = function() {
+				paintBox.fill.prep();
+				paintBox.stroke.prep();
 			}
 			
 			var flyout_funcs = {};
@@ -1266,15 +1281,21 @@
 				runCallback();
 			};
 			
-			var getPaint = function(color, opac) {
+			var getPaint = function(color, opac, type) {
 				// update the editor's fill paint
 				var opts = null;
-				if (color.substr(0,5) == "url(#") {
-					var grad = document.getElementById(color.substr(5,color.length-6));
+				if (color.indexOf("url(#") === 0) {
+					var refElem = svgCanvas.getRefElem(color);
+					if(refElem) {
+						refElem = refElem.cloneNode(true);
+					} else {
+						refElem =  $("#" + type + "_color defs *")[0];
+					}
+					
 					opts = { alpha: opac };
-					opts[grad.tagName] = grad;
+					opts[refElem.tagName] = refElem;
 				} 
-				else if (color.substr(0,1) == "#") {
+				else if (color.indexOf("#") === 0) {
 					opts = {
 						alpha: opac,
 						solidColor: color.substr(1)
@@ -1294,61 +1315,11 @@
 			var updateToolbar = function() {
 				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
 				
-					// get opacity values
-					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
-					if (isNaN(fillOpacity)) {
-						fillOpacity = 1.0;
-					}
+					paintBox.fill.update(true);
+					paintBox.stroke.update(true);
 					
-					var strokeOpacity = parseFloat(selectedElement.getAttribute("stroke-opacity"));
-					if (isNaN(strokeOpacity)) {
-						strokeOpacity = 1.0;
-					}
-		
-					// update fill color and opacity
-					var fillColor = selectedElement.getAttribute("fill")||"black";
-					// prevent undo on these canvas changes
-					svgCanvas.setColor('fill', fillColor, true);
-					svgCanvas.setPaintOpacity('fill', fillOpacity, true);
-		
-					// update stroke color and opacity
-					var strokeColor = selectedElement.getAttribute("stroke")||"none";
-					// prevent undo on these canvas changes
-					svgCanvas.setColor('stroke', strokeColor, true);
-					svgCanvas.setPaintOpacity('stroke', strokeOpacity, true);
-					
-					// update the rect inside #fill_color
-					$("#stroke_color rect").attr({
-						fill: strokeColor,
-						opacity: strokeOpacity
-					});
-
-					// update the rect inside #fill_color
-					$("#fill_color rect").attr({
-						fill: fillColor,
-						opacity: fillOpacity
-					});
-		
-					fillOpacity *= 100;
-					strokeOpacity *= 100;
-					
-					fillPaint = getPaint(fillColor, fillOpacity);
-					strokePaint = getPaint(strokeColor, strokeOpacity);
-					
-					fillOpacity = fillOpacity + " %";
-					strokeOpacity = strokeOpacity + " %";
-		
-					// update fill color
-					if (fillColor == "none") {
-						fillOpacity = "N/A";
-					}
-					if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
-						strokeColor = "none";
-						strokeOpacity = "N/A";
-					}
-					
-					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1).change();
-					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none").change();
+					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
+					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 
 					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
 					
@@ -1359,7 +1330,6 @@
 					
 					if ($('#linecap_' + attr).length != 0)
 						setStrokeOpt($('#linecap_' + attr)[0]);
-
 				}
 				
 				// All elements including image and group have opacity
@@ -1820,26 +1790,23 @@
 			
 			$('.palette_item').mousedown(function(evt){
 				var right_click = evt.button === 2;
-				var picker = ((evt.shiftKey || right_click) ? "stroke" : "fill");
-				var id = ((evt.shiftKey || right_click) ? '#stroke_' : '#fill_');
+				var isStroke = evt.shiftKey || right_click;
+				var picker = isStroke ? "stroke" : "fill";
 				var color = $(this).attr('data-rgb');
-				var rectbox = document.getElementById("gradbox_"+picker).parentNode.firstChild;
 				var paint = null;
 		
 				// Webkit-based browsers returned 'initial' here for no stroke
-				if (color == 'transparent' || color == 'initial') {
+				if (color === 'transparent' || color === 'initial') {
 					color = 'none';
-					$(id + "opacity").html("N/A");
 					paint = new $.jGraduate.Paint();
 				}
 				else {
 					paint = new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
 				}
-				rectbox.setAttribute("fill", color);
-				rectbox.setAttribute("opacity", 1);
 				
-				if (evt.shiftKey) {
-					strokePaint = paint;
+				paintBox[picker].setPaint(paint);
+				
+				if (isStroke) {
 					if (svgCanvas.getColor('stroke') != color) {
 						svgCanvas.setColor('stroke', color);
 					}
@@ -1847,7 +1814,6 @@
 						svgCanvas.setPaintOpacity('stroke', 1.0);
 					}
 				} else {
-					fillPaint = paint;
 					if (svgCanvas.getColor('fill') != color) {
 						svgCanvas.setColor('fill', color);
 					}
@@ -2445,6 +2411,7 @@
 					zoomImage();
 					populateLayers();
 					updateContextPanel();
+					prepPaints();
 				});
 			};
 			
@@ -2580,7 +2547,7 @@
 				$('#save_output_btns').toggle(!!forSaving);
 				$('#tool_source_back').toggle(!forSaving);
 				
-				var str = svgCanvas.getSvgString();
+				var str = orig_source = svgCanvas.getSvgString();
 				$('#svg_source_textarea').val(str);
 				$('#svg_source_editor').fadeIn();
 				properlySourceSizeTextArea();
@@ -2652,6 +2619,7 @@
 					zoomImage();
 					populateLayers();
 					updateTitle();
+					prepPaints();
 				}
 		
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
@@ -2668,9 +2636,11 @@
 			var updateTitle = function(title) {
 				title = title || svgCanvas.getDocumentTitle();
 				var new_title = orig_title + (title?': ' + title:'');
-				if(cur_context) {
-					new_title = new_title + cur_context;
-				}
+				
+				// Remove title update with current context info, isn't really necessary
+// 				if(cur_context) {
+// 					new_title = new_title + cur_context;
+// 				}
 				$('title:first').text(new_title);
 			}
 			
@@ -3039,8 +3009,7 @@
 				};
 		
 				if (editingsource) {
-					var oldString = svgCanvas.getSvgString();
-					if (oldString != $('#svg_source_textarea').val()) {
+					if (orig_source !== $('#svg_source_textarea').val()) {
 						$.confirm(uiStrings.QignoreSourceChanges, function(ok) {
 							if(ok) hideSourceEditor();
 						});
@@ -3156,12 +3125,12 @@
 			var colorPicker = function(elem) {
 				var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
 // 				var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
-				var paint = (picker == 'stroke' ? strokePaint : fillPaint);
+				var paint = paintBox[picker].paint;
 				var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 				var was_none = false;
 				var pos = elem.position();
 				$("#color_picker")
-					.draggable({cancel:'.jPicker_table,.jGraduate_lgPick,.jGraduate_rgPick'})
+					.draggable({cancel:'.jGraduate_tabs,.jGraduate_colPick,.jGraduate_lgPick,.jGraduate_rgPick'})
 					.css(curConfig.colorPickerCSS || {'left': pos.left, 'bottom': 50 - pos.top})
 					.jGraduate(
 					{ 
@@ -3172,30 +3141,9 @@
 					function(p) {
 						paint = new $.jGraduate.Paint(p);
 						
-						var oldgrad = document.getElementById("gradbox_"+picker);
-						var svgbox = oldgrad.parentNode;
-						var rectbox = svgbox.firstChild;
-						if (paint.type == "linearGradient" || paint.type == "radialGradient") {
-							svgbox.removeChild(oldgrad);
-							var newgrad = svgbox.appendChild(document.importNode(paint[paint.type], true));
-							newgrad.id = "gradbox_"+picker;
-							rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
-							rectbox.setAttribute("opacity", paint.alpha/100);
-						}
-						else {
-							rectbox.setAttribute("fill", paint.solidColor != "none" ? "#" + paint.solidColor : "none");
-							rectbox.setAttribute("opacity", paint.alpha/100);
-						}
-		
-						if (picker == 'stroke') {
-							svgCanvas.setPaint('stroke', paint);
-							strokePaint = paint;
-						}
-						else {
-							svgCanvas.setPaint('fill', paint);
-							fillPaint = paint;
-						}
-						updateToolbar();
+						paintBox[picker].setPaint(paint);
+						svgCanvas.setPaint(picker, paint);
+						
 						$('#color_picker').hide();
 					},
 					function(p) {
@@ -3260,39 +3208,103 @@
 				operaRepaint();
 			};
 			
-			// set up gradients to be used for the buttons
-			var svgdocbox = new DOMParser().parseFromString(
-				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
-				fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
-				<linearGradient id="gradbox_">\
-						<stop stop-color="#000" offset="0.0"/>\
-						<stop stop-color="#FF0000" offset="1.0"/>\
-				</linearGradient></svg>', 'text/xml');
-			var docElem = svgdocbox.documentElement;
 
 
-			var boxgrad = svgdocbox.getElementById('gradbox_');
-			boxgrad.id = 'gradbox_fill';
-			docElem.setAttribute('width',16.5);
-			$('#fill_color').append( document.importNode(docElem,true) );
+			var PaintBox = function(container, type) {
+				var cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
+				
+				// set up gradients to be used for the buttons
+				var svgdocbox = new DOMParser().parseFromString(
+					'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
+					fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>\
+					<defs><linearGradient id="gradbox_"/></defs></svg>', 'text/xml');
+				var docElem = svgdocbox.documentElement;
+				
+				docElem = $(container)[0].appendChild(document.importNode(docElem, true));
+
+				docElem.setAttribute('width',16.5);
+				
+				this.rect = docElem.firstChild;
+				this.defs = docElem.getElementsByTagName('defs')[0];
+				this.grad = this.defs.firstChild;
+				this.paint = new $.jGraduate.Paint({solidColor: cur.color});
+				this.type = type;
+
+				this.setPaint = function(paint, apply) {
+					this.paint = paint;
+					
+					var fillAttr = "none";
+					var ptype = paint.type;
+					var opac = paint.alpha / 100;
+					
+					switch ( ptype ) {
+						case 'solidColor':
+							fillAttr = "#" + paint[ptype];
+							break;
+						case 'linearGradient':
+						case 'radialGradient':
+							this.defs.removeChild(this.grad);
+							this.grad = this.defs.appendChild(paint[ptype]);
+							var id = this.grad.id = 'gradbox_' + this.type;
+							fillAttr = "url(#" + id + ')';
+					}
+					
+					this.rect.setAttribute('fill', fillAttr);
+					this.rect.setAttribute('opacity', opac);
+					
+					if(apply) {
+						svgCanvas.setColor(this.type, paintColor, true);
+						svgCanvas.setPaintOpacity(this.type, paintOpacity, true);
+					}
+				}
+				
+				this.update = function(apply) {
+					if(!selectedElement) return;
+					var type = this.type;
+					var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
+					if (isNaN(paintOpacity)) {
+						paintOpacity = 1.0;
+					}
+					
+					var defColor = type === "fill" ? "black" : "none";
+					var paintColor = selectedElement.getAttribute(type) || defColor;
+					
+					if(apply) {
+						svgCanvas.setColor(type, paintColor, true);
+						svgCanvas.setPaintOpacity(type, paintOpacity, true);
+					}
+					
+					paintOpacity *= 100;
+					
+					var paint = getPaint(paintColor, paintOpacity, type);
+					// update the rect inside #fill_color/#stroke_color
+					this.setPaint(paint);
+				}
+				
+				this.prep = function() {
+					var ptype = this.paint.type;
+				
+					switch ( ptype ) {
+						case 'linearGradient':
+						case 'radialGradient':
+							var paint = new $.jGraduate.Paint({copy: this.paint});
+							svgCanvas.setPaint(type, paint);
+					}
+				}
+			};
 			
-			boxgrad.id = 'gradbox_stroke';	
-			docElem.setAttribute('width',16.5);
-			$('#stroke_color').append( document.importNode(docElem,true) );
-			$('#stroke_color rect').attr({
-				'fill': '#' + curConfig.initStroke.color,
-				'opacity': curConfig.initStroke.opacity
-			});
-			
+			paintBox.fill = new PaintBox('#fill_color', 'fill');
+			paintBox.stroke = new PaintBox('#stroke_color', 'stroke');
+
 			$('#stroke_width').val(curConfig.initStroke.width);
 			$('#group_opacity').val(curConfig.initOpacity * 100);
 			
 			// Use this SVG elem to test vectorEffect support
-			var test_el = docElem.firstChild;
+			var test_el = paintBox.fill.rect.cloneNode(false);
 			test_el.setAttribute('style','vector-effect:non-scaling-stroke');
 			var supportsNonSS = (test_el.style.vectorEffect === 'non-scaling-stroke');
 			test_el.removeAttribute('style');
-			
+			var svgdocbox = paintBox.fill.rect.ownerDocument;
 			// Use this to test support for blur element. Seems to work to test support in Webkit
 			var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
 			if(typeof blur_test.stdDeviationX === "undefined") {
@@ -4084,7 +4096,7 @@
 						if(f.files.length==1) {
 							var reader = new FileReader();
 							reader.onloadend = function(e) {
-								svgCanvas.setSvgString(e.target.result);
+								loadSvgString(e.target.result);
 								updateCanvas();
 							};
 							reader.readAsText(f.files[0]);
@@ -4107,6 +4119,7 @@
 			}
 			
 			var updateCanvas = Editor.updateCanvas = function(center, new_ctr) {
+		
 				var w = workarea.width(), h = workarea.height();
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();
@@ -4290,7 +4303,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1778 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1802 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
@@ -4399,6 +4412,18 @@
 		
 		var callbacks = [];
 		
+		function loadSvgString(str, callback) {
+			var success = svgCanvas.setSvgString(str) !== false;
+			callback = callback || $.noop;
+			if(success) {
+				callback(true);
+			} else {
+				$.alert('Error: Unable to load SVG data', function() {
+					callback(false);
+				});
+			}
+		}
+		
 		Editor.ready = function(cb) {
 			if(!is_ready) {
 				callbacks.push(cb);
@@ -4416,22 +4441,29 @@
 		
 		Editor.loadFromString = function(str) {
 			Editor.ready(function() {
-				svgCanvas.setSvgString(str);
+				loadSvgString(str);
 			});
 		};
 		
-		Editor.loadFromURL = function(url, cache) {
+		Editor.loadFromURL = function(url, opts) {
+			if(!opts) opts = {};
+
+			var cache = opts.cache;
+			var cb = opts.callback;
+		
 			Editor.ready(function() {
 				$.ajax({
 					'url': url,
 					'dataType': 'text',
 					cache: !!cache,
-					success: svgCanvas.setSvgString,
+					success: function(str) {
+						loadSvgString(str, cb);
+					},
 					error: function(xhr, stat, err) {
-						if(xhr.responseText) {
-							svgCanvas.setSvgString(xhr.responseText);
+						if(xhr.status != 404 && xhr.responseText) {
+							loadSvgString(xhr.responseText, cb);
 						} else {
-							$.alert("Unable to load from URL. Error: \n"+err+'');
+							$.alert("Unable to load from URL. Error: \n"+err+'', cb);
 						}
 					}
 				});
@@ -4440,10 +4472,9 @@
 		
 		Editor.loadFromDataURI = function(str) {
 			Editor.ready(function() {
-				svgCanvas.setSvgString(str);
 				var pre = 'data:image/svg+xml;base64,';
 				var src = str.substring(pre.length);
-				svgCanvas.setSvgString(Utils.decode64(src));
+				loadSvgString(svgCanvas.Utils.decode64(src));
 			});
 		};
 		

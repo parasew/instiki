@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 gem "sqlite3-ruby", :require => "sqlite3"
-gem "itextomml", ">=1.4.2"
+gem "itextomml", ">=1.4.5"
 gem "mongrel", ">=1.2.0.pre2"
 gem "rubyzip"
 gem "erubis"
