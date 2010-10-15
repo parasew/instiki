@@ -6,6 +6,23 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.1
+
+New Features:
+* From the "All" or Category listings, you can export selected pages (in any
+  desired order) to a single LaTeX file.
+* LaTeX export supports \array{} (with no options) and a LaTeX-style optional
+  argument for \sqrt[]{}. The latter requires itextomml 1.4.5 or later.
+* Updated to itextomml 1.4.5 (a bunch of new itex language features).
+* Updated to Rails 2.3.10. (There were security issues in 2.3.9 which, happily,
+  did NOT affect Instiki 0.19. But 2.3.10 has other improvements, as well.)
+
+Bugs Fixed:
+* Several SVG-Edit bugs fixed.
+* Removed some superfluous junk, to slim down the distribution (cuts the size of
+  the compressed .tar.gz nearly in half).
+
+------------------------------------------------------------------------------
 * 0.19
 
 New Features:

@@ -427,7 +427,7 @@ padding-left:0;
 ul#sortable_pages li {
 border: 1px solid #FFF;
 }
-ul#sortable_pages li:hover {
+ul#sortable_pages li:hover, ul#sortable_pages li:focus {
 border: 1px solid blue;
 }
 

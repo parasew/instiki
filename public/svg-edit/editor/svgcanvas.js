@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -118,7 +118,7 @@ var userAgent = navigator.userAgent,
 	"mask": ["class", "height", "id", "maskContentUnits", "maskUnits", "width", "x", "y"],
 	"metadata": ["class", "id"],
 	"path": ["class", "clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"pattern": ["class", "height", "id", "patternContentUnits", "patternTransform", "patternUnits", "requiredFeatures", "style", "systemLanguage", "width", "x", "xlink:href", "y"],
+	"pattern": ["class", "height", "id", "patternContentUnits", "patternTransform", "patternUnits", "requiredFeatures", "style", "systemLanguage", "viewBox", "width", "x", "xlink:href", "y"],
 	"polygon": ["class", "clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"polyline": ["class", "clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"radialGradient": ["class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "id", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
@@ -190,6 +190,7 @@ var userAgent = navigator.userAgent,
 	var visElems_arr = visElems.split(',');
 // 	var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 	
+	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 
 
 // Update config with new one if given
@@ -712,6 +713,22 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 })();
 
 
+var restoreRefElems = function(elem) {
+	// Look for missing reference elements, restore any found
+	var attrs = $(elem).attr(ref_attrs);
+	for(var o in attrs) {
+		var val = attrs[o];
+		if (val && val.indexOf('url(') === 0) {
+			var id = getUrlFromAttr(val).substr(1);
+			var ref = getElem(id);
+			if(!ref) {
+				findDefs().appendChild(removedElements[id]);
+				delete removedElements[id];
+			}
+		}
+	}
+}
+
 // Group: Undo/Redo history management
 
 this.undoCmd = {};
@@ -841,6 +858,9 @@ var InsertElementCommand = this.undoCmd.insertElement = function(elem, text) {
 	// Re-Inserts the new element
 	this.apply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
+		
+		restoreRefElems(this.elem);
+		
 		if (this.parent == svgcontent) {
 			identifyLayers();
 		}		
@@ -894,8 +914,11 @@ var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, t
 			delete svgTransformLists[this.elem.id];
 		}
 
-		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling);
-		if (this.parent == svgcontent) {
+		this.parent.insertBefore(this.elem, this.elem.nextSibling);
+		
+		restoreRefElems(this.elem);
+		
+		if (this.parent === svgcontent) {
 			identifyLayers();
 		}		
 	};
@@ -1272,6 +1295,7 @@ var SelectorManager;
 			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
 				offset += (sw/2);
 			}
+			
 			if (selected.tagName == "text") {
 				offset += 2/current_zoom;
 			}
@@ -1298,18 +1322,19 @@ var SelectorManager;
 			m.f *= current_zoom;
 			
 			// apply the transforms
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
+			var l=bbox.x, t=bbox.y, w=bbox.width, h=bbox.height,
 				bbox = {x:l, y:t, width:w, height:h};
+
 			
 			// we need to handle temporary transforms too
 			// if skewed, get its transformed box, then find its axis-aligned bbox
 			
 			//*
 			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
-				nbax = nbox.aabox.x,
-				nbay = nbox.aabox.y,
-				nbaw = nbox.aabox.width,
-				nbah = nbox.aabox.height;
+				nbax = nbox.aabox.x - offset,
+				nbay = nbox.aabox.y - offset,
+				nbaw = nbox.aabox.width + (offset * 2),
+				nbah = nbox.aabox.height + (offset * 2);
 				
 			// now if the shape is rotated, un-rotate it
 			var cx = nbax + nbaw/2,
@@ -1332,10 +1357,10 @@ var SelectorManager;
 					maxx = nbox.tl.x,
 					maxy = nbox.tl.y;
 				
-				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) );
-				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) );
-				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
-				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
+				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) ) - offset;
+				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) ) - offset;
+				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) ) + offset;
+				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) ) + offset;
 				
 				nbax = minx;
 				nbay = miny;
@@ -1683,6 +1708,7 @@ var SVGEditTransformList = function(elem) {
 				var bits = x.split(/\s*\(/);
 				var name = bits[0];
 				var val_bits = bits[1].match(/\s*(.*?)\s*\)/);
+				val_bits[1] = val_bits[1].replace(/(\d)-/g, "$1 -");
 				var val_arr = val_bits[1].split(/[, ]+/);
 				var letters = 'abcdef'.split('');
 				var mtx = svgroot.createSVGMatrix();
@@ -1833,11 +1859,11 @@ var assignAttributes = this.assignAttributes = function(node, attrs, suspendLeng
 	if(!suspendLength) suspendLength = 0;
 	// Opera has a problem with suspendRedraw() apparently
 	var handle = null;
-	if (!window.opera) svgroot.suspendRedraw(suspendLength);
+	if (!isOpera) svgroot.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
-		var ns = (i.substr(0,4) == "xml:" ? xmlns : 
-			i.substr(0,6) == "xlink:" ? xlinkns : null);
+		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
+			i.substr(0,6) === "xlink:" ? xlinkns : null);
 			
 		if(ns || !unitCheck) {
 			node.setAttributeNS(ns, i, attrs[i]);
@@ -2036,7 +2062,10 @@ var cur_shape = all_properties.shape,
 	extensions = {},
 	
 	// Canvas point for the most recent right click
-	lastClickPoint = null;
+	lastClickPoint = null,
+	
+	// Map of deleted reference elements
+	removedElements = {}
 
 // Clipboard for cut, copy&pasted elements
 canvas.clipBoard = [];
@@ -2204,12 +2233,13 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 				}
 				
 				if(!good_bb) {
+					// Must use clone else FF freaks out
+					var clone = elem.cloneNode(true); 
 					var g = document.createElementNS(svgns, "g");
 					var parent = elem.parentNode;
-					parent.replaceChild(g, elem);
-					g.appendChild(elem);
+					parent.appendChild(g);
+					g.appendChild(clone);
 					bb = g.getBBox();
-					parent.insertBefore(elem,g);
 					parent.removeChild(g);
 				}
 				
@@ -2418,11 +2448,6 @@ var copyElem = function(el) {
 // Parameters:
 // id - String with the element's new ID
 function getElem(id) {
-// 	if(svgroot.getElementById) {
-// 		// getElementById lookup
-// 		return svgroot.getElementById(id);
-// 	} else 
-	
 	if(svgroot.querySelector) {
 		// querySelector lookup
 		return svgroot.querySelector('#'+id);
@@ -2566,6 +2591,18 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 				node.setAttribute('d',pathActions.convertPath(node));
 				pathActions.fixEnd(node);
 			}
+			
+			// Add spaces before negative signs where necessary
+			if(isGecko) {
+				switch ( attrName ) {
+				case "transform":
+				case "gradientTransform":
+				case "patternTransform":
+					var val = attr.nodeValue.replace(/(\d)-/g, "$1 -");
+					node.setAttribute(attrName, val);
+				}
+			}
+			
 			// for the style attribute, rewrite it in terms of XML presentational attributes
 			if (attrName == "style") {
 				var props = attr.nodeValue.split(";"),
@@ -2612,7 +2649,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 			if (val) {
 				val = getUrlFromAttr(val);
 				// simply check for first character being a '#'
-				if (val && val[0] != "#") {
+				if (val && val[0] !== "#") {
 					node.setAttribute(attr, "");
 					node.removeAttribute(attr);
 				}
@@ -2657,19 +2694,28 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 var getUrlFromAttr = this.getUrlFromAttr = function(attrVal) {
 	if (attrVal) {		
 		// url("#somegrad")
-		if (attrVal.indexOf('url("') == 0) {
+		if (attrVal.indexOf('url("') === 0) {
 			return attrVal.substring(5,attrVal.indexOf('"',6));
 		}
 		// url('#somegrad')
-		else if (attrVal.indexOf("url('") == 0) {
+		else if (attrVal.indexOf("url('") === 0) {
 			return attrVal.substring(5,attrVal.indexOf("'",6));
 		}
-		else if (attrVal.indexOf("url(") == 0) {
+		else if (attrVal.indexOf("url(") === 0) {
 			return attrVal.substring(4,attrVal.indexOf(')'));
 		}
 	}
 	return null;
 };
+
+// Function getRefElem
+// Get the reference element associated with the given attribute value
+//
+// Parameters:
+// attrVal - The attribute value as a string
+var getRefElem = this.getRefElem = function(attrVal) {
+	return getElem(getUrlFromAttr(attrVal).substr(1));
+}
 
 // Function: getBBox
 // Get the given/selected element's bounding box object, convert it to be more
@@ -2934,6 +2980,10 @@ var getTransformList = this.getTransformList = function(elem) {
 	else if (elem.gradientTransform) {
 		return elem.gradientTransform.baseVal;
 	}
+	else if (elem.patternTransform) {
+		return elem.patternTransform.baseVal;
+	}
+
 	return null;
 };
 
@@ -2977,82 +3027,159 @@ var logMatrix = function(m) {
 // changes - Object with changes to be remapped
 // m - Matrix object to use for remapping coordinates
 var remapElement = this.remapElement = function(selected,changes,m) {
+
 	var remap = function(x,y) { return transformPoint(x,y,m); },
 		scalew = function(w) { return m.a*w; },
 		scaleh = function(h) { return m.d*h; },
+		doSnapping = curConfig.gridSnapping && selected.parentNode.parentNode.localName === "svg",
+		finishUp = function() {
+			if(doSnapping) for(var o in changes) changes[o] = snapToGrid(changes[o]);
+			assignAttributes(selected, changes, 1000, true);
+		}
 		box = getBBox(selected);
+	
+	for(var i = 0; i < 2; i++) {
+		var type = i === 0 ? 'fill' : 'stroke';
+		var attrVal = selected.getAttribute(type);
+		if(attrVal && attrVal.indexOf('url(') === 0) {
+			if(m.a < 0 || m.d < 0) {
+				var grad = getRefElem(attrVal);
+				var newgrad = grad.cloneNode(true);
+	
+				if(m.a < 0) {
+					//flip x
+					var x1 = newgrad.getAttribute('x1');
+					var x2 = newgrad.getAttribute('x2');
+					newgrad.setAttribute('x1', -(x1 - 1));
+					newgrad.setAttribute('x2', -(x2 - 1));
+				} 
+				
+				if(m.d < 0) {
+					//flip y
+					var y1 = newgrad.getAttribute('y1');
+					var y2 = newgrad.getAttribute('y2');
+					newgrad.setAttribute('y1', -(y1 - 1));
+					newgrad.setAttribute('y2', -(y2 - 1));
+				}
+				newgrad.id = getNextId();
+				findDefs().appendChild(newgrad);
+				selected.setAttribute(type, 'url(#' + newgrad.id + ')');
+			}
+		}
+		
+	}
 
-	switch (selected.tagName)
+
+	var elName = selected.tagName;
+	if(elName === "g" || elName === "text" || elName === "use") {
+		// if it was a translate, then just update x,y
+		if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
+			(m.e != 0 || m.f != 0) ) 
+		{
+			// [T][M] = [M][T']
+			// therefore [T'] = [M_inv][T][M]
+			var existing = transformListToTransform(selected).matrix,
+				t_new = matrixMultiply(existing.inverse(), m, existing);
+			changes.x = parseFloat(changes.x) + t_new.e;
+			changes.y = parseFloat(changes.y) + t_new.f;
+		}
+		else {
+			// we just absorb all matrices into the element and don't do any remapping
+			var chlist = getTransformList(selected);
+			var mt = svgroot.createSVGTransform();
+			mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
+			chlist.clear();
+			chlist.appendItem(mt);
+		}
+	}
+	
+	// now we have a set of changes and an applied reduced transform list
+	// we apply the changes directly to the DOM
+	switch (elName)
 	{
-		case "line":
-			var pt1 = remap(changes["x1"],changes["y1"]),
-				pt2 = remap(changes["x2"],changes["y2"]);
-			changes["x1"] = pt1.x;
-			changes["y1"] = pt1.y;
-			changes["x2"] = pt2.x;
-			changes["y2"] = pt2.y;
-			break;
-		case "circle":
-			var c = remap(changes["cx"],changes["cy"]);
-			changes["cx"] = c.x;
-			changes["cy"] = c.y;
-			// take the minimum of the new selected box's dimensions for the new circle radius
-			var tbox = transformBox(box.x, box.y, box.width, box.height, m);
-			var w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
-			changes["r"] = Math.min(w/2, h/2);
-			break;
-		case "ellipse":
-			var c = remap(changes["cx"],changes["cy"]);
-			changes["cx"] = c.x;
-			changes["cy"] = c.y;
-			changes["rx"] = scalew(changes["rx"]);
-			changes["ry"] = scaleh(changes["ry"]);
-			break;
 		case "foreignObject":
 		case "rect":
 		case "image":
-			var pt1 = remap(changes["x"],changes["y"]);
-			changes["x"] = pt1.x;
-			changes["y"] = pt1.y;
-			changes["width"] = scalew(changes["width"]);
-			changes["height"] = scaleh(changes["height"]);
-			break;
-		case "use":
-// 			var pt1 = remap(changes["x"],changes["y"]);
-// 			changes["x"] = pt1.x;
-// 			changes["y"] = pt1.y;
-// 			break;
-		case "g":
-		case "text":
-			// if it was a translate, then just update x,y
-			if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
-				(m.e != 0 || m.f != 0) ) 
-			{
-				// [T][M] = [M][T']
-				// therefore [T'] = [M_inv][T][M]
-				var existing = transformListToTransform(selected).matrix,
-					t_new = matrixMultiply(existing.inverse(), m, existing);
-				changes["x"] = parseFloat(changes["x"]) + t_new.e;
-				changes["y"] = parseFloat(changes["y"]) + t_new.f;
-			}
-			else {
-				// we just absorb all matrices into the element and don't do any remapping
+			
+			// Allow images to be inverted (give them matrix when flipped)
+			if(elName === 'image' && (m.a < 0 || m.d < 0)) {
+				// Convert to matrix
 				var chlist = getTransformList(selected);
 				var mt = svgroot.createSVGTransform();
 				mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
 				chlist.clear();
 				chlist.appendItem(mt);
+			} else {
+				var pt1 = remap(changes.x,changes.y);
+				
+				changes.width = scalew(changes.width);
+				changes.height = scaleh(changes.height);
+				
+				changes.x = pt1.x + Math.min(0,changes.width);
+				changes.y = pt1.y + Math.min(0,changes.height);
+				changes.width = Math.abs(changes.width);
+				changes.height = Math.abs(changes.height);
+			}
+			finishUp();
+			break;
+		case "ellipse":
+			var c = remap(changes.cx,changes.cy);
+			changes.cx = c.x;
+			changes.cy = c.y;
+			changes.rx = scalew(changes.rx);
+			changes.ry = scaleh(changes.ry);
+		
+			changes.rx = Math.abs(changes.rx);
+			changes.ry = Math.abs(changes.ry);
+			finishUp();
+			break;
+		case "circle":
+			var c = remap(changes.cx,changes.cy);
+			changes.cx = c.x;
+			changes.cy = c.y;
+			// take the minimum of the new selected box's dimensions for the new circle radius
+			var tbox = transformBox(box.x, box.y, box.width, box.height, m);
+			var w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
+			changes.r = Math.min(w/2, h/2);
+
+			if(changes.r) changes.r = Math.abs(changes.r);
+			finishUp();
+			break;
+		case "line":
+			var pt1 = remap(changes.x1,changes.y1),
+				pt2 = remap(changes.x2,changes.y2);
+			changes.x1 = pt1.x;
+			changes.y1 = pt1.y;
+			changes.x2 = pt2.x;
+			changes.y2 = pt2.y;
+			
+		case "text":
+		case "use":
+			finishUp();
+			break;
+		case "g":
+			var gsvg = $(selected).data('gsvg');
+			if(gsvg) {
+				assignAttributes(gsvg, changes, 1000, true);
 			}
 			break;
-		case "polygon":
 		case "polyline":
-			var len = changes["points"].length;
+		case "polygon":
+			var len = changes.points.length;
 			for (var i = 0; i < len; ++i) {
-				var pt = changes["points"][i];
+				var pt = changes.points[i];
 				pt = remap(pt.x,pt.y);
-				changes["points"][i].x = pt.x;
-				changes["points"][i].y = pt.y;
+				changes.points[i].x = pt.x;
+				changes.points[i].y = pt.y;
 			}
+
+			var len = changes.points.length;
+			var pstr = "";
+			for (var i = 0; i < len; ++i) {
+				var pt = changes.points[i];
+				pstr += pt.x + "," + pt.y + " ";
+			}
+			selected.setAttribute("points", pstr);
 			break;
 		case "path":
 			var segList = selected.pathSegList;
@@ -3076,13 +3203,13 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				};
 			}
 			
-			var len = changes["d"].length,
-				firstseg = changes["d"][0],
+			var len = changes.d.length,
+				firstseg = changes.d[0],
 				currentpt = remap(firstseg.x,firstseg.y);
-			changes["d"][0].x = currentpt.x;
-			changes["d"][0].y = currentpt.y;
+			changes.d[0].x = currentpt.x;
+			changes.d[0].y = currentpt.y;
 			for (var i = 1; i < len; ++i) {
-				var seg = changes["d"][i];
+				var seg = changes.d[i];
 				var type = seg.type;
 				// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
 				// if relative, we want to scalew, scaleh
@@ -3115,81 +3242,11 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				if (seg.x) currentpt.x = seg.x;
 				if (seg.y) currentpt.y = seg.y;
 			} // for each segment
-			break;
-	} // switch on element type to get initial values
-	
-	// now we have a set of changes and an applied reduced transform list
-	// we apply the changes directly to the DOM
-	// TODO: merge this switch with the above one and optimize
-	switch (selected.tagName)
-	{
-		case "foreignObject":
-		case "rect":
-		case "image":
-			changes.x = changes.x-0 + Math.min(0,changes.width);
-			changes.y = changes.y-0 + Math.min(0,changes.height);
-			changes.width = Math.abs(changes.width);
-			changes.height = Math.abs(changes.height);
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x = snapToGrid(changes.x);
-				changes.y = snapToGrid(changes.y);
-				changes.width = snapToGrid(changes.width);
-				changes.height = snapToGrid(changes.height);
-			}
-			assignAttributes(selected, changes, 1000, true);
-			break;
-		case "ellipse":
-			changes.rx = Math.abs(changes.rx);
-			changes.ry = Math.abs(changes.ry);
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.cx = snapToGrid(changes.cx);
-				changes.cy = snapToGrid(changes.cy);
-				changes.rx = snapToGrid(changes.rx);
-				changes.ry = snapToGrid(changes.ry);
-			}
-		case "circle":
-			if(changes.r) changes.r = Math.abs(changes.r);
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.cx = snapToGrid(changes.cx);
-				changes.cy = snapToGrid(changes.cy);
-				changes.r = snapToGrid(changes.r);
-			}
-		case "line":
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x1 = snapToGrid(changes.x1);
-				changes.y1 = snapToGrid(changes.y1);
-				changes.x2 = snapToGrid(changes.x2);
-				changes.y2 = snapToGrid(changes.y2);
-			}
-		case "text":
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x = snapToGrid(changes.x);
-				changes.y = snapToGrid(changes.y);
-			}	
-		case "use":
-			assignAttributes(selected, changes, 1000, true);
-			break;
-		case "g":
-			var gsvg = $(selected).data('gsvg');
-			if(gsvg) {
-				assignAttributes(gsvg, changes, 1000, true);
-			}
-			break;
-		case "polyline":
-		case "polygon":
-			var len = changes["points"].length;
-			var pstr = "";
-			for (var i = 0; i < len; ++i) {
-				var pt = changes["points"][i];
-				pstr += pt.x + "," + pt.y + " ";
-			}
-			selected.setAttribute("points", pstr);
-			break;
-		case "path":
+		
 			var dstr = "";
-			var len = changes["d"].length;
+			var len = changes.d.length;
 			for (var i = 0; i < len; ++i) {
-				var seg = changes["d"][i];
+				var seg = changes.d[i];
 				var type = seg.type;
 				dstr += pathMap[type];
 				switch(type) {
@@ -3242,8 +3299,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 // tx - The translation's x value
 // ty - The translation's y value
 var updateClipPath = function(attr, tx, ty) {
-	var id = getUrlFromAttr(attr).substr(1);
-	var path = getElem(id).firstChild;
+	var path = getRefElem(attr).firstChild;
 	
 	var cp_xform = getTransformList(path);
 	
@@ -3324,8 +3380,8 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		if(k === 2 && tlist.getItem(0).type === 1 && tlist.getItem(1).type === 2) {
 			var mt = svgroot.createSVGTransform();
-			logMatrix(tlist.getItem(0).matrix);
-			logMatrix(transformListToTransform(tlist).matrix);
+// 			logMatrix(tlist.getItem(0).matrix);
+// 			logMatrix(transformListToTransform(tlist).matrix);
 			
 			mt.setMatrix(transformListToTransform(tlist).matrix);
 			tlist.clear();
@@ -3532,8 +3588,8 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						childxforms.push(translateBack);
 						childxforms.push(scale);
 						childxforms.push(translateOrigin);
-						logMatrix(translateBack.matrix);
-						logMatrix(scale.matrix);
+// 						logMatrix(translateBack.matrix);
+// 						logMatrix(scale.matrix);
 					} // not rotated
 					batchCmd.addSubCommand( recalculateDimensions(child) );
 					// TODO: If any <use> have this group as a parent and are 
@@ -3667,6 +3723,15 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					
 					batchCmd.addSubCommand( recalculateDimensions(child) );
 					start_transform = old_start_transform;
+					
+					// Convert stroke
+					// TODO: Find out if this should actually happen somewhere else
+					var sw = child.getAttribute("stroke-width");
+					if (child.getAttribute("stroke") !== "none" && !isNaN(sw)) {
+						var avg = (Math.abs(em.a) + Math.abs(em.d)) / 2;
+						child.setAttribute('stroke-width', sw * avg);
+					}
+
 				}
 			}
 			tlist.clear();
@@ -3806,17 +3871,18 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		if(!isWebkit) {
 			var fill = selected.getAttribute('fill');
 			if(fill && fill.indexOf('url(') === 0) {
-				var grad = getElem(getUrlFromAttr(fill).substr(1));
-				if(grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
-				
+				var paint = getRefElem(fill);
+				var type = 'pattern';
+				if(paint.tagName !== type) type = 'gradient';
+				var attrVal = paint.getAttribute(type + 'Units');
+				if(attrVal === 'userSpaceOnUse') {
 					//Update the userSpaceOnUse element
-					var grad = $(grad);
 					m = transformListToTransform(tlist).matrix;
-					var gtlist = getTransformList(grad[0]);
+					var gtlist = getTransformList(paint);
 					var gmatrix = transformListToTransform(gtlist).matrix;
 					m = matrixMultiply(m, gmatrix);
 					var m_str = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
-					grad.attr('gradientTransform', m_str);
+					paint.setAttribute(type + 'Transform', m_str);
 				}
 			}
 		}
@@ -4579,6 +4645,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					tlist.appendItem(svgroot.createSVGTransform());
 					tlist.appendItem(svgroot.createSVGTransform());
+					
+					if(support.nonScalingStroke) {
+						mouse_target.style.vectorEffect = 'non-scaling-stroke';
+						var all = mouse_target.getElementsByTagName('*'), len = all.length;
+						for(var i = 0; i < all.length; i++) {
+							all[i].style.vectorEffect = 'non-scaling-stroke';
+						}
+					}
 				}
 				break;
 			case "fhellipse":
@@ -4708,7 +4782,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						"font-size": cur_text.font_size,
 						"font-family": cur_text.font_family,
 						"text-anchor": "middle",
-						"xml:space": "preserve"
+						"xml:space": "preserve",
+						"opacity": cur_shape.opacity
 					}
 				});
 // 					newText.textContent = "text";
@@ -5227,6 +5302,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							}
 						}
 					} // no change in mouse position
+					
+					// Remove non-scaling stroke
+					if(support.nonScalingStroke) {
+						var elem = selectedElements[0];
+						elem.removeAttribute('style');
+						walkTree(elem, function(elem) {
+							elem.removeAttribute('style');
+						});
+					}
+
 				}
 				// we return immediately from select so that the obj_num is not incremented
 				return;
@@ -5452,8 +5537,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		if(getRotationAngle(mouse_target)) {
-			// Don't do for rotated groups for now
-			return;
+			// TODO: Allow method of in-group editing without having to do 
+			// this (similar to editing rotated paths)
+		
+			// Ungroup and regroup
+			canvas.ungroupSelectedElement();
+			canvas.groupSelectedElements();
+			mouse_target = selectedElements[0];
+			clearSelection(true);
 		}
 		// Reset context
 		if(current_group) {
@@ -7762,19 +7853,20 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		
 		// gradients can refer to other gradients
 		var href = getHref(el);
-		if (href && href.indexOf('#') == 0) {
+		if (href && href.indexOf('#') === 0) {
 			defelem_uses.push(href.substr(1));
 		}
 	};
 	
-	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker, svg");
+	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker, svg, symbol");
 		defelem_ids = [],
 		i = defelems.length;
 	while (i--) {
 		var defelem = defelems[i];
 		var id = defelem.id;
-		if(defelem_uses.indexOf(id) == -1) {
-			// Not found, so remove
+		if(defelem_uses.indexOf(id) < 0) {
+			// Not found, so remove (but remember)
+			removedElements[id] = defelem;
 			defelem.parentNode.removeChild(defelem);
 			numRemoved++;
 		}
@@ -8124,7 +8216,6 @@ this.randomizeIds = function() {
 // g - The parent element of the tree to give unique IDs
 var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
-	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "textPath", "use"];
 	
 	walkTree(g, function(n) {
@@ -8227,8 +8318,26 @@ var convertGradients = this.convertGradients = function(elem) {
 			// get object's bounding box
 			var bb = getBBox(elems[0]);
 			
+			// This will occur if the element is inside a <defs> or a <symbol>,
+			// in which we shouldn't need to convert anyway.
+			if(!bb) return;
+			
 			if(grad.tagName === 'linearGradient') {
 				var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
+				
+				// If has transform, convert
+				var tlist = grad.gradientTransform.baseVal;
+				if(tlist && tlist.numberOfItems > 0) {
+					var m = transformListToTransform(tlist).matrix;
+					var pt1 = transformPoint(g_coords.x1, g_coords.y1, m);
+					var pt2 = transformPoint(g_coords.x2, g_coords.y2, m);
+					
+					g_coords.x1 = pt1.x;
+					g_coords.y1 = pt1.y;
+					g_coords.x2 = pt2.x;
+					g_coords.y2 = pt2.y;
+					grad.removeAttribute('gradientTransform');
+				}
 				
 				$(grad).attr({
 					x1: (g_coords.x1 - bb.x) / bb.width,
@@ -8236,7 +8345,6 @@ var convertGradients = this.convertGradients = function(elem) {
 					x2: (g_coords.x2 - bb.x) / bb.width,
 					y2: (g_coords.y2 - bb.y) / bb.height
 				});
-				
 				grad.removeAttribute('gradientUnits');
 			} else {
 				// Note: radialGradient elements cannot be easily converted 
@@ -8325,7 +8433,6 @@ var convertToGroup = this.convertToGroup = function(elem) {
 // 			g.appendChild(elem.firstChild.cloneNode(true));
 		if (ts)
 			g.setAttribute("transform", ts);
-			console.log('t',g.getAttribute('transform'));
 		
 		var parent = elem.parentNode;
 		
@@ -8444,9 +8551,9 @@ this.setSvgString = function(xmlString) {
 			}
 		});
 		
-		// For Firefox: Put all gradients in defs
+		// For Firefox: Put all paint elems in defs
 		if(isGecko) {
-			content.find('linearGradient, radialGradient').appendTo(findDefs());
+			content.find('linearGradient, radialGradient, pattern').appendTo(findDefs());
 		}
 
 		
@@ -8574,6 +8681,8 @@ this.importSvgString = function(xmlString) {
 		// import new svg document into our document
 		var svg = svgdoc.importNode(newDoc.documentElement, true);
 		
+		uniquifyElems(svg);
+		
 		var innerw = convertToNum('width', svg.getAttribute("width")),
 			innerh = convertToNum('height', svg.getAttribute("height")),
 			innervb = svg.getAttribute("viewBox"),
@@ -8597,17 +8706,17 @@ this.importSvgString = function(xmlString) {
 		// Hack to make recalculateDimensions understand how to scale
 		ts = "translate(0) " + ts + " translate(0)";
 		
-		// Uncomment this once Firefox has fixed their symbol bug:
-		// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
 		var symbol = svgdoc.createElementNS(svgns, "symbol");
 		var defs = findDefs();
 		
+		if(isGecko) {
+			// Move all gradients into root for Firefox, workaround for this bug:
+			// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
+			$(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
+		}
+
 		while (svg.firstChild) {
 			var first = svg.firstChild;
-			if(isGecko && first.tagName === 'defs') {
-				// Move all gradients into root for Firefox
-				$(first).find('linearGradient, radialGradient').appendTo(defs);
-			}
 			symbol.appendChild(first);
 		}
 		var attrs = svg.attributes;
@@ -8621,7 +8730,7 @@ this.importSvgString = function(xmlString) {
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		setHref(use_el, "#" + symbol.id);
 		findDefs().appendChild(symbol);
-	
+		
 		(current_group || current_layer).appendChild(use_el);
 		use_el.id = getNextId();
 		clearSelection();
@@ -9253,7 +9362,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1777 $)";
+	return "svgcanvas.js ($Rev: 1804 $)";
 };
 
 // Function: setUiStrings
@@ -10702,6 +10811,7 @@ this.ungroupSelectedElement = function() {
 		var anchor = g.nextSibling;
 		var children = new Array(g.childNodes.length);
 		var xform = g.getAttribute("transform");
+		
 		// get consolidated matrix
 		var glist = getTransformList(g);
 		var m = transformListToTransform(glist).matrix;
@@ -10755,14 +10865,14 @@ this.ungroupSelectedElement = function() {
 				if(!orig_cblur) {
 					// Set group's filter to use first child's ID
 					if(!gfilter) {
-						gfilter = getElem(getUrlFromAttr(gattrs.filter).substr(1));
+						gfilter = getRefElem(gattrs.filter);
 					} else {
 						// Clone the group's filter
 						gfilter = copyElem(gfilter);
 						findDefs().appendChild(gfilter);
 					}
 				} else {
-					gfilter = getElem(getUrlFromAttr(elem.getAttribute('filter')).substr(1));
+					gfilter = getRefElem(elem.getAttribute('filter'));
 				}
 
 				// Change this in future for different filters
@@ -11412,6 +11522,10 @@ function disableAdvancedTextEdit() {
 	unit_types.pt = inch / 72;
 	unit_types.pc = inch / 6;
 	unit_types['%'] = 0;
+	
+	rect.setAttribute('style','vector-effect:non-scaling-stroke');
+	support.nonScalingStroke = (rect.style.vectorEffect === 'non-scaling-stroke');
+
 	svgcontent.removeChild(rect);
 }());
 
