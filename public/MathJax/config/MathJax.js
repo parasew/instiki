@@ -7,13 +7,10 @@ MathJax.Hub.Config({
   },
   "HTML-CSS": {
     preferredFont: "STIX",
+    imageFont: null,
     scale: 90
   },
   MMLorHTML: {
-    //
-    //  The output jax that is to be preferred when both are possible
-    //  (set to "MML" for native MathML, "HTML" for MathJax's HTML-CSS output jax).
-    //
     prefer:
     {
       MSIE:    "MML",
