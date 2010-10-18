@@ -34,6 +34,15 @@
   /*]]>*/--></style>
   <%= javascript_include_tag :defaults %>
   <%- if @web -%>
+   <%- if @web.markup == :markdownMML -%>
+  <script type="text/javascript">
+    if (!(Prototype.Browser.Gecko || navigator.userAgent.match(/MathPlayer/))) {
+      var s = document.createElement('script');
+      s.src = "<%= compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>";
+      document.querySelector('head').appendChild(s);        
+    };
+  </script>
+   <%- end -%>
   	<%= auto_discovery_link_tag(:atom, {:controller => 'wiki', :web => @web.address, :action => 'atom_with_headlines'},
   	      :title => 'Atom with headlines') %>
   	<%= auto_discovery_link_tag(:atom, {:controller => 'wiki', :web => @web.address, :action => 'atom_with_content'},
