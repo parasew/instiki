@@ -743,7 +743,36 @@ END_THM
     assert_equal WikiReference::INCLUDED_PAGE, references[0].link_type
   end
 
-  def test_references_creation_categories
+  def test_references_creation_redirects
+    new_page = @web.add_page('NewPage', '[[!redirects OtherPage]]',
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
+        
+    references = new_page.wiki_references(true)
+    assert_equal 1, references.size
+    assert_equal 'OtherPage', references[0].referenced_name
+    assert_equal WikiReference::REDIRECTED_PAGE, references[0].link_type
+  end
+
+   def test_references_creation_redirects_in_included_page
+    new_page = @web.add_page('NewPage', "[[!redirects OtherPage]]\ncategory: plants",
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
+    second_page = @web.add_page('SecondPage', '[[!include NewPage]]',
+        Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
+        
+    references = new_page.wiki_references(true)
+    assert_equal 2, references.size
+    assert_equal 'OtherPage', references[0].referenced_name
+    assert_equal WikiReference::REDIRECTED_PAGE, references[0].link_type
+    assert_equal 'plants', references[1].referenced_name
+    assert_equal WikiReference::CATEGORY, references[1].link_type
+
+    references = second_page.wiki_references(true)
+    assert_equal 1, references.size
+    assert_equal 'NewPage', references[0].referenced_name
+    assert_equal WikiReference::INCLUDED_PAGE, references[0].link_type
+  end
+
+ def test_references_creation_categories
     new_page = @web.add_page('NewPage', "Foo\ncategory: NewPageCategory",
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 

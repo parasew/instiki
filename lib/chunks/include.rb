@@ -36,7 +36,8 @@ class Include < WikiChunk::WikiReference
         else
           raise "Unsupported rendering mode #{@mode.inspect}"
         end
-      @content.merge_chunks(included_content)
+      # redirects and categories of included pages should not be inherited
+      @content.merge_chunks(included_content.delete_chunks!([Redirect, Category]))
       clear_include_list
       return included_content.pre_rendered
     else
