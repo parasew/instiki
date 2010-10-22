@@ -185,6 +185,16 @@ class WikiContent < ActiveSupport::SafeBuffer
     end
   end
 
+  def delete_chunks!(types)
+    types.each do |t|
+      @chunks_by_type[t].each do |c|
+        @pre_rendered.sub!(c.mask, '') if @pre_rendered
+        @chunks.delete(c)
+      end
+    end
+    self
+  end
+
   def pre_render!
     unless @pre_rendered
       @chunks_by_type[Include].each{|chunk| chunk.unmask }
