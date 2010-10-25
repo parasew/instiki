@@ -729,7 +729,14 @@
 				if(!z_info) return;
 				var zoomlevel = z_info.zoom,
 					bb = z_info.bbox;
-				$('#zoom').val(Math.round(zoomlevel*100));
+				
+				if(zoomlevel < .001) {
+					changeZoom({value: .1});
+					return;
+				}
+					
+// 				$('#zoom').val(Math.round(zoomlevel*100));
+				$('#zoom').val(zoomlevel*100);
 				
 				if(autoCenter) {
 					updateCanvas();
@@ -1389,6 +1396,8 @@
 					$('#tool_reorient').toggleClass('disabled', ang == 0);
 					return;
 				}
+				var unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
+				
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 				var menu_items = $('#cmenu_canvas li');
 				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
@@ -1412,7 +1421,7 @@
 					$('#blur_slider').slider('option', 'value', blurval);
 					
 					if(svgCanvas.addedNew) {
-						if(elname == 'image') {
+						if(elname === 'image') {
 							// Prompt for URL if not a data URL
 							if(svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
@@ -1429,6 +1438,7 @@
 							$('#xy_panel').hide();
 						} else {
 							var x,y;
+							
 							// Get BBox vals for g, polyline and path
 							if(['g', 'polyline', 'path'].indexOf(elname) >= 0) {
 								var bb = svgCanvas.getStrokedBBox([elem]);
@@ -1440,6 +1450,12 @@
 								x = elem.getAttribute('x');
 								y = elem.getAttribute('y');
 							}
+							
+							if(unit) {
+								x = svgCanvas.convertUnit(x);
+								y = svgCanvas.convertUnit(y);
+							}							
+							
 							$('#selected_x').val(x || 0);
 							$('#selected_y').val(y || 0);
 							$('#xy_panel').show();
@@ -1460,6 +1476,10 @@
 						
 						if(point) {
 							var seg_type = $('#seg_type');
+							if(unit) {
+								point.x = svgCanvas.convertUnit(point.x);
+								point.y = svgCanvas.convertUnit(point.y);
+							}
 							$('#path_node_x').val(point.x);
 							$('#path_node_y').val(point.y);
 							if(point.type) {
@@ -1496,7 +1516,13 @@
 						$('#' + el_name + '_panel').show();
 			
 						$.each(cur_panel, function(i, item) {
-							$('#' + el_name + '_' + item).val(elem.getAttribute(item) || 0);
+							var attrVal = elem.getAttribute(item);
+							if(curConfig.baseUnit !== 'px' && elem[item]) {
+								var bv = elem[item].baseVal.value;
+								attrVal = svgCanvas.convertUnit(bv);
+							}
+						
+							$('#' + el_name + '_' + item).val(attrVal || 0);
 						});
 						
 						if(el_name == 'text') {
@@ -1651,6 +1677,10 @@
 			}
 			var changeZoom = function(ctl) {
 				var zoomlevel = ctl.value / 100;
+				if(zoomlevel < .001) {
+					ctl.value = .1;
+					return;
+				}
 				var zoom = svgCanvas.getZoom();
 				var w_area = workarea;
 				
@@ -1762,15 +1792,25 @@
 					return false;
 				}
 				
-				// Convert unitless value to one with given unit
-				if(curConfig.baseUnit !== 'px' && !isNaN(val) ) {
-					val += curConfig.baseUnit;
-					this.value = val;
+				if(isNaN(val)) {
+					val = svgCanvas.convertToNum(attr, val);
+				} else if(curConfig.baseUnit !== 'px') {
+					// Convert unitless value to one with given unit
+				
+// 					val = svgCanvas.convertUnit(bv, "px");
+// 					selectedElement[attr].baseVal.newValueSpecifiedUnits();
+// 					this.value = val;
+// 					selectedElement[attr].baseVal
+					var unitData = svgCanvas.getUnits();
+
+					if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
+						val *= unitData[curConfig.baseUnit];
+					}
 				}
 				
 				// if the user is changing the id, then de-select the element first
 				// change the ID, then re-select it with the new ID
-				if (attr == "id") {
+				if (attr === "id") {
 					var elem = selectedElement;
 					svgCanvas.clearSelection();
 					elem.id = val;
@@ -4205,6 +4245,8 @@
 				if(!zoom) zoom = svgCanvas.getZoom();
 				if(!scanvas) scanvas = $("#svgcanvas");
 				
+				var limit = 30000;
+				
 				var c_elem = svgCanvas.getContentElem();
 				
 				var units = svgCanvas.getUnits();
@@ -4214,13 +4256,44 @@
 					var is_x = (d === 0);
 					var dim = is_x ? 'x' : 'y';
 					var lentype = is_x?'width':'height';
-					
 					var content_d = c_elem.getAttribute(dim)-0;
 					
-					var hcanv = $('#ruler_' + dim + ' canvas')[0];
+					var $hcanv = $('#ruler_' + dim + ' canvas:first');
+					var hcanv = $hcanv[0];
+					
 					// Set the canvas size to the width of the container
-					var len = hcanv[lentype] = scanvas[lentype]();
+					hcanv.setAttribute(lentype, 0);
+					var ruler_len = scanvas[lentype]();
+					var total_len = ruler_len;
+					hcanv.parentNode.style[lentype] = total_len + 'px';
+					
+					var canv_count = 1;
+					var ctx_num = 0;
+					var ctx_arr;
 					var ctx = hcanv.getContext("2d");
+
+					// Remove any existing canvasses
+					$hcanv.siblings().remove();
+					
+					// Create multiple canvases when necessary (due to browser limits)
+					if(ruler_len >= limit) {
+						var num = parseInt(ruler_len / limit) + 1;
+						ctx_arr = Array(num);
+						ctx_arr[0] = ctx;
+						for(var i = 1; i < num; i++) {
+							hcanv[lentype] = limit;
+							var copy = hcanv.cloneNode(true);
+							hcanv.parentNode.appendChild(copy);
+							ctx_arr[i] = copy.getContext('2d');
+						}
+						
+						copy[lentype] = ruler_len % limit;
+						
+						// set copy width to last
+						ruler_len = limit;
+					}
+					
+					hcanv[lentype] = ruler_len;
 					
 					var u_multi = unit * zoom;
 					
@@ -4238,12 +4311,13 @@
 					var big_int = multi * u_multi;
 
 					ctx.font = "9px sans-serif";
-					
+
 					var ruler_d = ((content_d / u_multi) % multi) * u_multi;
-					
-					for (; ruler_d < len; ruler_d += big_int) {
-						var real_d = Math.round((ruler_d) - content_d );
-	
+					var label_pos = ruler_d - big_int;
+					for (; ruler_d < total_len; ruler_d += big_int) {
+						label_pos += big_int;
+						var real_d = ruler_d - content_d;
+
 						var cur_d = Math.round(ruler_d) + .5;
 						if(is_x) {
 							ctx.moveTo(cur_d, 15);
@@ -4253,8 +4327,7 @@
 							ctx.lineTo(0, cur_d);
 						}
 	
-	
-						var num = real_d / u_multi;
+						var num = (label_pos - content_d) / u_multi;
 						if(multi >= 1) {
 							label = Math.round(num);
 						} else {
@@ -4283,6 +4356,19 @@
 						var part = big_int / 10;
 						for(var i = 1; i < 10; i++) {
 							var sub_d = Math.round(ruler_d + part * i) + .5;
+							if(ctx_arr && sub_d > ruler_len) {
+								ctx_num++;
+								ctx.stroke();
+								if(ctx_num >= ctx_arr.length) {
+									i = 10;
+									ruler_d = total_len;
+									continue;
+								}
+								ctx = ctx_arr[ctx_num];
+								ruler_d -= limit;
+								sub_d = Math.round(ruler_d + part * i) + .5;
+							}
+							
 							var line_num = (i % 2)?12:10;
 							if(is_x) {
 								ctx.moveTo(sub_d, 15);
@@ -4303,7 +4389,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1802 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1814 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
