@@ -78,7 +78,7 @@ if(window.opera) {
 		}
 		return this;
 	};
-
+	
 }());
 
 // Class: SvgCanvas
@@ -110,7 +110,7 @@ var userAgent = navigator.userAgent,
 	"feGaussianBlur": ["class", "color-interpolation-filters", "id", "requiredFeatures", "stdDeviation"],
 	"filter": ["class", "color-interpolation-filters", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
 	"foreignObject": ["class", "font-size", "height", "id", "opacity", "requiredFeatures", "style", "transform", "width", "x", "y"],
-	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "font-family", "font-size", "font-style", "font-weight", "text-anchor"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["class", "id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
@@ -402,6 +402,10 @@ var Utils = this.Utils = function() {
 		// round value to for snapping
 		"snapToGrid" : function(value){
 			var stepSize = curConfig.snappingStep;
+			var unit = curConfig.baseUnit;
+			if(unit !== "px") {
+				stepSize *= unit_types[unit];
+			}
 			value = Math.round(value/stepSize)*stepSize;
 			return value;
 		},
@@ -427,9 +431,17 @@ var Utils = this.Utils = function() {
 			}
 			catch(e){ throw new Error("Error parsing XML string"); };
 			return out;
+		},
+		
+		bboxToObj: function(bbox) {
+			return {
+				x: bbox.x,
+				y: bbox.y,
+				width: bbox.width,
+				height: bbox.height
+			}
 		}
 	}
-
 }();
 
 var snapToGrid = Utils.snapToGrid;
@@ -479,6 +491,7 @@ var canvas = this,
 				'</svg>').documentElement, true);
 
 	container.appendChild(svgroot);
+	
 	
 // The actual element that represents the final output SVG element
 var svgcontent = svgdoc.createElementNS(svgns, "svg");
@@ -545,6 +558,20 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
 	var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
 	var unit_attrs = $.merge(['r','radius'], w_attrs);
+	
+	var unitNumMap = {
+			'%': 2,
+			em: 3,
+			ex: 4,
+			px: 5,
+			cm: 6,
+			mm: 7,
+			'in': 8,
+			pt: 9,
+			pc: 10
+	};
+	
+
 	$.merge(unit_attrs, h_attrs);
 	
 	// Function: convertToNum
@@ -554,7 +581,7 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 	// Parameters:
 	// attr - String with the name of the attribute associated with the value
 	// val - String with the attribute value to convert
-	convertToNum = function(attr, val) {
+	convertToNum = canvas.convertToNum = function(attr, val) {
 		// Return a number if that's what it already is
 		if(!isNaN(val)) return val-0;
 		
@@ -591,31 +618,32 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 			// New value is a number, so check currently used unit
 			var old_val = elem.getAttribute(attr);
 			
-			if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
-				// Old value was a number, so get unit, then convert
-				var unit;
-				if(old_val.substr(-1) === '%') {
-					var res = getResolution();
-					unit = '%';
-					val *= 100;
-					if(w_attrs.indexOf(attr) >= 0) {
-						val = val / res.w;
-					} else if(h_attrs.indexOf(attr) >= 0) {
-						val = val / res.h;
-					} else {
-						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-					}
-				} else {
-					if(curConfig.baseUnit !== 'px') {
-						unit = curConfig.baseUnit;
-					} else {
-						unit = old_val.substr(-2);
-					}
-					val = val / unit_types[unit];
-				}
-				
-				val += unit;
-			}
+			// Enable this for alternate mode
+// 			if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
+// 				// Old value was a number, so get unit, then convert
+// 				var unit;
+// 				if(old_val.substr(-1) === '%') {
+// 					var res = getResolution();
+// 					unit = '%';
+// 					val *= 100;
+// 					if(w_attrs.indexOf(attr) >= 0) {
+// 						val = val / res.w;
+// 					} else if(h_attrs.indexOf(attr) >= 0) {
+// 						val = val / res.h;
+// 					} else {
+// 						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+// 					}
+// 				} else {
+// 					if(curConfig.baseUnit !== 'px') {
+// 						unit = curConfig.baseUnit;
+// 					} else {
+// 						unit = old_val.substr(-2);
+// 					}
+// 					val = val / unit_types[unit];
+// 				}
+// 				
+// 				val += unit;
+// 			}
 		}
 		elem.setAttribute(attr, val);
 	}
@@ -664,6 +692,16 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 	// Returns the unit object with values for each unit
 	canvas.getUnits = function() {
 		return unit_types;
+	}
+	
+	// Function: convertUnit
+	// Converts the number to given unit or baseUnit
+	canvas.convertUnit = function(val, unit) {
+		unit = unit || curConfig.baseUnit;
+// 		baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
+// 		var val = baseVal.valueInSpecifiedUnits;
+// 		baseVal.convertToSpecifiedUnits(1);
+		return shortFloat(val / unit_types[unit]);
 	}
 	
 	// Function: unitConvertAttrs
@@ -1254,6 +1292,7 @@ var SelectorManager;
 			var bShow = show ? "inline" : "none";
 			selectorManager.selectorGripsGroup.setAttribute("display", bShow);
 			var elem = this.selectedElement;
+			this.hasGrips = show;
 			if(elem && show) {
 				this.selectorGroup.appendChild(selectorManager.selectorGripsGroup);
 				this.updateGripCursors(getRotationAngle(elem));
@@ -1290,29 +1329,28 @@ var SelectorManager;
 				mgr = selectorManager,
 				selectedGrips = mgr.selectorGrips,
 				selected = this.selectedElement,
-				 sw = selected.getAttribute("stroke-width");
+				sw = selected.getAttribute("stroke-width");
 			var offset = 1/current_zoom;
-			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
+			if (selected.getAttribute("stroke") !== "none" && !isNaN(sw)) {
 				offset += (sw/2);
 			}
 			
-			if (selected.tagName == "text") {
+			var tagName = selected.tagName;
+			
+			if (tagName === "text") {
 				offset += 2/current_zoom;
 			}
+			
 			var bbox = getBBox(selected);
-			if(selected.tagName == 'g' && !$(selected).data('gsvg')) {
+
+			if(tagName === 'g' && !elData(selected, 'gsvg')) {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = getStrokedBBox(selected.childNodes);
 				if(stroked_bbox) {
-					var bb = {};
-					$.each(bbox, function(key, val) {
-						bb[key] = stroked_bbox[key];
-					});
-					bbox = bb;
+					bbox = stroked_bbox;
 				}
 			}
-
 			// loop and transform our bounding box until we reach our first rotation
 			var m = getMatrix(selected);
 
@@ -1331,10 +1369,11 @@ var SelectorManager;
 			
 			//*
 			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
-				nbax = nbox.aabox.x - offset,
-				nbay = nbox.aabox.y - offset,
-				nbaw = nbox.aabox.width + (offset * 2),
-				nbah = nbox.aabox.height + (offset * 2);
+				aabox = nbox.aabox,
+				nbax = aabox.x - offset,
+				nbay = aabox.y - offset,
+				nbaw = aabox.width + (offset * 2),
+				nbah = aabox.height + (offset * 2);
 				
 			// now if the shape is rotated, un-rotate it
 			var cx = nbax + nbaw/2,
@@ -1352,15 +1391,18 @@ var SelectorManager;
 				nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
 				
 				// calculate the axis-aligned bbox
-				var minx = nbox.tl.x,
-					miny = nbox.tl.y,
-					maxx = nbox.tl.x,
-					maxy = nbox.tl.y;
+				var tl = nbox.tl;
+				var minx = tl.x,
+					miny = tl.y,
+					maxx = tl.x,
+					maxy = tl.y;
 				
-				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) ) - offset;
-				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) ) - offset;
-				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) ) + offset;
-				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) ) + offset;
+				var Min = Math.min, Max = Math.max;
+				
+				minx = Min(minx, Min(nbox.tr.x, Min(nbox.bl.x, nbox.br.x) ) ) - offset;
+				miny = Min(miny, Min(nbox.tr.y, Min(nbox.bl.y, nbox.br.y) ) ) - offset;
+				maxx = Max(maxx, Max(nbox.tr.x, Max(nbox.bl.x, nbox.br.x) ) ) + offset;
+				maxy = Max(maxy, Max(nbox.tr.y, Max(nbox.bl.y, nbox.br.y) ) ) + offset;
 				
 				nbax = minx;
 				nbay = miny;
@@ -1374,43 +1416,39 @@ var SelectorManager;
 						+ " L" + (nbax+nbaw) + "," + nbay
 						+ " " + (nbax+nbaw) + "," + (nbay+nbah)
 						+ " " + nbax + "," + (nbay+nbah) + "z";
-			assignAttributes(selectedBox, {'d': dstr});
+			selectedBox.setAttribute('d', dstr);
 			
-			this.gripCoords = {
-				nw: [nbax, nbay],
-				ne: [nbax+nbaw, nbay],
-				sw: [nbax, nbay+nbah],
-				se: [nbax+nbaw, nbay+nbah],
-				n:  [nbax + (nbaw)/2, nbay],
-				w:	[nbax, nbay + (nbah)/2],
-				e:	[nbax + nbaw, nbay + (nbah)/2],
-				s:	[nbax + (nbaw)/2, nbay + nbah]
-			};
+			var xform = angle ? "rotate(" + [angle,cx,cy].join(",") + ")" : "";
+			this.selectorGroup.setAttribute("transform", xform);
+
+			if(selected === selectedElements[0]) {
+				this.gripCoords = {
+					nw: [nbax, nbay],
+					ne: [nbax+nbaw, nbay],
+					sw: [nbax, nbay+nbah],
+					se: [nbax+nbaw, nbay+nbah],
+					n:  [nbax + (nbaw)/2, nbay],
+					w:	[nbax, nbay + (nbah)/2],
+					e:	[nbax + nbaw, nbay + (nbah)/2],
+					s:	[nbax + (nbaw)/2, nbay + nbah]
+				};
 			
-			if(selected == selectedElements[0]) {
 				for(var dir in this.gripCoords) {
 					var coords = this.gripCoords[dir];
 					assignAttributes(selectedGrips[dir], {
 						cx: coords[0], cy: coords[1]
 					});
 				};
+
+				// we want to go 20 pixels in the negative transformed y direction, ignoring scale
+				assignAttributes(mgr.rotateGripConnector, { x1: nbax + (nbaw)/2, 
+															y1: nbay, 
+															x2: nbax + (nbaw)/2, 
+															y2: nbay- 20});
+				assignAttributes(mgr.rotateGrip, { cx: nbax + (nbaw)/2, 
+													cy: nbay - 20 });
 			}
 
-			if (angle) {
-				this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
-			}
-			else {
-				this.selectorGroup.setAttribute("transform", "");
-			}
-
-			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			assignAttributes(mgr.rotateGripConnector, { x1: nbax + (nbaw)/2, 
-														y1: nbay, 
-														x2: nbax + (nbaw)/2, 
-														y2: nbay- 20});
-			assignAttributes(mgr.rotateGrip, { cx: nbax + (nbaw)/2, 
-												cy: nbay - 20 });
-			
 			svgroot.unsuspendRedraw(sr_handle);
 		};
 
@@ -1522,7 +1560,7 @@ var SelectorManager;
 				'height': dims[1],
 				'x': 0,
 				'y': 0,
-				'overflow': 'visible',
+				'overflow': (isWebkit ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
 				'style': 'pointer-events:none'
 			});
 			
@@ -1865,8 +1903,10 @@ var assignAttributes = this.assignAttributes = function(node, attrs, suspendLeng
 		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
 			i.substr(0,6) === "xlink:" ? xlinkns : null);
 			
-		if(ns || !unitCheck) {
+		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);
+		} else if(!unitCheck) {
+			node.setAttribute(i, attrs[i]);
 		} else {
 			setUnitAttr(node, i, attrs[i]);
 		}
@@ -2125,7 +2165,8 @@ this.addExtension = function(name, ext_func) {
 var shortFloat = function(val) {
 	var digits = save_options.round_digits;
 	if(!isNaN(val)) {
-		return Number(Number(val).toFixed(digits));
+		// Note that + converts to Number
+		return +((+val).toFixed(digits));
 	} else if($.isArray(val)) {
 		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
 	} else {
@@ -2239,7 +2280,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 					var parent = elem.parentNode;
 					parent.appendChild(g);
 					g.appendChild(clone);
-					bb = g.getBBox();
+					bb = bboxToObj(g.getBBox());
 					parent.removeChild(g);
 				}
 				
@@ -2289,12 +2330,6 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 		if(full_bb) return;
 		if(!this.parentNode) return;
 		full_bb = getCheckedBBox(this);
-		if(full_bb) {
-			var b = {};
-			for(var i in full_bb) b[i] = full_bb[i];
-			full_bb = b;
-		}
-
 	});
 	
 	// This shouldn't ever happen...
@@ -2410,7 +2445,7 @@ var copyElem = function(el) {
 	
 	// Opera's "d" value needs to be reset for Opera/Win/non-EN
 	// Also needed for webkit (else does not keep curved segments on clone)
-	if((isWebkit) && el.nodeName == 'path') {
+	if(isWebkit && el.nodeName == 'path') {
 		var fixed_d = pathActions.convertPath(el);
 		new_el.setAttribute('d', fixed_d);
 	}
@@ -2717,6 +2752,8 @@ var getRefElem = this.getRefElem = function(attrVal) {
 	return getElem(getUrlFromAttr(attrVal).substr(1));
 }
 
+var bboxToObj = Utils.bboxToObj;
+
 // Function: getBBox
 // Get the given/selected element's bounding box object, convert it to be more
 // usable when necessary
@@ -2759,6 +2796,9 @@ var getBBox = this.getBBox = function(elem) {
 			}
 		}
 	}
+	if(ret) {
+		ret = bboxToObj(ret);
+	}
 
 	// get the bounding box from the DOM (which is in that element's coordinate system)
 	return ret;
@@ -2774,7 +2814,7 @@ var getBBox = this.getBBox = function(elem) {
 // Parameters: 
 // elem - The (text) DOM element to clone
 var ffClone = function(elem) {
-	if(isGecko) return elem;
+	if(!isGecko) return elem;
 	var clone = elem.cloneNode(true)
 	elem.parentNode.insertBefore(clone, elem);
 	elem.parentNode.removeChild(elem);
@@ -3277,8 +3317,8 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 						break;
 					case 11: // relative elliptical arc (a)
 					case 10: // absolute elliptical arc (A)
-						dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + Number(seg.largeArcFlag) +
-							" " + Number(seg.sweepFlag) + " " + seg.x + "," + seg.y + " ";
+						dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + (+seg.largeArcFlag) +
+							" " + (+seg.sweepFlag) + " " + seg.x + "," + seg.y + " ";
 						break;
 					case 17: // relative smooth cubic (s)
 					case 16: // absolute smooth cubic (S)
@@ -3355,7 +3395,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		selected.removeAttribute("transform");
 		return null;
 	}
-
+	
 	// TODO: Make this work for more than 2
 	if (tlist) {
 		var k = tlist.numberOfItems;
@@ -3377,21 +3417,19 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		// combine matrix + translate
 		k = tlist.numberOfItems;
-		
-		if(k === 2 && tlist.getItem(0).type === 1 && tlist.getItem(1).type === 2) {
+		if(k >= 2 && tlist.getItem(k-2).type === 1 && tlist.getItem(k-1).type === 2) {
 			var mt = svgroot.createSVGTransform();
-// 			logMatrix(tlist.getItem(0).matrix);
-// 			logMatrix(transformListToTransform(tlist).matrix);
 			
-			mt.setMatrix(transformListToTransform(tlist).matrix);
-			tlist.clear();
+			var m = matrixMultiply(
+				tlist.getItem(k-2).matrix, 
+				tlist.getItem(k-1).matrix
+			);		
+			mt.setMatrix(m);
+			tlist.removeItem(k-2);
+			tlist.removeItem(k-2);
 			tlist.appendItem(mt);
 		}
 	}
-	
-	
-	
-	
 	
 	// Grouped SVG element 
 	var gsvg = $(selected).data('gsvg');
@@ -4060,7 +4098,7 @@ var transformPoint = function(x, y, m) {
 // Returns:
 // Boolean indicating whether or not the matrix is 1,0,0,1,0,0
 var isIdentity = function(m) {
-	return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
+	return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
 }
 
 // Function: matrixMultiply
@@ -4864,7 +4902,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// we temporarily use a translate on the element(s) being dragged
 				// this transform is removed upon mousing up and the element is 
 				// relocated to the new location
-				if (selectedElements[0] != null) {
+				if (selectedElements[0] !== null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
 					
@@ -5238,7 +5276,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var real_x = x;
 		var real_y = y;
 		
-		var useUnit = (curConfig.baseUnit !== 'px');
+		// TODO: Make true when in multi-unit mode
+		var useUnit = false; // (curConfig.baseUnit !== 'px');
 		
 		started = false;
 		switch (current_mode)
@@ -5292,8 +5331,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					// no change in position/size, so maybe we should move to pathedit
 					else {
 						var t = evt.target;
-						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
-							pathActions.select(t);
+						if (selectedElements[0].nodeName === "path" && selectedElements[1] == null) {
+							pathActions.select(selectedElements[0]);
 						} // if it was a path
 						// else, if it was selected and this is a shift-click, remove it from selection
 						else if (evt.shiftKey) {
@@ -5506,7 +5545,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				element.setAttribute("opacity", cur_shape.opacity);
 				element.setAttribute("style", "pointer-events:inherit");
 				cleanupElement(element);
-				if(current_mode == "path") {
+				if(current_mode === "path") {
 					pathActions.toEditMode(element);
 				} else {
 					selectOnly([element], true);
@@ -5530,19 +5569,19 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if(parent === current_group) return;
 		
 		var mouse_target = getMouseTarget(evt);
+		var tagName = mouse_target.tagName;
 		
-		if(mouse_target.tagName === 'text' && current_mode !== 'textedit') {
+		if(tagName === 'text' && current_mode !== 'textedit') {
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
 			textActions.select(mouse_target, pt.x, pt.y);
 		}
 		
-		if(getRotationAngle(mouse_target)) {
+		if(tagName === "g" && getRotationAngle(mouse_target)) {
 			// TODO: Allow method of in-group editing without having to do 
 			// this (similar to editing rotated paths)
 		
 			// Ungroup and regroup
-			canvas.ungroupSelectedElement();
-			canvas.groupSelectedElements();
+			pushGroupProperties(mouse_target);
 			mouse_target = selectedElements[0];
 			clearSelection(true);
 		}
@@ -6503,6 +6542,9 @@ var pathActions = this.pathActions = function() {
 			if(getRotationAngle(p.elem)) {
 				p.matrix = getMatrix(path.elem);
 				p.imatrix = p.matrix.inverse();
+			} else {
+				p.matrix = null;
+				p.imatrix = null;
 			}
 
 			p.eachSeg(function(i) {
@@ -7310,7 +7352,7 @@ var pathActions = this.pathActions = function() {
 			}
 		},
 		select: function(target) {
-			if (current_path == target) {
+			if (current_path === target) {
 				pathActions.toEditMode(target);
 				current_mode = "pathedit";
 			} // going into pathedit mode
@@ -7897,7 +7939,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 	
 	// Keep SVG-Edit comment on top
 	$.each(svgcontent.childNodes, function(i, node) {
-		if(i && node.nodeType == 8 && node.data.indexOf('Created with') >= 0) {
+		if(i && node.nodeType === 8 && node.data.indexOf('Created with') >= 0) {
 			svgcontent.insertBefore(node, svgcontent.firstChild);
 		}
 	});
@@ -7966,7 +8008,21 @@ var svgToString = this.svgToString = function(elem, indent) {
 		if(elem.id === 'svgcontent') {
 			// Process root element separately
 			var res = getResolution();
-			out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+			
+			var vb = "";
+			// TODO: Allow this by dividing all values by current baseVal
+			// Note that this also means we should properly deal with this on import
+// 			if(curConfig.baseUnit !== "px") {
+// 				var unit = curConfig.baseUnit;
+// 				var unit_m = unit_types[unit];
+// 				res.w = shortFloat(res.w / unit_m)
+// 				res.h = shortFloat(res.h / unit_m)
+// 				vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';				
+// 				res.w += unit;
+// 				res.h += unit;
+// 			}
+			
+			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+svgns+'"');
 			
 			var nsuris = {};
 			
@@ -8411,7 +8467,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 // 		}
 
 		// Not ideal, but works
-		ts += "translate(" + (pos.x || 0) + "," + (pos.x || 0) + ")";
+		ts += "translate(" + (pos.x || 0) + "," + (pos.y || 0) + ")";
 		
 		var prev = $elem.prev();
 		
@@ -8465,10 +8521,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		selectOnly([g]);
 		
-		// Temporary hack to get rid of matrix
-		// TODO: See what ungroupSelectedElement does to absorb matrix
-		canvas.ungroupSelectedElement();
-		canvas.groupSelectedElements();
+		batchCmd.addSubCommand(pushGroupProperties(g, true));
 // 		
 		addCommandToHistory(batchCmd);
 		
@@ -8689,11 +8742,11 @@ this.importSvgString = function(xmlString) {
 			// if no explicit viewbox, create one out of the width and height
 			vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
 		for (var j = 0; j < 4; ++j)
-			vb[j] = Number(vb[j]);
+			vb[j] = +(vb[j]);
 
 		// TODO: properly handle preserveAspectRatio
-		var canvasw = Number(svgcontent.getAttribute("width")),
-			canvash = Number(svgcontent.getAttribute("height"));
+		var canvasw = +svgcontent.getAttribute("width"),
+			canvash = +svgcontent.getAttribute("height");
 		// imported content should be 1/3 of the canvas on its largest dimension
 		
 		if (innerh > innerw) {
@@ -9362,7 +9415,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1804 $)";
+	return "svgcanvas.js ($Rev: 1814 $)";
 };
 
 // Function: setUiStrings
@@ -10787,6 +10840,187 @@ this.groupSelectedElements = function() {
 	selectOnly([g], true);
 };
 
+
+// Function: pushGroupProperties
+// Pushes all appropriate parent group properties down to its children, then
+// removes them from the group
+var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
+
+	var children = g.childNodes;
+	var len = children.length;
+	var xform = g.getAttribute("transform");
+
+	var glist = getTransformList(g);
+	var m = transformListToTransform(glist).matrix;
+	
+	var batchCmd = new BatchCommand("Push group properties");
+
+	// TODO: get all fill/stroke properties from the group that we are about to destroy
+	// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
+	// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
+	// "stroke-width"
+	// and then for each child, if they do not have the attribute (or the value is 'inherit')
+	// then set the child's attribute
+	
+	var i = 0;
+	var gangle = getRotationAngle(g);
+	
+	var gattrs = $(g).attr(['filter', 'opacity']);
+	var gfilter, gblur;
+	
+	for(var i = 0; i < len; i++) {
+		var elem = children[i];
+		
+		if(gattrs.opacity !== null && gattrs.opacity !== 1) {
+			var c_opac = elem.getAttribute('opacity') || 1;
+			var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
+			changeSelectedAttribute('opacity', new_opac, [elem]);
+		}
+
+		if(gattrs.filter) {
+			var cblur = this.getBlur(elem);
+			var orig_cblur = cblur;
+			if(!gblur) gblur = this.getBlur(g);
+			if(cblur) {
+				// Is this formula correct?
+				cblur = (gblur-0) + (cblur-0);
+			} else if(cblur === 0) {
+				cblur = gblur;
+			}
+			
+			// If child has no current filter, get group's filter or clone it.
+			if(!orig_cblur) {
+				// Set group's filter to use first child's ID
+				if(!gfilter) {
+					gfilter = getRefElem(gattrs.filter);
+				} else {
+					// Clone the group's filter
+					gfilter = copyElem(gfilter);
+					findDefs().appendChild(gfilter);
+				}
+			} else {
+				gfilter = getRefElem(elem.getAttribute('filter'));
+			}
+
+			// Change this in future for different filters
+			var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
+			gfilter.id = elem.id + '_' + suffix;
+			changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
+			
+			// Update blur value 
+			if(cblur) {
+				changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
+				canvas.setBlurOffsets(gfilter, cblur);
+			}
+		}
+		
+		var chtlist = getTransformList(elem);
+
+		// Don't process gradient transforms
+		if(~elem.tagName.indexOf('Gradient')) chtlist = null;
+		
+		// Hopefully not a problem to add this. Necessary for elements like <desc/>
+		if(!chtlist) continue;
+		
+		if (glist.numberOfItems) {
+			// TODO: if the group's transform is just a rotate, we can always transfer the
+			// rotate() down to the children (collapsing consecutive rotates and factoring
+			// out any translates)
+			if (gangle && glist.numberOfItems == 1) {
+				// [Rg] [Rc] [Mc]
+				// we want [Tr] [Rc2] [Mc] where:
+				// 	- [Rc2] is at the child's current center but has the 
+				//	  sum of the group and child's rotation angles
+				// 	- [Tr] is the equivalent translation that this child 
+				// 	  undergoes if the group wasn't there
+				
+				// [Tr] = [Rg] [Rc] [Rc2_inv]
+				
+				// get group's rotation matrix (Rg)
+				var rgm = glist.getItem(0).matrix;
+				
+				// get child's rotation matrix (Rc)
+				var rcm = svgroot.createSVGMatrix();
+				var cangle = getRotationAngle(elem);
+				if (cangle) {
+					rcm = chtlist.getItem(0).matrix;
+				}
+				
+				// get child's old center of rotation
+				var cbox = getBBox(elem);
+				var ceqm = transformListToTransform(chtlist).matrix;
+				var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
+				
+				// sum group and child's angles
+				var sangle = gangle + cangle;
+				
+				// get child's rotation at the old center (Rc2_inv)
+				var r2 = svgroot.createSVGTransform();
+				r2.setRotate(sangle, coldc.x, coldc.y);
+				
+				// calculate equivalent translate
+				var trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
+				
+				// set up tlist
+				if (cangle) {
+					chtlist.removeItem(0);
+				}
+				
+				if (sangle) {
+					if(chtlist.numberOfItems) {
+						chtlist.insertItemBefore(r2, 0);
+					} else {
+						chtlist.appendItem(r2);
+					}
+				}
+
+				if (trm.e || trm.f) {
+					var tr = svgroot.createSVGTransform();
+					tr.setTranslate(trm.e, trm.f);
+					if(chtlist.numberOfItems) {
+						chtlist.insertItemBefore(tr, 0);
+					} else {
+						chtlist.appendItem(tr);
+					}
+				}
+			}
+			else { // more complicated than just a rotate
+				// transfer the group's transform down to each child and then
+				// call recalculateDimensions()				
+				var oldxform = elem.getAttribute("transform");
+				var changes = {};
+				changes["transform"] = oldxform ? oldxform : "";
+
+				var newxform = svgroot.createSVGTransform();
+
+				// [ gm ] [ chm ] = [ chm ] [ gm' ]
+				// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
+				var chm = transformListToTransform(chtlist).matrix,
+					chm_inv = chm.inverse();
+				var gm = matrixMultiply( chm_inv, m, chm );
+				newxform.setMatrix(gm);
+				chtlist.appendItem(newxform);
+			}
+			batchCmd.addSubCommand(recalculateDimensions(elem));
+		}
+	}
+
+	
+	// remove transform and make it undo-able
+	if (xform) {
+		var changes = {};
+		changes["transform"] = xform;
+		g.setAttribute("transform", "");
+		g.removeAttribute("transform");				
+		batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
+	}
+	
+	if (undoable && !batchCmd.isEmpty()) {
+		return batchCmd;
+	}
+}
+
+
 // Function: ungroupSelectedElement
 // Unwraps all the elements in a selected group (g) element. This requires
 // significant recalculations to apply group's transforms, etc to its children
@@ -10804,30 +11038,17 @@ this.ungroupSelectedElement = function() {
 		convertToGroup(g);
 		return;
 	}
-	if (g.tagName == "g") {
+	if (g.tagName === "g") {
 	
 		var batchCmd = new BatchCommand("Ungroup Elements");
+		var cmd = pushGroupProperties(g, true);
+		if(cmd) batchCmd.addSubCommand(cmd);
+		
 		var parent = g.parentNode;
 		var anchor = g.nextSibling;
 		var children = new Array(g.childNodes.length);
-		var xform = g.getAttribute("transform");
-		
-		// get consolidated matrix
-		var glist = getTransformList(g);
-		var m = transformListToTransform(glist).matrix;
-
-		// TODO: get all fill/stroke properties from the group that we are about to destroy
-		// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
-		// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
-		// "stroke-width"
-		// and then for each child, if they do not have the attribute (or the value is 'inherit')
-		// then set the child's attribute
 		
 		var i = 0;
-		var gangle = getRotationAngle(g);
-		
-		var gattrs = $(g).attr(['filter', 'opacity']);
-		var gfilter, gblur;
 		
 		while (g.firstChild) {
 			var elem = g.firstChild;
@@ -10835,7 +11056,7 @@ this.ungroupSelectedElement = function() {
 			var oldParent = elem.parentNode;
 			
 			// Remove child title elements
-			if(elem.tagName == 'title') {
+			if(elem.tagName === 'title') {
 				batchCmd.addSubCommand(new RemoveElementCommand(elem, oldParent));
 				oldParent.removeChild(elem);
 				continue;
@@ -10843,149 +11064,6 @@ this.ungroupSelectedElement = function() {
 			
 			children[i++] = elem = parent.insertBefore(elem, anchor);
 			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
-			
-			if(gattrs.opacity !== null && gattrs.opacity !== 1) {
-				var c_opac = elem.getAttribute('opacity') || 1;
-				var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
-				changeSelectedAttribute('opacity', new_opac, [elem]);
-			}
-
-			if(gattrs.filter) {
-				var cblur = this.getBlur(elem);
-				var orig_cblur = cblur;
-				if(!gblur) gblur = this.getBlur(g);
-				if(cblur) {
-					// Is this formula correct?
-					cblur = (gblur-0) + (cblur-0);
-				} else if(cblur === 0) {
-					cblur = gblur;
-				}
-				
-				// If child has no current filter, get group's filter or clone it.
-				if(!orig_cblur) {
-					// Set group's filter to use first child's ID
-					if(!gfilter) {
-						gfilter = getRefElem(gattrs.filter);
-					} else {
-						// Clone the group's filter
-						gfilter = copyElem(gfilter);
-						findDefs().appendChild(gfilter);
-					}
-				} else {
-					gfilter = getRefElem(elem.getAttribute('filter'));
-				}
-
-				// Change this in future for different filters
-				var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
-				gfilter.id = elem.id + '_' + suffix;
-				changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
-				
-				// Update blur value 
-				if(cblur) {
-					changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
-					canvas.setBlurOffsets(gfilter, cblur);
-				}
-			}
-			
-			var chtlist = getTransformList(elem);
-
-			// Don't process gradient transforms
-			if(~elem.tagName.indexOf('Gradient')) chtlist = null;
-			
-			// Hopefully not a problem to add this. Necessary for elements like <desc/>
-			if(!chtlist) continue;
-			
-			if (glist.numberOfItems) {
-				// TODO: if the group's transform is just a rotate, we can always transfer the
-				// rotate() down to the children (collapsing consecutive rotates and factoring
-				// out any translates)
-				if (gangle && glist.numberOfItems == 1) {
-					// [Rg] [Rc] [Mc]
-					// we want [Tr] [Rc2] [Mc] where:
-					// 	- [Rc2] is at the child's current center but has the 
-					//	  sum of the group and child's rotation angles
-					// 	- [Tr] is the equivalent translation that this child 
-					// 	  undergoes if the group wasn't there
-					
-					// [Tr] = [Rg] [Rc] [Rc2_inv]
-					
-					// get group's rotation matrix (Rg)
-					var rgm = glist.getItem(0).matrix;
-					
-					// get child's rotation matrix (Rc)
-					var rcm = svgroot.createSVGMatrix();
-					var cangle = getRotationAngle(elem);
-					if (cangle) {
-						rcm = chtlist.getItem(0).matrix;
-					}
-					
-					// get child's old center of rotation
-					var cbox = getBBox(elem);
-					var ceqm = transformListToTransform(chtlist).matrix;
-					var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
-					
-					// sum group and child's angles
-					var sangle = gangle + cangle;
-					
-					// get child's rotation at the old center (Rc2_inv)
-					var r2 = svgroot.createSVGTransform();
-					r2.setRotate(sangle, coldc.x, coldc.y);
-					
-					// calculate equivalent translate
-					var trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
-					
-					// set up tlist
-					if (cangle) {
-						chtlist.removeItem(0);
-					}
-					
-					if (sangle) {
-						if(chtlist.numberOfItems) {
-							chtlist.insertItemBefore(r2, 0);
-						} else {
-							chtlist.appendItem(r2);
-						}
-					}
-
-					if (trm.e || trm.f) {
-						var tr = svgroot.createSVGTransform();
-						tr.setTranslate(trm.e, trm.f);
-						if(chtlist.numberOfItems) {
-							chtlist.insertItemBefore(tr, 0);
-						} else {
-							chtlist.appendItem(tr);
-						}
-					}
-				}
-				else { // more complicated than just a rotate
-					// transfer the group's transform down to each child and then
-					// call recalculateDimensions()				
-					var oldxform = elem.getAttribute("transform");
-					var changes = {};
-					changes["transform"] = oldxform ? oldxform : "";
-
-					var newxform = svgroot.createSVGTransform();
-
-					// [ gm ] [ chm ] = [ chm ] [ gm' ]
-					// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
-					var chm = transformListToTransform(chtlist).matrix,
-						chm_inv = chm.inverse();
-					var gm = matrixMultiply( chm_inv, m, chm );
-					newxform.setMatrix(gm);
-					chtlist.appendItem(newxform);
-				}
-				batchCmd.addSubCommand(recalculateDimensions(elem));
-			}
-		}
-
-		
-		// remove transform and make it undo-able
-		if (xform) {
-			var changes = {};
-			changes["transform"] = xform;
-			g.setAttribute("transform", "");
-			g.removeAttribute("transform");				
-			batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
 		}
 
 		// remove the group from the selection			

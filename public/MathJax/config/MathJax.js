@@ -7,7 +7,6 @@ MathJax.Hub.Config({
   },
   "HTML-CSS": {
     preferredFont: "STIX",
-    imageFont: null,
     scale: 90
   },
   MMLorHTML: {
