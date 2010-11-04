@@ -164,7 +164,7 @@
 #
 #  class RedCloth::Textile.new( str )
 
-class RedCloth < String
+class OldRedCloth < String
 
     VERSION = '3.0.3'
     DEFAULT_RULES = [:textile, :markdown]

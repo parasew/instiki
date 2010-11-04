@@ -358,11 +358,12 @@ END_THM
     assert_match_markup_parsed_as(re, textile_and_markdown)
     set_web_property :markup, :textile
     assert_markup_parsed_as(
-      "<p>Markdown heading<br/>================</p>\n\n\n\t<h2>Textile heading</h2>" +
-      "\n\n\n\t<p><strong>some</strong> <b>text</b> <em>with</em> <del>styles</del></p>" +
-      "\n\n\n\t<ul>\n\t<li>list 1</li>\n\t\t<li>list 2</li>\n\t</ul>",
+      "<p>Markdown heading<br/>\n====</p>\n<h2>Textile heading</h2>" +
+      "\n<p><strong>some</strong> <b>text</b> <em>with</em> <del>styles</del></p>" +
+      "\n<ul>\n\t<li>list 1</li>\n\t<li>list 2</li>\n</ul>",
       textile_and_markdown)
-    
+
+# Mixed Textile+Markdown markup not supported by RedCloth 4.x    
     set_web_property :markup, :mixed
     assert_markup_parsed_as(
       "<h1>Markdown heading</h1>\n\n\n\t<h2>Textile heading</h2>\n\n\n\t" +
@@ -370,7 +371,14 @@ END_THM
       "<ul>\n\t<li>list 1</li>\n\t\t<li>list 2</li>\n\t</ul>",
       textile_and_markdown)
   end
-  
+
+  def test_textile_pre
+    set_web_property :markup, :textile
+     assert_markup_parsed_as("<pre>\n<code>\n  a == 16\n</code>\n</pre>\n<p>foo bar" +
+       "<br/>\n<pre><br/>\n<code>\n  b == 16\n</code><br/>\n</pre></p>",
+     "<pre>\n<code>\n  a == 16\n</code>\n</pre>\nfoo bar\n<pre>\n<code>\n  b == 16\n</code>\n</pre>")
+  end
+
   def test_rdoc
     set_web_property :markup, :rdoc
   
@@ -461,7 +469,7 @@ END_THM
     set_web_property :markup, :textile
     assert_markup_parsed_as(
       "<p>$$<span class='newWikiWord'>foo<a href='../show/foo'>?" +
-      "</a></span>$$<br/>$<span class='newWikiWord'>foo<a " +
+      "</a></span>$$<br/>\n$<span class='newWikiWord'>foo<a " +
       "href='../show/foo'>?</a></span>$</p>",
       "$$[[foo]]$$\n$[[foo]]$")
   end
