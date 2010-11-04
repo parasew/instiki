@@ -6,6 +6,7 @@ require 'maruku'
 require 'maruku/ext/math'
 require_dependency 'rdocsupport'
 require 'redcloth'
+require 'oldredcloth'
 
 # The markup engines are Chunks that call the one of RedCloth
 # or RDoc to convert text. This markup occurs when the chunk is required
@@ -113,7 +114,7 @@ module Engines
   class Mixed < AbstractEngine
     def mask
       @content.as_utf8
-      redcloth = RedCloth.new(@content, @content.options[:engine_opts])
+      redcloth = OldRedCloth.new(@content, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
       html = redcloth.to_html

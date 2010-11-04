@@ -478,7 +478,7 @@ EOL
             "<meta http-equiv=\"Refresh\" content=\"0;URL=HomePage.#{html_ext}\" /></head></html>"
         end
         dir = Rails.root.join('public')
-        Dir["#{dir}/**/*"].each do |f|
+        Dir["#{dir}/{images,javascripts,s5,stylesheets}/**/*"].each do |f|
           zip_out.add "public#{f.sub(dir.to_s,'')}", f
         end
       end
