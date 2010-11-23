@@ -41,11 +41,9 @@ class ApplicationController < ActionController::Base
      s.scan( %r(\w{#{n},#{n}}) ).collect {|a| (a.hex * 2/3).to_s(16).rjust(n,'0')}.join
   end
 
-  def check_authorization
-    if in_a_web? and authorization_needed? and not authorized?
-      redirect_to :controller => 'wiki', :action => 'login', :web => @web_name
-      return false
-    end
+  def check_authorization    
+    redirect_to(:controller => 'wiki', :action => 'login',
+                :web => @web_name) if in_a_web? and authorization_needed? and not authorized?
   end
 
   def connect_to_model
@@ -55,10 +53,8 @@ class ApplicationController < ActionController::Base
     @author = cookies['author'] || 'AnonymousCoward'
     if @web_name
       @web = @wiki.webs[@web_name]
-      if @web.nil?
-        render(:status => 404, :text => "Unknown web '#{@web_name}'", :layout => 'error')
-        return false 
-      end
+      render(:status => 404, :text => "Unknown web '#{@web_name}'",
+             :layout => 'error') if @web.nil?
     end
   end
 
@@ -252,7 +248,6 @@ class ApplicationController < ActionController::Base
       layout = false if %w(tex tex_list).include?(action_name)
       headers['Allow'] = 'POST'
       render(:status => 405, :text => 'You must use an HTTP POST', :layout => layout)
-      return false
     end
     return true
   end
