@@ -208,6 +208,12 @@ END_THM
         %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
         "ecuasi\303\263n $\\sin(x)$")
   
+    assert_markup_parsed_as(
+        %{<div class='maruku-equation'><math class='maruku-mathml' display='block' xmlns='http://w} +
+        %{ww.w3.org/1998/Math/MathML'><mo>⋅</mo><mi>p</mi></math><span class='maruku-eq-tex'><code} +
+        %{ style='display: none;'>\\cdot\np</code></span></div>},
+        "$$\\cdot\np$$")
+  
   end
 
   def test_ial_in_lists
