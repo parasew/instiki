@@ -58,6 +58,8 @@ MaRuKu::In::Markdown.register_block_extension(
     end
 
     opening, tex = first.scan(EquationStart).first
+    # ensure newline at end of first line of equation isn't swallowed 
+    tex << "\n"
     numerate = doc.get_setting(:math_numbered).include?(opening)
     label = nil
     loop do
