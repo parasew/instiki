@@ -6,6 +6,20 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.2
+
+New Features:
+* MathJax rendering for non-MathML capable browsers.
+* RedCloth (Textile) upgraded to 4.x (now handled
+  by Bundler).
+
+Bugs Fixed:
+* Redirects and categories of included pages should
+  not be inherited. (Suggestion of Andrew Stacey).
+* Bug in Maruku equation handling (reported by Andrew Stacey).
+* SVG-Edit updates and bug-fixes.
+
+------------------------------------------------------------------------------
 * 0.19.1
 
 New Features:
