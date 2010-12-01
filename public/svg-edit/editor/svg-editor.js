@@ -10,6 +10,10 @@
  *
  */
 
+// Dependencies:
+// 1) units.js
+// 2) svgcanvas.js
+
 (function() { 
 	
 	if(!window.svgEditor) window.svgEditor = function($) {
@@ -462,14 +466,14 @@
 			           "#00007f", "#3f007f", "#7f007f", "#7f003f",
 			           "#ffaaaa", "#ffd4aa", "#ffffaa", "#d4ffaa",
 			           "#aaffaa", "#aaffd4", "#aaffff", "#aad4ff",
-			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4",
+			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4"
 			           ],
 				isMac = (navigator.platform.indexOf("Mac") >= 0),
 				isWebkit = (navigator.userAgent.indexOf("AppleWebKit") >= 0),
 				modKey = (isMac ? "meta+" : "ctrl+"), // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
-				Utils = svgCanvas.Utils,
+				Utils = svgedit.utilities,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				canv_menu = $("#cmenu_canvas"),
@@ -489,7 +493,7 @@
 			// In the future we may want to add additional types of dialog boxes, since 
 			// they should be easy to handle this way.
 			(function() {
-				$('#dialog_container').draggable({cancel:'#dialog_content, #dialog_buttons *'});
+				$('#dialog_container').draggable({cancel:'#dialog_content, #dialog_buttons *', containment: 'window'});
 				var box = $('#dialog_box'), btn_holder = $('#dialog_buttons');
 				
 				var dbox = function(type, msg, callback, defText) {
@@ -1321,11 +1325,30 @@
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
 				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
+					var all_swidth = null;
+
+// 					if(selectedElement.tagName === "g" || selectedElement.tagName === "a") {
+// 						// Look for common styles
+// 						var childs = selectedElement.getElementsByTagName('*');
+// 						console.log('ch', childs);
+// 						for(var i = 0, len = childs.length; i < len; i++) {
+// 							var elem = childs[i];
+// 							var swidth = elem.getAttribute("stroke-width");
+// 						 	if(swidth && swidth !== all_swidth) {
+// 						 		// different, so do don't check more
+// 						 		all_swidth = null;
+// 						 		break;
+// 						 	} else if(swidth) {
+// 						 		console.log('e', elem, swidth);
+// 						 		all_swidth = swidth;
+// 						 	}
+// 						}
+// 					}
 				
 					paintBox.fill.update(true);
 					paintBox.stroke.update(true);
 					
-					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
+					$('#stroke_width').val(all_swidth || selectedElement.getAttribute("stroke-width") || 1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 
 					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
@@ -1784,7 +1807,7 @@
 			$('.attr_changer').change(function() {
 				var attr = this.getAttribute("data-attr");
 				var val = this.value;
-				var valid = svgCanvas.isValidUnit(attr, val);
+				var valid = svgedit.units.isValidUnit(attr, val);
 				
 				if(!valid) {
 					$.alert(uiStrings.invalidAttrValGiven);
@@ -1797,11 +1820,7 @@
 				} else if(curConfig.baseUnit !== 'px') {
 					// Convert unitless value to one with given unit
 				
-// 					val = svgCanvas.convertUnit(bv, "px");
-// 					selectedElement[attr].baseVal.newValueSpecifiedUnits();
-// 					this.value = val;
-// 					selectedElement[attr].baseVal
-					var unitData = svgCanvas.getUnits();
+					var unitData = svgedit.units.getTypeMap();
 
 					if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
 						val *= unitData[curConfig.baseUnit];
@@ -2594,7 +2613,7 @@
 				$('#svg_source_textarea').focus();
 			};
 			
-			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel:'button,fieldset'});
+			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel:'button,fieldset', containment: 'window'});
 			
 			var showDocProperties = function(){
 				if (docprops) return;
@@ -2605,6 +2624,11 @@
 				
 				// update resolution option with actual resolution
 				var res = svgCanvas.getResolution();
+				if(curConfig.baseUnit !== "px") {
+					res.w = svgCanvas.convertUnit(res.w) + curConfig.baseUnit;
+					res.h = svgCanvas.convertUnit(res.h) + curConfig.baseUnit;
+				}
+				
 				$('#canvas_width').val(res.w);
 				$('#canvas_height').val(res.h);
 				$('#canvas_title').val(svgCanvas.getDocumentTitle());
@@ -2694,7 +2718,7 @@
 				var width = $('#canvas_width'), w = width.val();
 				var height = $('#canvas_height'), h = height.val();
 		
-				if(w != "fit" && !svgCanvas.isValidUnit('width', w)) {
+				if(w != "fit" && !svgedit.units.isValidUnit('width', w)) {
 					$.alert(uiStrings.invalidAttrValGiven);
 					width.parent().addClass('error');
 					return false;
@@ -2702,7 +2726,7 @@
 				
 				width.parent().removeClass('error');
 				
-				if(h != "fit" && !svgCanvas.isValidUnit('height', h)) {
+				if(h != "fit" && !svgedit.units.isValidUnit('height', h)) {
 					$.alert(uiStrings.invalidAttrValGiven);
 					height.parent().addClass('error');
 					return false;
@@ -2920,7 +2944,7 @@
 					"div#workarea": {
 						'left': 38,
 						'top': 74
-					},
+					}
 // 					"#tools_bottom": {
 // 						'left': {s: '27px', l: '46px', xl: '65px'},
 // 						'height': {s: '58px', l: '98px', xl: '145px'}
@@ -3170,7 +3194,7 @@
 				var was_none = false;
 				var pos = elem.position();
 				$("#color_picker")
-					.draggable({cancel:'.jGraduate_tabs,.jGraduate_colPick,.jGraduate_lgPick,.jGraduate_rgPick'})
+					.draggable({cancel:'.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
 					.css(curConfig.colorPickerCSS || {'left': pos.left, 'bottom': 50 - pos.top})
 					.jGraduate(
 					{ 
@@ -3197,7 +3221,7 @@
 				var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
 				var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 				if (bNoStroke) {
-					for (index in buttonsNeedingStroke) {
+					for (var index in buttonsNeedingStroke) {
 						var button = buttonsNeedingStroke[index];
 						if ($(button).hasClass('tool_button_current')) {
 							clickSelect();
@@ -3206,14 +3230,14 @@
 					}
 				}
 				else {
-					for (index in buttonsNeedingStroke) {
+					for (var index in buttonsNeedingStroke) {
 						var button = buttonsNeedingStroke[index];
 						$(button).removeClass('disabled');
 					}
 				}
 		
 				if (bNoStroke && bNoFill) {
-					for (index in buttonsNeedingFillAndStroke) {
+					for (var index in buttonsNeedingFillAndStroke) {
 						var button = buttonsNeedingFillAndStroke[index];
 						if ($(button).hasClass('tool_button_current')) {
 							clickSelect();
@@ -3222,7 +3246,7 @@
 					}
 				}
 				else {
-					for (index in buttonsNeedingFillAndStroke) {
+					for (var index in buttonsNeedingFillAndStroke) {
 						var button = buttonsNeedingFillAndStroke[index];
 						$(button).removeClass('disabled');
 					}
@@ -3971,7 +3995,8 @@
 			
 			// Select given tool
 			Editor.ready(function() {
-				var itool = curConfig.initTool,
+				var tool,
+					itool = curConfig.initTool,
 					container = $("#tools_left, #svg_editor .tools_flyout"),
 					pre_tool = container.find("#tool_" + itool),
 					reg_tool = container.find("#" + itool);
@@ -4249,7 +4274,7 @@
 				
 				var c_elem = svgCanvas.getContentElem();
 				
-				var units = svgCanvas.getUnits();
+				var units = svgedit.units.getTypeMap();
 				var unit = units[curConfig.baseUnit]; // 1 = 1px
 			
 				for(var d = 0; d < 2; d++) {
@@ -4328,6 +4353,7 @@
 						}
 	
 						var num = (label_pos - content_d) / u_multi;
+						var label;
 						if(multi >= 1) {
 							label = Math.round(num);
 						} else {
@@ -4389,7 +4415,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1814 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1877 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
@@ -4404,7 +4430,7 @@
 			
 			// Callback handler for embedapi.js
  			try{
- 				json_encode = function(obj){
+ 				var json_encode = function(obj){
  			  //simple partial JSON encoder implementation
  			  if(window.JSON && JSON.stringify) return JSON.stringify(obj);
  			  var enc = arguments.callee; //for purposes of recursion
@@ -4560,7 +4586,7 @@
 			Editor.ready(function() {
 				var pre = 'data:image/svg+xml;base64,';
 				var src = str.substring(pre.length);
-				loadSvgString(svgCanvas.Utils.decode64(src));
+				loadSvgString(svgedit.utilities.decode64(src));
 			});
 		};
 		
