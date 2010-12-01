@@ -15,7 +15,7 @@ Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms
 
 == 3 easy Steps to get the Instiki experience
 
-  Step 1. Get Ruby and Instiki, run "ruby bundle"
+  Step 1. Get Instiki and run "ruby bundle"
   Step 2. Run "instiki"
   Step 3. Chuckle... "There's no step three!" (TM)
  
