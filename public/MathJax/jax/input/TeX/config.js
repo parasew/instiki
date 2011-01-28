@@ -1,5 +1,5 @@
 /*
- *  ../SourceForge/trunk/mathjax/jax/input/TeX/config.js
+ *  /MathJax/jax/input/TeX/config.js
  *  
  *  Copyright (c) 2010 Design Science, Inc.
  *
@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.InputJax','.TeX','=',0,'({id:"TeX",version:"1.0.2",directory:',0,'.directory+"/','TeX",extensionDir:',0,'.extensionDir+"/TeX",require:[MathJax.ElementJax',6,'mml/jax.js"],config:{TagSide:"right",TagIndent:"0.8em",MultLineWidth:"85%"}});',0,1,'.Register("math/tex");',0,1,'.loadComplete("config.js");']
-]);
+MathJax.InputJax.TeX=MathJax.InputJax({id:"TeX",version:"1.0.4",directory:MathJax.InputJax.directory+"/TeX",extensionDir:MathJax.InputJax.extensionDir+"/TeX",config:{TagSide:"right",TagIndent:"0.8em",MultLineWidth:"85%"}});MathJax.InputJax.TeX.Register("math/tex");MathJax.InputJax.TeX.loadComplete("config.js");
 

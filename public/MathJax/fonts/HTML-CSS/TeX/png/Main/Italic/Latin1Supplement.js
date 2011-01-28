@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.OutputJax["HTML-CSS"].','defineImageData({"MathJax_Main-italic":{160:[[1,1,0],[1,','1,0],[1,1,0],[1,',2,2,2,2,2,'1,0]],163:[[5,5,0],[6,6,0],[7,6,0],[9,8,0],[10,9,0],[12,11,0],[14,14,0],[17,15,0],[20,20,0],[24,24,0],[28,27,0],[33,34,1],[39,41,1],[47,48,1]]}});MathJax.Ajax.loadComplete(',0,'imgDir+"/Main/Italic"+',0,'imgPacked+"/Latin1Supplement.js");']
-]);
+MathJax.OutputJax["HTML-CSS"].defineImageData({"MathJax_Main-italic":{160:[[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0]],163:[[5,5,0],[6,6,0],[7,6,0],[9,8,0],[10,9,0],[12,11,0],[14,14,0],[17,15,0],[20,20,0],[24,24,0],[28,27,0],[33,34,1],[39,41,1],[47,48,1]]}});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].imgDir+"/Main/Italic"+MathJax.OutputJax["HTML-CSS"].imgPacked+"/Latin1Supplement.js");
 

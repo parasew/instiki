@@ -1,5 +1,5 @@
 /*
- *  ../SourceForge/trunk/mathjax/jax/output/HTML-CSS/fonts/TeX/Main/Regular/CombDiactForSymbols.js
+ *  /MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Regular/CombDiactForSymbols.js
  *  
  *  Copyright (c) 2010 Design Science, Inc.
  *
@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.Hub.Insert','(MathJax.OutputJax["HTML-CSS"].','FONTDATA.FONTS.MathJax_Main,{8407:[714,-516,0,29,471]});MathJax.Ajax.loadComplete',1,'fontDir+"/Main/Regular/CombDiactForSymbols.js");']
-]);
+MathJax.Hub.Insert(MathJax.OutputJax["HTML-CSS"].FONTDATA.FONTS.MathJax_Main,{8407:[714,-516,0,29,471]});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].fontDir+"/Main/Regular/CombDiactForSymbols.js");
 

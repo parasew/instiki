@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.OutputJax["HTML-CSS"].','defineImageData({MathJax_AMS:{9733:[[7,6,1],[8,7,1],[9,9,2],[11,11,2],[13,12,2],[15,14,2],[18,17,3],[21,20,3],[25,24,4],[30,27,4],[36,33,5],[42,39,6],[50,46,7],[60,54,8]]}});MathJax.Ajax.loadComplete(',0,'imgDir+"/AMS/Regular"+',0,'imgPacked+"/MiscSymbols.js");']
-]);
+MathJax.OutputJax["HTML-CSS"].defineImageData({MathJax_AMS:{9733:[[7,6,1],[8,7,1],[9,9,2],[11,11,2],[13,12,2],[15,14,2],[18,17,3],[21,20,3],[25,24,4],[30,27,4],[36,33,5],[42,39,6],[50,46,7],[60,54,8]]}});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].imgDir+"/AMS/Regular"+MathJax.OutputJax["HTML-CSS"].imgPacked+"/MiscSymbols.js");
 
