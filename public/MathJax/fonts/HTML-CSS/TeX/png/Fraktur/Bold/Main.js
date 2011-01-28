@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.OutputJax["HTML-CSS"].','defineImageData({"MathJax_Fraktur-bold":{}});MathJax.Ajax.loadComplete(',0,'imgDir+"/Fraktur/Bold"+',0,'imgPacked+"/Main.js");']
-]);
+MathJax.OutputJax["HTML-CSS"].defineImageData({"MathJax_Fraktur-bold":{}});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].imgDir+"/Fraktur/Bold"+MathJax.OutputJax["HTML-CSS"].imgPacked+"/Main.js");
 

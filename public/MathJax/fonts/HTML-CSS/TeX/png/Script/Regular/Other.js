@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.OutputJax["HTML-CSS"].','defineImageData({MathJax_Script:{160:[[1,1,0],[1,1',',0],[1,1,0],[1,1',2,2,2,2,2,',0]]}});MathJax.Ajax.loadComplete(',0,'imgDir+"/Script/Regular"+',0,'imgPacked+"/Other.js");']
-]);
+MathJax.OutputJax["HTML-CSS"].defineImageData({MathJax_Script:{160:[[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0],[1,1,0]]}});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].imgDir+"/Script/Regular"+MathJax.OutputJax["HTML-CSS"].imgPacked+"/Other.js");
 

@@ -1,5 +1,5 @@
 /*
- *  ../SourceForge/trunk/mathjax/jax/input/MathML/config.js
+ *  /MathJax/jax/input/MathML/config.js
  *  
  *  Copyright (c) 2010 Design Science, Inc.
  *
@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.InputJax','.MathML','=',0,'({id:"','MathML",','version:"1.0.2",directory:',0,'.directory+"/',5,'extensionDir',':',0,'.',10,'+"/',5,'entityDir:',0,8,'MathML/entities",require:[MathJax.ElementJax',8,'mml/jax.js"],config:{useMathMLspacing:false}});',0,1,'.Register("math/mml");',0,1,'.loadComplete("config.js");']
-]);
+MathJax.InputJax.MathML=MathJax.InputJax({id:"MathML",version:"1.0.3",directory:MathJax.InputJax.directory+"/MathML",extensionDir:MathJax.InputJax.extensionDir+"/MathML",entityDir:MathJax.InputJax.directory+"/MathML/entities",config:{useMathMLspacing:false}});MathJax.InputJax.MathML.Register("math/mml");MathJax.InputJax.MathML.loadComplete("config.js");
 

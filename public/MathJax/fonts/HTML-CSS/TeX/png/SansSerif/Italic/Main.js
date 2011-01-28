@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.OutputJax["HTML-CSS"].','defineImageData({"MathJax_SansSerif-italic":{}});MathJax.Ajax.loadComplete(',0,'imgDir+"/SansSerif/Italic"+',0,'imgPacked+"/Main.js");']
-]);
+MathJax.OutputJax["HTML-CSS"].defineImageData({"MathJax_SansSerif-italic":{}});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].imgDir+"/SansSerif/Italic"+MathJax.OutputJax["HTML-CSS"].imgPacked+"/Main.js");
 

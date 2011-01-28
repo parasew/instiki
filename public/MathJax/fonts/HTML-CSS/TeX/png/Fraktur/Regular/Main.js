@@ -12,7 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-MathJax.Unpack([
-  ['MathJax.OutputJax["HTML-CSS"].','defineImageData({MathJax_Fraktur:{}});MathJax.Ajax.loadComplete(',0,'imgDir+"/Fraktur/Regular"+',0,'imgPacked+"/Main.js");']
-]);
+MathJax.OutputJax["HTML-CSS"].defineImageData({MathJax_Fraktur:{}});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].imgDir+"/Fraktur/Regular"+MathJax.OutputJax["HTML-CSS"].imgPacked+"/Main.js");
 
