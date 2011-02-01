@@ -8,13 +8,12 @@
  */
 
 // Dependencies:
-// 1) browsersupport.js
+// 1) browser.js
+
+var svgedit = svgedit || {};
 
 (function() {
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
 if (!svgedit.transformlist) {
 	svgedit.transformlist = {};
 }
@@ -261,7 +260,7 @@ svgedit.transformlist.removeElementFromListMap = function(elem) {
 // Parameters:
 // elem - DOM element to get a transformlist from
 svgedit.transformlist.getTransformList = function(elem) {
-	if (!svgedit.browsersupport.nativeTransformLists) {
+	if (!svgedit.browser.supportsNativeTransformLists()) {
 		var id = elem.id;
 		if(!id) {
 			// Get unique ID for temporary element
