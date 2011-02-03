@@ -186,7 +186,7 @@ svgedit.utilities.convertToXMLReferences = function(input) {
 	return output;
 };
 
-// Function: text2xml
+// Function: svgedit.utilities.text2xml
 // Cross-browser compatible method of converting a string to an XML tree
 // found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 svgedit.utilities.text2xml = function(sXML) {
@@ -209,7 +209,7 @@ svgedit.utilities.text2xml = function(sXML) {
 	return out;
 };
 
-// Function: bboxToObj
+// Function: svgedit.utilities.bboxToObj
 // Converts a SVGRect into an object.
 // 
 // Parameters:
@@ -226,7 +226,7 @@ svgedit.utilities.bboxToObj = function(bbox) {
 	}
 };
 
-// Function: walkTree
+// Function: svgedit.utilities.walkTree
 // Walks the tree and executes the callback on each element in a top-down fashion
 //
 // Parameters:
@@ -242,7 +242,7 @@ svgedit.utilities.walkTree = function(elem, cbFn){
 	}
 };
 
-// Function: walkTreePost
+// Function: svgedit.utilities.walkTreePost
 // Walks the tree and executes the callback on each element in a depth-first fashion
 // TODO: FIXME: Shouldn't this be calling walkTreePost?
 //
@@ -418,7 +418,7 @@ svgedit.utilities.getBBox = function(elem) {
 		selected.textContent = 'a'; // Some character needed for the selector to use.
 		ret = selected.getBBox();
 		selected.textContent = '';
-	} else if(elname === 'path' && svgedit.browser.isWebkit()) {
+	} else if(elname === 'path' && !svgedit.browser.supportsPathBBox()) {
 		ret = svgedit.utilities.getPathBBox(selected);
 	} else if(elname === 'use' && !svgedit.browser.isWebkit() || elname === 'foreignObject') {
 		ret = selected.getBBox();

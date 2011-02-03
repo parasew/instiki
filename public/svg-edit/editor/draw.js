@@ -23,6 +23,13 @@ var svg_ns = "http://www.w3.org/2000/svg";
 var se_ns = "http://svg-edit.googlecode.com";
 var xmlns_ns = "http://www.w3.org/2000/xmlns/";
 
+var RandomizeModes = {
+	LET_DOCUMENT_DECIDE: 0,
+	ALWAYS_RANDOMIZE: 1,
+	NEVER_RANDOMIZE: 2
+};
+var randomize_ids = RandomizeModes.LET_DOCUMENT_DECIDE;
+
 /**
  * This class encapsulates the concept of a layer in the drawing
  * @param name {String} Layer name
@@ -41,6 +48,23 @@ svgedit.draw.Layer.prototype.getGroup = function() {
 	return this.group_;
 };
 
+
+// Called to ensure that drawings will or will not have randomized ids.
+// The current_drawing will have its nonce set if it doesn't already.
+// 
+// Params:
+// enableRandomization - flag indicating if documents should have randomized ids
+svgedit.draw.randomizeIds = function(enableRandomization, current_drawing) {
+	randomize_ids = enableRandomization == false ?
+		RandomizeModes.NEVER_RANDOMIZE :
+		RandomizeModes.ALWAYS_RANDOMIZE;
+
+	if (randomize_ids == RandomizeModes.ALWAYS_RANDOMIZE && !current_drawing.getNonce()) {
+		current_drawing.setNonce(Math.floor(Math.random() * 100001));
+	} else if (randomize_ids == RandomizeModes.NEVER_RANDOMIZE && current_drawing.getNonce()) {
+		current_drawing.clearNonce();
+	}
+};
 
 /**
  * This class encapsulates the concept of a SVG-edit drawing
@@ -100,7 +124,15 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	 * The nonce to use to uniquely identify elements across drawings.
 	 * @type {!String}
 	 */
-	this.nonce_ = this.svgElem_.getAttributeNS(se_ns, 'nonce') || "";
+	this.nonce_ = "";
+	var n = this.svgElem_.getAttributeNS(se_ns, 'nonce');
+	// If already set in the DOM, use the nonce throughout the document
+	// else, if randomizeIds(true) has been called, create and set the nonce.
+	if (!!n && randomize_ids != RandomizeModes.NEVER_RANDOMIZE) {
+		this.nonce_ = n;
+	} else if (randomize_ids == RandomizeModes.ALWAYS_RANDOMIZE) {
+		this.setNonce(Math.floor(Math.random() * 100001));
+	}
 };
 
 svgedit.draw.Drawing.prototype.getElem_ = function(id) {
@@ -121,10 +153,16 @@ svgedit.draw.Drawing.prototype.getNonce = function() {
 	return this.nonce_;
 };
 
-svgedit.draw.Drawing.prototype.setNonce = function(nonce) {
-	this.nonce_ = nonce;
+svgedit.draw.Drawing.prototype.setNonce = function(n) {
 	this.svgElem_.setAttributeNS(xmlns_ns, 'xmlns:se', se_ns);
-	this.svgElem_.setAttributeNS(se_ns, 'se:nonce', nonce);
+	this.svgElem_.setAttributeNS(se_ns, 'se:nonce', n);
+	this.nonce_ = n;
+};
+
+svgedit.draw.Drawing.prototype.clearNonce = function() {
+	// We deliberately leave any se:nonce attributes alone,
+	// we just don't use it to randomize ids.
+	this.nonce_ = "";
 };
 
 /**
