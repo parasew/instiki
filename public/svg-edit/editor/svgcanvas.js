@@ -151,17 +151,29 @@ container.appendChild(svgroot);
 // The actual element that represents the final output SVG element
 var svgcontent = svgdoc.createElementNS(svgns, "svg");
 
-$(svgcontent).attr({
-	id: 'svgcontent',
-	width: dimensions[0],
-	height: dimensions[1],
-	x: dimensions[0],
-	y: dimensions[1],
-	overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden',
-	xmlns: svgns,
-	"xmlns:se": se_ns,
-	"xmlns:xlink": xlinkns
-}).appendTo(svgroot);
+// This function resets the svgcontent element while keeping it in the DOM.
+var clearSvgContentElement = canvas.clearSvgContentElement = function() {
+	while (svgcontent.firstChild) { svgcontent.removeChild(svgcontent.firstChild); }
+
+	// TODO: Clear out all other attributes first?
+	$(svgcontent).attr({
+		id: 'svgcontent',
+		width: dimensions[0],
+		height: dimensions[1],
+		x: dimensions[0],
+		y: dimensions[1],
+		overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden',
+		xmlns: svgns,
+		"xmlns:se": se_ns,
+		"xmlns:xlink": xlinkns
+	}).appendTo(svgroot);
+
+	// TODO: make this string optional and set by the client
+	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
+        // Lead to invalid content with Instiki's Sanitizer
+        // svgcontent.appendChild(comment);
+};
+clearSvgContentElement();
 
 // Prefix string for element IDs
 var idprefix = "svg_";
@@ -177,26 +189,14 @@ canvas.setIdPrefix = function(p) {
 
 // Current svgedit.draw.Drawing object
 // @type {svgedit.draw.Drawing}
-var current_drawing = new svgedit.draw.Drawing(svgcontent, idprefix);
+canvas.current_drawing_ = new svgedit.draw.Drawing(svgcontent, idprefix);
 
 // Function: getCurrentDrawing
 // Returns the current Drawing.
 // @return {svgedit.draw.Drawing}
 var getCurrentDrawing = canvas.getCurrentDrawing = function() {
-	return current_drawing;
+	return canvas.current_drawing_;
 };
-
-// nonce to uniquify id's
-var nonce = Math.floor(Math.random() * 100001);
-
-// Boolean to indicate whether or not IDs given to elements should be random
-var randomize_ids = false;
-
-// Set nonce if randomize_ids = true
-// TODO: Remove this?  Given randomize_ids is set to false above, it seems useless.
-if (randomize_ids) {
-	getCurrentDrawing().setNonce(nonce);
-}
 
 // Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
 var current_zoom = 1;
@@ -386,7 +386,8 @@ svgedit.units.init({
 	getBaseUnit: function() { return curConfig.baseUnit; },
 	getElement: getElem,
 	getHeight: function() { return svgcontent.getAttribute("height")/current_zoom; },
-	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; }
+	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; },
+	getRoundDigits: function() { return save_options.round_digits; }
 });
 // import from units.js
 var convertToNum = canvas.convertToNum = svgedit.units.convertToNum;
@@ -426,7 +427,7 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 			call("changed", elems);
 			
 			var cmdType = cmd.type();
-			var isApply = eventType == EventTypes.AFTER_APPLY;
+			var isApply = (eventType == EventTypes.AFTER_APPLY);
 			if (cmdType == MoveElementCommand.type()) {
 				var parent = isApply ? cmd.newParent : cmd.oldParent;
 				if (parent == svgcontent) {
@@ -441,6 +442,10 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 					if (isApply) restoreRefElems(cmd.elem);
 				} else {
 					if (!isApply) restoreRefElems(cmd.elem);
+				}
+				
+				if(cmd.elem.tagName === 'use') {
+					setUseData(cmd.elem);
 				}
 			} else if (cmdType == ChangeElementCommand.type()) {
 				// if we are changing layer names, re-identify all layers
@@ -524,14 +529,17 @@ var restoreRefElems = function(elem) {
 			}
 		}
 	}
+	
+	var childs = elem.getElementsByTagName('*');
+	
+	if(childs.length) {
+		for(var i = 0, l = childs.length; i < l; i++) {
+			restoreRefElems(childs[i]);
+		}
+	}
 };
 
 (function() {
-	// TODO: make this string optional and set by the client
-	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
-       // Lead to invalid content with Instiki's Sanitizer
-       // svgcontent.appendChild(comment);
-
 	// TODO For Issue 208: this is a start on a thumbnail
 	//	var svgthumb = svgdoc.createElementNS(svgns, "use");
 	//	svgthumb.setAttribute('width', '100');
@@ -628,7 +636,7 @@ this.addExtension = function(name, ext_func) {
 		var ext = ext_func($.extend(canvas.getPrivateMethods(), {
 			svgroot: svgroot,
 			svgcontent: svgcontent,
-			nonce: nonce,
+			nonce: getCurrentDrawing().getNonce(),
 			selectorManager: selectorManager
 		}));
 		} else {
@@ -639,32 +647,6 @@ this.addExtension = function(name, ext_func) {
 	} else {
 		console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
 	}
-};
-
-
-// Function: shortFloat
-// Rounds a given value to a float with number of digits defined in save_options
-//
-// Parameters: 
-// val - The value as a String, Number or Array of two numbers to be rounded
-//
-// Returns:
-// If a string/number was given, returns a Float. If an array, return a string
-// with comma-seperated floats
-var shortFloat = function(val) {
-	var digits = save_options.round_digits;
-	if(!isNaN(val)) {
-		// Note that + converts to Number
-		return +((+val).toFixed(digits));
-	} else if($.isArray(val)) {
-		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
-	} else {
-		return parseFloat(val).toFixed(digits) - 0;
-	}
-}
-
-this.convertUnit = function(val, unit) {
-	return shortFloat(svgedit.units.convertUnit(val, unit));
 };
 	
 // This method rounds the incoming value to the nearest value based on the current_zoom
@@ -1547,6 +1529,23 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		}
 	}
 	
+	// If it still has a single [M] or [R][M], return null too (prevents BatchCommand from being returned).
+	switch ( selected.tagName ) {
+		// Ignore these elements, as they can absorb the [M]
+		case 'line':
+		case 'polyline':
+		case 'polygon':
+		case 'path':
+			break;
+		default:
+			if(
+				(tlist.numberOfItems === 1 && tlist.getItem(0).type === 1)
+				||  (tlist.numberOfItems === 2 && tlist.getItem(0).type === 1 && tlist.getItem(0).type === 4)
+			) {
+				return null;
+			}
+	}
+	
 	// Grouped SVG element 
 	var gsvg = $(selected).data('gsvg');
 	
@@ -2184,6 +2183,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	if (tlist.numberOfItems == 0) {
 		selected.removeAttribute("transform");
 	}
+	
 	batchCmd.addSubCommand(new ChangeElementCommand(selected, initial));
 	
 	return batchCmd;
@@ -5832,9 +5832,9 @@ var pathActions = canvas.pathActions = function() {
 				var addToD = function(pnts, more, last) {
 					var str = '';
 					var more = more?' '+more.join(' '):'';
-					var last = last?' '+shortFloat(last):'';
+					var last = last?' '+svgedit.units.shortFloat(last):'';
 					$.each(pnts, function(i, pnt) {
-						pnts[i] = shortFloat(pnt);
+						pnts[i] = svgedit.units.shortFloat(pnt);
 					});
 					d += letter + pnts.join(' ') + more + last;
 				}
@@ -5984,6 +5984,8 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 	var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
 	if(!defs || !defs.length) return 0;
 	
+// 	if(!defs.firstChild) return;
+	
 	var defelem_uses = [],
 		numRemoved = 0;
 	var attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
@@ -5996,7 +5998,9 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		var el = all_els[i];
 		for(var j = 0; j < alen; j++) {
 			var ref = getUrlFromAttr(el.getAttribute(attrs[j]));
-			if(ref) defelem_uses.push(ref.substr(1));
+			if(ref) {
+				defelem_uses.push(ref.substr(1));
+			}
 		}
 		
 		// gradients can refer to other gradients
@@ -6019,16 +6023,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 			numRemoved++;
 		}
 	}
-	
-	// Remove defs if empty
-	var i = defs.length;
-	while (i--) {
-		var def = defs[i];
-		if(!def.getElementsByTagNameNS(svgns,'*').length) {
-			def.parentNode.removeChild(def);
-		}
-	}
-	
+
 	return numRemoved;
 }
 
@@ -6119,16 +6114,16 @@ this.svgToString = function(elem, indent) {
 // 			if(curConfig.baseUnit !== "px") {
 // 				var unit = curConfig.baseUnit;
 // 				var unit_m = svgedit.units.getTypeMap()[unit];
-// 				res.w = shortFloat(res.w / unit_m)
-// 				res.h = shortFloat(res.h / unit_m)
+// 				res.w = svgedit.units.shortFloat(res.w / unit_m)
+// 				res.h = svgedit.units.shortFloat(res.h / unit_m)
 // 				vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';				
 // 				res.w += unit;
 // 				res.h += unit;
 // 			}
 			
 			if(unit !== "px") {
-				res.w = this.convertUnit(res.w, unit) + unit;
-				res.h = this.convertUnit(res.h, unit) + unit;
+				res.w = svgedit.units.convertUnit(res.w, unit) + unit;
+				res.h = svgedit.units.convertUnit(res.h, unit) + unit;
 			}
 			
 			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+svgns+'"');
@@ -6168,6 +6163,9 @@ this.svgToString = function(elem, indent) {
 				}
 			}
 		} else {
+			// Skip empty defs
+			if(elem.nodeName === 'defs' && !elem.firstChild) return;
+		
 			var moz_attrs = ['-moz-math-font-style', '_moz-math-font-style'];
 			for (var i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
@@ -6180,9 +6178,9 @@ this.svgToString = function(elem, indent) {
 					out.push(" "); 
 					if(attr.localName === 'd') attrVal = pathActions.convertPath(elem, true);
 					if(!isNaN(attrVal)) {
-						attrVal = shortFloat(attrVal);
+						attrVal = svgedit.units.shortFloat(attrVal);
 					} else if(unit_re.test(attrVal)) {
-						attrVal = shortFloat(attrVal) + unit;
+						attrVal = svgedit.units.shortFloat(attrVal) + unit;
 					}
 					
 					// Embed images when saving 
@@ -6350,9 +6348,9 @@ this.getSvgString = function() {
 	return this.svgCanvasToString();
 };
 
-//function randomizeIds
-// This function determines whether to add a nonce to the prefix, when
-// generating IDs in SVG-Edit
+// Function: randomizeIds
+// This function determines whether to use a nonce in the prefix, when
+// generating IDs for future documents in SVG-Edit.
 // 
 //  Parameters:
 //   an opional boolean, which, if true, adds a nonce to the prefix. Thus
@@ -6363,17 +6361,11 @@ this.getSvgString = function() {
 //
 this.randomizeIds = function() {
 	if (arguments.length > 0 && arguments[0] == false) {
-		randomize_ids = false;
-		if (extensions["Arrows"])  call("unsetarrownonce") ;
+		svgedit.draw.randomizeIds(false, getCurrentDrawing());
 	} else {
-		randomize_ids = true;
-		var drawing = getCurrentDrawing();
-		if (!drawing.getSvgElem().getAttributeNS(se_ns, 'nonce')) {
-			drawing.setNonce(nonce);
-			if (extensions["Arrows"])  call("setarrownonce", nonce);
-		}
+		svgedit.draw.randomizeIds(true, getCurrentDrawing());
 	}
-}
+};
 
 // Function: uniquifyElems
 // Ensure each element has a unique ID
@@ -6472,9 +6464,16 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 // Function setUseData
 // Assigns reference data for each use element
 var setUseData = this.setUseData = function(parent) {
-	$(parent).find('use').each(function() {
+	var elems = $(parent);
+	
+	if(parent.tagName !== 'use') {
+		elems = elems.find('use');
+	}
+	
+	elems.each(function() {
 		var id = getHref(this).substr(1);
 		var ref_elem = getElem(id);
+		if(!ref_elem) return;
 		$(this).data('ref', ref_elem);
 		if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
 			$(this).data('symbol', ref_elem);
@@ -6669,8 +6668,11 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		selectOnly([g]);
 		
-		batchCmd.addSubCommand(pushGroupProperties(g, true));
-// 		
+		var cm = pushGroupProperties(g, true);
+		if(cm) {
+			batchCmd.addSubCommand(cm);
+		}
+
 		addCommandToHistory(batchCmd);
 		
 	} else {
@@ -6706,19 +6708,16 @@ this.setSvgString = function(xmlString) {
 		
 		var content = $(svgcontent);
 		
-		current_drawing = new svgedit.draw.Drawing(svgcontent, idprefix);
+		canvas.current_drawing_ = new svgedit.draw.Drawing(svgcontent, idprefix);
 		
 		// retrieve or set the nonce
-		n = svgcontent.getAttributeNS(se_ns, 'nonce');
-		if (n) {
-			randomize_ids = true;
-			nonce = n;
-			if (extensions["Arrows"])  call("setarrownonce", n) ;
-		} else if (randomize_ids) {
-			current_drawing.setNonce(nonce); 
-			if (extensions["Arrows"])  call("setarrownonce", nonce) ;
+		var nonce = getCurrentDrawing().getNonce();
+		if (nonce) {
+			call("setnonce", nonce);
+		} else {
+			call("unsetnonce");
 		}
-
+		
 		// change image href vals if possible
 		content.find('image').each(function() {
 			var image = this;
@@ -7042,10 +7041,10 @@ this.cloneLayer = function(name) {
 // Deletes the current layer from the drawing and then clears the selection. This function 
 // then calls the 'changed' handler.  This is an undoable action.
 this.deleteCurrentLayer = function() {
-	var current_layer = current_drawing.getCurrentLayer();
+	var current_layer = getCurrentDrawing().getCurrentLayer();
 	var nextSibling = current_layer.nextSibling;
 	var parent = current_layer.parentNode;
-	current_layer = current_drawing.deleteCurrentLayer();
+	current_layer = getCurrentDrawing().deleteCurrentLayer();
 	if (current_layer) {
 		var batchCmd = new BatchCommand("Delete Layer");
 		// store in our Undo History
@@ -7086,18 +7085,19 @@ this.setCurrentLayer = function(name) {
 // Returns:
 // true if the rename succeeded, false otherwise.
 this.renameCurrentLayer = function(newname) {
-	if (current_drawing.current_layer) {
-		var oldLayer = current_drawing.current_layer;
+	var drawing = getCurrentDrawing();
+	if (drawing.current_layer) {
+		var oldLayer = drawing.current_layer;
 		// setCurrentLayer will return false if the name doesn't already exist
 		// this means we are free to rename our oldLayer
 		if (!canvas.setCurrentLayer(newname)) {
 			var batchCmd = new BatchCommand("Rename Layer");
 			// find the index of the layer
-			for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
-				if (current_drawing.all_layers[i][1] == oldLayer) break;
+			for (var i = 0; i < drawing.getNumLayers(); ++i) {
+				if (drawing.all_layers[i][1] == oldLayer) break;
 			}
-			var oldname = current_drawing.getLayerName(i);
-			current_drawing.all_layers[i][0] = svgedit.utilities.toXml(newname);
+			var oldname = drawing.getLayerName(i);
+			drawing.all_layers[i][0] = svgedit.utilities.toXml(newname);
 		
 			// now change the underlying title element contents
 			var len = oldLayer.childNodes.length;
@@ -7116,7 +7116,7 @@ this.renameCurrentLayer = function(newname) {
 				}
 			}
 		}
-		current_drawing.current_layer = oldLayer;
+		drawing.current_layer = oldLayer;
 	}
 	return false;
 };
@@ -7133,31 +7133,32 @@ this.renameCurrentLayer = function(newname) {
 // Returns:
 // true if the current layer position was changed, false otherwise.
 this.setCurrentLayerPosition = function(newpos) {
-	if (current_drawing.current_layer && newpos >= 0 && newpos < current_drawing.getNumLayers()) {
-		for (var oldpos = 0; oldpos < current_drawing.getNumLayers(); ++oldpos) {
-			if (current_drawing.all_layers[oldpos][1] == current_drawing.current_layer) break;
+	var drawing = getCurrentDrawing();
+	if (drawing.current_layer && newpos >= 0 && newpos < drawing.getNumLayers()) {
+		for (var oldpos = 0; oldpos < drawing.getNumLayers(); ++oldpos) {
+			if (drawing.all_layers[oldpos][1] == drawing.current_layer) break;
 		}
 		// some unknown error condition (current_layer not in all_layers)
-		if (oldpos == current_drawing.getNumLayers()) { return false; }
+		if (oldpos == drawing.getNumLayers()) { return false; }
 		
 		if (oldpos != newpos) {
 			// if our new position is below us, we need to insert before the node after newpos
 			var refLayer = null;
-			var oldNextSibling = current_drawing.current_layer.nextSibling;
+			var oldNextSibling = drawing.current_layer.nextSibling;
 			if (newpos > oldpos ) {
-				if (newpos < current_drawing.getNumLayers()-1) {
-					refLayer = current_drawing.all_layers[newpos+1][1];
+				if (newpos < drawing.getNumLayers()-1) {
+					refLayer = drawing.all_layers[newpos+1][1];
 				}
 			}
 			// if our new position is above us, we need to insert before the node at newpos
 			else {
-				refLayer = current_drawing.all_layers[newpos][1];
+				refLayer = drawing.all_layers[newpos][1];
 			}
-			svgcontent.insertBefore(current_drawing.current_layer, refLayer);
-			addCommandToHistory(new MoveElementCommand(current_drawing.current_layer, oldNextSibling, svgcontent));
+			svgcontent.insertBefore(drawing.current_layer, refLayer);
+			addCommandToHistory(new MoveElementCommand(drawing.current_layer, oldNextSibling, svgcontent));
 			
 			identifyLayers();
-			canvas.setCurrentLayer(current_drawing.getLayerName(newpos));
+			canvas.setCurrentLayer(drawing.getLayerName(newpos));
 			
 			return true;
 		}
@@ -7207,9 +7208,10 @@ this.setLayerVisibility = function(layername, bVisible) {
 this.moveSelectedToLayer = function(layername) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
-		if (current_drawing.getLayerName(i) == layername) {
-			layer = current_drawing.all_layers[i][1];
+	var drawing = getCurrentDrawing();
+	for (var i = 0; i < drawing.getNumLayers(); ++i) {
+		if (drawing.getLayerName(i) == layername) {
+			layer = drawing.all_layers[i][1];
 			break;
 		}
 	}
@@ -7237,28 +7239,29 @@ this.moveSelectedToLayer = function(layername) {
 
 this.mergeLayer = function(skipHistory) {
 	var batchCmd = new BatchCommand("Merge Layer");
-	var prev = $(current_drawing.current_layer).prev()[0];
+	var drawing = getCurrentDrawing();
+	var prev = $(drawing.current_layer).prev()[0];
 	if(!prev) return;
-	var childs = current_drawing.current_layer.childNodes;
+	var childs = drawing.current_layer.childNodes;
 	var len = childs.length;
-	var layerNextSibling = current_drawing.current_layer.nextSibling;
-	batchCmd.addSubCommand(new RemoveElementCommand(current_drawing.current_layer, layerNextSibling, svgcontent));
+	var layerNextSibling = drawing.current_layer.nextSibling;
+	batchCmd.addSubCommand(new RemoveElementCommand(drawing.current_layer, layerNextSibling, svgcontent));
 
-	while(current_drawing.current_layer.firstChild) {
-		var ch = current_drawing.current_layer.firstChild;
+	while(drawing.current_layer.firstChild) {
+		var ch = drawing.current_layer.firstChild;
 		if(ch.localName == 'title') {
 			var chNextSibling = ch.nextSibling;
-			batchCmd.addSubCommand(new RemoveElementCommand(ch, chNextSibling, current_drawing.current_layer));
-			current_drawing.current_layer.removeChild(ch);
+			batchCmd.addSubCommand(new RemoveElementCommand(ch, chNextSibling, drawing.current_layer));
+			drawing.current_layer.removeChild(ch);
 			continue;
 		}
 		var oldNextSibling = ch.nextSibling;
 		prev.appendChild(ch);
-		batchCmd.addSubCommand(new MoveElementCommand(ch, oldNextSibling, current_drawing.current_layer));
+		batchCmd.addSubCommand(new MoveElementCommand(ch, oldNextSibling, drawing.current_layer));
 	}
 	
 	// Remove current layer
-	svgcontent.removeChild(current_drawing.current_layer);
+	svgcontent.removeChild(drawing.current_layer);
 	
 	if(!skipHistory) {
 		clearSelection();
@@ -7269,13 +7272,14 @@ this.mergeLayer = function(skipHistory) {
 		addCommandToHistory(batchCmd);
 	}
 	
-	current_drawing.current_layer = prev;
+	drawing.current_layer = prev;
 	return batchCmd;
 }
 
 this.mergeAllLayers = function() {
 	var batchCmd = new BatchCommand("Merge all Layers");
-	current_drawing.current_layer = current_drawing.all_layers[current_drawing.getNumLayers()-1][1];
+	var drawing = getCurrentDrawing();
+	drawing.current_layer = drawing.all_layers[drawing.getNumLayers()-1][1];
 	while($(svgcontent).children('g').length > 1) {
 		batchCmd.addSubCommand(canvas.mergeLayer(true));
 	}
@@ -7342,29 +7346,26 @@ var setContext = this.setContext = function(elem) {
 this.clear = function() {
 	pathActions.clear();
 
-	// clear the svgcontent node
-	var nodes = svgcontent.childNodes;
-	var len = svgcontent.childNodes.length;
-	var i = 0;
 	clearSelection();
-	for(var rep = 0; rep < len; rep++){
-		if (nodes[i].nodeType == 1) { // element node
-			svgcontent.removeChild(nodes[i]);
-		} else {
-			i++;
-		}
-	}
+
+	// clear the svgcontent node
+	canvas.clearSvgContentElement();
+
+	// create new document
+	canvas.current_drawing_ = new svgedit.draw.Drawing(svgcontent);
+
 	// create empty first layer
-	current_drawing.all_layers = [];
-	
 	canvas.createLayer("Layer 1");
 	
 	// clear the undo stack
 	canvas.undoMgr.resetUndoStack();
+
 	// reset the selector manager
 	selectorManager.initGroup();
+
 	// reset the rubber band box
 	rubberBox = selectorManager.getRubberBandBox();
+
 	call("cleared");
 };
 
@@ -7407,7 +7408,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 1961 $)";
+	return "svgcanvas.js ($Rev: 1972 $)";
 };
 
 // Function: setUiStrings
@@ -8730,8 +8731,8 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 				selectedBBoxes[i] = getBBox(elem);
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
-			if(elem.nodeName == 'text') {
-				if((newValue+'').indexOf('url') == 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
+			if(svgedit.browser.isGecko() && elem.nodeName === 'text' && /rotate/.test(elem.getAttribute('transform'))) {
+				if((newValue+'').indexOf('url') === 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
 					elem = ffClone(elem);
 				}
 			}
@@ -9015,6 +9016,8 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 	for(var i = 0; i < len; i++) {
 		var elem = children[i];
 		
+		if(elem.nodeType !== 1) continue;
+		
 		if(gattrs.opacity !== null && gattrs.opacity !== 1) {
 			var c_opac = elem.getAttribute('opacity') || 1;
 			var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
@@ -9149,7 +9152,8 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 				newxform.setMatrix(gm);
 				chtlist.appendItem(newxform);
 			}
-			batchCmd.addSubCommand(recalculateDimensions(elem));
+			var cmd = recalculateDimensions(elem);
+			if(cmd)	batchCmd.addSubCommand(cmd);
 		}
 	}
 
@@ -9670,7 +9674,6 @@ this.getPrivateMethods = function() {
 		round: round,
 		runExtensions: runExtensions,
 		sanitizeSvg: sanitizeSvg,
-		shortFloat: shortFloat,
 		SVGEditTransformList: svgedit.transformlist.SVGTransformList,
 		toString: toString,
 		transformBox: svgedit.math.transformBox,

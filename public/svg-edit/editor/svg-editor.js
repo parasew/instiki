@@ -1535,8 +1535,8 @@
 							}
 							
 							if(unit) {
-								x = svgCanvas.convertUnit(x);
-								y = svgCanvas.convertUnit(y);
+								x = svgedit.units.convertUnit(x);
+								y = svgedit.units.convertUnit(y);
 							}							
 							
 							$('#selected_x').val(x || 0);
@@ -1560,8 +1560,8 @@
 						if(point) {
 							var seg_type = $('#seg_type');
 							if(unit) {
-								point.x = svgCanvas.convertUnit(point.x);
-								point.y = svgCanvas.convertUnit(point.y);
+								point.x = svgedit.units.convertUnit(point.x);
+								point.y = svgedit.units.convertUnit(point.y);
 							}
 							$('#path_node_x').val(point.x);
 							$('#path_node_y').val(point.y);
@@ -1622,7 +1622,7 @@
 							var attrVal = elem.getAttribute(item);
 							if(curConfig.baseUnit !== 'px' && elem[item]) {
 								var bv = elem[item].baseVal.value;
-								attrVal = svgCanvas.convertUnit(bv);
+								attrVal = svgedit.units.convertUnit(bv);
 							}
 						
 							$('#' + el_name + '_' + item).val(attrVal || 0);
@@ -2734,8 +2734,8 @@
 				// update resolution option with actual resolution
 				var res = svgCanvas.getResolution();
 				if(curConfig.baseUnit !== "px") {
-					res.w = svgCanvas.convertUnit(res.w) + curConfig.baseUnit;
-					res.h = svgCanvas.convertUnit(res.h) + curConfig.baseUnit;
+					res.w = svgedit.units.convertUnit(res.w) + curConfig.baseUnit;
+					res.h = svgedit.units.convertUnit(res.h) + curConfig.baseUnit;
 				}
 				
 				$('#canvas_width').val(res.w);
@@ -4583,7 +4583,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1956 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 1973 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
@@ -4719,6 +4719,13 @@
 			Editor.ready(function() {
 				loadSvgString(str);
 			});
+		};
+		
+		Editor.disableUI = function(featList) {
+// 			$(function() {
+// 				$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
+// 				$('#tools_top').css('left', 5);
+// 			});
 		};
 		
 		Editor.loadFromURL = function(url, opts) {
