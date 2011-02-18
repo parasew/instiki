@@ -23,9 +23,9 @@ class SanitizerTest < Test::Unit::TestCase
   end
 
   def test_sanitize_named_entities
-    input = '<p>Greek &phis; &phi;, double-struck &Aopf;, numeric &#x1D538; &#8279;, uppercase &TRADE; &LT;</p>'
-    output = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric \360\235\224\270 \342\201\227, uppercase \342\204\242 &lt;</p>"
-    output2 = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric &#x1D538; &#8279;, uppercase \342\204\242 &lt;</p>"
+    input = '<p>Greek &phis; &phi;, double-struck &Aopf;, numeric &nbsp; &#xA0; &#x1D538; &#8279;, uppercase &TRADE; &LT;</p>'
+    output = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric \302\240 \302\240 \360\235\224\270 \342\201\227, uppercase \342\204\242 &lt;</p>"
+    output2 = "<p>Greek \317\225 \317\206, double-struck \360\235\224\270, numeric \302\240 &#xA0; &#x1D538; &#8279;, uppercase \342\204\242 &lt;</p>"
     check_sanitization(input, output, output, output)
     assert_equal(output2, input.to_utf8.as_bytes)
   end

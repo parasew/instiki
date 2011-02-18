@@ -2329,24 +2329,16 @@ end
       when /\Aquot\z/ni            then '"'
       when /\Aapos\z/ni            then "'"
       when /\A#0*(\d+)\z/n       then
-        if Integer($1) < 256
-          Integer($1).chr
+        if Integer($1) < 1114111
+          [Integer($1)].pack("U")
         else
-          if Integer($1) < 1114111
-            [Integer($1)].pack("U")
-          else
-            "&##{$1};"
-          end
+          "&##{$1};"
         end
       when /\A#x([0-9a-f]+)\z/ni then
-        if $1.hex < 256
+        if $1.hex < 1114111
           [$1.hex].pack("U")
         else
-          if $1.hex < 1114111
-            [$1.hex].pack("U")
-          else
-            "&#x#{$1};"
-          end
+          "&#x#{$1};"
         end
       else
         "&#{match};"
