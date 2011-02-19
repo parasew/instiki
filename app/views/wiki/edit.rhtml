@@ -69,9 +69,11 @@ function cleanAuthorName() {
 }
 
 document.forms["editForm"].elements["content"].focus();
-<%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) and !@page.categories.include?('S5-slideshow') -%>
+<%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) -%>
 setupSVGedit('<%= compute_public_path("editor/svg-editor.html", "svg-edit").split(/\?/)[0] %>');
+<%- unless @page.categories.include?('S5-slideshow') -%>
 addS5button('<%= @page.name.escapeHTML %>');
+<%- end -%>
 <%- end -%>
 //--><!]]>
 </script>
