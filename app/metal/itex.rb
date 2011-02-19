@@ -18,7 +18,7 @@ class Itex
   begin
     require 'nokogiri'
     def self.xmlparse(text)
-      Nokogiri::XML(text) { |config| config.options = Nokogiri::XML::ParseOptions::STRICT }
+      Nokogiri::XML(text) { |config| config.strict }
     end
   rescue LoadError
     require 'rexml/document'

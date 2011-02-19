@@ -33,6 +33,7 @@
     <%= @web && @web.additional_style ? @web.additional_style.html_safe : '' %>
   /*]]>*/--></style>
   <%= javascript_include_tag :defaults %>
+  <%= csrf_meta_tag %>
   <%- if @web -%>
    <%- if @web.markup == :markdownMML -%>
   <script type="text/javascript">
