@@ -1,3 +1,5 @@
+require 'instiki_stringsupport'
+
 class Web < ActiveRecord::Base
   ## Associations
 
@@ -15,8 +17,7 @@ class Web < ActiveRecord::Base
 
   ## Validations
 
-  validates_uniqueness_of :address
-
+  validates_uniqueness_of :address, :message => 'already exists'
   validates_length_of :color, :in => 3..6
 
   ## Methods
@@ -203,6 +204,10 @@ class Web < ActiveRecord::Base
     end
 
     def validate_address
+      if ['create_system', 'create_web', 'delete_web', 'delete_files', 'web_list', ''].include?(address)
+         self.errors.add(:address, 'is not a valid address')
+        raise Instiki::ValidationError.new("\"#{address.purify.escapeHTML}\" #{errors.on(:address)}")     
+      end
       unless address == CGI.escape(address)
         self.errors.add(:address, 'should contain only valid URI characters')
         raise Instiki::ValidationError.new("#{self.class.human_attribute_name('address')} #{errors.on(:address)}")

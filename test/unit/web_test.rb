@@ -56,6 +56,16 @@ class WebTest < ActiveSupport::TestCase
     assert_raises(Instiki::ValidationError) { 
       Web.create(:name => 'Wiki2', :address => "wiki\234", :password => '123') 
     }
+    assert_raises(Instiki::ValidationError) { 
+      Web.create(:name => 'Wiki2', :address => "web_list", :password => '123') 
+    }
+    assert_raises(Instiki::ValidationError) { 
+      Web.create(:name => 'Wiki2', :address => "", :password => '123') 
+    }
+    assert_raises(Instiki::ValidationError) { 
+      Web.create!(:name => 'Wiki2', :address => "", :password => '123') 
+      Web.create(:name => 'Wiki2', :address => "", :password => '123') 
+    }
   end
   
   def test_new_page_linked_from_mother_page
