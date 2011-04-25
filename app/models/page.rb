@@ -1,6 +1,8 @@
 class Page < ActiveRecord::Base
   belongs_to :web
   has_many :revisions, :order => 'id', :dependent => :destroy
+  #In many cases, we don't need to instantiate the full revisions (with all that textual data)
+  has_many :rev_ids, :order => 'id', :class_name => 'Revision', :select => 'id, revised_at, page_id, author, ip'
   has_many :wiki_references, :order => 'referenced_name'
   has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
 
@@ -9,7 +11,7 @@ class Page < ActiveRecord::Base
   end
 
   def revise(content, name, time, author, renderer)
-    revisions_size = new_record? ? 0 : revisions.size
+    revisions_size = new_record? ? 0 : rev_ids.size
     if (revisions_size > 0) and content == current_revision.content and name == self.name
       raise Instiki::ValidationError.new(
           "You have tried to save page '#{name}' without changing its content")
@@ -46,11 +48,11 @@ class Page < ActiveRecord::Base
   end
 
   def revisions?
-    revisions.size > 1
+    rev_ids.size > 1
   end
 
   def previous_revision(revision)
-    revision_index = revisions.each_with_index do |rev, index| 
+    revision_index = rev_ids.each_with_index do |rev, index| 
       if rev.id == revision.id 
         break index 
       else

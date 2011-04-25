@@ -7,7 +7,7 @@
 <div id="revision">
   <%- if @show_diff -%>
     <p class="show_diff">  
-        Showing changes from revision #<%= @page.revisions.size - 1 %> to #<%= @page.revisions.size %>:  
+        Showing changes from revision #<%= @page.rev_ids.size - 1 %> to #<%= @page.rev_ids.size %>:  
         <ins class="diffins">Added</ins> | <del class="diffdel">Removed</del> | <del class="diffmod">Chan</del><ins class="diffmod">ged</ins>  
     </p>
     <%= @renderer.display_diff %>

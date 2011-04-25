@@ -69,7 +69,7 @@ class WikiController < ApplicationController
   
   def export_html
     export_pages_as_zip(html_ext) do |page| 
-      renderer = PageRenderer.new(page.revisions.last)
+      renderer = PageRenderer.new(page.current_revision)
       rendered_page = <<-EOL
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg-flat.dtd" >
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -262,7 +262,7 @@ EOL
       redirect_home
     end
     @link_mode ||= :show
-    @renderer = PageRenderer.new(@page.revisions.last)
+    @renderer = PageRenderer.new(@page.current_revision)
     # to template
   end
 
@@ -276,7 +276,7 @@ EOL
     @page ||= wiki.read_page(@web_name, @page_name)
     @link_mode ||= :publish
     if @page
-       @renderer = PageRenderer.new(@page.revisions.last)
+       @renderer = PageRenderer.new(@page.current_revision)
     else
       real_page = WikiReference.page_that_redirects_for(@web, @page_name)
         if real_page
@@ -348,7 +348,7 @@ EOL
   def show
     if @page
       begin
-        @renderer = PageRenderer.new(@page.revisions.last)
+        @renderer = PageRenderer.new(@page.current_revision)
         @show_diff = (params[:mode] == 'diff')
         render :action => 'page'
       # TODO this rescue should differentiate between errors due to rendering and errors in 
@@ -383,8 +383,8 @@ EOL
     if @page
       @revisions_by_day = Hash.new { |h, day| h[day] = [] }
       @revision_numbers = Hash.new { |h, id| h[id] = [] }
-      revision_number = @page.revisions.size
-      @page.revisions.reverse.each do |rev|
+      revision_number = @page.rev_ids.size
+      @page.rev_ids.reverse.each do |rev|
         day = Date.new(rev.revised_at.year, rev.revised_at.month, rev.revised_at.day)
         @revisions_by_day[day] << rev
         @revision_numbers[rev.id] = revision_number
@@ -415,7 +415,7 @@ EOL
 
   def s5
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
-      my_rendered = PageRenderer.new(@page.revisions.last)
+      my_rendered = PageRenderer.new(@page.current_revision)
       @s5_content = my_rendered.display_s5
       @s5_theme = my_rendered.s5_theme
     else
@@ -506,7 +506,7 @@ EOL
     if params['rev']
       @revision_number = params['rev'].to_i
     else
-      @revision_number = @page.revisions.size
+      @revision_number = @page.rev_ids.size
     end
     @revision = @page.revisions[@revision_number - 1]
   end

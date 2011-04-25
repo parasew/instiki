@@ -55,7 +55,7 @@ require 'instiki_stringsupport'
 
   # Create a hyperlink to a particular revision of a Wiki page
   def link_to_revision(page, revision_number, text = nil, mode = nil, html_options = {})
-    revision_number == page.revisions.size ?
+    revision_number == page.rev_ids.size ?
       link_to(
         text || page.plain_name,
             {:web => @web.address, :action => 'show', :id => page.name,
@@ -109,7 +109,7 @@ require 'instiki_stringsupport'
   end
 
   def rendered_content(page)
-    PageRenderer.new(page.revisions.last).display_content
+    PageRenderer.new(page.current_revision).display_content
   end
 
   def truncate(text, *args)
