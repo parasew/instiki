@@ -7,7 +7,7 @@
   <%- for rev in @revisions_by_day[day] -%>
     <li>
       <%= link_to_revision(rev.page, @revision_numbers[rev.id],
-          text= (rev.page.revisions.size == @revision_numbers[rev.id] ?
+          text= (rev.page.rev_ids.size == @revision_numbers[rev.id] ?
               "Current" :
               "Revision #{@revision_numbers[rev.id]}" )
               ) %>
