@@ -230,6 +230,20 @@ END_THM
 
   end
   
+  def test_utf8_in_lists
+
+    assert_markup_parsed_as(
+    "<ul>\n<li>\u041E\u0434\u0438\u043D</li>\n\n<li>\u0414" +
+    "\u0432\u0430</li>\n\n<li>\u0422\u0440\u0438</li>\n</ul>",
+    "* \u041E\u0434\u0438\u043D\n* \u0414\u0432\u0430\n* \u0422\u0440\u0438\n")
+    
+    assert_markup_parsed_as(
+    "<ol>\n<li>\u041E\u0434\u0438\u043D</li>\n\n<li>\u0414"+
+    "\u0432\u0430</li>\n\n<li>\u0422\u0440\u0438</li>\n</ol>",
+    "1. \u041E\u0434\u0438\u043D\n2. \u0414\u0432\u0430\n3. \u0422\u0440\u0438\n")
+
+  end
+
   def test_have_latest_itex2mml  
 
       assert_markup_parsed_as(

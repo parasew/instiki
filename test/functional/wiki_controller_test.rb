@@ -690,7 +690,7 @@ class WikiControllerTest < ActionController::TestCase
     a = ''.respond_to?(:force_encoding) ? "\u{1D538}\u00FCthorOfNewPage" :
                                           "\360\235\224\270\303\274thorOfNewPage"
     assert_equal a, new_page.author
-    assert_equal "\xF0\x9D\x94\xB8\xC3\xBCthorOfNewPage".as_bytes, r.cookies['author']
+    assert_equal a, r.cookies['author']
   end
 
   def test_save_not_utf8

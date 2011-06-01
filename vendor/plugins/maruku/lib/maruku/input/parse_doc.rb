@@ -204,8 +204,8 @@ Disabled by default because of security concerns.
 					               
 					# Select all text elements of e
 					XPath.match(e, "//text()" ).each { |original_text| 
-						s = original_text.value.strip
-						if s.size > 0
+						s = original_text.value
+						if s.strip.size > 0
 
 					#	    puts "Parsing #{s.inspect} as blocks: #{parse_blocks}  (#{e.name}, #{e.attributes['markdown']})  "
 
