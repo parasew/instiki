@@ -31,13 +31,8 @@ rescue LoadError
   end
 end
 
-begin
-  gem 'rack', '~> 1.1.0'
-  require 'rack'
-rescue Gem::LoadError
-  $:.unshift "#{File.dirname(__FILE__)}/../../../plugins/rack/lib"
-  require 'rack'
-end
+gem 'rack', '>= 1.1.0'
+require 'rack'
 require 'action_controller/cgi_ext'
 
 module ActionController
