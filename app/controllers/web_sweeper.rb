@@ -9,7 +9,7 @@ class WebSweeper < ActionController::Caching::Sweeper
   def after_save(record)
     if record.is_a?(Web)
       web = record
-      web.pages.each { |page| expire_cached_page(web, page.name) }
+      web.pages.find_each { |page| expire_cached_page(web, page.name) }
       expire_cached_summary_pages(web)
     elsif record.is_a?(WikiFile)
       record.web.pages_that_link_to_file(record.file_name).each do |page|

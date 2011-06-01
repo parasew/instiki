@@ -1,7 +1,7 @@
 MathJax.Hub.Config({
   config: ["MMLorHTML.js"],
-  jax: ["input/MathML"],
-  extensions: ["mml2jax.js"],
+  jax: ["input/MathML","output/HTML-CSS","output/NativeMML"],
+  extensions: ["mml2jax.js","MathMenu.js","MathZoom.js"],
   MathML: {
     useMathMLspacing: true
   },
