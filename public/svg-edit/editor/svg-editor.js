@@ -1509,9 +1509,9 @@
 							if(svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
 							}
-						} else if(elname == 'text') {
+						} /*else if(elname == 'text') {
 							// TODO: Do something here for new text
-						}
+						}*/
 					}
 					
 					if(!is_node && currentMode != 'pathedit') {
@@ -1887,6 +1887,10 @@
 				}
 			});
 		
+			$('#g_title').change(function() {
+				svgCanvas.setGroupTitle(this.value);
+			});
+		
 			$('.attr_changer').change(function() {
 				var attr = this.getAttribute("data-attr");
 				var val = this.value;
@@ -1898,15 +1902,17 @@
 					return false;
 				}
 				
-				if(isNaN(val)) {
-					val = svgCanvas.convertToNum(attr, val);
-				} else if(curConfig.baseUnit !== 'px') {
-					// Convert unitless value to one with given unit
+				if (attr !== "id") {
+					if (isNaN(val)) {
+						val = svgCanvas.convertToNum(attr, val);
+					} else if(curConfig.baseUnit !== 'px') {
+						// Convert unitless value to one with given unit
 				
-					var unitData = svgedit.units.getTypeMap();
+						var unitData = svgedit.units.getTypeMap();
 
-					if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
-						val *= unitData[curConfig.baseUnit];
+						if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
+							val *= unitData[curConfig.baseUnit];
+						}
 					}
 				}
 				
@@ -1965,9 +1971,11 @@
 			$("#toggle_stroke_tools").toggle(function() {
 				$(".stroke_tool").css('display','table-cell');
 				$(this).text('<<');
+				resetScrollPos();
 			}, function() {
 				$(".stroke_tool").css('display','none');
 				$(this).text('>>');
+				resetScrollPos();
 			});
 		
 			// This is a common function used when a tool has been clicked (chosen)
@@ -3195,7 +3203,7 @@
 				} else if (preferences) {
 					hidePreferences();
 				}
-		
+				resetScrollPos();
 			};
 		
 			var hideSourceEditor = function(){
@@ -3218,6 +3226,42 @@
 			};
 
 			var win_wh = {width:$(window).width(), height:$(window).height()};
+			
+			var resetScrollPos = $.noop, curScrollPos;
+			
+			// Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
+			if(svgedit.browser.isIE()) {
+				(function() {
+					resetScrollPos = function() {
+						if(workarea[0].scrollLeft === 0 
+						&& workarea[0].scrollTop === 0) {
+							workarea[0].scrollLeft = curScrollPos.left;
+							workarea[0].scrollTop = curScrollPos.top;
+						}
+					}
+				
+					curScrollPos = {
+						left: workarea[0].scrollLeft,
+						top: workarea[0].scrollTop
+					};
+					
+					$(window).resize(resetScrollPos);
+					svgEditor.ready(function() {
+						// TODO: Find better way to detect when to do this to minimize
+						// flickering effect
+						setTimeout(function() {
+							resetScrollPos();
+						}, 500);
+					});
+					
+					workarea.scroll(function() {
+						curScrollPos = {
+							left: workarea[0].scrollLeft,
+							top: workarea[0].scrollTop
+						};
+					});
+				}());
+			}
 			
 			$(window).resize(function(evt) {
 				if (editingsource) {
@@ -3436,7 +3480,15 @@
 					if(!selectedElement) return;
 					var type = this.type;
 					
-					if(selectedElement.tagName === 'g') {
+					switch ( selectedElement.tagName ) {
+					case 'use':
+					case 'image':
+					case 'foreignObject':
+						// These elements don't have fill or stroke, so don't change 
+						// the current value
+						return;
+					case 'g':
+					case 'a':
 						var gPaint = null;
 					
 						var childs = selectedElement.getElementsByTagName('*');
@@ -3458,8 +3510,8 @@
 						var paintColor = gPaint;
 						
 						var paintOpacity = 1;
-
-					} else {
+						break;
+					default:
 						var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
 						if (isNaN(paintOpacity)) {
 							paintOpacity = 1.0;
@@ -4196,7 +4248,9 @@
 			$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
 			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 			$('#blur').SpinButton({ step: .1, min: 0, max: 10, callback: changeBlur });
-			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
+			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom })
+				// Set default zoom 
+				.val(svgCanvas.getZoom() * 100);
 			
 			$("#workarea").contextMenu({
 					menu: 'cmenu_canvas',
@@ -4583,7 +4637,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 1973 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 2028 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
