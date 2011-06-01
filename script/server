@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
-require File.join(File.dirname(__FILE__), '..', 'config', 'boot')
+
+require File.join(File.dirname(File.dirname(__FILE__)), 'config', 'boot')
 # Don't do this. Instead, put it here, where we can customize it.
 #require 'commands/server'
 
@@ -46,7 +47,10 @@ ARGV.clone.options do |opts|
   opts.parse!
 end
 
-server = Rack::Handler.get(ARGV.first) rescue nil
+begin
+  server = Rack::Handler.get(ARGV.first)
+rescue Exception
+end
 unless server
   begin
     server = Rack::Handler::Mongrel
