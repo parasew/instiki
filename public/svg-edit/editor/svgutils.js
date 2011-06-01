@@ -9,8 +9,8 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js: only for getBBox()
-// 3) svgtransformlist.js: only for getRotationAngle()
+// 2) browser.js
+// 3) svgtransformlist.js
 
 var svgedit = svgedit || {};
 
@@ -26,6 +26,7 @@ if (!svgedit.utilities) {
 var KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 var SVGNS = 'http://www.w3.org/2000/svg';
 var XLINKNS = 'http://www.w3.org/1999/xlink';
+var XMLNS = "http://www.w3.org/XML/1998/namespace";
 
 // Much faster than running getBBox() every time
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
@@ -33,9 +34,15 @@ var visElems_arr = visElems.split(',');
 //var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 
 var editorContext_ = null;
+var domdoc_ = null;
+var domcontainer_ = null;
+var svgroot_ = null;
 
 svgedit.utilities.init = function(editorContext) {
 	editorContext_ = editorContext;
+	domdoc_ = editorContext.getDOMDocument();
+	domcontainer_ = editorContext.getDOMContainer();
+	svgroot_ = editorContext.getSVGRoot();
 };
 
 // Function: svgedit.utilities.toXml
@@ -402,6 +409,52 @@ svgedit.utilities.getPathBBox = function(path) {
 	};
 };
 
+// Function: groupBBFix
+// Get the given/selected element's bounding box object, checking for
+// horizontal/vertical lines (see issue 717)
+// Note that performance is currently terrible, so some way to improve would
+// be great.
+//
+// Parameters: 
+// selected - Container or <use> DOM element
+function groupBBFix(selected) {
+	if(svgedit.browser.supportsHVLineContainerBBox()) {
+		try { return selected.getBBox();} catch(e){} 
+	}
+	var ref = $.data(selected, 'ref');
+	var matched = null;
+	
+	if(ref) {
+		var copy = $(ref).children().clone().attr('visibility', 'hidden');
+		$(svgroot_).append(copy);
+		matched = copy.filter('line, path');
+	} else {
+		matched = $(selected).find('line, path');
+	}
+	
+	var issue = false;
+	if(matched.length) {
+		matched.each(function() {
+			var bb = this.getBBox();
+			if(!bb.width || !bb.height) {
+				issue = true;
+			}
+		});
+		if(issue) {
+			var elems = ref ? copy : $(selected).children();
+			ret = getStrokedBBox(elems);
+		} else {
+			ret = selected.getBBox();
+		}
+	} else {
+		ret = selected.getBBox();
+	}
+	if(ref) {
+		copy.remove();
+	}
+	return ret;
+}
+
 // Function: svgedit.utilities.getBBox
 // Get the given/selected element's bounding box object, convert it to be more
 // usable when necessary
@@ -414,36 +467,61 @@ svgedit.utilities.getBBox = function(elem) {
 	var ret = null;
 	var elname = selected.nodeName;
 	
-	if(elname === 'text' && selected.textContent === '') {
-		selected.textContent = 'a'; // Some character needed for the selector to use.
-		ret = selected.getBBox();
-		selected.textContent = '';
-	} else if(elname === 'path' && !svgedit.browser.supportsPathBBox()) {
-		ret = svgedit.utilities.getPathBBox(selected);
-	} else if(elname === 'use' && !svgedit.browser.isWebkit() || elname === 'foreignObject') {
-		ret = selected.getBBox();
-		var bb = {};
-		bb.width = ret.width;
-		bb.height = ret.height;
-		bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
-		bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
-		ret = bb;
-	} else if(~visElems_arr.indexOf(elname)) {
-		try { ret = selected.getBBox();} 
-		catch(e) { 
-			// Check if element is child of a foreignObject
-			var fo = $(selected).closest("foreignObject");
-			if(fo.length) {
-				try {
-					ret = fo[0].getBBox();
-				} catch(e) {
+	switch ( elname ) {
+	case 'text':
+		if(selected.textContent === '') {
+			selected.textContent = 'a'; // Some character needed for the selector to use.
+			ret = selected.getBBox();
+			selected.textContent = '';
+		} else {
+			try { ret = selected.getBBox();} catch(e){}
+		}
+		break;
+	case 'path':
+		if(!svgedit.browser.supportsPathBBox()) {
+			ret = svgedit.utilities.getPathBBox(selected);
+		} else {
+			try { ret = selected.getBBox();} catch(e){}
+		}
+		break;
+	case 'g':
+	case 'a':
+		ret = groupBBFix(selected);
+		break;
+	default:
+
+		if(elname === 'use') {
+			ret = groupBBFix(selected, true);
+		}
+		
+		if(elname === 'use' || elname === 'foreignObject') {
+			if(!ret) ret = selected.getBBox();
+			if(!svgedit.browser.isWebkit()) {
+				var bb = {};
+				bb.width = ret.width;
+				bb.height = ret.height;
+				bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
+				bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
+				ret = bb;
+			}
+		} else if(~visElems_arr.indexOf(elname)) {
+			try { ret = selected.getBBox();} 
+			catch(e) { 
+				// Check if element is child of a foreignObject
+				var fo = $(selected).closest("foreignObject");
+				if(fo.length) {
+					try {
+						ret = fo[0].getBBox();
+					} catch(e) {
+						ret = null;
+					}
+				} else {
 					ret = null;
 				}
-			} else {
-				ret = null;
 			}
 		}
 	}
+	
 	if(ret) {
 		ret = svgedit.utilities.bboxToObj(ret);
 	}
@@ -475,5 +553,95 @@ svgedit.utilities.getRotationAngle = function(elem, to_rad) {
 	}
 	return 0.0;
 };
+
+// Function: getElem
+// Get a DOM element by ID within the SVG root element.
+//
+// Parameters:
+// id - String with the element's new ID
+if (svgedit.browser.supportsSelectors()) {
+	svgedit.utilities.getElem = function(id) {
+		// querySelector lookup
+		return svgroot_.querySelector('#'+id);
+	};
+} else if (svgedit.browser.supportsXpath()) {
+	svgedit.utilities.getElem = function(id) {
+		// xpath lookup
+		return domdoc_.evaluate(
+			'svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
+			domcontainer_, 
+			function() { return "http://www.w3.org/2000/svg"; },
+			9,
+			null).singleNodeValue;
+	};
+} else {
+	svgedit.utilities.getElem = function(id) {
+		// jQuery lookup: twice as slow as xpath in FF
+		return $(svgroot_).find('[id=' + id + ']')[0];
+	};
+}
+
+// Function: assignAttributes
+// Assigns multiple attributes to an element.
+//
+// Parameters: 
+// node - DOM element to apply new attribute values to
+// attrs - Object with attribute keys/values
+// suspendLength - Optional integer of milliseconds to suspend redraw
+// unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
+svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
+	if(!suspendLength) suspendLength = 0;
+	// Opera has a problem with suspendRedraw() apparently
+	var handle = null;
+	if (!svgedit.browser.isOpera()) svgroot_.suspendRedraw(suspendLength);
+
+	for (var i in attrs) {
+		var ns = (i.substr(0,4) === "xml:" ? XMLNS : 
+			i.substr(0,6) === "xlink:" ? XLINKNS : null);
+			
+		if(ns) {
+			node.setAttributeNS(ns, i, attrs[i]);
+		} else if(!unitCheck) {
+			node.setAttribute(i, attrs[i]);
+		} else {
+			svgedit.units.setUnitAttr(node, i, attrs[i]);
+		}
+		
+	}
+	
+	if (!svgedit.browser.isOpera()) svgroot_.unsuspendRedraw(handle);
+};
+
+// Function: cleanupElement
+// Remove unneeded (default) attributes, makes resulting SVG smaller
+//
+// Parameters:
+// element - DOM element to clean up
+svgedit.utilities.cleanupElement = function(element) {
+	var handle = svgroot_.suspendRedraw(60);
+	var defaults = {
+		'fill-opacity':1,
+		'stop-opacity':1,
+		'opacity':1,
+		'stroke':'none',
+		'stroke-dasharray':'none',
+		'stroke-linejoin':'miter',
+		'stroke-linecap':'butt',
+		'stroke-opacity':1,
+		'stroke-width':1,
+		'rx':0,
+		'ry':0
+	}
+	
+	for(var attr in defaults) {
+		var val = defaults[attr];
+		if(element.getAttribute(attr) == val) {
+			element.removeAttribute(attr);
+		}
+	}
+	
+	svgroot_.unsuspendRedraw(handle);
+};
+
 
 })();
