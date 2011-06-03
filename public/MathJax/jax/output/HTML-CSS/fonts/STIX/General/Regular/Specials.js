@@ -1,5 +1,5 @@
 /*
- *  /MathJax/jax/input/MathML/entities/q.js
+ *  /MathJax/jax/output/HTML-CSS/fonts/STIX/General/Regular/Specials.js
  *  
  *  Copyright (c) 2010 Design Science, Inc.
  *
@@ -12,5 +12,5 @@
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
 
-(function(a){MathJax.Hub.Insert(a.Parse.Entity,{QUOT:"\u0022",qint:"\u2A0C",qprime:"\u2057",quaternions:"\u210D",quatint:"\u2A16",quest:"\u003F",questeq:"\u225F",quot:"\u0022"});MathJax.Ajax.loadComplete(a.entityDir+"/q.js")})(MathJax.InputJax.MathML);
+MathJax.Hub.Insert(MathJax.OutputJax["HTML-CSS"].FONTDATA.FONTS.STIXGeneral,{65533:[662,217,872,55,817]});MathJax.Ajax.loadComplete(MathJax.OutputJax["HTML-CSS"].fontDir+"/General/Regular/Specials.js");
 
