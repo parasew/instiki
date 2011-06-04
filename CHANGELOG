@@ -12,12 +12,19 @@ New Features:
 * MathJax rendering for non-MathML capable browsers.
 * RedCloth (Textile) upgraded to 4.x (now handled
   by Bundler).
+* Bundler upgraded to 1.0.7
+* Rails updated to 2.3.11
 
 Bugs Fixed:
 * Redirects and categories of included pages should
   not be inherited. (Suggestion of Andrew Stacey).
 * Bug in Maruku equation handling (reported by Andrew Stacey).
 * SVG-Edit updates and bug-fixes.
+* Bug in editing S5 slideshows.
+* Unvendor Rack
+* Fix Maruku list-parsing bug (reported by Shamaoke)
+* Validate Web address (Reported by Richard Marquez).
+* Fix a well-formedness bug
 
 ------------------------------------------------------------------------------
 * 0.19.1
