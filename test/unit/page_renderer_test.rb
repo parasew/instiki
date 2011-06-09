@@ -244,6 +244,14 @@ END_THM
 
   end
 
+  def test_sick_lists
+
+    assert_markup_parsed_as(
+    "<ul>\n<li>item 1 19.</li>\n</ul>",
+    "* item 1\n19.\n")
+
+  end
+
   def test_have_latest_itex2mml  
 
       assert_markup_parsed_as(

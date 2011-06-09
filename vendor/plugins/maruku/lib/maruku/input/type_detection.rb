@@ -54,7 +54,7 @@ module MaRuKu; module Strings
 		#return :ulist    if l =~ /^[ ]{0,3}([\*\-\+])\s+.*\w+/
 		#return :olist    if l =~ /^[ ]{0,3}\d+\..*\w+/
 		return :ulist    if l =~ /^[ ]{0,1}([\*\-\+])\s+.*/
-		return :olist    if l =~ /^[ ]{0,1}\d+\..*/
+		return :olist    if l =~ /^[ ]{0,1}\d+\.\s+.*/
 		return :header1  if l =~ /^(=)+/ 
 		return :header2  if l =~ /^([-\s])+$/ 
 		return :header3  if l =~ /^(#)+\s*\S+/ 
