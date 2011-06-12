@@ -279,7 +279,7 @@ module Instiki
     MINOR = 19
     TINY  = 2 
     SUFFIX = '(MML+)'
-    PRERELEASE =  'pre'
+    PRERELEASE = false
     if PRERELEASE
        STRING = [MAJOR, MINOR].join('.') + PRERELEASE + SUFFIX
     else

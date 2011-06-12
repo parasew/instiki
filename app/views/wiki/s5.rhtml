@@ -22,11 +22,19 @@
 <!-- S5 JS -->
 <%= javascript_include_tag 'prototype' %>
 <%- if @web.markup == :markdownMML -%>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    MathML: { useMathMLspacing: true },
+    "HTML-CSS": { scale: 90 }
+  });
+  if (window._onload_fired_) MathJax.Hub.Startup.onload();
+</script>
 <script type="text/javascript">
   if (!(Prototype.Browser.Gecko || navigator.userAgent.match(/MathPlayer/))) {
     var s = document.createElement('script');
-    s.src = "<%= compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>?config=instiki";
+    s.src = "<%= compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>?config=MML_HTMLorMML";
     document.querySelector('head').appendChild(s);        
+    window.addEventListener("load", function(){window._onload_fired_ = true} , false);        
   };
 </script>
 <%- end -%>
