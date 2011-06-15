@@ -30,9 +30,9 @@ module Literal
 
   # A literal chunk that protects equations from wiki rendering.
   class Math < AbstractLiteral
-    MATH_START = '(\${1,2}|' + Regexp.escape('\[') + '|\\begin\{equation\})'
-    MATH_END =   '(\${1,2}|' + Regexp.escape('\]') + '|\\end\{equation\})'
-    MATH_PATTERN = Regexp.new(MATH_START + '([^$]|\\\$)+?' + MATH_END, Regexp::MULTILINE)
+    MATH_START = "(?:\\\\\\[|\\${1,2}|\\\\begin\\{equation\\})"
+    MATH_END   = "(?:\\\\\\]|\\${1,2}|\\\\end\\{equation\\})"
+    MATH_PATTERN = Regexp.new( '(' + MATH_START + "(?:\\\\\\$|(?!\\$|\\\\\\]|\\\\end\\{equation\\}).)+?" + MATH_END + ')', Regexp::MULTILINE)
     def self.pattern() MATH_PATTERN  end
   end
 

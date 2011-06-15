@@ -11,8 +11,10 @@ module RailsXss
       src << "@output_buffer.safe_concat('" << escape_text(text) << "');"
     end
 
+    BLOCK_EXPR = /\s+(do|\{)(\s*\|[^|]*\|)?\s*\Z/
+
     def add_expr_literal(src, code)
-      if code =~ /\s*raw\s+(.*)/
+      if code =~ BLOCK_EXPR
         src << "@output_buffer.safe_concat((" << $1 << ").to_s);"
       else
         src << '@output_buffer << ((' << code << ').to_s);'

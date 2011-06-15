@@ -34,7 +34,8 @@ module WikiChunk
     end
 
     def self.apply_to(content)
-      content.as_utf8.gsub!( self.pattern ) do |matched_text|
+      text = content.as_utf8.to_str
+      text.gsub!( self.pattern ) do |matched_text|
         chunk = self.new($~, content)
         if chunk.textile_url?
           # do not substitute
@@ -44,6 +45,7 @@ module WikiChunk
           chunk.mask
         end
       end
+      content.replace text
     end
 
     def textile_url?

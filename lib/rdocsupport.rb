@@ -39,7 +39,7 @@ class RDocMarkup < SM::SimpleMarkup
   end
 
   def convert(text, handler)
-    super.sub(/^<p>\n/, '').sub(/<\/p>$/, '')
+    super.sub(/^\n{0,1}<p>\n{0,1}/, '').sub(/\n{0,1}<\/p>\n{0,1}$/, '')
   end
 end
 

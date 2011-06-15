@@ -208,7 +208,8 @@ class WikiContent < ActiveSupport::SafeBuffer
     @options[:engine].apply_to(self)
     as_utf8
     # unmask in one go. $~[1] is the chunk id
-    gsub!(MASK_RE[ACTIVE_CHUNKS]) do
+    text = self.to_str
+    text.gsub!(MASK_RE[ACTIVE_CHUNKS]) do
       chunk = @chunks_by_id[$~[1].to_i]
       if chunk.nil?
         # if we match a chunkmask that existed in the original content string
@@ -218,7 +219,7 @@ class WikiContent < ActiveSupport::SafeBuffer
         chunk.unmask_text
       end
     end
-    self.replace xhtml_sanitize(self)
+    self.replace xhtml_sanitize(text)
     self.html_safe
   end
 

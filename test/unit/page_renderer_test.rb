@@ -414,7 +414,7 @@ END_THM
         :author => Author.new('DavidHeinemeierHansson'))
   
     assert_equal "<tt>hello</tt> that <span class='newWikiWord'>Smart Engine GUI" +
-        "<a href='../show/SmartEngineGUI'>?</a></span>\n\n", 
+        "<a href='../show/SmartEngineGUI'>?</a></span>", 
         x_test_renderer(@revision).display_content
   end
   
