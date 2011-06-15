@@ -1,7 +1,7 @@
 N.B.: You *must* run
 
      ruby bundle
-     rake upgrade_instiki
+     ruby bundle exec rake upgrade_instiki
 
 after installing the new software, to enjoy the benefits of this new version.
 

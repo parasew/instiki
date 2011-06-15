@@ -48,11 +48,14 @@ module Chunk
     # chunk for it, and replace the occurance of the chunk
     # in this content with its mask.
 	def self.apply_to(content)
-	  content.gsub!( self.pattern ) do |match|	
+	  text = content.to_str
+	  text.gsub!( self.pattern ) do |match|
+#	    content.replace text	
         new_chunk = self.new($~, content)
         content.add_chunk(new_chunk)
         new_chunk.mask
-      end
+       end
+       content.replace text
     end
 
     # should contain only [a-z0-9]
@@ -61,7 +64,7 @@ module Chunk
     end
 
     def unmask
-      @content.sub!(mask){|s| s.replace @unmask_text}
+      @content.replace  @content.sub(mask){|s| s.replace @unmask_text}
     end
 
     def rendered?
@@ -73,7 +76,7 @@ module Chunk
     end
 
     def revert
-      @content.sub!(mask){|s| s.replace @text}
+      @content.replace  @content.sub(mask){|s| s.replace @text}
       # unregister
       @content.delete_chunk(self)
     end

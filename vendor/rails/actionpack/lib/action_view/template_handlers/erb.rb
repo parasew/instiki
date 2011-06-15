@@ -15,6 +15,7 @@ module ActionView
         erb = "#{magic}<% __in_erb_template=true %>#{template.source}"
 
         if erb.respond_to?(:force_encoding)
+          erb.force_encoding(template.source.encoding)
 #          erb.force_encoding(template.source.encoding)
           erb.force_encoding('UTF-8')
         end

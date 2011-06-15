@@ -114,7 +114,7 @@ module Engines
   class Mixed < AbstractEngine
     def mask
       @content.as_utf8
-      redcloth = OldRedCloth.new(@content, @content.options[:engine_opts])
+      redcloth = OldRedCloth.new(@content.to_str, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
       html = redcloth.to_html
@@ -123,8 +123,7 @@ module Engines
 
   class RDoc < AbstractEngine
     def mask
-      @content.as_utf8
-      html = RDocSupport::RDocFormatter.new(@content).to_html
+      html = RDocSupport::RDocFormatter.new(@content.as_utf8.to_str).to_html
     end
   end
 

@@ -9,6 +9,19 @@ ActiveSupport::SafeBuffer.class_eval do
     end
   end
   alias << concat
+  UNSAFE_STRING_METHODS = ["capitalize", "chomp", "chop", "delete", "downcase", "gsub", "lstrip", "next", "reverse", "rstrip", "slice", "squeeze", "strip", "sub", "succ", "swapcase", "tr", "tr_s", "upcase"].freeze
+
+  for unsafe_method in UNSAFE_STRING_METHODS
+    class_eval <<-EOT, __FILE__, __LINE__
+      def #{unsafe_method}(*args)
+        super.to_str
+      end
+  
+      def #{unsafe_method}!(*args)
+        raise TypeError, "Cannot modify SafeBuffer in place"
+      end
+    EOT
+  end
 end
 
 class String

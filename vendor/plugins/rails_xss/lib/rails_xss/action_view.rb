@@ -15,6 +15,15 @@ module ActionView
   end
 
   module Helpers
+    module CaptureHelper
+      def content_for(name, content = nil, &block)
+        ivar = "@content_for_#{name}"
+        content = capture(&block) if block_given?
+        instance_variable_set(ivar, "#{instance_variable_get(ivar)}#{ERB::Util.h(content)}".html_safe)
+        nil
+      end
+    end    
+
     module TextHelper
       def concat(string, unused_binding = nil)
         if unused_binding
@@ -23,14 +32,52 @@ module ActionView
 
         output_buffer.concat(string)
       end
+
+      def simple_format(text, html_options={})
+        start_tag = tag('p', html_options, true)
+        text = ERB::Util.h(text).to_str.dup
+        text.gsub!(/\r\n?/, "\n")                    # \r\n and \r -> \n
+        text.gsub!(/\n\n+/, "</p>\n\n#{start_tag}")  # 2+ newline  -> paragraph
+        text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />') # 1 newline   -> br
+        text.insert 0, start_tag
+        text.html_safe.safe_concat("</p>")
+      end
     end
 
     module TagHelper
       private
         def content_tag_string_with_escaping(name, content, options, escape = true)
-          content_tag_string_without_escaping(name, ERB::Util.h(content), options, escape)
+          content_tag_string_without_escaping(name, escape ? ERB::Util.h(content) : content, options, escape)
         end
         alias_method_chain :content_tag_string, :escaping
+    end
+
+    module UrlHelper
+      def link_to(*args, &block)
+        if block_given?
+          options      = args.first || {}
+          html_options = args.second
+          concat(link_to(capture(&block), options, html_options))
+        else
+          name         = args.first
+          options      = args.second || {}
+          html_options = args.third
+
+          url = url_for(options)
+
+          if html_options
+            html_options = html_options.stringify_keys
+            href = html_options['href']
+            convert_options_to_javascript!(html_options, url)
+            tag_options = tag_options(html_options)
+          else
+            tag_options = nil
+          end
+
+          href_attr = "href=\"#{url}\"" unless href
+          "<a #{href_attr}#{tag_options}>#{ERB::Util.h(name || url)}</a>".html_safe
+        end
+      end
     end
   end
 end
@@ -49,35 +96,6 @@ module RailsXss
       end
     end
   end
-
-  module HelperOverrides
-    def link_to(*args, &block)
-      if block_given?
-        options      = args.first || {}
-        html_options = args.second
-        concat(link_to(capture(&block), options, html_options))
-      else
-        name         = args.first
-        options      = args.second || {}
-        html_options = args.third
-
-        url = url_for(options)
-
-        if html_options
-          html_options = html_options.stringify_keys
-          href = html_options['href']
-          convert_options_to_javascript!(html_options, url)
-          tag_options = tag_options(html_options)
-        else
-          tag_options = nil
-        end
-
-        href_attr = "href=\"#{url}\"" unless href
-        "<a #{href_attr}#{tag_options}>#{ERB::Util.h(name || url)}</a>".html_safe
-      end
-    end
-  end
 end
 
 Module.class_eval { include RailsXss::SafeHelpers }
-ActionController::Base.helper(RailsXss::HelperOverrides)

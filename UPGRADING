@@ -11,7 +11,7 @@ At a minimum, you need to backup your database.
 After installing the new software and restoring your database, you need to run
 
      ruby bundle
-     rake upgrade_instiki
+     ruby bundle exec rake upgrade_instiki
 
 from the commandline, to complete the upgrade. Doing a
 

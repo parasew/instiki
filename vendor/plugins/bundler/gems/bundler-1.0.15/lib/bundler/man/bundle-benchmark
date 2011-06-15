@@ -1,0 +1,19 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "BUNDLE\-BENCHMARK" "1" "May 2011" "" ""
+.
+.SH "NAME"
+\fBbundle\-benchmark\fR \- Display the time taken for each gem to be loaded
+.
+.SH "SYNOPSIS"
+\fBbundle benchmark\fR [group]
+.
+.SH "DESCRIPTION"
+This command loads all your required dependencies as per Bundler\.setup, and displays the total time spent in requiring each gem and its dependencies\.
+.
+.P
+Use this command to track down problems with excessive boot time in your application, or to optimize specific groups in your Gemfile for fast setup\.
+.
+.SH "GROUP OPTION"
+To test the load times for gems in a specific group, pass the group as an argument to \fBbundle benchmark\fR\. Omitting this option loads all dependencies in your Gemfile\.

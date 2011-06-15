@@ -123,7 +123,7 @@ class WikiControllerTest < ActionController::TestCase
     
     r = process 'edit', 'web' => 'wiki1', 'id' => 'With : Special /> symbols'
     assert_response(:success)
-    xml = REXML::Document.new(r.body)
+    xml = REXML::Document.new(r.body.to_str)
     form = REXML::XPath.first(xml, '//form')
     assert_equal '/wiki1/save/With+%3A+Special+%2F%3E+symbols', form.attributes['action']
   end
