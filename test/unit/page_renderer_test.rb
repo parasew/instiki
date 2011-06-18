@@ -216,6 +216,21 @@ END_THM
   
   end
 
+  def test_footnotes
+    assert_markup_parsed_as("<p>Ruby on Rails is a web-framework<sup id='fnref:1'><a href='#fn" +
+    ":1' rel='footnote'>1</a></sup>. It uses the MVC<sup id='fnref:2'><a href='#fn:2' rel='foo" +
+    "tnote'>2</a></sup> architecture pattern. It has its good points<sup id='fnref:3'><a href=" +
+    "'#fn:3' rel='footnote'>3</a></sup>.</p>\n<div class='footnotes'><hr/><ol><li id='fn:1'>\n" +
+    "<p>a reusable set of libraries <a href='#fnref:1' rev='footnote'>\342\206\251</a></p>\n</li><li" +
+    " id='fn:2'>\n<p>Model View Controller <a href='#fnref:2' rev='footnote'>\342\206\251</a></p>\n<" +
+    "/li><li id='fn:3'>\n<p>Here are its good points</p>\n\n<ol>\n<li>Ease of use</li>\n\n<li>" +
+    "Rapid development</li>\n</ol>\n<a href='#fnref:3' rev='footnote'>\342\206\251</a></li></ol></div>",
+    "Ruby on Rails is a web-framework[^framework]. It uses the MVC[^MVC] architecture pattern." +
+    " It has its good points[^points].\n\n[^framework]: a reusable set of libraries\n\n[^MVC]:" +
+    " Model View Controller\n\n[^points]: Here are its good points\n1. Ease of use\n2. Rapid d" +
+    "evelopment")
+  end
+
   def test_ial_in_lists
 
     assert_markup_parsed_as(

@@ -326,7 +326,21 @@ Example:
 						a.attributes['href'] = "\##{get_setting(:doc_prefix)}fnref:#{num}"
 						a.attributes['rev'] = 'footnote'
 						a<< Text.new('&#8617;', true, nil, true)
-					li.insert_after(li.children.last, a)
+
+					last = nil
+					li.children.reverse_each do |child|
+					  if child.node_type != :text
+					    last = child
+					    break
+					  end 
+					end
+
+					if last and last.name == "p"
+					  last.add_text(' ');
+					  last.add(a);
+					else
+					   li.insert_after(li.children.last, a)
+					end
 					ol << li
 				else
 					maruku_error "Could not find footnote id '#{fid}' among ["+
