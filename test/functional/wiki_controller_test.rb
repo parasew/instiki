@@ -1201,6 +1201,8 @@ class WikiControllerTest < ActionController::TestCase
 
 %% Fix array
 \newcommand{\itexarray}[1]{\begin{matrix}#1\end{matrix}}
+%% \itexnum is a noop
+\newcommand{\itexnum}[1]{#1}
 
 %% Renaming existing commands
 \newcommand{\underoverset}[3]{\underset{#1}{\overset{#2}{#3}}}

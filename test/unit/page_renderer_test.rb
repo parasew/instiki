@@ -272,6 +272,16 @@ END_THM
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
+        %{MathML'><mrow href='http://ex.com' xlink:href=} +
+        %{'http://ex.com' xlink:type='simple' xmlns:xlin} +
+        %{k='http://www.w3.org/1999/xlink'><mn>47.3</mn>} +
+        %{</mrow><mn>47</mn><mo>,</mo><mn>3</mn><mn>47,3} +
+        %{</mn></math></p>},
+        "equation $\\href{http://ex.com}{47.3} 47,3 \\itexnum{47,3}$")
+
+      assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' displa} +
+        %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
         %{MathML'><mi>A</mi><mi>\342\200\246</mi><mo>\342\253\275</mo><mi>B</} +
         %{mi></math></p>},
         "equation $A\\dots\\sslash B$")
