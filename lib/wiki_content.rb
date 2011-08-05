@@ -8,6 +8,7 @@ require_dependency 'chunks/literal'
 require 'chunks/nowiki'
 require 'sanitizer'
 require 'instiki_stringsupport'
+require 'set'
 
 
 # Wiki content is just a string that can process itself with a chain of
@@ -53,10 +54,10 @@ module ChunkManager
   def init_chunk_manager
     @chunks_by_type = Hash.new
     Chunk::Abstract::derivatives.each{|chunk_type|
-      @chunks_by_type[chunk_type] = Array.new
+      @chunks_by_type[chunk_type] = Set.new
     }
     @chunks_by_id = Hash.new
-    @chunks = []
+    @chunks = Set.new
     @chunk_id = 0
   end
 
