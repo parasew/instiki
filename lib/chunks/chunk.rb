@@ -45,12 +45,11 @@ module Chunk
 
     # Find all the chunks of the given type in content
     # Each time the pattern is matched, create a new
-    # chunk for it, and replace the occurance of the chunk
+    # chunk for it, and replace the occurrence of the chunk
     # in this content with its mask.
 	def self.apply_to(content)
 	  text = content.to_str
 	  text.gsub!( self.pattern ) do |match|
-#	    content.replace text	
         new_chunk = self.new($~, content)
         content.add_chunk(new_chunk)
         new_chunk.mask

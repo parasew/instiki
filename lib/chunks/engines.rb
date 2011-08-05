@@ -71,9 +71,11 @@ module Engines
         @content.options[:renderer].s5_theme = my_content.s5_theme
         my_content.to_s5
       else
+        (t = Time.now; nil)
         html = Maruku.new(@content.delete("\r").to_utf8,
              {:math_enabled => true,
               :math_numbered => ['\\[','\\begin{equation}']}).to_html
+        (ApplicationController.logger.info("Maruku took " + (Time.now-t).to_s + " seconds."); nil)
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
     end
