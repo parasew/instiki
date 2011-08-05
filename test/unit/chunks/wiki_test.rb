@@ -130,11 +130,12 @@ class WikiTest < Test::Unit::TestCase
   def assert_link_parsed_as(expected_page_name, expected_link_text, expected_link_type, link)
     link_to_file = ContentStub.new(link)
     WikiChunk::Link.apply_to(link_to_file)
-    chunk = link_to_file.chunks.last
-    assert chunk
-    assert_equal expected_page_name, chunk.page_name
-    assert_equal expected_link_text, chunk.link_text
-    assert_equal expected_link_type, chunk.link_type
+    link_to_file.chunks.each do |chunk|
+      assert chunk
+      assert_equal expected_page_name, chunk.page_name
+      assert_equal expected_link_text, chunk.link_text
+      assert_equal expected_link_type, chunk.link_type
+    end
   end
   
 end

@@ -100,10 +100,12 @@ module ChunkMatch
 
     # Test if requested parts are correct.
     expected_chunk_state.each_pair do |a_method, expected_value|
-      assert content.chunks.last.kind_of?(chunk_type)
-      assert_respond_to(content.chunks.last, a_method)
-      assert_equal(expected_value, content.chunks.last.send(a_method.to_sym),
+      content.chunks.each do |c|
+        assert c.kind_of?(chunk_type)
+        assert_respond_to(c, a_method)
+        assert_equal(expected_value, c.send(a_method.to_sym),
         "Wrong #{a_method} value")
+      end
     end
   end
 
