@@ -23,7 +23,17 @@ require 'set'
 
 module MaRuKu; module In; module Markdown; module SpanLevelParser
 	include MaRuKu::Helpers
-	
+
+# Concatenates to a string
+class SpanContext_String; end
+
+# Pushes to an Arrary, and then calls #join to output
+class SpanContext_Array; end
+
+# You choose...
+#SpanContext = SpanContext_Array
+SpanContext = SpanContext_String # Seems to be faster
+		
 	EscapedCharInText = 
 		Set.new [?\\,?`,?*,?_,?{,?},?[,?],?(,?),?#,?.,?!,?|,?:,?+,?-,?>]
 
@@ -31,6 +41,8 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		Set.new [?\\,?`,?*,?_,?{,?},?[,?],?(,?),?#,?.,?!,?|,?:,?+,?-,?>,?',?"]
 	
 	EscapedCharInInlineCode = [?\\,?`]
+
+        IgnoreWikiLinks = MaRuKu::Globals[:ignore_wikilinks]
 
 	def parse_lines_as_span(lines, parent=nil)
 		parse_span_better lines.join("\n"), parent
@@ -60,7 +72,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			# This is only an optimization which cuts 50% of the time used.
 			# (but you can't use a-zA-z in exit_on_chars)
 			if c && ((c>=?a && c<=?z) || ((c>=?A && c<=?Z)))
-				con.cur_string << src.shift_char
+				con.push_char src.shift_char
 				next
 			end
 
@@ -142,6 +154,9 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			when ?[
 				if markdown_extra? && src.next_char == ?^
 					read_footnote_ref(src,con)
+				elsif IgnoreWikiLinks && src.next_char == ?[
+					con.push_char src.shift_char
+					con.push_char src.shift_char
 				else
 					read_link(src, con)
 				end
@@ -191,7 +206,7 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 					# or 2) the last char was a space
 					# or 3) the current string is empty
 					#if con.elements.empty? ||
-					if	 (con.cur_string =~ /\s\Z/) || (con.cur_string.size == 0)
+					if con.is_end?
 						# also, we check the next characters
 						follows = src.cur_chars(4)
 						if  follows =~ /^\_\_\_[^\s\_]/
@@ -678,16 +693,15 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 	end # read link
 
 
-	class SpanContext 
+	class SpanContext_Array 
 		include MaRuKu::Strings
 	
 		# Read elements
 		attr_accessor :elements
-		attr_accessor :cur_string
 	
 		def initialize
 			@elements = []
-			@cur_string = ""
+			@cur_string_array = []
 		end
 	
 		def push_element(e)
@@ -703,17 +717,86 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		def push_elements(a)
 			for e in a 
 				if e.kind_of? String
-					e.each_byte do |b| push_char b end
+					@cur_string_array << e # e.each_byte do |b| push_char b end
 				else
 					push_element e
 				end
 			end
 		end
 		
+		def is_end?
+		   @cur_string_array.empty? || @cur_string_array.last =~ /\s\Z/
+		end
+		
 		def push_string_if_present
-			if @cur_string.size > 0
+			unless @cur_string_array.empty?
+				@elements << @cur_string_array.join
+				@cur_string_array = []
+			end
+			nil
+		end
+	
+		def push_char(c)
+			@cur_string_array << c.chr 
+			nil
+		end
+	
+		# push space into current string if
+		# there isn't one
+		def push_space
+			last = @cur_string_array.last
+			@cur_string_array << ' ' unless last =~ /\ \Z/ 
+		end
+	
+		def describe
+			lines = @elements.map{|x| x.inspect}.join("\n")
+			s = "Elements read in span: \n" +
+			lines.gsub(/^/, ' -')+"\n"
+		
+			s += "Current string: \n  #{@cur_string_array.join.inspect}\n" unless @cur_string_array.empty?
+			s
+		end
+	end # SpanContext_Array
+	
+	class SpanContext_String 
+		include MaRuKu::Strings
+	
+		# Read elements
+		attr_accessor :elements
+	
+		def initialize
+			@elements = []
+			@cur_string = ''
+		end
+	
+		def push_element(e)
+			raise "Only MDElement and String, please. You pushed #{e.class}: #{e.inspect} " if
+			 not (e.kind_of?(String) or e.kind_of?(MDElement))
+		
+			push_string_if_present
+			@elements << e
+			nil
+		end
+		alias push push_element
+		
+		def push_elements(a)
+			for e in a 
+				if e.kind_of? String
+					@cur_string << e # e.each_byte do |b| push_char b end
+				else
+					push_element e
+				end
+			end
+		end
+		
+		def is_end?
+		   @cur_string.empty? || @cur_string =~ /\s\Z/
+		end
+		
+		def push_string_if_present
+			unless @cur_string.empty?
 				@elements << @cur_string
-				@cur_string = ""
+				@cur_string = ''
 			end
 			nil
 		end
@@ -726,8 +809,8 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 		# push space into current string if
 		# there isn't one
 		def push_space
-			last = @cur_string[@cur_string.size-1]
-			@cur_string << ?\  if last != ?\ 
+			last = @cur_string[@cur_string.length - 1]
+			@cur_string << ' ' unless last == ?\  
 		end
 	
 		def describe
@@ -735,12 +818,11 @@ module MaRuKu; module In; module Markdown; module SpanLevelParser
 			s = "Elements read in span: \n" +
 			lines.gsub(/^/, ' -')+"\n"
 		
-			if @cur_string.size > 0
-			s += "Current string: \n  #{@cur_string.inspect}\n" 
-			end
+			s += "Current string: \n  #{@cur_string_array.join.inspect}\n" unless @cur_string_array.empty?
 			s
 		end
-	end # SpanContext
+	end # SpanContext_String
+
 	
 end end end end # module MaRuKu; module In; module Markdown; module SpanLevelParser
 
