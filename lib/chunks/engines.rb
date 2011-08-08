@@ -41,16 +41,16 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask
-      @content.as_utf8
+      text = @content.as_utf8.to_str.delete("\r").to_utf8
       # If the request is for S5, call Maruku accordingly (without math)
       if @content.options[:mode] == :s5
-        my_content = Maruku.new(@content.delete("\r").to_utf8,
+        my_content = Maruku.new(text,
                            {:math_enabled => false, :content_only => true,
                             :author => @content.options[:engine_opts][:author],
                             :title => @content.options[:engine_opts][:title]})
         @content.options[:renderer].s5_theme = my_content.s5_theme
       else
-        html = Maruku.new(@content.delete("\r").to_utf8, {:math_enabled => false}).to_html
+        html = Maruku.new(text, {:math_enabled => false}).to_html
         html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
 
@@ -59,10 +59,10 @@ module Engines
 
   class MarkdownMML < AbstractEngine
     def mask
-      @content.as_utf8
+      text = @content.as_utf8.to_str.delete("\r").to_utf8
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
-        my_content = Maruku.new(@content.delete("\r").to_utf8,
+        my_content = Maruku.new(text,
                            {:math_enabled => true,
                             :math_numbered => ['\\[','\\begin{equation}'],
                             :content_only => true,
@@ -71,8 +71,10 @@ module Engines
         @content.options[:renderer].s5_theme = my_content.s5_theme
         my_content.to_s5
       else
-        (t = Time.now; nil)
-        html = Maruku.new(@content.delete("\r").to_utf8,
+        (t = Time.now; nil)        
+        puts "text is #{text.class}"
+        puts "text responds to concat_with_safety" if text.respond_to?(:concat_with_safety)
+        html = Maruku.new(text,
              {:math_enabled => true,
               :math_numbered => ['\\[','\\begin{equation}']}).to_html
         (ApplicationController.logger.info("Maruku took " + (Time.now-t).to_s + " seconds."); nil)
@@ -83,10 +85,10 @@ module Engines
 
   class MarkdownPNG < AbstractEngine
     def mask
-      @content.as_utf8
+      text = @content.as_utf8.to_str.delete("\r").to_utf8
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
-        my_content = Maruku.new(@content.delete("\r").to_utf8,
+        my_content = Maruku.new(text,
                            {:math_enabled => true,
                             :math_numbered => ['\\[','\\begin{equation}'],
                             :html_math_output_mathml => false,
@@ -100,7 +102,7 @@ module Engines
         @content.options[:renderer].s5_theme = my_content.s5_theme
         my_content.to_s5
       else
-        html = Maruku.new(@content.delete("\r").to_utf8,
+        html = Maruku.new(text,
              {:math_enabled => true,
               :math_numbered => ['\\[','\\begin{equation}'],
               :html_math_output_mathml => false,
