@@ -86,8 +86,8 @@ MaRuKu::In::Markdown.register_block_extension(
 
 
 # This adds support for \eqref
-RegEqrefLatex = /\\eqref\{(\w+)\}/
-RegEqPar = /\(eq:(\w+)\)/
+RegEqrefLatex = /\\eqref\{(\w+?)\}/
+RegEqPar = /\(eq:(\w+?)\)/
 RegEqref = Regexp.union(RegEqrefLatex, RegEqPar)
 
 MaRuKu::In::Markdown.register_span_extension(
@@ -101,7 +101,7 @@ MaRuKu::In::Markdown.register_span_extension(
   end)
 
 # This adds support for \ref
-RegRef = /\\ref\{(\w*)\}/
+RegRef = /\\ref\{(\w*?)\}/
 MaRuKu::In::Markdown.register_span_extension(
   :chars => [?\\, ?(],
   :regexp => RegRef,
