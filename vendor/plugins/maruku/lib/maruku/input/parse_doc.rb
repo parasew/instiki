@@ -20,6 +20,7 @@
 
 
 require 'iconv'
+require 'nokogiri'
 
 
 module MaRuKu; module In; module Markdown; module BlockLevelParser
@@ -184,7 +185,6 @@ Disabled by default because of security concerns.
 		end
 	end
 	
-	include REXML
 	# (PHP Markdown extra) Search for elements that have
 	# markdown=1 or markdown=block defined
 	def substitute_markdown_inside_raw_html
@@ -195,35 +195,38 @@ Disabled by default because of security concerns.
 				block_tags = ['div']
 
 				# use xpath to find elements with 'markdown' attribute
-				XPath.match(doc, "//*[attribute::markdown]" ).each do |e|
+				doc.xpath("//*[attribute::markdown]").each do |e|
 #					puts "Found #{e}"
 					# should we parse block-level or span-level?
 					
-					how = e.attributes['markdown']
+					how = e['markdown']
 					parse_blocks = (how == 'block') || block_tags.include?(e.name)
 					               
 					# Select all text elements of e
-					XPath.match(e, "//text()" ).each { |original_text| 
-						s = original_text.value
+					e.xpath("//text()").each { |original_text| 
+						s = original_text.text
 						if s.strip.size > 0
 
-					#	    puts "Parsing #{s.inspect} as blocks: #{parse_blocks}  (#{e.name}, #{e.attributes['markdown']})  "
+					#	    puts "Parsing #{s.inspect} as blocks: #{parse_blocks}  (#{e.name}, #{e['markdown']})  "
 
 							el = md_el(:dummy,
 							 	parse_blocks ? parse_text_as_markdown(s) :
 							                  parse_lines_as_span([s]) )
 							p = original_text.parent
+							#Nokogiri collapses consecutive Text nodes, so replace it by a dummy element
+							guard = Nokogiri::XML::Element.new('guard', doc)
+							original_text.replace(guard)
 							el.children_to_html.each do |x|
-								p.insert_before(original_text, x)
+								guard.before(x)
 							end
-							p.delete(original_text)
+							guard.remove
 							
 						end
 					}
 					
 					
           # remove 'markdown' attribute
-          e.delete_attribute 'markdown'
+          e.delete('markdown')
           
 				end
 				

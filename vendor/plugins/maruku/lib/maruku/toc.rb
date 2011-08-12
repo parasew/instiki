@@ -16,6 +16,7 @@
 #   along with Maruku; if not, write to the Free Software
 #   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+require 'nokogiri'
 
 module MaRuKu
   # A section in the table of contents of a document.
@@ -87,14 +88,14 @@ module MaRuKu
       end
     end
 
-    include REXML
 
     # Returns an HTML representation of the table of contents.
     #
     # This should only be called on the root section.
     def to_html
-      div = Element.new 'div'
-      div.attributes['class'] = 'maruku_toc'
+      d = Nokogiri::XML::Document.new
+      div = Nokogiri::XML::Element.new('div', d)
+      div['class'] = 'maruku_toc'
       div << _to_html
       div
     end
@@ -109,18 +110,19 @@ module MaRuKu
     protected
 
     def _to_html
-      ul = Element.new 'ul'
+      d = Nokogiri::XML::Document.new
+      ul = Nokogiri::XML::Element.new('ul', d)
       # let's remove the bullets
-      ul.attributes['style'] = 'list-style: none;'
+      ul['style'] = 'list-style: none;'
       @section_children.each do |c|
-        li = Element.new 'li'
+        li = Nokogiri::XML::Element.new('li', d)
         if span = c.header_element.render_section_number
           li << span
         end
 
         a = c.header_element.wrap_as_element('a')
-        a.delete_attribute 'id'
-        a.attributes['href'] = "##{c.header_element.attributes[:id]}"
+        a.delete('id')
+        a['href'] = "##{c.header_element.attributes[:id]}"
 
         li << a
         li << c._to_html if c.section_children.size > 0

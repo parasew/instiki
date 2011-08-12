@@ -18,6 +18,9 @@
 
 
 module MaRuKu
+
+require 'nokogiri'
+
   # A collection of helper functions for creating Markdown elements.
   # They hide the particular internal representations.
   #
@@ -80,11 +83,11 @@ module MaRuKu
       e = md_el(:raw_html, [], :raw_html => raw_html)
       begin
         e.instance_variable_set("@parsed_html",
-          REXML::Document.new("<marukuwrap>#{raw_html.strip}</marukuwrap>"))
-      rescue REXML::ParseException => ex
+          Nokogiri::XML::Document.parse("<marukuwrap>#{raw_html.strip}</marukuwrap>"))
+      rescue Nokogiri::XML::Document.errors => ex
         e.instance_variable_set "@parsed_html", nil
         maruku_recover <<ERR
-REXML cannot parse this block of HTML/XML:
+Nokogiri cannot parse this block of HTML/XML:
 #{raw_html.gsub(/^/, '|').rstrip}
 #{ex.inspect}
 ERR

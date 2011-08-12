@@ -1,15 +1,14 @@
 module MaRuKu; module Out; module HTML
 
   require 'maruku/string_utils'
+  require 'nokogiri'
 
 	def convert_to_mathml_none(kind, tex)
-		# You can: either return a REXML::Element
-		#    return Element.new 'div'    
+		# You can: either return a nokogiri::XML::Element
 		# or return an empty array on error
 		#    return []  
-		# or have a string parsed by REXML:
 		mathml = "<code>#{html_escape(tex)}</code>"
-		return Document.new(mathml).root
+		return Nokogiri::XML::Document.parse(mathml).root
 	end
 
 	def convert_to_png_none(kind, tex)

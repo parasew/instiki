@@ -2,6 +2,7 @@ require 'tempfile'
 require 'fileutils'
 require 'digest/md5'
 require 'pstore'
+require 'nokogiri'
 
 module MaRuKu
   module Out
@@ -40,16 +41,16 @@ COMMAND
           return
         end
 
-        doc = Document.new(result, :respect_whitespace => :all)
-        png = doc.root.elements[1]
+        doc = Nokogiri::XML::Document.parse(result)
+        png = doc.root.elements.to_a[0]
         if png.name != 'png'
           maruku_error "Blahtex error: \n#{doc}"
           return
         end
 
-        raise "No depth element in:\n #{doc}" unless depth = png.elements['depth']
-        raise "No height element in:\n #{doc}" unless height = png.elements['height']
-        raise "No md5 element in:\n #{doc}" unless md5 = png.elements['md5']
+        raise "No depth element in:\n #{doc}" unless depth = png.xpath('//depth')[0]
+        raise "No height element in:\n #{doc}" unless height = png.xpath('//height')[0]
+        raise "No md5 element in:\n #{doc}" unless md5 = png.xpath('//md5')[0]
 
         depth = depth.text.to_f
         height = height.text.to_f # TODO: check != 0

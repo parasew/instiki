@@ -19,11 +19,9 @@
 #++
 
 
-require 'rexml/document'
+require 'nokogiri'
 
 module MaRuKu; module Out; module Latex
-	
-	include REXML
 	
 	def to_latex_entity 
 		MaRuKu::Out::Latex.need_entity_table
@@ -69,13 +67,13 @@ module MaRuKu; module Out; module Latex
 	def Latex.init_entity_table
 #		$stderr.write "Creating entity table.."
 #		$stderr.flush
-		doc = Document.new(File.read(File.dirname(__FILE__) + "/../../../data/entities.xml"))
-		doc.elements.each("//char") do |c| 
-			num =  c.attributes['num'].to_i
-			name =  c.attributes['name']
-			package =  c.attributes['package']
+		doc = Nokogiri::XML::Document.parse(File.read(File.dirname(__FILE__) + "/../../../data/entities.xml"))
+		doc.xpath("//char").each do |c| 
+			num =  c['num'].to_i
+			name =  c['name']
+			package =  c['package']
 			
-			convert =  c.attributes['convertTo']
+			convert =  c['convertTo']
 			convert.gsub!(/@DOUBLEQUOT/,'"')
 			convert.gsub!(/@QUOT/,"'")
 			convert.gsub!(/@GT/,">")

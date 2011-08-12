@@ -818,7 +818,7 @@ SpanContext = SpanContext_String # Seems to be faster
 			s = "Elements read in span: \n" +
 			lines.gsub(/^/, ' -')+"\n"
 		
-			s += "Current string: \n  #{@cur_string_array.join.inspect}\n" unless @cur_string_array.empty?
+			s += "Current string: \n  #{@cur_string.inspect}\n" unless  @cur_string.empty?
 			s
 		end
 	end # SpanContext_String

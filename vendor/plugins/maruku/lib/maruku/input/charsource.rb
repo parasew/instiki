@@ -221,12 +221,14 @@ class CharSourceStrscan
 	def shift_char; @scanner.getch[0]; end
 
     # Advance the pointer	
-	def ignore_char; @scanner.pos= @scanner.pos + 1; end
+#	def ignore_char; @scanner.pos=(@scanner.pos + 1); end
+	def ignore_char; @scanner.getch; nil; end
 
 	# Advance the pointer by n
-	def ignore_chars(n); @scanner.pos= @scanner.pos + n; end
+#	def ignore_chars(n); @scanner.pos=(@scanner.pos + n); end
+	def ignore_chars(n); n.times{@scanner.getch}; nil; end
 
-    # Resturn the rest of the string
+    # Return the rest of the string
 	def current_remaining_buffer; @scanner.rest; end
 
     # Returns true if string matches what we're pointing to	
@@ -237,7 +239,7 @@ class CharSourceStrscan
 
     def read_regexp(r); r.match(@scanner.scan(r)); end
 
-	def consume_whitespace; @scanner.skip(/\s*/); end
+	def consume_whitespace; @scanner.skip(/\s+/); end
 
 	def describe
     	len = 75

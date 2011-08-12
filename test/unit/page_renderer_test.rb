@@ -555,6 +555,13 @@ END_THM
       "<p>A <code>class SmartEngine</code> would not mark up</p>\n<pre>CodeBlocks</pre>\n<p>would it?</p>", 
       "A <code>class SmartEngine</code> would not mark up\n\n<pre>CodeBlocks</pre>\n\nwould it?")
   end
+
+  def test_inline_html
+    set_web_property :markup, :markdownMML
+    assert_markup_parsed_as(
+      "<p>We discuss the general abstract <a href='http://nlab.mathforge.org/nlab/show/cohesive+(infinity%2C1)-topos#Structures'>structures in a cohesive (\u221E,1)-topos</a> realized.</p>", 
+      "We discuss the general abstract\n<a href=\"http://nlab.mathforge.org/nlab/show/cohesive+(infinity%2C1)-topos#Structures\">structures in a cohesive (\u221E,1)-topos</a> realized.")
+  end
   
 #  def test_content_with_autolink_in_parentheses
 #    assert_markup_parsed_as(
