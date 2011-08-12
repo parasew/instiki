@@ -1,14 +1,8 @@
 # This module groups all functions related to HTML export.
 module MaRuKu
 
-begin
-        require 'rexml/formatters/pretty'
-        require 'rexml/formatters/default'
-        $rexml_new_version = true
-rescue LoadError
-        $rexml_new_version = false      
-end
-  require 'maruku/string_utils'
+require 'nokogiri'
+require 'maruku/string_utils'
 	 
 	class MDDocument
 
@@ -22,25 +16,30 @@ end
 		ie_hack      = !context[:ie_hack].kind_of?(FalseClass)
 		content_only = !context[:content_only].kind_of?(FalseClass)
 
-		doc = Document.new(nil,{:respect_whitespace =>:all})
+		doc = Nokogiri::XML::Document.new
 
 		if content_only
-			body = Element.new('div', doc)
+			body = Nokogiri::XML::Element.new('div', doc)
 		else
-			html = Element.new('html', doc)
-			html.add_namespace('http://www.w3.org/1999/xhtml')
+			html = Nokogiri::XML::Element.new('html', doc)
+			doc << html
+			html.add_namespace(nil, 'http://www.w3.org/1999/xhtml')
 			html.add_namespace('svg', "http://www.w3.org/2000/svg" )
 
-			head = Element.new('head', html)
-			me = Element.new 'meta', head
-			me.attributes['http-equiv'] = 'Content-type'
-			me.attributes['content'] = 'text/html;charset=utf-8'	
+			head = Nokogiri::XML::Element.new('head', html)
+			html << head
+			me = Nokogiri::XML::Element.new('meta', head)
+			me['http-equiv'] = 'Content-type'
+			me['content'] = 'text/html;charset=utf-8'
+			head << meta
 
 			# Create title element
 			doc_title = self.attributes[:title] || self.attributes[:subject] || ""
-			title = Element.new 'title', head
-				title << Text.new(doc_title)		
-			body = Element.new('body', html)
+			title = Nokogiri::XML::Element.new 'title', head
+				title << Nokogiri::XML::Text.new(doc_title, head)
+            head << title		
+			body = Nokogiri::XML::Element.new('body', html)
+			html << body
 			
 		end
 		
@@ -68,10 +67,11 @@ end
 		<div class='bottomright'> #{slide_bottomright}</div>
 		</div>
                 "
-		body.add_element Document.new(dummy_layout_slide, {:respect_whitespace =>:all}).root
+		body <<  Nokogiri::XML::Document.parse(dummy_layout_slide).root
 
-		presentation = Element.new 'div', body
-		presentation.attributes['class'] = 'presentation'
+		presentation = Nokogiri::XML::Element.new('div', body)
+		presentation['class'] = 'presentation'
+		body << presentation
 		
 		first_slide="
 	  <div class='slide'>
@@ -81,19 +81,21 @@ end
 	  <h4> #{self.attributes[:company] ||context[:company]}</h4>
 	  </div>
 		"
-		presentation.add_element Document.new(first_slide).root
+		presentation << Nokogiri::XML::Document.parse(first_slide).root
 
 		slide_num = 0
 		self.toc.section_children.each do |slide|
 			slide_num += 1
 			@doc.attributes[:doc_prefix] = "s#{slide_num}"
 			
-			puts "Slide #{slide_num}: " + slide.header_element.to_s
-			div = Element.new('div', presentation)
-			div.attributes['class'] = 'slide'
+#			puts "Slide #{slide_num}: " + slide.header_element.to_s
+			div = Nokogiri::XML::Element.new('div', presentation)
+			presentation << div
+			div['class'] = 'slide'
 			
-			h1 = Element.new 'h1', div
+			h1 = Nokogiri::XML::Element.new('h1', div)
 			slide.header_element.children_to_html.each do |e| h1 << e; end
+			div << h1
 			
 			array_to_html(slide.immediate_children).each do |e|  div << e  end
 				
@@ -104,23 +106,15 @@ end
 			end
 		end
 
-		xml  = "" 
 		if (content_only)
-		   if $rexml_new_version
-		     formatter = REXML::Formatters::Default.new(ie_hack)
-                     formatter.write(body, xml)
-		   else
-		     body.write(xml,indent,transitive=true,ie_hack);
-		  end
+		  xml = body.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
 		else
-		  doc2 = Document.new("<div>"+S5_external+"</div>",{:respect_whitespace =>:all})
+		  doc2 = Nokogiri::XML::Document.parse("<div>"+S5_external+"</div>")
 		  doc2.root.children.each{ |child| head << child }
 
 		  add_css_to(head)
 
-		  # REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
-		  # containing code.
-		  html.write(xml,indent,transitive=true,ie_hack);
+		  xml = html.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
 		  Xhtml11_mathml2_svg11 + xml
 		end
 	end

@@ -18,63 +18,37 @@
 #   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #++
 
-require 'rexml/document'
-
-begin
-	require 'rexml/formatters/pretty'
-	require 'rexml/formatters/default'
-	$rexml_new_version = true
-rescue LoadError
-	$rexml_new_version = false	
-end
+require 'nokogiri'
+require 'maruku/string_utils'
 
 class String
 	# A string is rendered into HTML by creating
-	# a REXML::Text node. REXML takes care of all the encoding.
+	# a Nokogiri::XML::Text node. Nokogiri takes care of all the encoding.
 	def to_html
-		REXML::Text.new(self)
+        d = Nokogiri::XML::Document.new
+	    Nokogiri::XML::Text.new(self, d)
 	end
 end
 
 
 # This module groups all functions related to HTML export.
 module MaRuKu; module Out; module HTML
-	include REXML
 	
 	# Render as an HTML fragment (no head, just the content of BODY). (returns a string)
-	def to_html(context={})
-		indent = context[:indent] || -1
-		ie_hack = context[:ie_hack] || true
-		
-		div = Element.new 'dummy'
+	def to_html(context={})		
+        d = Nokogiri::XML::Document.parse('<dummy/>')
 			children_to_html.each do |e|
-				div << e
+				d.root << e
 			end
 
 			# render footnotes
 			if @doc.footnotes_order.size > 0
-				div << render_footnotes
+				d.root << render_footnotes
 			end
 		
-		doc = Document.new(nil,{:respect_whitespace =>:all})
-		doc << div
-		
-		# REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
-		# containing code.
-		xml =""
+        xml = d.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
 
-		if $rexml_new_version
-			formatter = if indent > -1
-	          REXML::Formatters::Pretty.new( indent, ie_hack )
-	        else
-	          REXML::Formatters::Default.new( ie_hack )
-	        end
-			formatter.write( div, xml)
-		else
-			div.write(xml,indent,transitive=true,ie_hack)
-		end
-
-		xml.gsub!(/\A<dummy>\s*|\s*<\/dummy>\Z|\A<dummy\s*\/>/,'')
+		xml.gsub!(/\A<dummy>\s*|\s*<\/dummy>\s*\Z|\A<dummy\s*\/>/,'')
 		xml
 	end
 	
@@ -85,9 +59,7 @@ module MaRuKu; module Out; module HTML
 		doc = to_html_document_tree
 		xml  = "" 
 		
-		# REXML Bug? if indent!=-1 whitespace is not respected for 'pre' elements
-		# containing code.
-		doc.write(xml,indent,transitive=true,ie_hack);
+		xml = doc.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
 		
 		Xhtml11_mathml2_svg11 + xml
 	end
@@ -113,7 +85,10 @@ Xhtml11_mathml2_svg11 =
 '
 	
 	
-	def xml_newline() Text.new("\n") end
+	def xml_newline
+        d = Nokogiri::XML::Document.new
+        Nokogiri::XML::Text.new("\n", d)
+    end
 		
 
 =begin maruku_doc
@@ -155,10 +130,11 @@ Synonim for `title`.
 =end
 
 
-	# Render to an HTML fragment (returns a REXML document tree)
+	# Render to an HTML fragment (returns a Nokogiri document tree)
 	def to_html_tree
-		div = Element.new 'div'
-			div.attributes['class'] = 'maruku_wrapper_div'
+        d = Nokogiri::XML::Document.new
+        div = Nokogiri::XML::Element.new('dummy', d)
+			div['class'] = 'maruku_wrapper_div'
 				children_to_html.each do |e|
 						  div << e
 				end
@@ -168,8 +144,7 @@ Synonim for `title`.
 						  div << render_footnotes
 				end
 
-		 doc = Document.new(nil,{:respect_whitespace =>:all})
-		 doc << div
+		 d << div
 	end
 
 =begin maruku_doc
@@ -188,56 +163,59 @@ Example:
 
 	METAS = %w{description keywords author revised}
 
-	# Render to a complete HTML document (returns a REXML document tree)
+	# Render to a complete HTML document (returns a Nokogiri document tree)
 	def to_html_document_tree
-		doc = Document.new(nil,{:respect_whitespace =>:all})
-	#	doc << XMLDecl.new
+		doc = Nokogiri::XML::Document.new
 		
-		root = Element.new('html', doc)
-		root.add_namespace('http://www.w3.org/1999/xhtml')
+		root = Nokogiri::XML::Element.new('html', doc)
+		root.add_namespace(nil, 'http://www.w3.org/1999/xhtml')
 		root.add_namespace('svg', "http://www.w3.org/2000/svg" )
-		lang = self.attributes[:lang] || 'en'
-		root.attributes['xml:lang'] = lang
+		lang = self[:lang] || 'en'
+		root['xml:lang'] = lang
+		doc << root
 		
 		root << xml_newline
-		head = Element.new 'head', root
+		head = Nokogiri::XML::Element.new('head', doc)
+		root << head
 		
 			#<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-			me = Element.new 'meta', head
-			me.attributes['http-equiv'] = 'Content-type'
-#			me.attributes['content'] = 'text/html;charset=utf-8'	
-			me.attributes['content'] = 'application/xhtml+xml;charset=utf-8'	
+			me = Nokogiri::XML::Element.new('meta', doc)
+			me['http-equiv'] = 'Content-type'
+			me['content'] = 'application/xhtml+xml;charset=utf-8'
+			head << me	
 		
 			METAS.each do |m|
 				if value = self.attributes[m.to_sym]
-					meta = Element.new 'meta', head
-					meta.attributes['name'] = m
-					meta.attributes['content'] = value.to_s
+					meta = Nokogiri::XML::Element.new('meta', doc)
+					meta['name'] = m
+					meta['content'] = value.to_s
+					head << meta
 				end
 			end
 			
 			
 			self.attributes.each do |k,v|
 				if k.to_s =~ /\Ameta-(.*)\Z/
-					meta = Element.new 'meta', head
-					meta.attributes['name'] = $1
-					meta.attributes['content'] = v.to_s
+					meta = Nokogiri::XML::Element.new('meta',doc)
+					meta['name'] = $1
+					meta['content'] = v.to_s
+					head << meta
 				end
 			end
 			
 
 			
 			# Create title element
-			doc_title = self.attributes[:title] || self.attributes[:subject] || ""
-			title = Element.new 'title', head
-				title << Text.new(doc_title)
-							
+			doc_title = self[:title] || self[:subject] || ""
+			title = Nokogiri::XML::Element.new('title', doc)
+				title << Nokogiri::XML::Text.new(doc_title, doc)
+			head << title				
 			add_css_to(head)
 			
 		
 		root << xml_newline
 		
-		body = Element.new 'body'
+		body = Nokogiri::XML::Element.new('body', doc)
 		
 			children_to_html.each do |e|
 				body << e
@@ -245,7 +223,7 @@ Example:
 
 			# render footnotes
 			if @doc.footnotes_order.size > 0
-				body << render_footnotes
+				body << render_footnotes(@doc)
 			end
 			
 			# When we are rendering a whole document, we add a signature 
@@ -255,18 +233,18 @@ Example:
 			end
 			
 		root << body
-		
 		doc
 	end
 
 	def add_css_to(head)
 		if css_list = self.attributes[:css]
+            d = Nokogiri::XML::Document.new
 			css_list.split.each do |css|
 			# <link type="text/css" rel="stylesheet" href="..." />
-			link = Element.new 'link'
-			link.attributes['type'] = 'text/css'
-			link.attributes['rel'] = 'stylesheet'
-			link.attributes['href'] = css
+			link = Nokogiri::XML::Element.new('link', d)
+			link['type'] = 'text/css'
+			link['rel'] = 'stylesheet'
+			link['href'] = css
 			head << link 
 			head << xml_newline
 			end
@@ -296,50 +274,52 @@ Example:
 		t.strftime(", %Y")
 	end
 	
-	def maruku_html_signature		
-		div = Element.new 'div'
-			div.attributes['class'] = 'maruku_signature'
-			Element.new 'hr', div
-			span = Element.new 'span', div
-				span.attributes['style'] = 'font-size: small; font-style: italic'
-				span << Text.new('Created by ')
-				a = Element.new('a', span)
-					a.attributes['href'] = 'http://maruku.rubyforge.org'
-					a.attributes['title'] = 'Maruku: a Markdown-superset interpreter for Ruby'
-					a << Text.new('Maruku')
-				span << Text.new(nice_date+".")
+	def maruku_html_signature
+	    d = Nokogiri::XML::Document.new
+		div = Nokogiri::XML::Element.new( 'div', d)
+			div['class'] = 'maruku_signature'
+			div << Nokogiri::XML::Element.new('hr', div)
+			span = Nokogiri::XML::Element.new('span', div)
+				span['style'] = 'font-size: small; font-style: italic'
+				div << span << Nokogiri::XML::Text.new('Created by ', div)
+				a = Nokogiri::XML::Element.new('a', span)
+					a['href'] = 'http://maruku.rubyforge.org'
+					a['title'] = 'Maruku: a Markdown-superset interpreter for Ruby'
+					a << Nokogiri::XML::Text.new('Maruku', div)
+				span << Nokogiri::XML::Text.new(nice_date+".", div)
 		div
 	end
 	
-	def render_footnotes()
-		div = Element.new 'div'
-		div.attributes['class'] = 'footnotes'
-		div <<  Element.new('hr')
-			ol = Element.new 'ol'
+	def render_footnotes
+	    d = Nokogiri::XML::Document.new
+		div = Nokogiri::XML::Element.new('div', d)
+		div['class'] = 'footnotes'
+		div <<  Nokogiri::XML::Element.new('hr', d)
+			ol = Nokogiri::XML::Element.new('ol', d)
 			@doc.footnotes_order.each_with_index do |fid, i| num = i+1
 				f = self.footnotes[fid]
 				if f
 					li = f.wrap_as_element('li')
-					li.attributes['id'] = "#{get_setting(:doc_prefix)}fn:#{num}"
+					li['id'] = "#{get_setting(:doc_prefix)}fn:#{num}"
 					
-					a = Element.new 'a'
-						a.attributes['href'] = "\##{get_setting(:doc_prefix)}fnref:#{num}"
-						a.attributes['rev'] = 'footnote'
-						a<< Text.new('&#8617;', true, nil, true)
+					a = Nokogiri::XML::Element.new('a', d)
+						a['href'] = "\##{get_setting(:doc_prefix)}fnref:#{num}"
+						a['rev'] = 'footnote'
+                        a << Nokogiri::XML::EntityReference.new(d, '#8617')
 
 					last = nil
 					li.children.reverse_each do |child|
-					  if child.node_type != :text
+					  unless child.text?
 					    last = child
 					    break
 					  end 
 					end
 
 					if last and last.name == "p"
-					  last.add_text(' ');
-					  last.add(a);
+					  last << Nokogiri::XML::Text.new(' ', last);
+					  last << a;
 					else
-					   li.insert_after(li.children.last, a)
+					   li.children.last.add_next_sibling(a)
 					end
 					ol << li
 				else
@@ -352,8 +332,8 @@ Example:
 	end
 
 
-	def to_html_hrule; create_html_element 'hr' end
-	def to_html_linebreak; Element.new 'br' end
+	def to_html_hrule; create_html_element 'hr'; end
+	def to_html_linebreak; create_html_element 'br'; end
 
 	# renders children as html and wraps into an element of given name
 	# 
@@ -362,8 +342,6 @@ Example:
 		m = create_html_element(name, attributes_to_copy)
 			children_to_html.each do |e| m << e; end
 			
-#			m << Comment.new( "{"+self.al.to_md+"}") if not self.al.empty?
-#			m << Comment.new( @attributes.inspect) if not @attributes.empty?
 		m
 	end
 	
@@ -437,11 +415,12 @@ It is copied as a standard HTML attribute.
 		
 		
 	def create_html_element(name, attributes_to_copy=[])
-		m = Element.new name
+	    d = Nokogiri::XML::Document.new
+        m = Nokogiri::XML::Element.new(name, d)
 			if atts = HTML4Attributes[name] then 
 				atts.each do |att|
 					if v = @attributes[att] then 
-						m.attributes[att.to_s] = v.to_s 
+						m[att.to_s] = v.to_s 
 					end
 				end
 			else
@@ -495,11 +474,12 @@ by Maruku, to have the same results in both HTML and LaTeX.
 	
 	# nil if not applicable, else SPAN element
 	def render_section_number
+	    d = Nokogiri::XML::Document.new
 		# if we are bound to a section, add section number
 		if num = section_number
-			span = Element.new 'span'
-			span.attributes['class'] = 'maruku_section_number'
-			span << Text.new(section_number)
+			span = Nokogiri::XML::Element.new('span', d)
+			span['class'] = 'maruku_section_number'
+			span << Nokogiri::XML::Text.new(section_number, d)
 			span
 		else
 			nil
@@ -517,10 +497,8 @@ by Maruku, to have the same results in both HTML and LaTeX.
 	end
 
 	def source2html(source)
-#		source = source.gsub(/&/,'&amp;')
-		source = Text.normalize(source)
-		source.gsub!(/\&apos;|'/,'&#39;') # IE bug
-		Text.new(source, true, nil, true )
+	    d = Nokogiri::XML::Document.new
+        t = Nokogiri::XML::Text.new(source,d)
 	end
 		
 =begin maruku_doc
@@ -566,7 +544,7 @@ and
 		lang = 'css21' if lang == 'css'
 
 		use_syntax = get_setting :html_use_syntax
-		
+
 		element = 
 		if use_syntax && lang
 			begin
@@ -582,15 +560,17 @@ and
 				source = source.gsub(/\n*\Z/,'')
 				
 				html = convertor.convert( source )
+
 				html.gsub!(/\&apos;|'/,'&#39;') # IE bug
 	#			html = html.gsub(/&/,'&amp;') 
-				
-				code = Document.new(html, {:respect_whitespace =>:all}).root
+				dd = Nokogiri::XML::Document.new				
+				d = Nokogiri::XML::Document.parse(html)
+				code = d.root
 				code.name = 'code'
-				code.attributes['lang'] = lang
+				code['lang'] = lang
 				
-				pre = Element.new 'pre'
-				pre.attributes['class'] = lang
+				pre = Nokogiri::XML::Element.new('pre', dd)
+				pre['class'] = lang
 				pre << code
 				pre
 			rescue LoadError => e
@@ -612,7 +592,7 @@ and
 		
 		color = get_setting(:code_background_color)
 		if color != Globals[:code_background_color]
-			element.attributes['style'] = "background-color: #{color};"
+			element['style'] = "background-color: #{color};"
 		end
 		add_ws element
 	end
@@ -638,12 +618,10 @@ of the form `#ff00ff`.
 	
 	
 	def to_html_code_using_pre(source)
+	    d = Nokogiri::XML::Document.new
 		pre = create_html_element  'pre'
-		code = Element.new 'code', pre
+		code = Nokogiri::XML::Element.new('code', d)
 		s = source
-		
-#		s  = s.gsub(/&/,'&amp;')
-		s = Text.normalize(s).gsub(/\&apos;|'/,'&#39;') # IE bug
 
 		if get_setting(:code_show_spaces) 
 			# 187 = raquo
@@ -653,13 +631,13 @@ of the form `#ff00ff`.
 			s.gsub!(/ /,'&#172;')
 		end
 
-		text = Text.new(s, respect_ws=true, parent=nil, raw=true )
+        text = Nokogiri::XML::Text.new(s, d)
 		
 		if lang = self.attributes[:lang]
-			code.attributes['lang'] = lang
-			code.attributes['class'] = lang
+			code['lang'] = lang
+			code['class'] = lang
 		end
-		code << text
+		pre << code << text
 		pre
 	end
 
@@ -670,15 +648,15 @@ of the form `#ff00ff`.
 			
 			color = get_setting(:code_background_color)
 			if color != Globals[:code_background_color]
-				pre.attributes['style'] = "background-color: #{color};"+(pre.attributes['style']||"")
+				pre['style'] = "background-color: #{color};"+(pre['style']||"")
 			end
 			
 		pre
 	end
 
 	def add_class_to(el, cl)
-		el.attributes['class'] = 
-		if already = el.attributes['class']
+		el['class'] = 
+		if already = el['class']
 			already + " " + cl
 		else
 			cl
@@ -704,11 +682,12 @@ of the form `#ff00ff`.
 	
 	
 	def to_html_immediate_link
+        d = Nokogiri::XML::Document.new
 		a =  create_html_element 'a'
 		url = self.url
 		text = url.gsub(/^mailto:/,'') # don't show mailto
-		a << Text.new(text)
-		a.attributes['href'] = url
+		a << Nokogiri::XML::Text.new(text, d)
+		a['href'] = url
 		add_class_to_link(a)
 		a
 	end
@@ -720,8 +699,8 @@ of the form `#ff00ff`.
 		if ref = @doc.refs[id]
 			url = ref[:url]
 			title = ref[:title]
-			a.attributes['href'] = url if url
-			a.attributes['title'] = title if title
+			a['href'] = url if url
+			a['title'] = title if title
 		else
 			maruku_error "Could not find ref_id = #{id.inspect} for #{self.inspect}\n"+
 				"Available refs are #{@doc.refs.keys.inspect}"
@@ -737,8 +716,8 @@ of the form `#ff00ff`.
 		if url = self.url
 			title = self.title
 			a =  wrap_as_element 'a'
-			a.attributes['href'] = url
-			a.attributes['title'] = title if title
+			a['href'] = url
+			a['title'] = title if title
 			return a
 		else
 			maruku_error"Could not find url in #{self.inspect}"
@@ -748,7 +727,8 @@ of the form `#ff00ff`.
 	end
 	
 	def add_ws(e)
-		[Text.new("\n"), e, Text.new("\n")]
+	    d = Nokogiri::XML::Document.new
+		[Nokogiri::XML::Text.new("\n", d), e, Nokogiri::XML::Text.new("\n", d)]
 	end
 ##### Email address
 	
@@ -761,6 +741,7 @@ of the form `#ff00ff`.
 	end
 	
 	def to_html_email_address
+	    d = Nokogiri::XML::Document.new
 		email = self.email
 		a = create_html_element 'a'
 			#a.attributes['href'] = Text.new("mailto:"+obfuscate(email),false,nil,true)
@@ -769,7 +750,7 @@ of the form `#ff00ff`.
 			# Sorry, for the moment it doesn't work
 			a.attributes['href'] = "mailto:#{email}"
 			
-			a << Text.new(obfuscate(email),false,nil,true)
+			a << Nokogiri::XML::Text.new(obfuscate(email), d)
 		a
 	end
 
@@ -781,8 +762,8 @@ of the form `#ff00ff`.
 		if ref = @doc.refs[id]
 			url = ref[:url]
 			title = ref[:title]
-			a.attributes['src'] = url.to_s
-			a.attributes['alt'] = children_to_s 
+			a['src'] = url.to_s
+			a['alt'] = children_to_s 
 		else
 			maruku_error"Could not find id = #{id.inspect} for\n #{self.inspect}"
 			tell_user "Could not create image with ref_id = #{id.inspect};"+
@@ -801,8 +782,8 @@ of the form `#ff00ff`.
 		end
 		title = self.title
 		a =  create_html_element 'img'
-			a.attributes['src'] = url.to_s
-			a.attributes['alt'] = children_to_s 
+			a['src'] = url.to_s
+			a['alt'] = children_to_s 
 		return a
 	end
 
@@ -815,6 +796,7 @@ If true, raw HTML is discarded from the output.
 =end
 
 	def to_html_raw_html
+	    d = Nokogiri::XML::Document.new
 		return [] if get_setting(:filter_html)
 		
 		raw_html = self.raw_html
@@ -825,34 +807,35 @@ If true, raw HTML is discarded from the output.
 				"Raw HTML:\n#{raw_html.inspect}"
 				maruku_error s
 				tell_user 'The REXML version you have has a bug, omitting HTML'
-				div = Element.new 'div'
+                div = Nokogiri::XML::Element.new('div', d)
 				#div << Text.new(s)
 				return div
 			end
 			
 			# copies the @children array (FIXME is it deep?)
-			elements =  root.to_a 
-			return elements
+			elements =  root.children.to_a 
 		else # invalid
 			# Creates red box with offending HTML
 			tell_user "Wrapping bad html in a PRE with class 'markdown-html-error'\n"+
 				raw_html.gsub(/^/, '|')
-			pre = Element.new('pre')
-			pre.attributes['style'] = 'border: solid 3px red; background-color: pink'
-			pre.attributes['class'] = 'markdown-html-error'
-			pre << Text.new("REXML could not parse this XML/HTML: \n#{raw_html}", true)
+            pre = Nokogiri::XML::Element.new('pre', d)
+			pre['style'] = 'border: solid 3px red; background-color: pink'
+			pre['class'] = 'markdown-html-error'
+            pre << Nokogiri::XML::Text.new("Nokogiri could not parse this XML/HTML: \n#{raw_html}", d)
 			return pre
 		end
 	end
 
 	def to_html_abbr
-		abbr = Element.new 'abbr'
-		abbr << Text.new(children[0])
-		abbr.attributes['title'] = self.title if self.title
+	    d = Nokogiri::XML::Document.new
+		abbr = Nokogiri::XML::Element.new('abbr', d)
+		abbr << Nokogiri::XML::Text.new(children[0], d)
+		abbr['title'] = self.title if self.title
 		abbr
 	end
 	
 	def to_html_footnote_reference
+	    d = Nokogiri::XML::Document.new
 		id = self.footnote_id
 		
 		# save the order of used footnotes
@@ -873,12 +856,12 @@ If true, raw HTML is discarded from the output.
 		#num = order.size; 
 		num = order.index(id) + 1
 		  
-		sup = Element.new 'sup'
-		sup.attributes['id'] = "#{get_setting(:doc_prefix)}fnref:#{num}"
-			a = Element.new 'a'
-			a << Text.new(num.to_s)
-			a.attributes['href'] = "\##{get_setting(:doc_prefix)}fn:#{num}"
-			a.attributes['rel'] = 'footnote'
+		sup = Nokogiri::XML::Element.new('sup', d)
+		sup['id'] = "#{get_setting(:doc_prefix)}fnref:#{num}"
+			a = Nokogiri::XML::Element.new('a', d)
+			a << Nokogiri::XML::Text.new(num.to_s, d)
+			a['href'] = "\##{get_setting(:doc_prefix)}fn:#{num}"
+			a['rel'] = 'footnote'
 		sup << a
 			
 		sup
@@ -904,21 +887,21 @@ If true, raw HTML is discarded from the output.
 		end
 		
 		table = create_html_element 'table'
-			thead = Element.new 'thead'
-			tr = Element.new 'tr'
+			thead = Nokogiri::XML::Element.new('thead', table)
+			tr = Nokogiri::XML::Element.new('tr', table)
 				array_to_html(head).each do |x| tr<<x end
 			thead << tr
 			table << thead
 			
-			tbody = Element.new 'tbody'
+			tbody = Nokogiri::XML::Element.new('tbody', table)
 			rows.each do |row|
-				tr = Element.new 'tr'
+				tr = Nokogiri::XML::Element.new('tr', table)
 					array_to_html(row).each_with_index do |x,i| 
-						x.attributes['style'] ="text-align: #{align[i].to_s};" 
+						x['style'] ="text-align: #{align[i].to_s};" 
 						tr<<x 
 					end
 						
-				tbody << tr << Text.new("\n")
+				tbody << tr << Nokogiri::XML::Text.new("\n", table)
 			end
 			table << tbody
 		table
@@ -934,6 +917,7 @@ If true, raw HTML is discarded from the output.
  	end
 	
 	def to_html_entity 
+	    d = Nokogiri::XML::Document.new
 		MaRuKu::Out::Latex.need_entity_table
       
 		entity_name = self.entity_name
@@ -949,17 +933,17 @@ If true, raw HTML is discarded from the output.
 
 		
 		if entity_name.kind_of? Fixnum
-#			Entity.new(entity_name)
-			Text.new('&#%d;' % [entity_name],  false, nil, true)
+			 Nokogiri::XML::EntityReference.new(d, '#%d' % [entity_name])
 		else
-			Text.new('&%s;' % [entity_name],  false, nil, true)
+			 Nokogiri::XML::EntityReference.new(d, '%s' % [entity_name])
 		end
 	end
 
 	def to_html_xml_instr
 		target = self.target || ''
 		code = self.code || ''
-		REXML::Instruction.new(target, code)
+	    d = Nokogiri::XML::Document.new
+	    Nokogiri::XML::ProcessingInstruction.new(d,target,code)
 	end
 
 	# Convert each child to html
@@ -970,8 +954,7 @@ If true, raw HTML is discarded from the output.
 	def array_to_html(array)
 		e = []
 		array.each do |c|
-			method = c.kind_of?(MDElement) ? 
-			   "to_html_#{c.node_type}" : "to_html"
+			method = c.kind_of?(MDElement) ? "to_html_#{c.node_type}" : "to_html"
 
 			if not c.respond_to?(method)
 				#raise "Object does not answer to #{method}: #{c.class} #{c.inspect}"

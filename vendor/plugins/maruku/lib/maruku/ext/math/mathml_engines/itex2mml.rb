@@ -25,9 +25,9 @@ module MaRuKu
             maruku_error "Unknown itex2mml kind: #{kind}"
             return
           end
-
-        return Document.new(mathml.to_utf8, :respect_whitespace => :all).root
-      rescue REXML::ParseException => e
+        d = Nokogiri::XML::Document.parse(mathml.to_utf8)
+        return d.root
+      rescue Exception => e
         maruku_error "Invalid MathML TeX: \n#{tex.gsub(/^/, 'tex>')}\n\n #{e.inspect}"
         nil
       rescue
