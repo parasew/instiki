@@ -6,13 +6,13 @@ CSS: style.css
 
 Input:
 
-	<em>Emphasis</em>
+    <em>Emphasis</em>
 
 Result: <em>Emphasis</em>
 
 Input:
 
-	<img src="http://jigsaw.w3.org/css-validator/images/vcss"/>
+    <img src="http://jigsaw.w3.org/css-validator/images/vcss"/>
 
 Result on span: <img src="http://jigsaw.w3.org/css-validator/images/vcss"/>
 
@@ -25,14 +25,14 @@ Without closing:
 <img src="http://jigsaw.w3.org/css-validator/images/vcss">
 
 <div markdown="1">
-	This is *true* markdown text (paragraph)
+   This is *true* markdown text (paragraph)
 
-	<p markdown="1">
-		This is *true* markdown text (no paragraph)
-	</p>
-	<p markdown="block">
-		This is *true* markdown text (block paragraph)
-	</p>
+   <p markdown="1">
+   This is *true* markdown text (no paragraph)
+   </p>
+   <p markdown="block">
+   This is *true* markdown text (block paragraph)
+   </p>
 </div>
 
 <table>
@@ -78,7 +78,7 @@ md_el(:document,[
 <p>Result alone:</p>
 <img src="http://jigsaw.w3.org/css-validator/images/vcss"/>
 <p>Without closing:</p>
-<img src="http://jigsaw.w3.org/css-validator/images/vcss" /><div>
+<img src="http://jigsaw.w3.org/css-validator/images/vcss"/><div>
 <p>
 <p>This is</p>
 <em>
@@ -95,7 +95,7 @@ md_el(:document,[
 <p>markdown text (no paragraph)</p>
 </p>
 </p>
-	<p>
+   <p>
 <p>
 <p>This is</p>
 <em>
@@ -106,8 +106,20 @@ md_el(:document,[
 </p>
 </div><table>
 <tr>
-<td><p>This is a</p><em><p>true</p></em><p>markdown text. (no par)</p></td>
-<td><p>This is</p><em><p>true</p></em><p>markdown text. (par)</p></td>
+<td>
+<p>This is a</p>
+<em>
+<p>true</p>
+</em>
+<p>markdown text. (no par)</p>
+</td>
+<td>
+<p>This is</p>
+<em>
+<p>true</p>
+</em>
+<p>markdown text. (par)</p>
+</td>
 </tr>
 </table>
 *** Output of to_latex ***

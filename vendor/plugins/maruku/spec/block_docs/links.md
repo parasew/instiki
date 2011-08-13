@@ -102,7 +102,7 @@ md_el(:document,[
 <p>If all else fails, ask <a href="http://www.google.com">Google</a></p>
 
 <p>And now <a href="http://images.google.com" title="Google images">reference-style link ID with spaces</a></p>
-** Output of to_latex ***
+*** Output of to_latex ***
 Search on \href{http://www.google.com}{Google}
 
 Search on \href{http://www.google.com}{Google}
