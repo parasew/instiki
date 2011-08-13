@@ -31,7 +31,7 @@ md_el(:document,[
 
 <pre><code>&lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt;</code></pre>
 
-<pre class="xml"><code lang="xml">&lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt;</code></pre>
+<pre class="xml"><code lang="xml"><span class="punct">&lt;</span><span class="tag">p</span><span class="punct">&gt;</span>here's an apostrophe &amp; a quote "<span class="punct">&lt;/</span><span class="tag">p</span><span class="punct">&gt;</span></code></pre>
 
 <pre class="not_supported"><code lang="not_supported">&lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt;</code></pre>
 

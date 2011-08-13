@@ -733,9 +733,10 @@ of the form `#ff00ff`.
 ##### Email address
 	
 	def obfuscate(s)
-		res = ''
+	    d = Nokogiri::XML::Document.new
+		res = Nokogiri::XML::NodeSet.new(d)
 		s.each_byte do |char|
-			res +=  "&#%03d;" % char
+			res <<  Nokogiri::XML::EntityReference.new(d, "#%03d" % char)
 		end
 		res
 	end
@@ -748,9 +749,9 @@ of the form `#ff00ff`.
 			#a.attributes.add Attribute.new('href',Text.new(
 			#"mailto:"+obfuscate(email),false,nil,true))
 			# Sorry, for the moment it doesn't work
-			a.attributes['href'] = "mailto:#{email}"
+			a['href'] = "mailto:#{email}"
 			
-			a << Nokogiri::XML::Text.new(obfuscate(email), d)
+			a << obfuscate(email)
 		a
 	end
 
