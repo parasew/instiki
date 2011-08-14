@@ -764,7 +764,8 @@ of the form `#ff00ff`.
 			url = ref[:url]
 			title = ref[:title]
 			a['src'] = url.to_s
-			a['alt'] = children_to_s 
+			a['alt'] = children_to_s
+			a['title'] = title.to_s if title 
 		else
 			maruku_error"Could not find id = #{id.inspect} for\n #{self.inspect}"
 			tell_user "Could not create image with ref_id = #{id.inspect};"+
@@ -785,6 +786,7 @@ of the form `#ff00ff`.
 		a =  create_html_element 'img'
 			a['src'] = url.to_s
 			a['alt'] = children_to_s 
+			a['title'] = title.to_s if title 
 		return a
 	end
 
