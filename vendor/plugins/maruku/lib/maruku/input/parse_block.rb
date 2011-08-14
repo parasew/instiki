@@ -482,12 +482,12 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 			return
 		end
 		
-		id = match[1]; url = match[2]; title = match[3]; 
+		id = match[1]; url = match[2]; title = match[3] || match[4] || match[5]; 
 		id = sanitize_ref_id(id)
 		
 		hash = self.refs[id] = {:url=>url,:title=>title}
 		
-		stuff=match[4]
+		stuff=match[6]
 		
 		if stuff
 			stuff.split.each do |couple|
