@@ -120,11 +120,9 @@ module MaRuKu; module Strings
 		  [ ]*
 		<?([^>\s]+)>?				# url = $2
 		  [ ]*
-		(?:# Titles are delimited by "quotes" or (parens).
-			["(']
-			(.+?)			# title = $3
-			[")']			# Matching ) or "
-			\s*(.+)?   # stuff = $4
+		(?: # Titles are delimited by "quotes" or (parens).
+			(?:(?:"([^"]+)")|(?:'([^']+)')|(?:\(([^\(\)]+)\))) # title = $3, $4, or $5
+			\s*(.+)? # stuff = $6
 		)?	# title is optional
 	  }x
 

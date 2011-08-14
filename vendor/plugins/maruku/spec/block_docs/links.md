@@ -27,6 +27,8 @@ If all else fails, ask [Google](http://www.google.com)
 
 And now [reference-style link ID with spaces] [Google Images]
 
+And now [reference-style link ID (without spaces)][Google Search]
+
 [google]: http://www.google.com
 
 [google2]: http://www.google.com 'Single quotes'
@@ -36,7 +38,7 @@ And now [reference-style link ID with spaces] [Google Images]
 [google4]: http://www.google.com (Parenthesis)
 
 [Google Search]: 
- http://www.google.com "Google search"
+ http://www.google.com 'Google search'
 
 [Google Images]: 
  http://images.google.com  (Google images)
@@ -73,6 +75,10 @@ md_el(:document,[
 		"And now ",
 		md_link(["reference-style link ID with spaces"],"google_images")
 	]),
+	md_par([
+		"And now ",
+		md_link(["reference-style link ID (without spaces)"], "google_search")
+	]),
 	md_ref_def("google", "http://www.google.com", {:title=>nil}),
 	md_ref_def("google2", "http://www.google.com", {:title=>"Single quotes"}),
 	md_ref_def("google3", "http://www.google.com", {:title=>"Double quotes"}),
@@ -102,6 +108,8 @@ md_el(:document,[
 <p>If all else fails, ask <a href="http://www.google.com">Google</a></p>
 
 <p>And now <a href="http://images.google.com" title="Google images">reference-style link ID with spaces</a></p>
+
+<p>And now <a href="http://www.google.com" title="Google search">reference-style link ID (without spaces)</a></p>
 *** Output of to_latex ***
 Search on \href{http://www.google.com}{Google}
 
@@ -124,6 +132,8 @@ Search on \href{http://www.gogole.com}{http\char58\char47\char47www\char46gogole
 If all else fails, ask \href{http://www.google.com}{Google}
 
 And now \href{http://images.google.com}{reference-style link ID with spaces}
+
+And now \href{http://www.google.com}{reference-style link ID (without spaces)}
 *** Output of to_md ***
 Search on Google
 
@@ -148,5 +158,8 @@ If all else fails, ask Google
 
 And now
 reference-style link ID with spaces
+
+And now
+reference-style link ID (without spaces)
 *** Output of to_s ***
-Search on GoogleSearch on GoogleSearch on GoogleSearch on GoogleSearch on Google imagesInline: Google imagesInline with title: Google imagesInline with title: Google imagesSearch on  or  or ask  or you might ask bill@google.com.If all else fails, ask GoogleAnd now reference-style link ID with spaces
+Search on GoogleSearch on GoogleSearch on GoogleSearch on GoogleSearch on Google imagesInline: Google imagesInline with title: Google imagesInline with title: Google imagesSearch on  or  or ask  or you might ask bill@google.com.If all else fails, ask GoogleAnd now reference-style link ID with spacesAnd now reference-style link ID (without spaces)
