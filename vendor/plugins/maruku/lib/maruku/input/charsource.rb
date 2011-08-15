@@ -33,8 +33,9 @@ class CharSourceDebug; end
 
 # Choose!
 
-#CharSource = CharSourceManual     # faster! 58ms vs. 65ms
-CharSource = CharSourceStrscan     # Seems faster on LONG documents (where we care)
+CharSource = CharSourceManual     # faster! 58ms vs. 65ms
+#CharSource = CharSourceStrscan   # Faster on LONG documents. But it's not multi-byte aware
+                                  # (at least in Ruby 1.9.2 and earlier), Hence unusable in Ruby 1.9.
 #CharSource = CharSourceDebug
 
 
