@@ -466,7 +466,13 @@ END_THM
 	    '</span></em></p>', 
         '_should we go ThatWay or ThisWay _')
   end
-  
+
+  def test_content_with_utf8_in_strong
+    assert_markup_parsed_as(
+        "<p>Can we handle <strong>\u221E-gerbe</strong></p>", 
+        "Can we handle **\u221E-gerbe**")
+  end
+
   def test_content_with_redirected_link
     assert_markup_parsed_as(
         "<p>This is a redirected link: <a class='existingWikiWord' href='../show/liquor'>" +
