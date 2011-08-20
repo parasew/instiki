@@ -26,19 +26,27 @@ class NoWikiTest < Test::Unit::TestCase
 
   def test_sanitize_nowiki
 	match(NoWiki, 'This sentence contains <nowiki>[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*</nowiki>. Do not touch!',
-		:plain_text => "[[test]]&amp;<a href='a&amp;b'>shebang</a> &lt;script&gt;alert(&quot;xss!&quot;);&lt;/script&gt; *foo*"
+		:plain_text => "[[test]]&amp;<a href=\"a&amp;b\">shebang</a> &lt;script&gt;alert(\"xss!\");&lt;/script&gt; *foo*"
 	)
   end
 
+# Here, the input is not namespace-well-formed, but the output is.
+# I think that's OK.
   def test_sanitize_nowiki_ill_formed
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/></nowiki>",
-                :plain_text => "&lt;animateColor xlink:href=&#39;#foo&#39;/&gt;"
+                :plain_text => '<animateColor href="#foo"/>'
     )
   end
 
   def test_sanitize_nowiki_ill_formed_II
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/>\000</nowiki>",
-                :plain_text => %(&lt;animateColor xlink:href=&#39;#foo&#39;/&gt;)
+                :plain_text => '<animateColor href="#foo"/>'
+    )
+  end
+
+  def test_sanitize_nowiki_ill_formed_III
+    match(NoWiki, "<nowiki><animateColor xlink:href='#foo' xmlns:xlink='http://www.w3.org/1999/xlink'/>\000</nowiki>",
+                :plain_text => '<animateColor xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#foo"/>'
     )
   end
 

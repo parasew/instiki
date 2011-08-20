@@ -9,6 +9,7 @@ module Sanitizer
   require 'node'
   require 'instiki_stringsupport'
   require 'set'
+  require 'nokogiri'
 
   acceptable_elements = Set.new %w[a abbr acronym address area article aside
       audio b big blockquote br button canvas caption center cite code
@@ -227,9 +228,9 @@ module Sanitizer
 # (REXML trees are always utf-8 encoded.)
   def safe_xhtml_sanitize(html, options = {})
     sanitized = xhtml_sanitize(html.purify)
-    doc = REXML::Document.new("<div xmlns='http://www.w3.org/1999/xhtml'>#{sanitized}</div>")
-    sanitized = doc.to_s.gsub(/\A<div xmlns='http:\/\/www.w3.org\/1999\/xhtml'>(.*)<\/div>\Z/m, '\1')
-    rescue REXML::ParseException
+    doc = Nokogiri::XML::Document.parse("<div xmlns='http://www.w3.org/1999/xhtml'>#{sanitized}</div>", nil, (options[:encoding] || 'UTF-8'), 0)
+    sanitized = doc.root.children.to_xml(:indent => (options[:indent] || 2), :save_with => 2 )
+    rescue Nokogiri::XML::SyntaxError
       sanitized = sanitized.escapeHTML
   end 
 
