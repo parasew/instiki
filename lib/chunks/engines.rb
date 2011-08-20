@@ -72,8 +72,6 @@ module Engines
         my_content.to_s5
       else
         (t = Time.now; nil)        
-        puts "text is #{text.class}"
-        puts "text responds to concat_with_safety" if text.respond_to?(:concat_with_safety)
         html = Maruku.new(text,
              {:math_enabled => true,
               :math_numbered => ['\\[','\\begin{equation}']}).to_html
