@@ -32,6 +32,10 @@ md_el(:document,[
 
 \hypertarget{a_title_with_emphasis_3}{}\paragraph*{{A title with \emph{emphasis}}}\label{a_title_with_emphasis_3}
 *** Output of to_md ***
-A title with emphasisA title with emphasisA title with emphasis
+# A title with *emphasis* #
+
+## A title with *emphasis* ##
+
+#### A title with *emphasis* ####
 *** Output of to_s ***
 A title with emphasisA title with emphasisA title with emphasis

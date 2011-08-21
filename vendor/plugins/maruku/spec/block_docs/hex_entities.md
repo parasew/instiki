@@ -29,9 +29,9 @@ md_el(:document,[
 Examples of numeric character references include \copyright{} or \copyright{} for the copyright symbol, $A${} or $A${} for the Greek capital letter alpha, and  or  for the Arabic letter alef.
 *** Output of to_md ***
 Examples of numeric character
-references include or for the copyright
-symbol, or for the Greek capital letter
-alpha, and or for the Arabic letter
-alef.
+references include &169;or &169;for the
+copyright symbol, &913;or &913;for the
+Greek capital letter alpha, and &1575;
+or &1575;for the Arabic letter alef.
 *** Output of to_s ***
 Examples of numeric character references include  or  for the copyright symbol,  or  for the Greek capital letter alpha, and  or  for the Arabic letter alef.

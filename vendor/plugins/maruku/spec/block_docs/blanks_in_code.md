@@ -68,8 +68,23 @@ This block is composed of 2
 *** Output of to_md ***
 This block is composed of three lines:
 
+     one
+     
+     three
+
 This block is composed of 5
 
+     
+     one
+     
+     
+     four
+
+
 This block is composed of 2
+
+     
+     two
+
 *** Output of to_s ***
 This block is composed of three lines:This block is composed of 5This block is composed of 2

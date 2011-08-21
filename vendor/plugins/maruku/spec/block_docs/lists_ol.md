@@ -239,24 +239,32 @@ This is the second paragraph in the list item. You'{}re only required to indent 
 Ancora
 
 1.  
-    This is a list item with two paragraphs. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+    This is a list item with two
+    paragraphs. Lorem ipsum dolor sit amet,
+    consectetuer adipiscing elit. Aliquam
+    hendrerit mi posuere lectus.
     ATTENZIONE!
-    Uno
-    
-    Due
+    - Uno
+    - Due
     
     1.  tre
     2.  tre
     3.  tre
-    
-    Due
+    - Due
 2.  
-    Suspendisse id sem consectetuer libero luctus adipiscing.
+    Suspendisse id sem consectetuer libero
+    luctus adipiscing.
 
 Ancora
 
--This is a list item with two paragraphs.
-This is the second paragraph in the list item. Youre only required to indent the first line. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
--nother item in the same list.
+- 
+This is a list item with two
+paragraphs.
+This is the second paragraph in the
+list item. You re only required to
+indent the first line. Lorem ipsum
+dolor sit amet, consectetuer adipiscing
+elit.
+- Another item in the same list.
 *** Output of to_s ***
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.AncoraThis is a list item with two paragraphs. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.ATTENZIONE!UnoDuetretretreDueSuspendisse id sem consectetuer libero luctus adipiscing.AncoraThis is a list item with two paragraphs.This is the second paragraph in the list item. Youre only required to indent the first line. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.Another item in the same list.

@@ -10,6 +10,6 @@ md_el(:document,[md_par([md_em(["Hello!"]), " how are ", md_strong(["you"]), "?"
 *** Output of to_latex ***
 \emph{Hello!} how are \textbf{you}?
 *** Output of to_md ***
-Hello!how are you?
+*Hello!* how are **you**?
 *** Output of to_s ***
 Hello! how are you?

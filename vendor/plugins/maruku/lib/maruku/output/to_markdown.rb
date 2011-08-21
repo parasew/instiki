@@ -27,7 +27,11 @@ class String
 	
 	# " andrea censi " => [" andrea ", "censi "]
 	def mysplit
-		split.map{|x| x+" "}
+        res = split.map{|x| x+" "}
+        if self[0] == 32
+             res[0] = " " + res[0]
+        end
+        res
 	end
 end
 
@@ -44,12 +48,83 @@ module MaRuKu; module Out; module Markdown
 		line_length = context[:line_length] || DefaultLineLength
 		wrap(@children, line_length, context)+"\n"
 	end
-	
-	def to_md_li_span(context)
+
+    def to_md_header(context)
+        pounds = "#" * @level
+    "#{pounds} #{children_to_md(context)} #{pounds}\n\n"
+    end
+
+    def to_md_inline_code(context)
+    "`#{@raw_code}`"
+     end
+
+     def to_md_code(context)
+        @raw_code.split("\n").collect { |line| "     " + line}.join("\n") + "\n"
+     end
+
+    def to_md_quote(context)
+        line_length = (context[:line_length] || DefaultLineLength) - 2
+         wrap(@children, line_length, context).split(/\n/).collect { |line| "> " + line}.join("\n") + "\n"
+    end
+
+    def to_md_hrule(context)
+        "* * *"
+    end
+
+    def to_md_emphasis(context)
+        "*#{children_to_md(context)}*"
+    end
+
+    def to_md_strong(context)
+         "**#{children_to_md(context)}**"
+     end
+
+    def to_md_immediate_link(context)
+        "<#{@url}>"
+    end
+
+    def to_md_email_address(context)
+        "<#{@email}>"
+     end
+
+    def to_md_entity(context)
+        "&#{@entity_name};"
+    end
+
+    def to_md_linebreak(context)
+        "\n"
+    end
+
+    def to_md_paragraph(context)
+        line_length = context[:line_length] || DefaultLineLength
+         wrap(@children, line_length, context)+"\n"
+     end
+
+    def to_md_im_link(context)
+         "[#{children_to_md(context)}](#{@url}#{" #{@title}" if @title})"
+    end
+
+    def to_md_link(context)
+        "[#{children_to_md(context)}][#{@ref_id}]"
+    end
+
+    def to_md_im_image(context)
+     "![#{children_to_md(context)}](#{@url}#{" #{@title}" if @title})"
+     end
+    def to_md_image(context)
+        "![#{children_to_md(context)}][#{@ref_id}]"
+    end
+
+    def to_md_ref_definition(context)
+        "[#{@ref_id}] #{@url}#{" #{@title}" if @title}"
+    end
+
+    def to_md_li_span(context)
 		len = (context[:line_length] || DefaultLineLength) - 2
-		s = wrap(@children, len-2, context).rstrip.gsub(/^/, '  ')
-		s[0] = ?*
-		s + "\n"
+#		s = wrap(@children, len-2, context).rstrip.gsub(/^/, '  ')
+#		s[0] = ?*
+#		s + "\n"
+        s = "* " + wrap(@children, len-2, context).rstrip + "\n"
 	end
 	
 	def to_md_abbr_def(context)
@@ -60,9 +135,10 @@ module MaRuKu; module Out; module Markdown
 		len = (context[:line_length] || DefaultLineLength) - 2
 		md = ""
 		self.children.each_with_index do |li, i|
-			s = (w=wrap(li.children, len-2, context)).rstrip.gsub(/^/, '    ')+"\n"
-			s[0,4] = "#{i+1}.  "[0,4]
+#			s = (w=wrap(li.children, len-2, context)).rstrip.gsub(/^/, '    ')+"\n"
+#			s[0,4] = "#{i+1}.  "[0,4]
 #			puts w.inspect
+            s = "#{i+1}. " + (w=wrap(li.children, len-2, context)).rstrip + "\n"
 			md += s
 		end
 		md + "\n"
@@ -73,10 +149,11 @@ module MaRuKu; module Out; module Markdown
 		md = ""
 		self.children.each_with_index do |li, i|
 			w = wrap(li.children, len-2, context)
+			s = "- " + w
 #			puts "W: "+ w.inspect
-			s = add_indent(w)
+	#		s = add_indent(w)
 #			puts "S: " +s.inspect
-			s[0,1] = "-"
+	#		s[0,1] = "-"
 			md += s
 		end
 		md + "\n"
@@ -105,6 +182,10 @@ module MaRuKu; module Out; module Markdown
 			pieces =
 			if c.kind_of? String
 				c.to_md.mysplit
+            elsif c.kind_of?(MDElement)
+                method = "to_md_#{c.node_type}"
+                method = "to_md" unless c.respond_to?(method)
+                [c.send(method, context)].flatten
 			else
 				[c.to_md(context)].flatten
 			end

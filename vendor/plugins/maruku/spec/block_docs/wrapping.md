@@ -54,13 +54,13 @@ Lorem ipsum dolor amet. Lorem ipsum
 dolor amet. Lorem ipsum dolor amet.
 Lorem ipsum dolor amet.
 
--orem ipsum dolor amet. Lorem ipsum
+- Lorem ipsum dolor amet. Lorem ipsum
 dolor amet. Lorem ipsum dolor amet.
 Lorem ipsum dolor amet Lorem ipsum
 Break:  
 Lorem ipsum dolor amet. Lorem ipsum
 dolor amet. Lorem ipsum dolor amet
--orem ipsum dolor amet. Lorem ipsum
+- Lorem ipsum dolor amet. Lorem ipsum
 dolor amet. Lorem ipsum dolor amet.
 Lorem ipsum dolor amet
 *** Output of to_s ***

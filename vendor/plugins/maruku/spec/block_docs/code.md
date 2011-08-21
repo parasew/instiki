@@ -30,5 +30,10 @@ end tell
 	tab\end{verbatim}
 *** Output of to_md ***
 Here is an example of AppleScript:
+
+     tell application "Foo"
+         beep
+     end tell
+     	tab
 *** Output of to_s ***
 Here is an example of AppleScript:

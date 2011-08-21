@@ -20,6 +20,6 @@ md_el(:document,[
 
 \end{enumerate}
 *** Output of to_md ***
-1.  abcd efgh ijkl
+1. abcd efgh ijkl
 *** Output of to_s ***
 abcd efgh ijkl

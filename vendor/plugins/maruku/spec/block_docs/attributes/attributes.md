@@ -50,8 +50,19 @@ Paragraph with a.
 
 Paragraph with \emph{emphasis}
 *** Output of to_md ***
-Header with attributesHeader with attributesHeader no attributesParagraph with a.
 
-Paragraph with emphasis
+## Header with attributes ## {#header1}
+
+### Header with attributes ### {#header2}
+
+### Header no attributes ###
+
+{:warn2}Paragraph with a.
+{#par1}
+
+Paragraph with *emphasis*{:hello notfound}
+   {#par2}
+
+{:hello: .chello}
 *** Output of to_s ***
 Header with attributesHeader with attributesHeader no attributesParagraph with a.Paragraph with emphasis
