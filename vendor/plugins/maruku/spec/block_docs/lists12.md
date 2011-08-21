@@ -33,9 +33,9 @@ md_el(:document,[
 \end{itemize}
 
 *** Output of to_md ***
--
--
--
+- A
+- ?
+- B
 
 *** Output of to_s ***
 A?B

@@ -35,5 +35,10 @@ md_el(:document,[
 \vspace{.5em} \hrule \vspace{.5em}
 *** Output of to_md ***
 
+* * *
+* * *
+* * *
+* * *
+* * *
 *** Output of to_s ***
 

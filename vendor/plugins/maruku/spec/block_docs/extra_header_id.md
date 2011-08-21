@@ -53,11 +53,11 @@ Then you can create links to different parts of the same document like this:
 
 \hyperlink{header1}{Link back to header 1}, \hyperlink{header2}{Link back to header 2}, \hyperlink{header3}{Link back to header 3}
 *** Output of to_md ***
-# Header 1 # {#header1}
+# Header 1 #
 
-## Header 2 ## {#header2}
+## Header 2 ##
 
-### Header 3 ### {#header3}
+### Header 3 ###
 
 Then you can create links to different
 parts of the same document like this:
