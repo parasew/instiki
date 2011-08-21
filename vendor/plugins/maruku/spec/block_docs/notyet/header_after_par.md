@@ -49,10 +49,14 @@ Paragraph
 *** Output of to_md ***
 Paragraph
 
-headerParagraph
+### header
 
-headerParagraph
+Paragraph
 
-header
+## header
+
+Paragraph
+
+# header
 *** Output of to_s ***
 ParagraphheaderParagraphheaderParagraphheader

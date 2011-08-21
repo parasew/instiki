@@ -24,8 +24,10 @@ This is an .
 
 This is an .
 *** Output of to_md ***
-This is an image.
+This is an ![image][].
 
-This is an image.
+This is an ![image].
+
+[image]: image.jpg
 *** Output of to_s ***
 This is an image.This is an image.

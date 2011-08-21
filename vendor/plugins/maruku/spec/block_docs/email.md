@@ -15,6 +15,6 @@ md_el(:document,[
 *** Output of to_latex ***
 This is an email address: \href{mailto:andrea@invalid.it}{andrea\char64invalid\char46it}
 *** Output of to_md ***
-This is an email address:
+This is an email address: <andrea@invalid.it>
 *** Output of to_s ***
 This is an email address:

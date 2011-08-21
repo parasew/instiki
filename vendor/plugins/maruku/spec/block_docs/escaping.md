@@ -52,16 +52,16 @@ This is {\colorbox[rgb]{1.00,0.93,1.00}{\tt Code~with~a~special\char58~\char45\c
 
 End of {\colorbox[rgb]{1.00,0.93,1.00}{\tt paragraph~}}
 *** Output of to_md ***
-Hello: ! ! ` { } [ ] ( ) # . ! * * *
+Hello: ! \! \` \{ \} \[ \] \( \) \# \. \! * \* *
 
-Ora, emphasis, bold, * <- due
-asterischi-> * , un underscore-> _ ,
-emphasis, incre diblee!
 
-This is (after)
+Ora, *emphasis*, **bold**, * <- due asterischi-> * , un underscore-> _ , _emphasis_,
+ incre*dible*e!
 
-of paragraph
+This is ``Code with a special: -> ` <- ``(after)
 
-End of
+`Start ` of paragraph
+
+End of `paragraph `
 *** Output of to_s ***
 Hello: ! ! ` { } [ ] ( ) # . ! * * *Ora, emphasis, bold, * <- due asterischi-> * , un underscore-> _ , emphasis, incrediblee!This is (after) of paragraphEnd of

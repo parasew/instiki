@@ -23,6 +23,8 @@ Code
 
 \end{quote}
 *** Output of to_md ***
-Code
+> Code
+> 
+>      Ciao
 *** Output of to_s ***
 Code

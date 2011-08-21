@@ -47,6 +47,15 @@ This is ruby code:
 *** Output of to_md ***
 This is ruby code:
 
+	require 'maruku'
+	
+	puts Maruku.new($stdin).to_html
+
 This is ruby code:
+
+	require 'maruku'
+{: lang=ruby html_use_syntax}
+
+	puts Maruku.new($stdin).to_html
 *** Output of to_s ***
 This is ruby code:This is ruby code:

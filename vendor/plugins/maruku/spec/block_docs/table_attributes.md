@@ -20,8 +20,8 @@ md_el(:document,[
 	md_el(:ald,[],{:ald=>[["scope", "row"]],:ald_id=>"t"},[])
 ],{},[])
 *** Output of to_html ***
-<table class="class1" style="color:red" summary="Table summary" width="50%" frame="lhs" rules="cols" border="3" cellspacing="2em" cellpadding="4px"><thead><tr><th>h</th><th>h</th></tr></thead><tbody><tr><th scope="row" style="text-align: left;"> c1</th><td style="text-align: left;">c2</td>
-</tr></tbody></table>
+<table class="class1" style="color:red" summary="Table summary" width="50%" frame="lhs" rules="cols" border="3" cellspacing="2em" cellpadding="4px"><thead><tr><th>h</th><th>h</th></tr></thead><tbody><tr><th scope="row" style="text-align: left;"> c1</th><td style="text-align: left;">c2</td></tr>
+</tbody></table>
 *** Output of to_latex ***
 \begin{tabular}{l|l}
 h&h\\

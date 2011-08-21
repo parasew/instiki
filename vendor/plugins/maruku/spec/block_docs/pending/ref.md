@@ -16,6 +16,9 @@ md_el(:document,[
 *** Output of to_latex ***
 \href{http://site.com/}{a. b} is a link.
 *** Output of to_md ***
-a. bis a link.
+[a. b] is a link.
+
+[a. b]: http://site.com/
+
 *** Output of to_s ***
 a. b is a link.

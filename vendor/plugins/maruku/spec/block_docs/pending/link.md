@@ -67,6 +67,22 @@ md_el(:document,[
 
 \begin{verbatim}<a@invalid.it>\end{verbatim}
 *** Output of to_md ***
+<http://www.aa.com>
 
+ <http://www.bb.com>
+
+  <http://www.cc.com>
+
+   <http://www.dd.com>
+
+    <http://www.dd.com>
+
+<a@invalid.it>
+
+ <a@invalid.it>
+
+   <a@invalid.it>
+
+    <a@invalid.it>
 *** Output of to_s ***
 

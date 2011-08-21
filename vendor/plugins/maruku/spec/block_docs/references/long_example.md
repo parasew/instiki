@@ -59,13 +59,18 @@ filters --{} including \href{http://docutils.sourceforge.net/mirror/setext.html}
 
 To this end, Markdown'{}s syntax is comprised entirely of punctuation
 *** Output of to_md ***
-filters including Setext, atx, Textile,
-reStructuredText, Grutatext, and EtText
-the single biggest source of
-inspiration for Markdown s syntax is
-the format of plain text email.
 
-To this end, Markdown s syntax is
-comprised entirely of punctuation
+filters -- including [Setext] [1], [atx] [2], [Textile] [3], [reStructuredText] [4],
+[Grutatext] [5], and [EtText] [6] -- the single biggest source of
+inspiration for Markdown's syntax is the format of plain text email.
+
+  [1]: http://docutils.sourceforge.net/mirror/setext.html
+  [2]: http://www.aaronsw.com/2002/atx/
+  [3]: http://textism.com/tools/textile/
+  [4]: http://docutils.sourceforge.net/rst.html
+  [5]: http://www.triptico.com/software/grutatxt.html
+  [6]: http://ettext.taint.org/doc/
+
+To this end, Markdown's syntax is comprised entirely of punctuation
 *** Output of to_s ***
 filters  including Setext, atx, Textile, reStructuredText, Grutatext, and EtText  the single biggest source of inspiration for Markdowns syntax is the format of plain text email.To this end, Markdowns syntax is comprised entirely of punctuation

@@ -11,6 +11,6 @@ md_el(:document,[md_par([md_link(["test"],"test"), ":"])],{},[])
 *** Output of to_latex ***
 test:
 *** Output of to_md ***
-test:
+[test][]:
 *** Output of to_s ***
 test:

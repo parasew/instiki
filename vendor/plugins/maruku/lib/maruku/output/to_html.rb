@@ -637,8 +637,7 @@ of the form `#ff00ff`.
 			code['lang'] = lang
 			code['class'] = lang
 		end
-		pre << code << text
-		pre
+		pre << (code << text)
 	end
 
 	def to_html_inline_code; 

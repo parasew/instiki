@@ -154,39 +154,50 @@ This is the second paragraph in the list item. You'{}re only required to indent 
 
 \end{itemize}
 *** Output of to_md ***
--orem ipsum dolor sit amet,
+- Lorem ipsum dolor sit amet,
 consectetuer adipiscing elit.
 Aliquam hendrerit mi posuere
 lectus. Vestibulum enim wisi,
 viverra nec, fringilla in, laoreet
 vitae, risus.
--onec sit amet nisl. Aliquam semper
+- Donec sit amet nisl. Aliquam semper
 ipsum sit amet velit. Suspendisse
 id sem consectetuer libero luctus
 adipiscing.
--onec sit amet nisl. Aliquam semper
+- Donec sit amet nisl. Aliquam semper
 ipsum sit amet velit. Suspendisse
 id sem consectetuer libero luctus
 adipiscing.
--onec sit amet nisl. Aliquam semper
+- Donec sit amet nisl. Aliquam semper
 ipsum sit amet velit. Suspendisse
 id sem consectetuer libero luctus
 adipiscing.
--onec sit amet nisl. Aliquam semper
+- Donec sit amet nisl. Aliquam semper
 ipsum sit amet velit. Suspendisse
 id sem consectetuer libero luctus
 adipiscing.
 
 Ancora
 
--This is a list item with two paragraphs. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+- 
+This is a list item with two
+paragraphs. Lorem ipsum dolor sit amet,
+consectetuer adipiscing elit. Aliquam
+hendrerit mi posuere lectus.
 ATTENZIONE!
--Suspendisse id sem consectetuer libero luctus adipiscing.
+- 
+Suspendisse id sem consectetuer libero
+luctus adipiscing.
 
 Ancora
 
--This is a list item with two paragraphs.
-This is the second paragraph in the list item. Youre only required to indent the first line. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
--nother item in the same list.
+- This is a list item with two
+paragraphs.
+  This is the second paragraph in the
+list item. You re only required to
+indent the first line. Lorem ipsum
+dolor sit amet, consectetuer adipiscing
+elit.
+- Another item in the same list.
 *** Output of to_s ***
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse id sem consectetuer libero luctus adipiscing.AncoraThis is a list item with two paragraphs. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.ATTENZIONE!Suspendisse id sem consectetuer libero luctus adipiscing.AncoraThis is a list item with two paragraphs.This is the second paragraph in the list item. Youre only required to indent the first line. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.Another item in the same list.

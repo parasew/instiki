@@ -38,8 +38,8 @@ This is a list:
 *** Output of to_md ***
 This is a list:
 
-1.  one
-2.  two
-3.  three
+1. one
+2. two
+3. three
 *** Output of to_s ***
 This is a list:onetwothree

@@ -48,12 +48,12 @@ md_el(:document,[
 ],{},[])
 *** Output of to_html ***
 <p>Maruku translates HTML entities to the equivalent in LaTeX:</p>
-<table><thead><tr><th>Entity</th><th>Result</th></tr></thead><tbody><tr><td style="text-align: left;"><code>&amp;copy;</code></td><td style="text-align: left;">&#169;</td>
-</tr><tr><td style="text-align: left;"><code>&amp;pound;</code></td><td style="text-align: left;">&#163;</td>
-</tr><tr><td style="text-align: left;"><code>a&amp;nbsp;b</code></td><td style="text-align: left;">a&#160;b</td>
-</tr><tr><td style="text-align: left;"><code>&amp;lambda;</code></td><td style="text-align: left;">&#955;</td>
-</tr><tr><td style="text-align: left;"><code>&amp;mdash;</code></td><td style="text-align: left;">&#8212;</td>
-</tr></tbody></table>
+<table><thead><tr><th>Entity</th><th>Result</th></tr></thead><tbody><tr><td style="text-align: left;"><code>&amp;copy;</code></td><td style="text-align: left;">&#169;</td></tr>
+<tr><td style="text-align: left;"><code>&amp;pound;</code></td><td style="text-align: left;">&#163;</td></tr>
+<tr><td style="text-align: left;"><code>a&amp;nbsp;b</code></td><td style="text-align: left;">a&#160;b</td></tr>
+<tr><td style="text-align: left;"><code>&amp;lambda;</code></td><td style="text-align: left;">&#955;</td></tr>
+<tr><td style="text-align: left;"><code>&amp;mdash;</code></td><td style="text-align: left;">&#8212;</td></tr>
+</tbody></table>
 <p>Entity-substitution does not happen in code blocks or inline code.</p>
 
 <p>The following should not be translated:</p>
@@ -84,11 +84,21 @@ It should read just like this: {\colorbox[rgb]{1.00,0.93,1.00}{\tt \char38copy\c
 Maruku translates HTML entities to the
 equivalent in LaTeX:
 
-EntityResultabEntity-substitution does not happen in
-code blocks or inline code.
+Entity      | Result
+------------|----------
+`&copy;`    |  &copy;
+`&pound;`   |  &pound;
+`a&nbsp;b`  |  a&nbsp;b
+`&lambda;`  |  &lambda;
+`&mdash;`   |  &mdash;
+
+
+Entity-substitution does not happen in code blocks or inline code.
 
 The following should not be translated:
 
-It should read just like this: .
+     &copy;
+
+It should read just like this: `&copy;`.
 *** Output of to_s ***
 Maruku translates HTML entities to the equivalent in LaTeX:EntityResultabEntity-substitution does not happen in code blocks or inline code.The following should not be translated:It should read just like this: .

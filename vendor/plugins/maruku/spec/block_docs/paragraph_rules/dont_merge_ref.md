@@ -34,9 +34,13 @@ Paragraph
 Paragraph
 *** Output of to_md ***
 Paragraph
+[google1]: #
 
 Paragraph
+ [google2]: #
 
 Paragraph
+  [google3]: #
+
 *** Output of to_s ***
 ParagraphParagraphParagraph

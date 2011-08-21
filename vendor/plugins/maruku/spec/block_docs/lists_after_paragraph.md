@@ -194,9 +194,13 @@ Quoted
 
 Paragraph with header:
 
-headerParagraph with header on two lines:
+### header
 
-headerParagraph with html after
+Paragraph with header on two lines:
+
+## header
+
+Paragraph with html after
 
 Paragraph with html after, indented:
 
