@@ -40,12 +40,12 @@ The HTML specification is maintained by the W3C.
 
 Operation Tigra Genesis is going well.
 *** Output of to_md ***
-The HTMLspecification is maintained by
+The HTML specification is maintained by
 the W3C.
 
 *[HTML]: Hyper Text Markup Language
 *[W3C]: World Wide Web Consortium
-Operation Tigra Genesisis going well.
+Operation Tigra Genesis is going well.
 
 *[Tigra Genesis]:
 *** Output of to_s ***

@@ -28,7 +28,7 @@ class String
 	# " andrea censi " => [" andrea ", "censi "]
 	def mysplit
         res = split.map{|x| x+" "}
-        if self[0] == 32
+        if self[0] == ' '
              res[0] = " " + res[0]
         end
         res
@@ -59,7 +59,7 @@ module MaRuKu; module Out; module Markdown
      end
 
      def to_md_code(context)
-        @raw_code.split("\n").collect { |line| "     " + line}.join("\n") + "\n"
+        @raw_code.split("\n").collect { |line| "     " + line}.join("\n") + "\n\n"
      end
 
     def to_md_quote(context)
@@ -68,7 +68,7 @@ module MaRuKu; module Out; module Markdown
     end
 
     def to_md_hrule(context)
-        "* * *"
+        "* * *\n"
     end
 
     def to_md_emphasis(context)
@@ -101,7 +101,7 @@ module MaRuKu; module Out; module Markdown
      end
 
     def to_md_im_link(context)
-         "[#{children_to_md(context)}](#{@url}#{" #{@title}" if @title})"
+         "[#{children_to_md(context)}](#{@url}#{" \"#{@title}\"" if @title})"
     end
 
     def to_md_link(context)
@@ -109,14 +109,14 @@ module MaRuKu; module Out; module Markdown
     end
 
     def to_md_im_image(context)
-     "![#{children_to_md(context)}](#{@url}#{" #{@title}" if @title})"
+     "![#{children_to_md(context)}](#{@url}#{" \"#{@title}\"" if @title})"
      end
     def to_md_image(context)
         "![#{children_to_md(context)}][#{@ref_id}]"
     end
 
     def to_md_ref_definition(context)
-        "[#{@ref_id}] #{@url}#{" #{@title}" if @title}"
+        "[#{@ref_id}] #{@url}#{" \"#{@title}\"" if @title}"
     end
 
     def to_md_li_span(context)
@@ -130,7 +130,7 @@ module MaRuKu; module Out; module Markdown
 	def to_md_abbr_def(context)
 		"*[#{self.abbr}]: #{self.text}\n"
 	end
-	
+
 	def to_md_ol(context)
 		len = (context[:line_length] || DefaultLineLength) - 2
 		md = ""

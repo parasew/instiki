@@ -55,8 +55,9 @@ End of {\colorbox[rgb]{1.00,0.93,1.00}{\tt paragraph~}}
 Hello: ! \! \` \{ \} \[ \] \( \) \# \. \! * \* *
 
 
-Ora, *emphasis*, **bold**, * <- due asterischi-> * , un underscore-> _ , _emphasis_,
- incre*dible*e!
+Ora, *emphasis*, **bold**, * <- due
+asterischi-> * , un underscore-> _ ,
+*emphasis*, incre*dible*e!
 
 This is ``Code with a special: -> ` <- ``(after)
 
