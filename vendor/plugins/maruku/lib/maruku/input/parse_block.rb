@@ -122,7 +122,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				if c.children.all? {|li| !li.want_my_paragraph} then
 					c.children.each do |d|
 						d.node_type = :li_span
-						d.children = d.children[0].children 
+						d.children = d.children[0].children if d.children[0]
 					end
 				end
 			end 
@@ -130,7 +130,7 @@ module MaRuKu; module In; module Markdown; module BlockLevelParser
 				if c.children.all?{|defi| !defi.want_my_paragraph} then
 					c.children.each do |definition| 
 						definition.definitions.each do |dd|
-							dd.children = dd.children[0].children 
+							dd.children = dd.children[0].children if dd.children[0] 
 						end
 					end
 				end
