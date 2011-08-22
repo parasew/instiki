@@ -24,7 +24,7 @@
 <%- end -%>
 
 <%- if (@results + @title_results).empty? -%>
-  <h2>No pages contain "<%= h @query %>" </h2>
+  <h2>No pages contain "<%= h(@query).html_safe %>" </h2>
   <p>
     Perhaps you should try expanding your query. Remember that Instiki searches for entire 
     phrases, so if you search for "all that jazz" it will not match pages that contain these 
@@ -36,6 +36,6 @@
     "[a-z]*Leet?RegExpSkill(s|z)"
   </p>
   <p>
-    <b>Create a new page, named:</b> "<span class='newWikiWord'><%= link_to h(@query), :web => @web.address, :action => 'new', :id => @query %></span>"
+    <b>Create a new page, named:</b> "<span class='newWikiWord'><%= link_to h(@query).html_safe, :web => @web.address, :action => 'new', :id => @query %></span>"
   </p>
 <%- end -%>
