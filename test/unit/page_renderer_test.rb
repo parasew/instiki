@@ -44,6 +44,12 @@ class PageRendererTest < ActiveSupport::TestCase
     assert_equal %w( HisWay SmartEngineGUI ), x_test_renderer(@revision).unexisting_pages.sort
   end
 
+  def test_wiki_links_after_empty
+    assert_markup_parsed_as(%{<code/>\n<p>This is a <span class='newWikiWord'>wikilink<a href=} +
+      %{'../show/wikilink'>?</a></span>.</p>},
+      "<code></code>\n\nThis is a [[wikilink]].")
+  end
+
   def test_content_with_wiki_links
     assert_equal "<p><span class='newWikiWord'>His Way<a href='../show/HisWay'>?</a></span> " +
         "would be <a class='existingWikiWord' href='../show/MyWay'>My Way</a> " +
