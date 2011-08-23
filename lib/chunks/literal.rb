@@ -18,7 +18,7 @@ module Literal
   # A literal chunk that protects 'code' and 'pre' tags from wiki rendering.
   class Pre < AbstractLiteral
     PRE_BLOCKS = "a|pre|code|math"
-    PRE_PATTERN = Regexp.new('<('+PRE_BLOCKS+')\b[^>]*?>.*?</\1>', Regexp::MULTILINE)
+    PRE_PATTERN = Regexp.new('<('+PRE_BLOCKS+')\b[^>]*?(>.*?</\1>|/>)', Regexp::MULTILINE)
     def self.pattern() PRE_PATTERN end
   end 
 

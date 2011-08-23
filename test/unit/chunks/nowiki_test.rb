@@ -56,4 +56,16 @@ class NoWikiTest < Test::Unit::TestCase
     )
   end
 
+  def test_sanitize_empty_nowiki
+    match(NoWiki, "<nowiki></nowiki>",
+                :plain_text => ''
+    )
+  end
+
+  def test_sanitize_blank_nowiki
+    match(NoWiki, "<nowiki>\n</nowiki>",
+                :plain_text => "\n"
+    )
+  end
+
 end
