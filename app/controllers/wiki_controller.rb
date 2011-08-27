@@ -211,7 +211,7 @@ EOL
 
 
   def search
-    @query = params['query'].purify
+    @query = params['query'] ? params['query'].purify : ''
     @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
     @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
     all_pages_found = (@results + @title_results).uniq
