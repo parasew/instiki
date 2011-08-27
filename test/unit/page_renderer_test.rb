@@ -45,7 +45,7 @@ class PageRendererTest < ActiveSupport::TestCase
   end
 
   def test_wiki_links_after_empty
-    assert_markup_parsed_as(%{<code/>\n<p>This is a <span class='newWikiWord'>wikilink<a href=} +
+    assert_markup_parsed_as(%{<code></code>\n<p>This is a <span class='newWikiWord'>wikilink<a href=} +
       %{'../show/wikilink'>?</a></span>.</p>},
       "<code></code>\n\nThis is a [[wikilink]].")
   end
@@ -55,7 +55,7 @@ class PageRendererTest < ActiveSupport::TestCase
         "would be <a class='existingWikiWord' href='../show/MyWay'>My Way</a> " +
         "<math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>" +
         "<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics>" +
-        "<annotation-xml encoding='SVG1.1'><svg/></annotation-xml></semantics></math> in kinda " +
+        "<annotation-xml encoding='SVG1.1'><svg></svg></annotation-xml></semantics></math> in kinda " +
         "<a class='existingWikiWord' href='../show/ThatWay'>That Way</a> in " +
         "<span class='newWikiWord'>His Way<a href='../show/HisWay'>?</a></span> " +
         %{though <a class='existingWikiWord' href='../show/MyWay'>My Way</a> OverThere \342\200\223 see } +
@@ -164,7 +164,7 @@ END_THM
         %{<div class='maruku-equation'><math class='maruku-mathml' display='block' } +
         %{xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi><mo stretchy='false'>} +
         %{(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics><annotation-xml encoding='SVG1.1'>} +
-        %{<svg/></annotation-xml></semantics></math><span class='maruku-eq-tex'><code style='display: none;'>} +
+        %{<svg></svg></annotation-xml></semantics></math><span class='maruku-eq-tex'><code style='display: none;'>} +
         %{\\sin(x) \\begin{svg}&lt;svg/&gt;\\end{svg}</code></span></div>},
         "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
   
@@ -601,7 +601,7 @@ END_THM
        
     # currently, upper case HTML elements are not allowed
     assert_markup_parsed_as( 
-      "<p>This &lt;IMG SRC='http://hobix.com/sample.jpg' alt=''/&gt; is an inline image link.</p>", 
+      "<p>This &lt;IMG SRC='http://hobix.com/sample.jpg' alt=''&gt;&lt;/IMG&gt; is an inline image link.</p>", 
       'This <IMG SRC="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
   end
   
@@ -659,7 +659,7 @@ END_THM
         "<a class='existingWikiWord' href='MyWay.html'>My Way</a> " +
         "<math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>" +
         "<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics>" +
-        "<annotation-xml encoding='SVG1.1'><svg/></annotation-xml></semantics></math> in kinda " +
+        "<annotation-xml encoding='SVG1.1'><svg></svg></annotation-xml></semantics></math> in kinda " +
         "<a class='existingWikiWord' href='ThatWay.html'>That Way</a> in " +
         "<span class='newWikiWord'>His Way</span> though " +
         %{<a class='existingWikiWord' href='MyWay.html'>My Way</a> OverThere \342\200\223 see } +

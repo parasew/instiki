@@ -31,11 +31,11 @@ md_el(:document,[
 
 <pre><code>&lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt;</code></pre>
 
-<pre class="xml"><code lang="xml"><span class="punct">&lt;</span><span class="tag">p</span><span class="punct">&gt;</span>here's an apostrophe &amp; a quote "<span class="punct">&lt;/</span><span class="tag">p</span><span class="punct">&gt;</span></code></pre>
+<pre class="xml"><code lang="xml" xml:lang="xml"><span class="punct">&lt;</span><span class="tag">p</span><span class="punct">&gt;</span>here's an apostrophe &amp; a quote "<span class="punct">&lt;/</span><span class="tag">p</span><span class="punct">&gt;</span></code></pre>
 
-<pre class="not_supported"><code lang="not_supported">&lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt;</code></pre>
+<pre class="not_supported"><code lang="not_supported" xml:lang="not_supported">&lt;p&gt;here's an apostrophe &amp; a quote "&lt;/p&gt;</code></pre>
 
-<pre class="xml"><code lang="xml"><span class="punct">&lt;</span><span class="tag">p</span><span class="punct">&gt;</span>here's an apostrophe &amp; a quote "<span class="punct">&lt;/</span><span class="tag">p</span><span class="punct">&gt;</span></code></pre>
+<pre class="xml"><code lang="xml" xml:lang="xml"><span class="punct">&lt;</span><span class="tag">p</span><span class="punct">&gt;</span>here's an apostrophe &amp; a quote "<span class="punct">&lt;/</span><span class="tag">p</span><span class="punct">&gt;</span></code></pre>
 *** Output of to_latex ***
 {\colorbox[rgb]{1.00,0.93,1.00}{\tt \char60p\char62here\char39s~an~apostrophe~\char38~a~quote~\char34\char60\char47p\char62}}
 

@@ -16,9 +16,9 @@ md_el(:document,[
 	md_ref_def("image", "image.jpg", {:title=>nil})
 ],{},[])
 *** Output of to_html ***
-<p>This is an <img src="image.jpg" alt="image"/>.</p>
+<p>This is an <img src="image.jpg" alt="image" />.</p>
 
-<p>This is an <img src="image.jpg" alt="image"/>.</p>
+<p>This is an <img src="image.jpg" alt="image" />.</p>
 *** Output of to_latex ***
 This is an .
 

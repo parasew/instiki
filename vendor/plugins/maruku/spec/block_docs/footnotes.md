@@ -57,7 +57,7 @@ md_el(:document,[
 <p>That&#8217;s some text with a footnote <sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> and another <sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup> and another <sup id="fnref:3"><a href="#fn:3" rel="footnote">3</a></sup>.</p>
 
 <p>This is not a footnote.</p>
-<div class="footnotes"><hr/><ol><li id="fn:1">
+<div class="footnotes"><hr /><ol><li id="fn:1">
 <p>And that&#8217;s the footnote. This is second sentence (same paragraph). <a href="#fnref:1" rev="footnote">&#8617;</a></p>
 </li><li id="fn:2">
 <p>This is the very long one.</p>

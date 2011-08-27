@@ -107,14 +107,14 @@ require 'maruku/string_utils'
 		end
 
 		if (content_only)
-		  xml = body.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
+		  xml = body.to_xml(:indent => (context[:indent] || 2), :save_with => 18 )
 		else
 		  doc2 = Nokogiri::XML::Document.parse("<div>"+S5_external+"</div>")
 		  doc2.root.children.each{ |child| head << child }
 
 		  add_css_to(head)
 
-		  xml = html.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
+		  xml = html.to_xml(:indent => (context[:indent] || 2), :save_with => 18 )
 		  Xhtml11_mathml2_svg11 + xml
 		end
 	end

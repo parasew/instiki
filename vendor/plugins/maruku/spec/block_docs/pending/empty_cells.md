@@ -21,8 +21,8 @@ md_el(:document,[
 	],{:align=>[:left, :left, :left]},[])
 ],{},[])
 *** Output of to_html ***
-<table><thead><tr><th/><th>1</th><th>2</th></tr></thead><tbody><tr><td style="text-align: left;">A</td><td style="text-align: left;">X</td><td style="text-align: left;"/></tr>
-<tr><td style="text-align: left;">B</td><td style="text-align: left;"/><td style="text-align: left;">X</td></tr>
+<table><thead><tr><th></th><th>1</th><th>2</th></tr></thead><tbody><tr><td style="text-align: left;">A</td><td style="text-align: left;">X</td><td style="text-align: left;"></td></tr>
+<tr><td style="text-align: left;">B</td><td style="text-align: left;"></td><td style="text-align: left;">X</td></tr>
 </tbody></table>
 *** Output of to_latex ***
 \begin{tabular}{l|l|l}
