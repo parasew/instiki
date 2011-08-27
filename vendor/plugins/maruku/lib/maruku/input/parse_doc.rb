@@ -21,7 +21,7 @@
 
 require 'iconv'
 require 'nokogiri'
-
+require 'strscan'
 
 module MaRuKu; module In; module Markdown; module BlockLevelParser
 		
@@ -175,12 +175,15 @@ Disabled by default because of security concerns.
 			reg = Regexp.new(Regexp.escape(abbrev))
 			self.replace_each_string do |s|
 				# bug if many abbreviations are present (agorf)
-				if m = reg.match(s)
-					e = md_abbr(abbrev.dup, title ? title.dup : nil)
-					[m.pre_match, e, m.post_match]
-				else
-					s
-				end
+                p=StringScanner.new(s)
+                a = []
+                until p.eos?  
+                  o = ''
+                  o << p.getch until p.scan(reg) or p.eos?
+                  a << o
+                  a <<  md_abbr(abbrev.dup, title ? title.dup : nil)  if p.matched =~ reg
+                end
+                a
 			end
 		end
 	end
