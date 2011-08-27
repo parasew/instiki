@@ -31,7 +31,7 @@ puts Maruku.new($stdin).to_html</code></pre>
 
 <p>This is ruby code:</p>
 
-<pre class="ruby"><code lang="ruby"><span class="ident">require</span> <span class="punct">'</span><span class="string">maruku</span><span class="punct">'</span></code></pre>
+<pre class="ruby"><code lang="ruby" xml:lang="ruby"><span class="ident">require</span> <span class="punct">'</span><span class="string">maruku</span><span class="punct">'</span></code></pre>
 
 <pre><code>puts Maruku.new($stdin).to_html</code></pre>
 *** Output of to_latex ***

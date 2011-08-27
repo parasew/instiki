@@ -22,7 +22,7 @@ md_el(:document,[
 	md_el(:hrule,[],{},[])
 ],{},[])
 *** Output of to_html ***
-<hr/><hr/><hr/><hr/><hr/>
+<hr /><hr /><hr /><hr /><hr />
 *** Output of to_latex ***
 \vspace{.5em} \hrule \vspace{.5em}
 

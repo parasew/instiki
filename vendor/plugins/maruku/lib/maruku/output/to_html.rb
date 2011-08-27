@@ -46,7 +46,7 @@ module MaRuKu; module Out; module HTML
 				d.root << render_footnotes
 			end
 		
-        xml = d.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
+        xml = d.to_xml(:indent => (context[:indent] || 2), :save_with => 18 )
 
 		xml.gsub!(/\A<dummy>\s*|\s*<\/dummy>\s*\Z|\A<dummy\s*\/>/,'')
 		xml
@@ -59,7 +59,7 @@ module MaRuKu; module Out; module HTML
 		doc = to_html_document_tree
 		xml  = "" 
 		
-		xml = doc.to_xml(:indent => (context[:indent] || 2), :save_with => 2 )
+		xml = doc.to_xml(:indent => (context[:indent] || 2), :save_with => 18 )
 		
 		Xhtml11_mathml2_svg11 + xml
 	end

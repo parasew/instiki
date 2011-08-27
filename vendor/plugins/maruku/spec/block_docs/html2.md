@@ -12,8 +12,8 @@ md_el(:document,[
 	md_html("<div></div>")
 ],{},[])
 *** Output of to_html ***
-<p>One <div/>123</p>
-<div/>
+<p>One <div></div>123</p>
+<div></div>
 *** Output of to_latex ***
 One 123
 *** Output of to_md ***

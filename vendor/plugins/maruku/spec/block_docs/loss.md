@@ -7,7 +7,7 @@ Write a comment here
 *** Output of inspect ***
 md_el(:document,[md_html("<br />")],{},[])
 *** Output of to_html ***
-<br/>
+<br />
 *** Output of to_latex ***
 
 *** Output of to_md ***

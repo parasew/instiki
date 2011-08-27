@@ -28,7 +28,7 @@ md_el(:document,[
 
 <p>Paragraph 2</p>
 
-<p>Paragraph 3 Paragraph 4 Paragraph Br-&gt;<br/>Paragraph 5</p>
+<p>Paragraph 3 Paragraph 4 Paragraph Br-&gt;<br />Paragraph 5</p>
 *** Output of to_latex ***
 Paragraph 1
 

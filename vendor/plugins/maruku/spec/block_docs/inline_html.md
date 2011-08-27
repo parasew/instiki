@@ -73,12 +73,12 @@ md_el(:document,[
 
 <pre><code>&lt;img src="http://jigsaw.w3.org/css-validator/images/vcss"/&gt;</code></pre>
 
-<p>Result on span: <img src="http://jigsaw.w3.org/css-validator/images/vcss"/></p>
+<p>Result on span: <img src="http://jigsaw.w3.org/css-validator/images/vcss" /></p>
 
 <p>Result alone:</p>
-<img src="http://jigsaw.w3.org/css-validator/images/vcss"/>
+<img src="http://jigsaw.w3.org/css-validator/images/vcss" />
 <p>Without closing:</p>
-<img src="http://jigsaw.w3.org/css-validator/images/vcss"/><div>
+<img src="http://jigsaw.w3.org/css-validator/images/vcss" /><div>
 <p>
 <p>This is</p>
 <em>
