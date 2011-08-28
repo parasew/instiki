@@ -32,6 +32,7 @@ ActionController::Routing::Routes.draw do |map|
   connect_to_web map, ':web/revision/diff/:id/:rev', :controller => 'wiki', :action => 'revision', :mode => 'diff',
        :requirements => { :rev => /\d+/, :id => id_regexp}
   connect_to_web map, ':web/revision/:id/:rev', :controller => 'wiki', :action => 'revision', :requirements => { :rev => /\d+/, :id => id_regexp}
+  connect_to_web map, ':web/source/:id/:rev', :controller => 'wiki', :action => 'source', :requirements => { :rev => /\d+/, :id => id_regexp}
   connect_to_web map, ':web/list/:category', :controller => 'wiki', :action => 'list', :requirements => { :category => /.*/}, :category => nil
   connect_to_web map, ':web/recently_revised/:category', :controller => 'wiki', :action => 'recently_revised', :requirements => { :category => /.*/}, :category => nil
   connect_to_web map, ':web/:action/:id', :controller => 'wiki', :requirements => {:id => id_regexp}

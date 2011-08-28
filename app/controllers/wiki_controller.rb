@@ -401,7 +401,7 @@ EOL
   end
 
   def source
-    #to template
+    @revision = @page.revisions[params['rev'].to_i - 1] if params['rev']
   end
 
   def tex

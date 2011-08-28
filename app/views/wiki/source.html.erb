@@ -57,7 +57,7 @@ window.onload = function (){
 <body>
 
 <div id="Container">
-<textarea id='content'  readonly=' readonly' rows='24' cols='60' ><%= h(@page.content.purify) %></textarea>
+<textarea id='content'  readonly=' readonly' rows='24' cols='60' ><%= (@revision ? @revision.content : @page.content).purify %></textarea>
 </div> <!-- Container -->
 
 </body>
