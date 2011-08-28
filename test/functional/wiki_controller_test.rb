@@ -341,6 +341,13 @@ class WikiControllerTest < ActionController::TestCase
       %{hat SmartEngineGUI})), r.body
   end
 
+  def test_source_with_revision
+    r = process('source', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '1')
+
+    assert_response(:success)
+    assert_match Regexp.new(Regexp.escape(%{First revision of the HomePage})), r.body
+  end
+
   def test_published
     set_web_property :published, true
     
