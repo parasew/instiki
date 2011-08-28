@@ -29,7 +29,7 @@ md_el(:document,[
 *** Output of to_html ***
 <ul>
 <li>
-a
+<p>a</p>
 
 <ul>
 <li>a1</li>
