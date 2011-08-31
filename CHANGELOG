@@ -6,6 +6,29 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.3
+
+New Features:
+* Source view for Revisions
+* Rails updated to 2.3.14 (Security)
+* itextomml updated to 1.4.6
+* Replace REXML with Nokogiri in Maruku and
+  in xhtml_safe_sanitize().
+  (Huge speedup in rendering long pages)
+* MathJax updated to 1.1a final
+
+Bugs Fixed:
+* Bundler upgraded to 1.0.18
+* Fix null search bug
+* Better text/html serialization (thank you, Nokogiri)
+* Fix Maruku footnote backlink (reported by Shamaoke)
+* Fix Maruku link bug
+* Fix Maruku image title bug
+* Fix Maruku hrule, email address and header bugs
+* Fix Maruku bold-in-italics bug
+* Fix Maruku empty list-item bug
+
+------------------------------------------------------------------------------
 * 0.19.2
 
 New Features:
