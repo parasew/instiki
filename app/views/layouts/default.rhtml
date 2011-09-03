@@ -78,11 +78,11 @@
 <%= render(:file => 'navigation') unless @web.nil? || @hide_navigation %>
 
 <%- if flash[:info] -%>
-  <div class="info"><%= escape_preserving_linefeeds flash[:info] %></div>
+  <div class="info"><%= escape_preserving_linefeeds flash[:info].html_safe %></div>
 <%- end -%>
 
 <%- if @error or flash[:error] -%> 
-    <div class="errorExplanation"><%= escape_preserving_linefeeds(@error || flash[:error]) %></div>
+    <div class="errorExplanation"><%= escape_preserving_linefeeds(@error || flash[:error].html_safe) %></div>
 <%- end -%>
 
 <%= @content_for_layout %>
