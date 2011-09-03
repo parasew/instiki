@@ -280,7 +280,7 @@ EOL
     else
       real_page = WikiReference.page_that_redirects_for(@web, @page_name)
         if real_page
-          flash[:info] = "Redirected from \"#{@page_name}\".".html_safe
+          flash[:info] = "Redirected from \"#{@page_name}\"."
           redirect_to :web => @web_name, :action => 'published', :id => real_page, :status => 301
         else
           render(:text => "Page '#{@page_name}' not found", :status => 404, :layout => 'error')
@@ -366,11 +366,11 @@ EOL
       if not @page_name.nil? and not @page_name.empty?
         real_page = WikiReference.page_that_redirects_for(@web, @page_name)
         if real_page
-          flash[:info] = "Redirected from \"#{@page_name}\".".html_safe
+          flash[:info] = "Redirected from \"#{@page_name}\"."
           redirect_to :web => @web_name, :action => 'show', :id => real_page, :status => 301
         else
           flash[:info] = "Page \"#{@page_name}\" does not exist.\n" +
-                         "Please create it now, or hit the \"back\" button in your browser.".html_safe
+                         "Please create it now, or hit the \"back\" button in your browser."
           redirect_to :web => @web_name, :action => 'new', :id => @page_name
         end
       else
