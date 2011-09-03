@@ -96,7 +96,7 @@ require 'instiki_stringsupport'
 
   # Performs HTML escaping on text, but keeps linefeeds intact (by replacing them with <br/>)
   def escape_preserving_linefeeds(text)
-    h(text).gsub(/\n/, '<br/>').as_utf8
+    h(text).gsub(/\n/, '<br/>').as_utf8.html_safe
   end
 
   def format_date(date, include_time = true)
