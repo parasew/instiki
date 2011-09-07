@@ -278,6 +278,14 @@ END_THM
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
+        %{MathML'><mi>x</mi><menclose notation='box'><mp} +
+        %{added depth='2ex' height='3ex' voffset='5ex'><} +
+        %{mi>x</mi></mpadded></menclose></math></p>},
+        "equation $x\\boxed{\\mathraisebox{5ex}[3ex][2ex]{x}}$")
+
+      assert_markup_parsed_as(
+        %{<p>equation <math class='maruku-mathml' displa} +
+        %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
         %{MathML'><mrow href='http://ex.com' xlink:href=} +
         %{'http://ex.com' xlink:type='simple' xmlns:xlin} +
         %{k='http://www.w3.org/1999/xlink'><mn>47.3</mn>} +
