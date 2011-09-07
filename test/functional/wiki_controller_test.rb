@@ -1065,6 +1065,7 @@ class WikiControllerTest < ActionController::TestCase
 \usepackage{color}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
+\usepackage{xparse}
 \usepackage{hyperref}
 
 %----Macros----------
@@ -1198,6 +1199,15 @@ class WikiControllerTest < ActionController::TestCase
 \tw@}}}%
     {\ooalign{\box\tw@ \cr \box\z@}}}
 \makeatother
+
+% \mathraisebox{voffset}[height][depth]{something}
+\makeatletter
+\NewDocumentCommand\mathraisebox{moom}{%
+\IfNoValueTF{#2}{\def\@temp##1##2{\raisebox{#1}{$\m@th##1##2$}}}{%
+\IfNoValueTF{#3}{\def\@temp##1##2{\raisebox{#1}[#2]{$\m@th##1##2$}}%
+}{\def\@temp##1##2{\raisebox{#1}[#2][#3]{$\m@th##1##2$}}}}%
+\mathpalette\@temp{#4}}
+\makeatletter
 
 % udots (taken from yhmath)
 \makeatletter
