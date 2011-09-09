@@ -51,6 +51,15 @@ class WikiReference < ActiveRecord::Base
     names = connection.select_all(sanitize_sql([query, file_name])).map { |row| row['name'] }
   end
   
+  def self.pages_that_want_file(web, file_name)
+    query = 'SELECT name FROM pages JOIN wiki_references ' +
+      'ON pages.id = wiki_references.page_id ' +
+      'WHERE wiki_references.referenced_name = ? ' +
+      "AND wiki_references.link_type in ('#{WANTED_FILE}') " +
+      "AND pages.web_id = '#{web.id}'"
+    names = connection.select_all(sanitize_sql([query, file_name])).map { |row| row['name'] }
+  end
+
   def self.pages_that_include(web, page_name)
     query = 'SELECT name FROM pages JOIN wiki_references ' +
       'ON pages.id = wiki_references.page_id ' +
