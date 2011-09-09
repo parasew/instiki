@@ -25,6 +25,10 @@ class RevisionSweeper < ActionController::Caching::Sweeper
     end
   end
   
+  def self.expire_page(page)
+    new.expire_caches(page)
+  end
+
   private
   
   def expire_caches(page)
