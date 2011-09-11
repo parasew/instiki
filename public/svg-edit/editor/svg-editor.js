@@ -2137,7 +2137,9 @@
 			// Made public for UI customization.
 			// TODO: Group UI functions into a public svgEditor.ui interface.
 			Editor.addDropDown = function(elem, callback, dropUp) {
+				if ($(elem).length == 0) return; // Quit if called on non-existant element
 				var button = $(elem).find('button');
+				
 				var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
 				
 				if(!dropUp) {
@@ -3277,8 +3279,13 @@
 			
 			(function() {
 				workarea.scroll(function() {
-					$('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
-					$('#ruler_y')[0].scrollTop = workarea[0].scrollTop;
+					// TODO:  jQuery's scrollLeft/Top() wouldn't require a null check
+					if ($('#ruler_x').length != 0) {
+						$('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
+					}
+					if ($('#ruler_y').length != 0) {
+						$('#ruler_y')[0].scrollTop = workarea[0].scrollTop;	
+					}
 				});
 
 			}());
@@ -4227,8 +4234,11 @@
 				}
 				
 				$('#rulers').toggle(!!curConfig.showRulers);
-				$('#show_rulers')[0].checked = curConfig.showRulers;
 				
+				if (curConfig.showRulers) {
+					$('#show_rulers')[0].checked = true;	
+				}
+
 				if(curConfig.gridSnapping) {
 					$('#grid_snapping_on')[0].checked = true;
 				}
@@ -4637,7 +4647,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 2028 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 2037 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
