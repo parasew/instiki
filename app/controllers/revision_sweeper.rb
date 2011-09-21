@@ -18,7 +18,15 @@ class RevisionSweeper < ActionController::Caching::Sweeper
       expire_caches(record.page)
     end
   end
-  
+
+  def after_create(record)
+    if record.is_a?(Page)
+       WikiReference.pages_that_reference(record.web, record.name).each do |page_name|
+         expire_cached_page(record.web, page_name)
+      end
+    end
+  end
+
   def after_delete(record)
     if record.is_a?(Page)
       expire_caches(record)
@@ -33,7 +41,7 @@ class RevisionSweeper < ActionController::Caching::Sweeper
   
   def expire_caches(page)
     expire_cached_summary_pages(page.web)
-    pages_to_expire = ([page.name] + WikiReference.pages_that_reference(page.web, page.name) +
+    pages_to_expire = ([page.name] + 
        WikiReference.pages_redirected_to(page.web, page.name) +
        WikiReference.pages_that_include(page.web, page.name)).uniq
     pages_to_expire.each { |page_name| expire_cached_page(page.web, page_name) }
