@@ -170,7 +170,7 @@ Example:
 		root = Nokogiri::XML::Element.new('html', doc)
 		root.add_namespace(nil, 'http://www.w3.org/1999/xhtml')
 		root.add_namespace('svg', "http://www.w3.org/2000/svg" )
-		lang = self[:lang] || 'en'
+		lang = self.attributes[:lang] || 'en'
 		root['xml:lang'] = lang
 		doc << root
 		
