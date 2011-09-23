@@ -206,7 +206,7 @@ Example:
 
 			
 			# Create title element
-			doc_title = self[:title] || self[:subject] || ""
+			doc_title = self.attributes[:title] || self.attributes[:subject] || ""
 			title = Nokogiri::XML::Element.new('title', doc)
 				title << Nokogiri::XML::Text.new(doc_title, doc)
 			head << title				
