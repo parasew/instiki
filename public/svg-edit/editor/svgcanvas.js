@@ -6424,7 +6424,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 2028 $)";
+	return "svgcanvas.js ($Rev: 2040 $)";
 };
 
 // Function: setUiStrings
@@ -8602,6 +8602,14 @@ this.updateCanvas = function(w, h) {
 		x: x,
 		y: y
 	});
+
+	var bg_img = getElem('background_image');
+	if (bg_img) {
+		assignAttributes(bg_img, {
+			'width': '100%',
+			'height': '100%'
+		});
+	}
 	
 	selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
 	
