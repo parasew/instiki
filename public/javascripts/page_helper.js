@@ -42,9 +42,15 @@ function fixRunIn() {
   });
 // add tombstone to proof, since gecko doesn't support :last-child properly
  $$('div.proof').each(function(element) {
-     var l = element.childElements().length -1;
+     var el = element.childElements()[element.childElements().length-1];
      var span = new Element('span').update('\u00a0\u00a0\u25ae');
-     element.childElements()[l].insert(span);
+     if (el.match('p')) {
+       el.insert(span);
+     } else {
+       var par = new Element('p').update(span);
+       par.addClassName('tombstone');
+       element.appendChild(par);
+     }
     });
 }
 
