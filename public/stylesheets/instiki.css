@@ -476,6 +476,7 @@ span.theorem_label {font-style:normal; font-weight:bold;}
    content: " " counter(remark); counter-increment: remark;}
 .num_note .theorem_label:after {
    content: " " counter(note); counter-increment: note;}
+.tombstone {text-align:right;}
 
 /* Hack for Mozilla bug 449396 */
 [mathvariant="bold"] *  {

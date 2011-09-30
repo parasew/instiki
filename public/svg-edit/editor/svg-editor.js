@@ -42,7 +42,7 @@
 					opacity: 1
 				},
 				initStroke: {
-					width: 5,
+					width: 2,
 					color: '000000',  // solid black
 					opacity: 1
 				},
