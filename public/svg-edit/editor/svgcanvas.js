@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -4309,8 +4309,8 @@ var pathActions = canvas.pathActions = function() {
 							last_x += (last_x - last.x2);
 							last_y += (last_y - last.y2);
 						} else if(firstCtrl) {
-							last_x = firstCtrl[0];
-							last_y = firstCtrl[1];
+							last_x = firstCtrl[0]/current_zoom;
+							last_y = firstCtrl[1]/current_zoom;
 						}
 						svgedit.path.replacePathSeg(6, index, [pt_x, pt_y, last_x, last_y, alt_x, alt_y], drawn_path);
 					}
@@ -6424,7 +6424,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 2040 $)";
+	return "svgcanvas.js ($Rev: 2047 $)";
 };
 
 // Function: setUiStrings
