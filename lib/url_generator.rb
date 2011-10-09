@@ -64,6 +64,7 @@ class UrlGenerator < AbstractUrlGenerator
   private
 
   def file_link(mode, name, text, web_address, known_file, description)
+    return bad_filename(name) unless WikiFile.is_valid?(name) 
     case mode
     when :export
       if known_file
@@ -116,6 +117,7 @@ class UrlGenerator < AbstractUrlGenerator
   end
 
   def pic_link(mode, name, text, web_address, known_pic)
+    return bad_filename(name) unless WikiFile.is_valid?(name) 
     href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
       :id => name, :only_path => true
     case mode
@@ -141,6 +143,7 @@ class UrlGenerator < AbstractUrlGenerator
   end
 
   def media_link(mode, name, text, web_address, known_media, media_type)
+    return bad_filename(name) unless WikiFile.is_valid?(name) 
     href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
       :id => name, :only_path => true
     case mode
@@ -176,6 +179,10 @@ class UrlGenerator < AbstractUrlGenerator
   end
 
   private
+
+    def bad_filename(name)
+      "<span class='badWikiWord'>[[invalid filename: #{name}]]</span>"
+    end
 
     def wikilink_for(mode, name, text, web_address)
       web = Web.find_by_address(web_address)

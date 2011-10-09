@@ -12,10 +12,9 @@ class WikiFile < ActiveRecord::Base
     first(:conditions => ['file_name = ?', file_name])
   end
 
-  SANE_FILE_NAME = /^[a-zA-Z0-9\-_\. ]*$/
   def validate
     if file_name 
-      if file_name !~ SANE_FILE_NAME
+      if ! is_valid?(file_name)
         errors.add("file_name", "is invalid. Only latin characters, digits, dots, underscores, " +
            "dashes and spaces are accepted")
       elsif file_name == '.' or file_name == '..'
@@ -58,7 +57,10 @@ class WikiFile < ActiveRecord::Base
     require 'fileutils'
     FileUtils.rm_f(content_path) if File.exists?(content_path)
   end
-  
-  
+
+  SANE_FILE_NAME = /^[a-zA-Z0-9\-_\. ]*$/  
+  def self.is_valid?(name)
+    name =~ SANE_FILE_NAME
+  end
   
 end
