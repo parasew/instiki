@@ -14,7 +14,7 @@ class WikiFile < ActiveRecord::Base
 
   def validate
     if file_name 
-      if ! is_valid?(file_name)
+      if ! WikiFile.is_valid?(file_name)
         errors.add("file_name", "is invalid. Only latin characters, digits, dots, underscores, " +
            "dashes and spaces are accepted")
       elsif file_name == '.' or file_name == '..'
