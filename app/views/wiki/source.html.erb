@@ -19,7 +19,7 @@
     <%= Rails.root.join('public', 'stylesheets', 'instiki.css').read if @inline_style %>
   </style>
   <%= stylesheet_link_tag 'instiki', :media => 'all'  unless @inline_style %>
-  <%= "<style type='text/css'>#{@style_additions}</style>" if @style_additions %>
+  <%= "<style type='text/css'>#{@style_additions}</style>".html_safe if @style_additions %>
   <style type="text/css"><!--/*--><![CDATA[/*><!--*/    
     <%= @web ? @web.additional_style : '' %>
   /*]]>*/--></style>
