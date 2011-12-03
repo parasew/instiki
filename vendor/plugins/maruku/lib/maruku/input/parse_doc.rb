@@ -18,8 +18,6 @@
 #   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #++
 
-
-require 'iconv'
 require 'nokogiri'
 require 'strscan'
 
@@ -40,21 +38,23 @@ Summary:   Encoding for the document.
 
 If the `encoding` attribute is specified, then the content
 will be converted from the specified encoding to UTF-8.
-
-Conversion happens using the `iconv` library.
 =end
 
 		enc = self.attributes[:encoding]
 		self.attributes.delete :encoding
 		if enc && enc.downcase != 'utf-8'
-			converted = Iconv.new('utf-8', enc).iconv(data)
-			
-#			puts "Data: #{data.inspect}: #{data}"
-#			puts "Conv: #{converted.inspect}: #{converted}"
-			
-			data = converted
+
+			# Switch to ruby 1.9 String#encode
+			# with backward 1.8 compatibility
+			if data.respond_to?(:encode!)
+				data.encode!('UTF-8', enc)
+			else
+				require 'iconv'
+				data = Iconv.new('utf-8', enc).iconv(data)
+			end
+
 		end
-		
+
 		@children = parse_text_as_markdown(data)
 		
 		if true #markdown_extra? 
