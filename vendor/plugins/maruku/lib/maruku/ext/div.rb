@@ -103,6 +103,10 @@ module MaRuKu
       if type
         doc.refid2ref[type] ||= {}
         num = doc.refid2ref[type].length + 1
+        if !label
+          doc.id_counter += 1
+      		label =  "div_" + doc.id_counter.to_s
+        end
       end
 
       e = self.md_el(:div, children, {:label => label, :type => type, :num => num}, al)
