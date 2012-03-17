@@ -491,7 +491,7 @@ by Maruku, to have the same results in both HTML and LaTeX.
 		h = wrap_as_element element_name
 		
 		if span = render_section_number
-			h.insert_before(h.children.first, span)
+		  h.children.first.before(span)
 		end
 		add_ws h
 	end
