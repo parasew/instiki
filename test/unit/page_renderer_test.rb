@@ -448,13 +448,9 @@ END_THM
 
   def test_rdoc
     set_web_property :markup, :rdoc
-  
-    @revision = Revision.new(:page => @page, :content => '+hello+ that SmartEngineGUI', 
-        :author => Author.new('DavidHeinemeierHansson'))
-  
-    assert_equal "<tt>hello</tt> that <span class='newWikiWord'>Smart Engine GUI" +
-        "<a href='../show/SmartEngineGUI'>?</a></span>", 
-        x_test_renderer(@revision).display_content
+    re=Regexp.new("(<code>hello</code>|<tt>hello</tt>) that <span class='newWikiWord'>" +
+          "Smart Engine GUI<a href='\.\./show/SmartEngineGUI'>\\?</a></span>")
+    assert_match_markup_parsed_as(re, '+hello+ that SmartEngineGUI')
   end
   
 #  def test_content_with_auto_links
