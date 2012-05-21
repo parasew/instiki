@@ -550,7 +550,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     pages = r.template_objects['pages_by_revision']
-    assert_equal [@elephant, @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home], pages, "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
+    assert_equal [@elephant, @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home].sort{|x,y| x.name <=> y.name}, pages.sort{|x,y| x.name <=> y.name}, "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
     
     xml = REXML::Document.new(r.body)
