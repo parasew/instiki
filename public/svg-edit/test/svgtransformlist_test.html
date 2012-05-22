@@ -4,10 +4,10 @@
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
   <script src='../editor/jquery.js'></script>
   <script>
-    // Mock for browsersupport
+    // Mock for browser.js
     window.svgedit = {};
-    svgedit.browsersupport = {};
-    svgedit.browsersupport.nativeTransformLists = false;
+    svgedit.browser = {};
+    svgedit.browser.supportsNativeTransformLists = function() { return false;}
   </script>
   <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
   <script type='text/javascript' src='qunit/qunit.js'></script>  
@@ -24,7 +24,7 @@
 	var svgroot = document.getElementById('svgroot');
 	var svgcontent, rect, circle;
 	
-	var NEAR_ZERO = 1e-7;
+	var NEAR_ZERO = 5e-6; // 0.000005, Firefox fails at higher levels of precision.
 	function almostEquals(a, b, msg) {
 		msg = msg || (a + ' did not equal ' + b);
 		ok(Math.abs(a - b) < NEAR_ZERO, msg);

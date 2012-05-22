@@ -1,4 +1,4 @@
-body {
+﻿body {
 	background: #D0D0D0;
 }
 
@@ -6,7 +6,7 @@ html, body, div{
         -webkit-user-select: text;
         -khtml-user-select: text;
         -moz-user-select: text;
-        -o-user-select: none;
+        -o-user-select: text;
         user-select: text;
 	/* this will work for QtWebKit in future */
 	-webkit-user-drag: text;

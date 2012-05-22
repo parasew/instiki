@@ -48,7 +48,7 @@ if(window.opera) {
 	var proxied = jQuery.fn.attr, svgns = "http://www.w3.org/2000/svg";
 	jQuery.fn.attr = function(key, value) {
 		var len = this.length;
-		if(!len) return this;
+		if(!len) return proxied.apply(this, arguments);
 		for(var i=0; i<len; i++) {
 			var elem = this[i];
 			// set/get SVG attribute
@@ -208,7 +208,7 @@ var current_group = null;
 // Object containing data for the currently selected styles
 var all_properties = {
 	shape: {
-		fill: "#" + curConfig.initFill.color,
+		fill: (curConfig.initFill.color == 'none' ? '' : '#') + curConfig.initFill.color,
 		fill_paint: null,
 		fill_opacity: curConfig.initFill.opacity,
 		stroke: "#" + curConfig.initStroke.color,
@@ -2517,10 +2517,26 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					
 					if(svgedit.browser.supportsNonScalingStroke()) {
+						//Handle crash for newer Chrome: https://code.google.com/p/svg-edit/issues/detail?id=904
+						//Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
+						// TODO: Remove this workaround (all isChrome blocks) once vendor fixes the issue
+						var isChrome = svgedit.browser.isChrome();
+						if(isChrome) {
+							var delayedStroke = function(ele) {
+								var _stroke = ele.getAttributeNS(null, 'stroke');
+								ele.removeAttributeNS(null, 'stroke');
+								//Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+								setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke) }, 1);
+							}
+						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
-						var all = mouse_target.getElementsByTagName('*'), len = all.length;
-						for(var i = 0; i < all.length; i++) {
+						if(isChrome) delayedStroke(mouse_target);
+
+						var all = mouse_target.getElementsByTagName('*'),
+						    len = all.length;
+						for(var i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
+							if(isChrome) delayedStroke(all[i]);
 						}
 					}
 				}
@@ -5026,7 +5042,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		}
 	};
 	
-	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker, svg, symbol");
+	var defelems = $(defs).find("linearGradient, radialGradient, filter, marker, svg, symbol");
 		defelem_ids = [],
 		i = defelems.length;
 	while (i--) {
@@ -5239,6 +5255,13 @@ this.svgToString = function(elem, indent) {
 						bOneLine = true;
 						out.push(toXml(str) + "");
 					}
+					break;
+				case 4: // cdata node
+					out.push("\n");
+					out.push(new Array(indent+1).join(" "));
+					out.push("<![CDATA[");
+					out.push(child.nodeValue);
+					out.push("]]>");
 					break;
 				case 8: // comment
 					out.push("\n");
@@ -5720,8 +5743,15 @@ this.setSvgString = function(xmlString) {
 		batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgroot));
 	
 		// set new svg document
-		svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+		// If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
+		if(svgdoc.adoptNode) {
+			svgcontent = svgdoc.adoptNode(newDoc.documentElement);
+		}
+		else {
+			svgcontent = svgdoc.importNode(newDoc.documentElement, true);
+		}
 		
+		svgroot.appendChild(svgcontent);
 		var content = $(svgcontent);
 		
 		canvas.current_drawing_ = new svgedit.draw.Drawing(svgcontent, idprefix);
@@ -5908,7 +5938,14 @@ this.importSvgString = function(xmlString) {
 			this.prepareSvg(newDoc);
 	
 			// import new svg document into our document
-			var svg = svgdoc.importNode(newDoc.documentElement, true);
+			var svg;
+			// If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
+			if(svgdoc.adoptNode) {
+				svg = svgdoc.adoptNode(newDoc.documentElement);
+			}
+			else {
+				svg = svgdoc.importNode(newDoc.documentElement, true);
+			}
 			
 			uniquifyElems(svg);
 			
@@ -6424,7 +6461,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 2047 $)";
+	return "svgcanvas.js ($Rev: 2070 $)";
 };
 
 // Function: setUiStrings

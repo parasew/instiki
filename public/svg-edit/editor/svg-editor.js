@@ -51,11 +51,12 @@
 				langPath: 'locale/',
 				extPath: 'extensions/',
 				jGraduatePath: 'jgraduate/images/',
-				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-imagelib.js','ext-grid.js', 'ext-itex.js'],
+				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-imagelib.js', 'ext-grid.js', 'ext-itex.js'],
 				initTool: 'select',
 				wireframe: false,
 				colorPickerCSS: null,
 				gridSnapping: false,
+				gridColor: "#000",
 				baseUnit: 'px',
 				snappingStep: 10,
 				showRulers: true
@@ -178,7 +179,7 @@
 					svgCanvas.open = opts.open;
 				}
 				if(opts.save) {
-					show_save_warning = false;
+					Editor.show_save_warning = false;
 					svgCanvas.bind("saved", opts.save);
 				}
 				if(opts.pngsave) {
@@ -479,7 +480,7 @@
 			});
 
 			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById("svgcanvas"), curConfig);
-			
+			Editor.show_save_warning = false;
 			var palette = ["#000000", "#3f3f3f", "#7f7f7f", "#bfbfbf", "#ffffff",
 			           "#ff0000", "#ff7f00", "#ffff00", "#7fff00",
 			           "#00ff00", "#00ff7f", "#00ffff", "#007fff",
@@ -501,7 +502,6 @@
 				workarea = $("#workarea"),
 				canv_menu = $("#cmenu_canvas"),
 				layer_menu = $("#cmenu_layers"),
-				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1,
 				zoomInIcon = 'crosshair',
@@ -599,7 +599,7 @@
 			var orig_title = $('title:first').text();
 			
 			var saveHandler = function(window,svg) {
-				show_save_warning = false;
+				Editor.show_save_warning = false;
 			
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
 				// can just provide their own custom save handler and might not want the XML prolog
@@ -754,7 +754,7 @@
 					}
 				}
 				
-				show_save_warning = true;
+				Editor.show_save_warning = true;
 		
 				// we update the contextual panel with potentially new
 				// positional/sizing information (we DON'T want to update the
@@ -876,36 +876,50 @@
 							
 							// Remember the function that goes with this ID
 							flyout_funcs[opts.sel] = opts.fn;
-		
+
 							if(opts.isDefault) def = i;
-							
+
 							// Clicking the icon in flyout should set this set's icon
-							
-							var func = function() {
+							var func = function(event) {
+								var options = opts;
+								//find the currently selected tool if comes from keystroke
+								if (event.type === "keydown") {
+									var flyoutIsSelected = $(options.parent + "_show").hasClass('tool_button_current'); 
+									var currentOperation = $(options.parent + "_show").attr("data-curopt");
+									$.each(holders[opts.parent], function(i, tool){
+										if (tool.sel == currentOperation) {
+											if(!event.shiftKey || !flyoutIsSelected) {
+												options = tool;
+											}
+											else {
+												options = holders[opts.parent][i+1] || holders[opts.parent][0];
+											}
+										}
+									});
+								}
 								if($(this).hasClass('disabled')) return false;
 								if (toolButtonClick(show_sel)) {
-									opts.fn();
+									options.fn();
 								}
-								if(opts.icon) {
-									var icon = $.getSvgIcon(opts.icon, true);
+								if(options.icon) {
+									var icon = $.getSvgIcon(options.icon, true);
 								} else {
-									// 
-									var icon = $(opts.sel).children().eq(0).clone();
+									var icon = $(options.sel).children().eq(0).clone();
 								}
-								
+
 								icon[0].setAttribute('width',shower.width());
 								icon[0].setAttribute('height',shower.height());
 								shower.children(':not(.flyout_arrow_horiz)').remove();
-								shower.append(icon).attr('data-curopt', opts.sel); // This sets the current mode
+								shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
 							}
-							
+
 							$(this).mouseup(func);
-							
+
 							if(opts.key) {
-								$(document).bind('keydown', opts.key+'', func);
+								$(document).bind('keydown', opts.key[0] + " shift+" + opts.key[0], func);
 							}
 						});
-					
+
 					if(def) {
 						shower.attr('data-curopt', btn_opts[def].sel);
 					} else if(!shower.attr('data-curopt')) {
@@ -2590,6 +2604,7 @@
 					populateLayers();
 					updateContextPanel();
 					prepPaints();
+					svgCanvas.runExtensions('onNewDocument');
 				});
 			};
 			
@@ -4133,7 +4148,7 @@
 								});
 								
 								// Put shortcut in title
-								if(opts.sel && !opts.hidekey) {
+								if(opts.sel && !opts.hidekey && btn.attr('title')) {
 									var new_title = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
 									key_assocs[keyval] = opts.sel;
 									// Disregard for menu items
@@ -4301,7 +4316,11 @@
 						case 'move_back':
 							moveToBottomSelected();
 							break;
-
+  						default:
+ 							if(svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
+ 								svgedit.contextmenu.getCustomHandler(action).call();
+  							}
+  							break;
 					}
 					
 					if(svgCanvas.clipBoard.length) {
@@ -4353,11 +4372,11 @@
 			window.onbeforeunload = function() { 
 				// Suppress warning if page is empty 
 				if(undoMgr.getUndoStackSize() === 0) {
-					show_save_warning = false;
+					Editor.show_save_warning = false;
 				}
 
 				// show_save_warning is set to "false" when the page is saved.
-				if(!curConfig.no_save_warning && show_save_warning) {
+				if(!curConfig.no_save_warning && Editor.show_save_warning) {
 					// Browser already asks question about closing the page
 					return uiStrings.notification.unsavedChanges; 
 				}
@@ -4647,7 +4666,7 @@
 				updateCanvas(true);
 // 			});
 			
-		//	var revnums = "svg-editor.js ($Rev: 2042 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 2076 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
