@@ -275,6 +275,14 @@ END_THM
 
   def test_have_latest_itex2mml  
 
+    assert_markup_parsed_as(
+      %{<p>equation <math class='maruku-mathml' display='i} +
+      %{nline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+      %{<msub><mo lspace='thinmathspace' rspace='thinmaths} +
+      %{pace'>\342\250\205</mo> <mi>i</mi></msub><msub><mi} +
+      %{>A</mi> <mi>i</mi></msub></math></p>},
+      "equation $\\bigsqcap_i A_i$")
+
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
