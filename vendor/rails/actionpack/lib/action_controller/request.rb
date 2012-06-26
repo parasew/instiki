@@ -486,7 +486,11 @@ EOM
             h.with_indifferent_access
           end
         when Array
-          value.map { |e| normalize_parameters(e) }
+          if value.length == 1 and value[0] == nil
+            value = nil
+          else
+            value.map { |e| normalize_parameters(e) }.compact
+          end
         else
           value
         end
