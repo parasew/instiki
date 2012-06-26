@@ -6,6 +6,25 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.4
+
+New Feautures:
+* Update for itex2MML 1.4.10
+* Update SVG-Edit
+* Ruby 1.9.3 Compatibility
+
+Bugs Fixed:
+* Fix CVE-2012-2694 and CVE-2012-2695 (Security!)
+* Fix several Markuku bugs
+* Fix several SVG-Edit bugs
+* Don't escape style_additions
+* Avoid invalid WikiFile links
+* Fix tombstone bug
+* Fix Theorem Environment
+* Better Cache-Sweeping efficiency
+* Fix double-escaping of flash messages
+
+------------------------------------------------------------------------------
 * 0.19.3
 
 New Features:
