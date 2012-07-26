@@ -41,7 +41,7 @@ module Engines
 
   class Markdown < AbstractEngine
     def mask
-      text = @content.as_utf8.to_str.delete("\r").to_utf8
+      text = @content.as_utf8.delete("\r").to_utf8
       # If the request is for S5, call Maruku accordingly (without math)
       if @content.options[:mode] == :s5
         my_content = Maruku.new(text,
@@ -59,7 +59,7 @@ module Engines
 
   class MarkdownMML < AbstractEngine
     def mask
-      text = @content.as_utf8.to_str.delete("\r").to_utf8
+      text = @content.as_utf8.delete("\r").to_utf8
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
         my_content = Maruku.new(text,
@@ -83,7 +83,7 @@ module Engines
 
   class MarkdownPNG < AbstractEngine
     def mask
-      text = @content.as_utf8.to_str.delete("\r").to_utf8
+      text = @content.as_utf8.delete("\r").to_utf8
       # If the request is for S5, call Maruku accordingly
       if @content.options[:mode] == :s5
         my_content = Maruku.new(text,

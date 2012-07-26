@@ -74,7 +74,7 @@ namespace :db do
     task :import_all => :environment do
       ActiveRecord::Base.establish_connection
       Dir.glob(Rails.root.join('dump','fixtures',"*.yml")).each do |f|
-        table_name = f.gsub( Regexp.escape(Rails.root.join('dump','fixtures').to_s + File::SEPARATOR), '').gsub('.yml', '')
+        table_name = f.gsub(Regexp.new(Regexp.escape(Rails.root.join('dump','fixtures').to_s + File::SEPARATOR)), '').gsub('.yml', '')
          puts "Importing #{table_name}"
         import_table_fixture(table_name)
       end

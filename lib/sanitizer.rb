@@ -42,11 +42,11 @@ module Sanitizer
       selected shape size span src start step style summary tabindex target title
       type usemap valign value vspace width wrap xml:lang]
 
-  mathml_attributes = Set.new %w[actiontype align close
+  mathml_attributes = Set.new %w[actiontype align close accent accentunder
       columnalign columnlines columnspacing columnspan depth display
       displaystyle encoding equalcolumns equalrows fence fontstyle fontweight
       frame height linethickness lspace mathbackground mathcolor mathvariant
-      maxsize minsize notation open other rowalign
+      maxsize minsize movablelimits notation open other rowalign
       rowlines rowspacing rowspan rspace scriptlevel selection separator
       separators stretchy width voffset xlink:href xlink:show xlink:type xmlns
       xmlns:xlink]
@@ -77,7 +77,7 @@ module Sanitizer
        xlink:arcrole xlink:href xlink:role xlink:show xlink:title xlink:type
        xml:base xml:lang xml:space xmlns xmlns:xlink xmlns:se y y1 y2 zoomAndPan]
        
-  attr_val_is_uri = Set.new %w[href src cite action formaction longdesc xlink:href xml:base]
+  attr_val_is_uri = Set.new %w[href src cite action formaction longdesc poster xlink:href xml:base]
   
   svg_attr_val_allows_ref = Set.new %w[clip-path color-profile cursor fill
       filter marker marker-start marker-mid marker-end mask stroke]

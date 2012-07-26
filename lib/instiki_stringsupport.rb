@@ -2000,7 +2000,7 @@ end
 	'NotExists' => '&#x02204;',
 	'NotGreater' => '&#x0226F;',
 	'NotGreaterEqual' => '&#x02271;',
-	'NotGreaterFullEqual' => '&#x02266;&#x00338;',
+	'NotGreaterFullEqual' => '&#x02267;&#x00338;',
 	'NotGreaterGreater' => '&#x0226B;&#x00338;',
 	'NotGreaterLess' => '&#x02279;',
 	'NotGreaterSlantEqual' => '&#x02A7E;&#x00338;',
