@@ -15,7 +15,7 @@ class Redirect < WikiChunk::WikiReference
       super
       @page_name = match_data[1].strip
       @link_type = :redirect
-      @unmask_text = ''
+      @unmask_text =  "\n"
   end
 
 end
