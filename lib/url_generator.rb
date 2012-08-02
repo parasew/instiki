@@ -189,19 +189,19 @@ class UrlGenerator < AbstractUrlGenerator
       if known_cdf
         cdf_div("files/#{CGI.escape(name)}", width, height, badge_path)
       else 
-        text
+        CGI.escape(name)
       end
     when :publish
       if known_cdf
         cdf_div(href, width, height, badge_path)
       else 
-        %{<span class="newWikiWord">#{text}</span>} 
+        %{<span class="newWikiWord">#{CGI.escape(name)}</span>} 
       end
     else 
       if known_cdf 
         cdf_div(href, width, height, badge_path)
       else 
-        %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
+        %{<span class="newWikiWord">#{CGI.escape(name)}<a href="#{href}">?</a></span>} 
       end
     end    
   end
