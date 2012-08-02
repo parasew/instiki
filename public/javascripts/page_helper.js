@@ -261,10 +261,10 @@ function resizeableTextarea() {
    });
 }
 
-window.onload = function (){
+document.observe("dom:loaded", function (){
         extractBlockquoteCitations();
         fixRunIn();
         mactionWorkarounds();
         resizeableTextarea();
         embedCDFs();
-};
+});
