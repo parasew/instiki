@@ -66,6 +66,45 @@ function mactionWorkarounds() {
      });
 }
 
+function embedCDFs () {
+  if ( hasCDFPlugin() ) {
+    $$('div.cdf_object').each( function(element) {
+      var o = new Element('object');
+      var width = element.getAttribute('width');
+      var height = element.getAttribute('height');
+      o.setAttribute('classid', 'clsid:612AB921-E294-41AA-8E98-87E7E057EF33');
+      o.setAttribute('type', 'application/vnd.wolfram.cdf.text');
+      o.setAttribute('width', width);
+      o.setAttribute('height', height);
+      var p = new Element('param');
+      p.setAttribute('type', 'src');
+      p.setAttribute('value', element.getAttribute('src'));
+      o.appendChild(p);
+      var e = new Element('embed');
+      e.setAttribute('type', 'application/vnd.wolfram.cdf.text');
+      e.setAttribute('src', element.getAttribute('src'));
+      e.setAttribute('width', width);
+      e.setAttribute('height', height);
+      o.appendChild(e);
+      element.replace(o);
+    });
+  }
+}
+
+function hasCDFPlugin () {
+  if (typeof ActiveXObject != 'undefined') {
+    // IE 
+    try {
+      if (new ActiveXObject("Mathematica.Control") ) return true; 
+    } catch (e) { }
+  } else if(navigator.plugins && navigator.plugins.length > 0) {
+    // Gecko and WebKit browsers
+    for (var i = 0; i < navigator.plugins.length; i++) {
+      if (navigator.plugins[i].name.indexOf("Wolfram Mathematica") !== -1) return true;
+    }
+  }
+  return false;
+}
 function addS5button(page_name) {
   var f = $('MarkupHelp');
   if (f) {
@@ -227,4 +266,5 @@ window.onload = function (){
         fixRunIn();
         mactionWorkarounds();
         resizeableTextarea();
+        embedCDFs();
 };

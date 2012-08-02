@@ -424,6 +424,10 @@ EOL
     end
   end
 
+  def image_path(s)
+    @template.image_path(s)
+  end
+
   protected
 
   def do_caching?
