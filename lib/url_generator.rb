@@ -47,6 +47,8 @@ class AbstractUrlGenerator
       media_link(mode, name, text, web.address, known_page, 'audio')
     when :video
       media_link(mode, name, text, web.address, known_page, 'video')
+    when :cdf
+      cdf_link(mode, name, text, web.address, known_page)
     when :delete
       delete_link(mode, name, web.address, known_page)
     else
@@ -166,6 +168,48 @@ class UrlGenerator < AbstractUrlGenerator
         %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
       end
     end
+  end
+
+  def cdf_link(mode, name, text, web_address, known_cdf)
+    return bad_filename(name) unless WikiFile.is_valid?(name) 
+    href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
+      :id => name, :only_path => true
+    badge_path = @controller.image_path("cdf-player-white.png").split(/\?/)[0]
+    re = /\s*(\d{1,4})\s*x\s*(\d{1,4})\s*/
+    tt = re.match(text)
+    if tt
+      width = tt[1]
+      height = tt[2]
+    else
+      width = '500'
+      height = '300'
+    end
+    case mode
+    when :export
+      if known_cdf
+        cdf_div("files/#{CGI.escape(name)}", width, height, badge_path)
+      else 
+        text
+      end
+    when :publish
+      if known_cdf
+        cdf_div(href, width, height, badge_path)
+      else 
+        %{<span class="newWikiWord">#{text}</span>} 
+      end
+    else 
+      if known_cdf 
+        cdf_div(href, width, height, badge_path)
+      else 
+        %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
+      end
+    end    
+  end
+
+  def cdf_div(s, w, h, b)
+    %{<div class="cdf_object" src="#{s}" width="#{w}" height="#{h}">} +
+    %{<a href="http://www.wolfram.com/cdf-player/" title="Get the free Wolfram CDF } +
+    %{Player"><img src="#{b}"/></a></div>}
   end
 
   def delete_link(mode, name, web_address, known_file)
