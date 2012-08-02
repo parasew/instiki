@@ -1,15 +1,21 @@
 ---
 .avi: video/avi
+.cdf: application/vnd.wolfram.cdf.text
 .gz: application/x-gzip
 .js: application/x-javascript
 .nb: application/mathematica
 .oga: audio/ogg
 .ogg: audio/ogg
 .ogv: video/ogg
+.m3u8: application/vnd.apple.mpegurl
+.mp3: audio/mp3
+.mp4: video/mp4
+.mpd: video/vnd.mpeg.dash.mpd
 .pdf: application/pdf
 .svg: application/svg+xml
 .tar: application/x-tar
 .tex: application/x-tex
+.webm: video/webm
 .xhtml: application/xhtml+xml
 .xml: application/xml
 .xslt: application/xslt+xml

@@ -62,6 +62,7 @@ class ApplicationController < ActionController::Base
     '.aif' => 'audio/x-aiff',  
     '.aiff'=> 'audio/x-aiff',  
     '.avi' => 'video/x-msvideo',  
+    '.cdf' => 'application/vnd.wolfram.cdf.text',  
     '.exe' => 'application/octet-stream',
     '.gif' => 'image/gif',
     '.jpg' => 'image/jpeg',
@@ -70,6 +71,7 @@ class ApplicationController < ActionController::Base
     '.oga' => 'audio/ogg',
     '.ogg' => 'audio/ogg',
     '.ogv' => 'video/ogg',
+    '.m3u8'=> 'application/vnd.apple.mpegurl',
     '.mov' => 'video/quicktime',
     '.mp3' => 'audio/mpeg',
     '.mp4' => 'video/mp4',
@@ -77,23 +79,27 @@ class ApplicationController < ActionController::Base
     '.txt' => 'text/plain',
     '.tex' => 'text/plain',
     '.wav' => 'audio/x-wav',
+    '.webm'=> 'video/webm',
     '.zip' => 'application/zip'
   } unless defined? FILE_TYPES
 
   DISPOSITION = {
     'application/octet-stream' => 'attachment',
     'application/pdf'          => 'inline',
+    'application/vnd.wolfram.cdf.text' => 'inline',
+    'application/vnd.apple.mpegurl'    => 'inline',
     'image/gif'                => 'inline',
     'image/jpeg'               => 'inline',
     'image/png'                => 'inline',
     'audio/mpeg'               => 'inline',
     'audio/x-wav'              => 'inline',
     'audio/x-aiff'             => 'inline',
-    'audio/speex'             => 'inline',
+    'audio/speex'              => 'inline',
     'audio/ogg'                => 'inline',
     'video/ogg'                => 'inline',
     'video/mp4'                => 'inline',
     'video/quicktime'          => 'inline',
+    'video/webm'               => 'inline',
     'video/x-msvideo'          => 'inline',
     'text/plain'               => 'inline',
     'application/zip'          => 'attachment'
@@ -277,9 +283,9 @@ module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
     MINOR = 19
-    TINY  = 3 
+    TINY  = 5 
     SUFFIX = '(MML+)'
-    PRERELEASE = false
+    PRERELEASE = '.5pre'
     if PRERELEASE
        STRING = [MAJOR, MINOR].join('.') + PRERELEASE + SUFFIX
     else
