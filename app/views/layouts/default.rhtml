@@ -14,7 +14,6 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="robots" content="<%= @robots_metatag_value %>" />
   
-  <%= javascript_include_tag 'page_helper' %>
  
   <%= stylesheet_link_tag 'instiki', :media => 'all'  unless @inline_style %>
   <%= stylesheet_link_tag 'syntax', :media => 'all'  unless @inline_style %>
@@ -33,6 +32,7 @@
     <%= @web && @web.additional_style ? @web.additional_style.html_safe : '' %>
   /*]]>*/--></style>
   <%= javascript_include_tag :defaults %>
+  <%= javascript_include_tag 'page_helper' %>
   <%= csrf_meta_tag %>
   <%- if @web -%>
    <%- if @web.markup == :markdownMML -%>
