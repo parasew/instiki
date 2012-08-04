@@ -193,29 +193,77 @@ class StubUrlGenerator < AbstractUrlGenerator
   end
 end
 
-  def media_link(mode, name, text, web_address, known_media, media_type)
-    link = CGI.escape(name)
+  def media_link(mode, namelist, text, web_address, known_media, media_type)
+    if known_media
+      link = %{<#{media_type} controls="controls">}
+      link_end = %{\n#{text}\n</#{media_type}>}
+    else
+      link = %{&#x5B;upload #{media_type} files:}
+      link_end = %{ #{text}&#x5D;}
+    end
     text = CGI.escapeHTML(CGI.unescapeHTML(text || :description))
-    case mode.to_sym
-    when :export
-      if known_media 
-        %{<#{media_type} src="#{CGI.escape(name)}" controls="controls">#{text}</#{media_type}>}
+    namelist.each do |v|
+      name = v[0]
+      known = v[1]
+      href = CGI.escape(name)
+      case mode.to_sym
+      when :export
+        if known 
+          link << %{\n  <source src="files/#{CGI.escape(name)}"/>}
+        end
+      when :publish
+        if known
+          link << %{\n  <source src="../file/#{href}"/>}
+        end
       else 
-        text
-      end
-    when :publish
-      if known_media
-        %{<#{media_type} src="../file/#{link}" controls="controls">#{text}</#{media_type}>}
-      else 
-        %{<span class="newWikiWord">#{text}</span>} 
-      end
-    else 
-      if known_media 
-        %{<#{media_type} src="../file/#{link}" controls="controls">#{text}</#{media_type}>}
-      else 
-        %{<span class="newWikiWord">#{text}<a href="../file/#{link}">?</a></span>} 
+        if known 
+          link << %{\n  <source src="../file/#{href}"/>}
+        else 
+          link << %{ <span class="newWikiWord">#{name}<a href="#{href}">?</a></span>} 
+        end
       end
     end
+    link << link_end
+  end
+
+  def cdf_link(mode, name, text, web_address, known_cdf)
+    href = CGI.escape(name)
+    badge_path = "/images/cdf-player-white.png"
+    re = /\s*(\d{1,4})\s*x\s*(\d{1,4})\s*/
+    tt = re.match(text)
+    if tt
+      width = tt[1]
+      height = tt[2]
+    else
+      width = '500'
+      height = '300'
+    end
+    case mode
+    when :export
+      if known_cdf
+        cdf_div("files/#{CGI.escape(name)}", width, height, badge_path)
+      else 
+        CGI.escape(name)
+      end
+    when :publish
+      if known_cdf
+        cdf_div(href, width, height, badge_path)
+      else 
+        %{<span class="newWikiWord">#{CGI.escape(name)}</span>} 
+      end
+    else 
+      if known_cdf 
+        cdf_div(href, width, height, badge_path)
+      else 
+        %{<span class="newWikiWord">#{CGI.escape(name)}<a href="#{href}">?</a></span>} 
+      end
+    end    
+  end
+
+  def cdf_div(s, w, h, b)
+    %{<div class="cdf_object" src="#{s}" width="#{w}" height="#{h}">} +
+    %{<a href="http://www.wolfram.com/cdf-player/" title="Get the free Wolfram CDF } +
+    %{Player"><img src="#{b}"/></a></div>}
   end
 
 module Test
