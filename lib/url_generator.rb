@@ -156,7 +156,7 @@ class UrlGenerator < AbstractUrlGenerator
   end
 
   def media_link(mode, namelist, text, web_address, known_media, media_type)
-    if known_media
+    if ( known_media || mode == :export || mode == :publish )
       link = %{<#{media_type} controls="controls">}
       link_end = %{\n#{text}\n</#{media_type}>}
     else
@@ -170,13 +170,9 @@ class UrlGenerator < AbstractUrlGenerator
         :id => name, :only_path => true
       case mode
       when :export
-        if known 
-          link << %{\n  <source src="files/#{CGI.escape(name)}"/>}
-        end
+          link << %{\n  <source src="files/#{CGI.escape(name)}"/>} if known
       when :publish
-        if known
-          link << %{\n  <source src="#{href}"/>}
-        end
+          link << %{\n  <source src="#{href}"/>} if known
       else 
         if known 
           link << %{\n  <source src="#{href}"/>}
