@@ -23,6 +23,17 @@ class AbstractUrlGenerator
       else
         name = asked_name
       end
+    elsif (link_type == :audio || link_type == :video)
+       namelist = []
+       known_pages = true
+       asked_name.split(/\s+/).each do |name|
+         return bad_filename(name) unless WikiFile.is_valid?(name)
+         known_name =  web.has_file?(name)
+         known_pages = false unless known_name
+         namelist << [name, known_name]
+       end
+       description = web.description(asked_name)
+       description = description.unescapeHTML.escapeHTML if description
     else
       name = asked_name
       known_page = web.has_file?(name)
@@ -44,9 +55,9 @@ class AbstractUrlGenerator
     when :pic
       pic_link(mode, name, text, web.address, known_page)
     when :audio
-      media_link(mode, name, text, web.address, known_page, 'audio')
+      media_link(mode, namelist, text, web.address, known_pages, 'audio')
     when :video
-      media_link(mode, name, text, web.address, known_page, 'video')
+      media_link(mode, namelist, text, web.address, known_pages, 'video')
     when :cdf
       cdf_link(mode, name, text, web.address, known_page)
     when :delete
@@ -144,30 +155,37 @@ class UrlGenerator < AbstractUrlGenerator
     end
   end
 
-  def media_link(mode, name, text, web_address, known_media, media_type)
-    return bad_filename(name) unless WikiFile.is_valid?(name) 
-    href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
-      :id => name, :only_path => true
-    case mode
-    when :export
-      if known_media 
-        %{<#{media_type} src="files/#{CGI.escape(name)}" controls="controls">#{text}</#{media_type}>}
+  def media_link(mode, namelist, text, web_address, known_media, media_type)
+    if known_media
+      link = %{<#{media_type} controls="controls">}
+      link_end = %{\n#{text}\n</#{media_type}>}
+    else
+      link = %{&#x5B;&#x5B;upload #{media_type} files:}
+      link_end = %{ #{text}&#x5D;&#x5D;}
+    end
+    namelist.each do |v|
+      name = v[0]
+      known = v[1]
+      href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
+        :id => name, :only_path => true
+      case mode
+      when :export
+        if known 
+          link << %{\n  <source src="files/#{CGI.escape(name)}"/>}
+        end
+      when :publish
+        if known
+          link << %{\n  <source src="#{href}"/>}
+        end
       else 
-        text
-      end
-    when :publish
-      if known_media
-        %{<#{media_type} src="#{href}" controls="controls">#{text}</#{media_type}>}
-      else 
-        %{<span class="newWikiWord">#{text}</span>} 
-      end
-    else 
-      if known_media 
-        %{<#{media_type} src="#{href}" controls="controls">#{text}</#{media_type}>}
-      else 
-        %{<span class="newWikiWord">#{text}<a href="#{href}">?</a></span>} 
+        if known 
+          link << %{\n  <source src="#{href}"/>}
+        else 
+          link << %{ <span class="newWikiWord">#{name}<a href="#{href}">?</a></span>} 
+        end
       end
     end
+    link << link_end
   end
 
   def cdf_link(mode, name, text, web_address, known_cdf)

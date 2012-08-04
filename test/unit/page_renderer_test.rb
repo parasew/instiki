@@ -742,11 +742,21 @@ END_THM
       "<p><a class='existingWikiWord' href='../file/square.jpg' title='Square'>Blue Square</a></p>",
       '[[square.jpg|Blue Square:file]]')
     assert_markup_parsed_as(
-      "<p><video controls='controls' src='../file/square.jpg'>Blue Square</video></p>",
+      "<p><video controls='controls'>\n  <source src='../file/square.jpg'/>\nBlue Square\n</video></p>",
       '[[square.jpg|Blue Square:video]]')
     assert_markup_parsed_as(
-      "<p><audio controls='controls' src='../file/square.jpg'>Blue Square</audio></p>",
+      "<p><audio controls='controls'>\n  <source src='../file/square.jpg'/>\nBlue Square\n</audio></p>",
       '[[square.jpg|Blue Square:audio]]')
+    assert_markup_parsed_as(
+      %{<p><div class='cdf_object' height='300' src='square.jpg' width='500'><a href='http://www.wolfra} +
+      %{m.com/cdf-player/' title='Get the free Wolfram CDF Player'><img src='/images/cdf-player-white.p} +
+      %{ng'/></a></div></p>},
+      '[[square.jpg|Blue Square:cdf]]')
+    assert_markup_parsed_as(
+      %{<p><div class='cdf_object' height='380' src='square.jpg' width='588'><a href='http://www.wolfra} +
+      %{m.com/cdf-player/' title='Get the free Wolfram CDF Player'><img src='/images/cdf-player-white.p} +
+      %{ng'/></a></div></p>},
+      '[[square.jpg| 588 x 380 :cdf]]')
     assert_markup_parsed_as( 
       "<p><a class='existingWikiWord' href='../file/square.jpg' title='Square'>Square</a></p>",
       '[[square.jpg:file]]')
