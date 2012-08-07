@@ -1,4 +1,5 @@
 require 'instiki_stringsupport'
+require 'file_signature'
 
 class Web < ActiveRecord::Base
   ## Associations
@@ -80,6 +81,10 @@ class Web < ActiveRecord::Base
 
   def has_file?(file_name)
     wiki_files.exists?(:file_name => file_name)
+  end
+
+  def mime_type(file_name)
+      File.mime_type(files_path.join(file_name)) if has_file?(file_name)
   end
 
   def file_list(sort_order="file_name")
