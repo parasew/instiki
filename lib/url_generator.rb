@@ -168,14 +168,16 @@ class UrlGenerator < AbstractUrlGenerator
       known = v[1]
       href = @controller.url_for :controller => 'file', :web => web_address, :action => 'file',
         :id => name, :only_path => true
+      type = @web.mime_type(name)
+      type_attr = type ? %{ type="#{type}"} : ''
       case mode
       when :export
-          link << %{\n  <source src="files/#{CGI.escape(name)}"/>} if known
+          link << %{\n  <source src="files/#{CGI.escape(name)}"#{type_attr}/>} if known
       when :publish
-          link << %{\n  <source src="#{href}"/>} if known
+          link << %{\n  <source src="#{href}"#{type_attr}/>} if known
       else 
         if known 
-          link << %{\n  <source src="#{href}"/>}
+          link << %{\n  <source src="#{href}"#{type_attr}/>}
         else 
           link << %{ <span class="newWikiWord">#{name}<a href="#{href}">?</a></span>} 
         end
