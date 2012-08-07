@@ -167,25 +167,27 @@ class IO
       end
     end
     if bytes[4,4] == 'ftyp'
-      case bytes[8,4]
-      when 'isom'
+      case bytes[8,3]
+      when 'iso'
         type = :mp4
-      when 'qt  '
-        type = :quicktime
-      when '3gp5'
+      when 'mp4'
         type = :mp4
-      when 'mp42'
-        type = :m4v
-      when 'M4A '
+      when 'avc'
+        type = :mp4
+      when '3ge'
+        type = :video_3gpp
+      when '3gg'
+        type = :video_3gpp
+      when '3gp'
+        type = :video_3gpp
+      when '3g2'
+        type = :video_3gpp2
+      when 'M4A'
         type = :m4a
-      when '3gpp'
-        type = :video_3gpp
-      when '3gp4'
-        type = :video_3gpp
-      when '3gp2'
-        type = :video_3gpp2
-      when '3g2a'
-        type = :video_3gpp2
+      when 'M4V'
+        type = :m4v
+      when 'qt '
+        type = :quicktime
       end
     end
 
