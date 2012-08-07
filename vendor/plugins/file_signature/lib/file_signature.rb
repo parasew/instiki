@@ -168,17 +168,9 @@ class IO
     end
     if bytes[4,4] == 'ftyp'
       case bytes[8,3]
-      when 'iso'
+      when 'iso', 'mp4', 'avc'
         type = :mp4
-      when 'mp4'
-        type = :mp4
-      when 'avc'
-        type = :mp4
-      when '3ge'
-        type = :video_3gpp
-      when '3gg'
-        type = :video_3gpp
-      when '3gp'
+      when '3ge', '3gg', '3gp'
         type = :video_3gpp
       when '3g2'
         type = :video_3gpp2
