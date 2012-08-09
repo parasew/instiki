@@ -8,6 +8,7 @@
 
 $LOAD_PATH << File.expand_path("#{File.dirname(__FILE__)}/../lib")
 
+require 'rubygems'
 require 'minitest/autorun'
 require 'file_signature'
 
@@ -18,10 +19,14 @@ describe File do
     'sample.gif' => [:gif, 'image/gif'],
     'sample.jpg' => [:jpeg, 'image/jpeg'],
     'sample.png' => [:png, 'image/png'],
+    'sample.jp2' => [:jpeg2000, 'image/jp2'],
+    'sample.webp' => [:webp, 'image/webp'],
+    'sample.mid' => [:midi, 'audio/midi'],
     'sample.ps' => [:postscript, 'application/postscript'],
     'sample.ras' => [:sun_rasterfile, 'image/x-cmu-raster'],
     'sample.sgi' => [:iris_rgb, 'application/octet-stream'],
     'sample.tiff' => [:tiff, 'image/tiff'],
+    'sample.rar' => [:rar, 'application/x-rar-compressed'],
     'sample.xcf.bz2' => [:bzip, 'application/x-bzip'],
     'sample.xcf.gz' => [:gzip, 'application/x-gzip'],
     'sample.xcf.zip' => [:pkzip, 'application/zip'],
@@ -33,6 +38,7 @@ describe File do
     'sample.m4v' => [:m4v, 'video/x-m4v'],
     'sample.mov' => [:quicktime, 'video/quicktime'],
     'sample.ogg' => [:ogg, 'application/ogg'],
+    'sample.spx' => [:ogg, 'application/ogg'],
     'sample.webm' => [:webm, 'video/webm'],
     'sample.3gp' => [:video_3gpp, 'video/3gpp'],
     'sample.3g2' => [:video_3gpp2, 'video/3gpp2'],
@@ -48,6 +54,7 @@ describe File do
     'sample.wav' => [:wave, 'audio/wave'],
     'sample.flac' => [:flac, 'audio/flac'],
     'sample.aif' => [:aiff, 'audio/x-aiff'],
+    'sample.elf' => [:unix_elf, 'application/octet-stream'],
   }
 
   FILE_TO_MAGIC_NUMBER_MAP.each_pair do |file_name, v|
