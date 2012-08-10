@@ -15,7 +15,7 @@ Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms
 
 == 3 easy Steps to get the Instiki experience
 
-  Step 1. Get Instiki and run "ruby bundle"
+  Step 1. Get Instiki and run "ruby bundle install --path vendor/bundle"
   Step 2. Run "instiki"
   Step 3. Chuckle... "There's no step three!" (TM)
  
@@ -36,7 +36,7 @@ You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your Syst
 
 On Leopard and Snow Leopard, you are all set.
 - run "sudo gem update --system" via the command-line.
-- run "ruby bundle" in the instiki directory.
+- run "ruby bundle install --path vendor/bundle" in the instiki directory.
 - run "ruby instiki" and there you go!
 
 Tiger ships with a really old Ruby Version (1.8.2) and a broken Readline Library you have to
@@ -53,7 +53,7 @@ Tiger ships with a really old Ruby Version (1.8.2) and a broken Readline Library
     sudo gem update --system
     
 - get SQLite or compile from http://sqlite.org (you can also use mysql or any other supported database system if you want)
-- run "ruby bundle"
+- run "ruby bundle install --path vendor/bundle"
 - run instiki
 
 You're now running a perfectly suitable wiki on port 2500 that'll present you with one-step setup, followed by a textarea for the home page on http://localhost:2500
@@ -95,7 +95,7 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 
 == Migrating from Instiki 0.11-0.18 to 0.19
 
-   ruby bundle
+   ruby bundle install --path vendor/bundle
    ruby bundle exec rake upgrade_instiki
    
 == Download the latest release from:
