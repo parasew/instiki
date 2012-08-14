@@ -102,7 +102,7 @@ class PageRenderer
     the_wiki_words = wiki_links(rendering_result)
     # Exclude backslash-escaped wiki words, such as \WikiWord, as well as links to files 
     # and pictures, such as [[foo.txt:file]] or [[foo.jpg:pic]]
-    the_wiki_words.delete_if { |link| link.escaped? or [:pic, :file, :audio, :video, :delete].include?(link.link_type) }
+    the_wiki_words.delete_if { |link| link.escaped? or [:pic, :file, :cdf, :audio, :video, :delete].include?(link.link_type) }
     # convert to the list of unique page names
     the_wiki_words.map { |link| ( link.page_name ) }.uniq
   end
@@ -114,7 +114,7 @@ class PageRenderer
     
   def find_wiki_files(rendering_result)
      the_wiki_files = wiki_links(rendering_result)
-     the_wiki_files.delete_if { |link| ![:pic, :file, :audio, :video].include?(link.link_type) }
+     the_wiki_files.delete_if { |link| ![:pic, :file, :cdf, :audio, :video].include?(link.link_type) }
      the_wiki_files.map { |link| ( link.page_name ) }.uniq
   end
   
