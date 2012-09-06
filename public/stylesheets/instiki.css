@@ -460,10 +460,10 @@ span.keyboard {
 }
 
 body {counter-reset: theorem lemma proposition corollary definition example remark note}
-.un_theorem *, .num_theorem *,
-.un_lemma *, .num_lemma *,
-.un_prop *, .num_prop *,
-.un_cor *, .num_cor * {font-style: italic}
+.un_theorem, .num_theorem,
+.un_lemma, .num_lemma,
+.un_prop, .num_prop,
+.un_cor, .num_cor {font-style: italic}
 span.theorem_label {font-style:normal; font-weight:bold;}
 .proof span.theorem_label {font-style:italic;}
 .num_theorem .theorem_label:after {
@@ -521,3 +521,4 @@ span.theorem_label {font-style:normal; font-weight:bold;}
   font-weight: bold;
 }
 [actiontype="toggle"]:hover {text-shadow: #ccc 2px 2px 5px;}
+.maruku_toc ul { list-style: none; }
