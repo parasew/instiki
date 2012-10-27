@@ -5,6 +5,17 @@ Instiki is a wiki clone so pretty and easy to set up, you'll wonder if it’s re
 
 Instiki lowers the barriers of interest for when you might consider using a wiki. It's so simple to get running that you'll find yourself using it for anything -- taking notes, brainstorming, organizing a gathering.
 
+== This is a fork for easy deploy to heroku
+
+Works on the Cedar Stack. Bare minimum of changes were done on this, so you should able to merge this without conflicts with the latest clone of insitki. 
+
+=== Steps to deploy to heroku
+ 
+ - git clone https://github.com/mkcode/instiki.git
+ - cd instiki
+ - heroku create
+ - git push heroku master
+ - heroku run rake db:migrate
 
 == Supported Platforms
 
