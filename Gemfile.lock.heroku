@@ -20,6 +20,7 @@ GEM
     RedCloth (4.2.9)
     daemons (1.0.10)
     erubis (2.7.0)
+    eventmachine (1.0.0)
     gem_plugin (0.2.3)
     itextomml (1.4.10)
     json (1.7.5)
@@ -35,6 +36,10 @@ GEM
     rubyzip (0.9.9)
     sqlite3 (1.3.6)
     syntax (1.0.0)
+    thin (1.5.0)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
 
 PLATFORMS
   ruby
@@ -54,3 +59,4 @@ DEPENDENCIES
   rdoc
   rubyzip
   sqlite3
+  thin

@@ -11,7 +11,7 @@ Instiki only relies on Ruby - the sole external dependency (it includes all othe
 
 Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms is planned. Mostly it already works, if Ruby runs there (download the linux version in this case). Please contact parasew if you want to help out for your OS that is not listed. Please also get in touch if you are able to create an instiki package for your favorite unix or linux distribution.
 
-Heroku cedar stack
+Heroku cedar stack.
 
 == 3 easy Steps to get the Instiki experience
 
@@ -25,13 +25,12 @@ You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your Syst
 
 === Deploy to Heroku
 
-Works on the Cedar Stack. Bare minimum of changes were done on this, so you should able to merge this without conflicts with the latest clone of insitki. 
-
-=== Steps to deploy to heroku
- 
  - git clone https://github.com/mkcode/instiki.git
  - cd instiki
- - heroku create
+ - heroku create [APPNAME] 
+ - git mv Gemfile.heroku Gemfile
+ - git mv Gemfile.lock.heroku Gemfile.lock
+ - git commit -m "Setup for heroku"
  - git push heroku master
  - heroku run rake db:migrate
 
