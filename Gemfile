@@ -12,11 +12,12 @@ gem "json"
 gem "file_signature", :git => 'http://github.com/distler/file_signature.git'
 gem "maruku", :git => 'http://github.com/distler/maruku.git', :branch => 'nokogiri'
 
+group :development, :test do
+  gem "sqlite3", :require => "sqlite3"
+end
+
 group :production do
     gem "pg"
 end
 
-group :development do
-  gem "sqlite3", :require => "sqlite3"
-end
 
