@@ -5,7 +5,25 @@ Instiki is a wiki clone so pretty and easy to set up, you'll wonder if it’s re
 
 Instiki lowers the barriers of interest for when you might consider using a wiki. It's so simple to get running that you'll find yourself using it for anything -- taking notes, brainstorming, organizing a gathering.
 
-== This is a fork for easy deploy to heroku
+== Supported Platforms
+
+Instiki only relies on Ruby - the sole external dependency (it includes all other dependencies). Any OS that can run Ruby can run Instiki - that includes Windows, Linux, Mac OS X and most known Unix flavors.
+
+Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms is planned. Mostly it already works, if Ruby runs there (download the linux version in this case). Please contact parasew if you want to help out for your OS that is not listed. Please also get in touch if you are able to create an instiki package for your favorite unix or linux distribution.
+
+Heroku cedar stack
+
+== 3 easy Steps to get the Instiki experience
+
+  Step 1. Get Instiki and run "ruby bundle install --path vendor/bundle"
+  Step 2. Run "instiki"
+  Step 3. Chuckle... "There's no step three!" (TM)
+ 
+== Details
+
+You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your System. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
+
+=== Deploy to Heroku
 
 Works on the Cedar Stack. Bare minimum of changes were done on this, so you should able to merge this without conflicts with the latest clone of insitki. 
 
@@ -16,25 +34,6 @@ Works on the Cedar Stack. Bare minimum of changes were done on this, so you shou
  - heroku create
  - git push heroku master
  - heroku run rake db:migrate
-
-== Supported Platforms
-
-Instiki only relies on Ruby - the sole external dependency (it includes all other dependencies). Any OS that can run Ruby can run Instiki - that includes Windows, Linux, Mac OS X and most known Unix flavors.
-
-Instiki on BeOS, Amiga OS, OS2, Zeta OS and support for various exotic Platforms is planned. Mostly it already works, if Ruby runs there (download the linux version in this case). Please contact parasew if you want to help out for your OS that is not listed. Please also get in touch if you are able to create an instiki package for your favorite unix or linux distribution.
-
-
-== 3 easy Steps to get the Instiki experience
-
-  Step 1. Get Instiki and run "ruby bundle install --path vendor/bundle"
-  Step 2. Run "instiki"
-  Step 3. Chuckle... "There's no step three!" (TM)
- 
-
-== Details
-
-You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your System. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
-
 
 === If you are on Windows
 
