@@ -6,6 +6,19 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.5
+
+New Features:
+* MathJax 2.0
+* Rails 2.3.15
+* Support for embedding Wolfram CDF files
+* Extended support for HTML5 audio and video
+* Maruku and file_signature unbundled
+
+Bugs Fixed:
+* Fixed CVE-2013-0155 and CVE-2013-0156
+* Stylesheet fixes
+------------------------------------------------------------------------------
 * 0.19.4
 
 New Feautures:
