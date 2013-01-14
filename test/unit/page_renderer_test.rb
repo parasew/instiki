@@ -237,6 +237,14 @@ END_THM
     "evelopment")
   end
 
+  def test_toc
+    assert_markup_parsed_as(
+      %{<h1 id='title_1'>Title</h1>\n<div class='maruku_toc'><ul><li><a href='#section_1_2'>Sect} +
+      %{ion 1</a></li><li><a href='#section_2_3'>Section 2</a></li></ul></div>\n<h2 id='section_} +
+      %{1_2'>Section 1</h2>\n\n<p>Foo</p>\n\n<h2 id='section_2_3'>Section 2</h2>\n\n<p>Bar</p>},
+      "#Title\n* Toc\n{:toc}\n\n##Section 1\n\nFoo\n\n##Section 2\n\nBar\n")
+  end
+
   def test_ial_in_lists
 
     assert_markup_parsed_as(

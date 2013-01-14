@@ -1162,6 +1162,19 @@ class WikiControllerTest < ActionController::TestCase
 \DeclareSymbolFont{stmry}{U}{stmry}{m}{n}
 \SetSymbolFont{stmry}{bold}{U}{stmry}{b}{n}
 
+% Manually declare the MnSymbolE font
+\DeclareFontFamily{OMX}{MnSymbolE}{}
+\DeclareSymbolFont{mnomx}{OMX}{MnSymbolE}{m}{n}
+\SetSymbolFont{mnomx}{bold}{OMX}{MnSymbolE}{b}{n}
+\DeclareFontShape{OMX}{MnSymbolE}{m}{n}{
+    <-6>  MnSymbolE5
+   <6-7>  MnSymbolE6
+   <7-8>  MnSymbolE7
+   <8-9>  MnSymbolE8
+   <9-10> MnSymbolE9
+  <10-12> MnSymbolE10
+  <12->   MnSymbolE12}{}
+
 % Declare specific arrows from txfonts without loading the full package
 \makeatletter
 \def\re@DeclareMathSymbol#1#2#3#4{%
@@ -1183,6 +1196,21 @@ class WikiControllerTest < ActionController::TestCase
 \re@DeclareMathSymbol{\biginterleave}{\mathop}{stmry}{"6}
 \re@DeclareMathSymbol{\invamp}{\mathrel}{symbolsC}{77}
 \re@DeclareMathSymbol{\parr}{\mathrel}{symbolsC}{77}
+\makeatother
+
+% \llangle, \rrangle, \lmoustache and \rmoustache from MnSymbolE
+\makeatletter
+\def\Decl@Mn@Delim#1#2#3#4{%
+  \if\relax\noexpand#1%
+    \let#1\undefined
+  \fi
+  \DeclareMathDelimiter{#1}{#2}{#3}{#4}{#3}{#4}}
+\def\Decl@Mn@Open#1#2#3{\Decl@Mn@Delim{#1}{\mathopen}{#2}{#3}}
+\def\Decl@Mn@Close#1#2#3{\Decl@Mn@Delim{#1}{\mathclose}{#2}{#3}}
+\Decl@Mn@Open{\llangle}{mnomx}{'164}
+\Decl@Mn@Close{\rrangle}{mnomx}{'171}
+\Decl@Mn@Open{\lmoustache}{mnomx}{'245}
+\Decl@Mn@Close{\rmoustache}{mnomx}{'244}
 \makeatother
 
 % Widecheck
