@@ -62,22 +62,29 @@ svgEditor.addExtension("itex", function(S) {
 				var math = svgdoc.createElementNS(mathns, 'math');
 				math.setAttributeNS(xmlnsns, 'xmlns', mathns);
 				math.setAttribute('display', 'inline');
-				var semantics = document.createElementNS(mathns, 'semantics');
-				var annotation = document.createElementNS(mathns, 'annotation');
-				annotation.setAttribute('encoding', 'application/x-tex');
-				annotation.textContent = tex;
-				var mrow = document.createElementNS(mathns, 'mrow');
-				semantics.appendChild(mrow);
-				semantics.appendChild(annotation);
-				math.appendChild(semantics);
 				// make an AJAX request to the server, to get the MathML
 				$.post(ajaxEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
-				    var children = data.documentElement.childNodes;
-				    while (children.length > 0) {
-				      mrow.appendChild(svgdoc.adoptNode(children[0], true));
-				    }
-				    S.sanitizeSvg(math);
-				    S.call("changed", [elt]);
+					var first = data.documentElement.firstElementChild;
+					// If itex2MML included the original tex source as an <annotation>,
+					// then we don't have to. Otherwise, let's do that ourselves.
+					if (first.localName == 'semantics') {
+					  math.appendChild(svgdoc.adoptNode(first, true));
+					} else {
+					  var semantics = document.createElementNS(mathns, 'semantics');
+					  var annotation = document.createElementNS(mathns, 'annotation');
+					  annotation.setAttribute('encoding', 'application/x-tex');
+					  annotation.textContent = tex;
+					  var mrow = document.createElementNS(mathns, 'mrow');
+					  semantics.appendChild(mrow);
+					  semantics.appendChild(annotation);
+					  math.appendChild(semantics);
+					  var children = data.documentElement.childNodes;
+					  while (children.length > 0) {
+					    mrow.appendChild(svgdoc.adoptNode(children[0], true));
+					  }
+					}
+					S.sanitizeSvg(math);
+					S.call("changed", [elt]);
 				});
 				elt.replaceChild(math, elt.firstChild);
 				S.call("changed", [elt]);
@@ -86,10 +93,9 @@ svgEditor.addExtension("itex", function(S) {
 				console.log(e);
 				return false;
 			}
-	
+
 			return true;
 		};
-
 		function showItexEditor() {
 			var elt = selElems[0];
 			var annotation = jQuery('math > semantics > annotation', elt);

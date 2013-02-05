@@ -1,7 +1,7 @@
 /**
  * Package: svgedit.units
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Alexis Deveria
  * Copyright(c) 2010 Jeff Schiller
@@ -241,7 +241,7 @@ svgedit.units.convertToNum = function(attr, val) {
 // Parameters: 
 // attr - String with the name of the attribute associated with the value
 // val - String with the attribute value to check
-svgedit.units.isValidUnit = function(attr, val) {
+svgedit.units.isValidUnit = function(attr, val, selectedElement) {
 	var valid = false;
 	if(unit_attrs.indexOf(attr) >= 0) {
 		// True if it's just a number
@@ -267,7 +267,7 @@ svgedit.units.isValidUnit = function(attr, val) {
 		// not already present
 		try {
 			var elem = elementContainer_.getElement(val);
-			result = (elem == null);
+			result = (elem == null || elem === selectedElement);
 		} catch(e) {}
 		return result;
 	} else {
