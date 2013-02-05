@@ -4375,7 +4375,7 @@
 				if ('localStorage' in window) {
 					var name = 'svgedit-' + Editor.curConfig.canvasName;
 					window.localStorage.setItem(name, svgCanvas.getSvgString());
-					Editor.show_save_warning = false;
+					// Editor.show_save_warning = false;
 				}
 
 				// Suppress warning if page is empty
