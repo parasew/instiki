@@ -1,7 +1,7 @@
 /*
  * svgcanvas.js
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Alexis Deveria
  * Copyright(c) 2010 Pavol Rusnak
@@ -171,8 +171,8 @@ var clearSvgContentElement = canvas.clearSvgContentElement = function() {
 
 	// TODO: make this string optional and set by the client
 	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
-        // Lead to invalid content with Instiki's Sanitizer
-        // svgcontent.appendChild(comment);
+         // Lead to invalid content with Instiki's Sanitizer
+         // svgcontent.appendChild(comment);
 };
 clearSvgContentElement();
 
@@ -377,17 +377,19 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 				if (values["stdDeviation"]) {
 					canvas.setBlurOffsets(cmd.elem.parentNode, values["stdDeviation"]);
 				}
-				
+				// This is resolved in later versions of webkit, perhaps we should
+				// have a featured detection for correct 'use' behavior?
+				// ——————————
 				// Remove & Re-add hack for Webkit (issue 775) 
-				if(cmd.elem.tagName === 'use' && svgedit.browser.isWebkit()) {
-					var elem = cmd.elem;
-					if(!elem.getAttribute('x') && !elem.getAttribute('y')) {
-						var parent = elem.parentNode;
-						var sib = elem.nextSibling;
-						parent.removeChild(elem);
-						parent.insertBefore(elem, sib);
-					}
-				}
+				//if(cmd.elem.tagName === 'use' && svgedit.browser.isWebkit()) {
+				//	var elem = cmd.elem;
+				//	if(!elem.getAttribute('x') && !elem.getAttribute('y')) {
+				//		var parent = elem.parentNode;
+				//		var sib = elem.nextSibling;
+				//		parent.removeChild(elem);
+				//		parent.insertBefore(elem, sib);
+				//	}
+				//}
 			}
 		}
 	}
@@ -2517,26 +2519,28 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					
 					if(svgedit.browser.supportsNonScalingStroke()) {
-						//Handle crash for newer Chrome: https://code.google.com/p/svg-edit/issues/detail?id=904
-						//Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
-						// TODO: Remove this workaround (all isChrome blocks) once vendor fixes the issue
-						var isChrome = svgedit.browser.isChrome();
-						if(isChrome) {
+						// Handle crash for newer Chrome and Safari 6 (Mobile and Desktop): 
+						// https://code.google.com/p/svg-edit/issues/detail?id=904
+						// Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
+						// TODO: Remove this workaround once vendor fixes the issue
+						var isWebkit = svgedit.browser.isWebkit();
+
+						if(isWebkit) {
 							var delayedStroke = function(ele) {
 								var _stroke = ele.getAttributeNS(null, 'stroke');
 								ele.removeAttributeNS(null, 'stroke');
 								//Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-								setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke) }, 1);
+								setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke) }, 0);
 							}
 						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
-						if(isChrome) delayedStroke(mouse_target);
+						if(isWebkit) delayedStroke(mouse_target);
 
 						var all = mouse_target.getElementsByTagName('*'),
 						    len = all.length;
 						for(var i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
-							if(isChrome) delayedStroke(all[i]);
+							if(isWebkit) delayedStroke(all[i]);
 						}
 					}
 				}
@@ -3473,12 +3477,15 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	$(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick).mouseup(mouseUp);
 //	$(window).mouseup(mouseUp);
 	
+	 //TODO(rafaelcastrocouto): User preference for shift key and zoom factor
 	$(container).bind("mousewheel DOMMouseScroll", function(e){
-		if(!e.shiftKey) return;
+		//if(!e.shiftKey) return;
 		e.preventDefault();
+		var evt = e.originalEvent;
 
 		root_sctm = svgcontent.getScreenCTM().inverse();
-		var pt = transformPoint( e.pageX, e.pageY, root_sctm );
+		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
+
 		var bbox = {
 			'x': pt.x,
 			'y': pt.y,
@@ -3486,23 +3493,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			'height': 0
 		};
 
-		// Respond to mouse wheel in IE/Webkit/Opera.
-		// (It returns up/dn motion in multiples of 120)
-		if(e.wheelDelta) {
-			if (e.wheelDelta >= 120) {
-				bbox.factor = 2;
-			} else if (e.wheelDelta <= -120) {
-				bbox.factor = .5;
-			}
-		} else if(e.detail) {
-			if (e.detail > 0) {
-				bbox.factor = .5;
-			} else if (e.detail < 0) {
-				bbox.factor = 2;			
-			}				
-		}
-		
-		if(!bbox.factor) return;
+		var delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
+		if(!delta) return;
+
+		bbox.factor = Math.max(3/4, Math.min(4/3, (delta)));
+	
 		call("zoomed", bbox);
 	});
 	
@@ -5535,7 +5530,7 @@ var convertGradients = this.convertGradients = function(elem) {
 		var grad = this;
 		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
 			// TODO: Support more than one element with this ref by duplicating parent grad
-			var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')],[stroke=url(#' + grad.id + ')]');
+			var elems = $(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
 			if(!elems.length) return;
 			
 			// get object's bounding box
@@ -6461,7 +6456,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 2070 $)";
+	return "svgcanvas.js ($Rev: 2310 $)";
 };
 
 // Function: setUiStrings
