@@ -2365,6 +2365,17 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 	
 		root_sctm = svgcontent.getScreenCTM().inverse();
+                
+                // Firefox issue 1046
+                if(current_zoom != 1 && root_sctm.a == 1)
+                {
+                    matrix_e = root_sctm.e / current_zoom - root_sctm.e;
+                    matrix_f = root_sctm.f / current_zoom - root_sctm.f;
+                    matrix_scale = 1/current_zoom;
+                    root_sctm = svgcontent.getScreenCTM().inverse()
+                        .translate(matrix_e, matrix_f)
+                        .scale(matrix_scale);
+                }
 		
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
@@ -6456,7 +6467,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 2310 $)";
+	return "svgcanvas.js ($Rev: 2330 $)";
 };
 
 // Function: setUiStrings
