@@ -6,6 +6,16 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.6
+
+New Features:
+* SVG-Edit 1.6
+* Rails 2.3.16
+
+Bugs Fixed:
+* Fixed CVE-2013-0333
+
+------------------------------------------------------------------------------
 * 0.19.5
 
 New Features:
