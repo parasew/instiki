@@ -2055,6 +2055,10 @@
 						workarea.css('cursor', zoomInIcon);
 					}
 				})
+                                
+                                Editor.setPanning = function(active) {
+                                        svgCanvas.spaceKey = keypan = active;
+                                }
 			}());
 
 
@@ -4753,7 +4757,7 @@
 				updateCanvas(true);
 // 			});
 
-		//	var revnums = "svg-editor.js ($Rev: 2318 $) ";
+		//	var revnums = "svg-editor.js ($Rev: 2332 $) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 
