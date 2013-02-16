@@ -1352,7 +1352,7 @@ class WikiControllerTest < ActionController::TestCase
     
     assert_equal @tex_header1 + @tex_header2 + %q!\section*{HomePage}
 
-HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere --{} see SmartEngine in that SmartEngineGUI
+HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere -- see SmartEngine in that SmartEngineGUI
 
 
 
@@ -1407,7 +1407,7 @@ Page2 contents $\mathbb{01234}$.
 
 \section*{HomePage}
 
-HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere --{} see SmartEngine in that SmartEngineGUI
+HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere -- see SmartEngine in that SmartEngineGUI
 
 
 
