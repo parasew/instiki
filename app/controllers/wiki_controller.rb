@@ -529,12 +529,6 @@ EOL
     end
   end
   
-  def remote_ip
-    ip = request.remote_ip
-    logger.info(ip)
-    ip.dup.gsub!(Regexp.union(Resolv::IPv4::Regex, Resolv::IPv6::Regex), '\0') || 'bogus address'
-  end
-
   def render_atom(hide_description = false, limit = 15)
     @pages_by_revision = @web.select.by_revision.first(limit)
     @hide_description = hide_description

@@ -30,13 +30,14 @@ module DNSBL_Check
   private
   # Filter to check if the client is listed. This will be run before all requests.
   def dnsbl_check
+    ip = self.remote_ip
     return true if respond_to?(:logged_in?) && logged_in?
-    return true if $dnsbl_passed.include? request.remote_addr
+    return true if $dnsbl_passed.include? ip
 
     passed = true
     ban_help = ''
     threads = []
-    request.remote_addr =~ /(\d+).(\d+).(\d+).(\d+)/
+    ip =~ /(\d+).(\d+).(\d+).(\d+)/
 
     # Check the remote address against each dnsbl in a separate thread
     DNSBLS.each_key do |dnsbl|
@@ -44,8 +45,8 @@ module DNSBL_Check
         logger.warn("Checking DNSBL #{host}")
         addr = Resolv.getaddress("#{host}") rescue ''
         if addr[0,7]=="127.0.0"
-          logger.info("#{request.remote_addr} found using DNSBL #{host}")
-          ban_help << "\n<p>See <a href='#{DNSBLS[dnsbl]}#{request.remote_addr}'>here</a> for more information.</p>"
+          logger.info("#{ip} found using DNSBL #{host}")
+          ban_help << "\n<p>See <a href='#{DNSBLS[dnsbl]}#{ip}'>here</a> for more information.</p>"
           passed = false
         end
       end
@@ -54,12 +55,13 @@ module DNSBL_Check
 
     # Add client ip to global passed cache if no dnsbls objected. else deny service.
     if passed
-#      $dnsbl_passed = $dnsbl_passed[0,99].unshift request.remote_addr
-      $dnsbl_passed.push request.remote_addr
-      logger.warn("#{request.remote_addr} added to DNSBL passed cache")
+#      $dnsbl_passed = $dnsbl_passed[0,99].unshift ip
+      $dnsbl_passed.push ip
+      logger.warn("#{ip} added to DNSBL passed cache")
     else
-      render( :text => "<p>Access denied. Your IP address, #{request.remote_addr}, was found on one or more DNSBL" +
-                       " blocking list(s).</p>#{ban_help}", :status => 403, :layout => 'error', :locals => {:raw => true})
+      render( :text =>
+        "<p>Access denied. Your IP address, #{ip}, was found on one or more DNSBL blocking list(s).</p>#{ban_help}".html_safe,
+        :status => 403, :layout => 'error', :locals => {:raw => true})
       return false
     end
   end

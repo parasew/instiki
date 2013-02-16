@@ -23,6 +23,12 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def remote_ip
+    ip = request.remote_ip
+    logger.info(ip)
+    ip.dup.gsub!(Regexp.union(Resolv::IPv4::Regex, Resolv::IPv6::Regex), '\0') || 'bogus address'
+  end
+
   def xhtml_enabled?
     in_a_web? and [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
   end
