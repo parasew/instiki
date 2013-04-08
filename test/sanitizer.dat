@@ -408,6 +408,13 @@
   },
 
   {
+    "name": "should_strip_src_attribute_in_img_with_escaped_bad_protocols",
+    "input": "<img src=\"javascript&#x3a;alert('XSS');\" title=\"1\">boo</img>",
+    "output": "<img title='1'/>boo",
+    "rexml": "<img title='1' />"
+  },
+
+  {
     "name": "should_strip_src_attribute_in_img_with_bad_protocols_and_whitespace",
     "input": "<img src=\" javascript:XSS\" title=\"1\">boo</img>",
     "output": "<img title='1'/>boo",
@@ -501,6 +508,13 @@
     "rexml": "<div style='color: blue;'></div>"
   },
   
+  {
+    "name": "style_attr_end_with_newlines",
+    "input": "<div style=\"\nwidth:\nexpression(alert('XSS'));\n\" />",
+    "output": "<div style=''/>",
+    "rexml": "<div style=''></div>"
+  },
+
   {
    "name": "attributes_with_embedded_quotes",
    "input": "<img src=doesntexist.jpg\"'onerror=\"alert(1) />",
