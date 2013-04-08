@@ -194,8 +194,8 @@ module Sanitizer
       style = style.to_s.gsub(/url\s*\(\s*[^\s)]+?\s*\)\s*/, ' ')
 
       # gauntlet
-      return '' unless style =~ /^([-:,;#%.\sa-zA-Z0-9!]|\w-\w|\'[\s\w]+\'|\"[\s\w]+\"|\([\d,\s]+\))*$/
-      return '' unless style =~ /^\s*([-\w]+\s*:[^:;]*(;\s*|$))*$/
+      return '' unless style =~ /\A([-:,;#%.\sa-zA-Z0-9!]|\w-\w|\'[\s\w]+\'|\"[\s\w]+\"|\([\d,\s]+\))*\z/
+      return '' unless style =~ /\A\s*([-\w]+\s*:[^:;]*(;\s*|$))*\z/
 
       clean = []
       style.scan(/([-\w]+)\s*:\s*([^:;]*)/) do |prop, val|
@@ -206,7 +206,7 @@ module Sanitizer
         elsif self.class.const_get("SHORTHAND_CSS_PROPERTIES").include?(prop.split('-')[0])
           clean << "#{prop}: #{val};" unless val.split().any? do |keyword|
             !self.class.const_get("ALLOWED_CSS_KEYWORDS").include?(keyword) and
-            keyword !~ /^(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)$/
+            keyword !~ /\A(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)\z/
           end
         elsif self.class.const_get("ALLOWED_SVG_PROPERTIES").include?(prop)
           clean << "#{prop}: #{val};"
