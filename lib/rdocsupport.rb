@@ -53,7 +53,11 @@ class HyperLinkHtml < SM::ToHtml
   # [site] object representing the whole site (typically of class
   #             +Site+)
   def initialize
-    super()
+    if RDoc::VERSION.split('.')[0].to_i >= 4
+      super(RDoc::Options.new)
+    else
+      super()
+    end
     add_tag(:CENTER, "<center>", "</center>")
   end
 
