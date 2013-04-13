@@ -11,8 +11,7 @@
 // 1) jQuery
 // 2) browser.js
 // 3) svgtransformlist.js
-
-var svgedit = svgedit || {};
+// 4) units.js
 
 (function() {
 
@@ -24,9 +23,7 @@ if (!svgedit.utilities) {
 
 // String used to encode base64.
 var KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-var SVGNS = 'http://www.w3.org/2000/svg';
-var XLINKNS = 'http://www.w3.org/1999/xlink';
-var XMLNS = "http://www.w3.org/XML/1998/namespace";
+var NS = svgedit.NS;
 
 // Much faster than running getBBox() every time
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
@@ -48,7 +45,7 @@ svgedit.utilities.init = function(editorContext) {
 // Function: svgedit.utilities.toXml
 // Converts characters in a string to XML-friendly entities.
 //
-// Example: "&" becomes "&amp;"
+// Example: '&' becomes '&amp;'
 //
 // Parameters:
 // str - The string to be converted
@@ -58,15 +55,15 @@ svgedit.utilities.init = function(editorContext) {
 svgedit.utilities.toXml = function(str) {
 	return $('<p/>').text(str).html();
 };
-	
+
 // Function: svgedit.utilities.fromXml
-// Converts XML entities in a string to single characters. 
-// Example: "&amp;" becomes "&"
+// Converts XML entities in a string to single characters.
+// Example: '&amp;' becomes '&'
 //
 // Parameters:
 // str - The string to be converted
 //
-// Returns: 
+// Returns:
 // The converted string
 svgedit.utilities.fromXml = function(str) {
 	return $('<p/>').html(str).text();
@@ -120,15 +117,15 @@ svgedit.utilities.encode64 = function(input) {
 // Converts a string from base64
 svgedit.utilities.decode64 = function(input) {
 	if(window.atob) return window.atob(input);
-	var output = "";
-	var chr1, chr2, chr3 = "";
-	var enc1, enc2, enc3, enc4 = "";
+	var output = '';
+	var chr1, chr2, chr3 = '';
+	var enc1, enc2, enc3, enc4 = '';
 	var i = 0;
 
-	 // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-	 input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+	// remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+	input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
 
-	 do {
+	do {
 		enc1 = KEYSTR.indexOf(input.charAt(i++));
 		enc2 = KEYSTR.indexOf(input.charAt(i++));
 		enc3 = KEYSTR.indexOf(input.charAt(i++));
@@ -141,23 +138,23 @@ svgedit.utilities.decode64 = function(input) {
 		output = output + String.fromCharCode(chr1);
 
 		if (enc3 != 64) {
-		   output = output + String.fromCharCode(chr2);
+			output = output + String.fromCharCode(chr2);
 		}
 		if (enc4 != 64) {
-		   output = output + String.fromCharCode(chr3);
+			output = output + String.fromCharCode(chr3);
 		}
 
-		chr1 = chr2 = chr3 = "";
-		enc1 = enc2 = enc3 = enc4 = "";
+		chr1 = chr2 = chr3 = '';
+		enc1 = enc2 = enc3 = enc4 = '';
 
-	 } while (i < input.length);
-	 return unescape(output);
+	} while (i < input.length);
+	return unescape(output);
 };
 
 // Currently not being used, so commented out for now
 // based on http://phpjs.org/functions/utf8_encode:577
 // codedread:does not seem to work with webkit-based browsers on OSX
-// 		"encodeUTF8": function(input) {
+// 		'encodeUTF8': function(input) {
 // 			//return unescape(encodeURIComponent(input)); //may or may not work
 // 			var output = '';
 // 			for (var n = 0; n < input.length; n++){
@@ -168,7 +165,7 @@ svgedit.utilities.decode64 = function(input) {
 // 				else if (c > 127) {
 // 					if (c < 2048){
 // 						output += String.fromCharCode((c >> 6) | 192);
-// 					} 
+// 					}
 // 					else {
 // 						output += String.fromCharCode((c >> 12) | 224) + String.fromCharCode((c >> 6) & 63 | 128);
 // 					}
@@ -178,7 +175,7 @@ svgedit.utilities.decode64 = function(input) {
 // 			return output;
 // 		},
 
-// Function: svgedit.utilities.convertToXMLReferences 
+// Function: svgedit.utilities.convertToXMLReferences
 // Converts a string to use XML references
 svgedit.utilities.convertToXMLReferences = function(input) {
 	var output = '';
@@ -187,7 +184,7 @@ svgedit.utilities.convertToXMLReferences = function(input) {
 		if (c < 128) {
 			output += input[n];
 		} else if(c > 127) {
-			output += ("&#" + c + ";");
+			output += ('&#' + c + ';');
 		}
 	}
 	return output;
@@ -203,16 +200,16 @@ svgedit.utilities.text2xml = function(sXML) {
 
 	var out;
 	try{
-		var dXML = (window.DOMParser)?new DOMParser():new ActiveXObject("Microsoft.XMLDOM");
+		var dXML = (window.DOMParser)?new DOMParser():new ActiveXObject('Microsoft.XMLDOM');
 		dXML.async = false;
-	} catch(e){ 
-		throw new Error("XML Parser could not be instantiated"); 
-	};
-	try{
-		if(dXML.loadXML) out = (dXML.loadXML(sXML))?dXML:false;
-		else out = dXML.parseFromString(sXML, "text/xml");
+	} catch(e){
+		throw new Error('XML Parser could not be instantiated');
 	}
-	catch(e){ throw new Error("Error parsing XML string"); };
+	try{
+		if(dXML.loadXML) out = (dXML.loadXML(sXML)) ? dXML : false;
+		else out = dXML.parseFromString(sXML, 'text/xml');
+	}
+	catch(e){ throw new Error('Error parsing XML string'); }
 	return out;
 };
 
@@ -230,7 +227,7 @@ svgedit.utilities.bboxToObj = function(bbox) {
 		y: bbox.y,
 		width: bbox.width,
 		height: bbox.height
-	}
+	};
 };
 
 // Function: svgedit.utilities.walkTree
@@ -267,29 +264,29 @@ svgedit.utilities.walkTreePost = function(elem, cbFn) {
 };
 
 // Function: svgedit.utilities.getUrlFromAttr
-// Extracts the URL from the url(...) syntax of some attributes.  
+// Extracts the URL from the url(...) syntax of some attributes.
 // Three variants:
-// 	* <circle fill="url(someFile.svg#foo)" />
+//  * <circle fill="url(someFile.svg#foo)" />
 //  * <circle fill="url('someFile.svg#foo')" />
 //  * <circle fill='url("someFile.svg#foo")' />
 //
 // Parameters:
 // attrVal - The attribute value as a string
-// 
+//
 // Returns:
 // String with just the URL, like someFile.svg#foo
 svgedit.utilities.getUrlFromAttr = function(attrVal) {
-	if (attrVal) {		
+	if (attrVal) {
 		// url("#somegrad")
 		if (attrVal.indexOf('url("') === 0) {
-			return attrVal.substring(5,attrVal.indexOf('"',6));
+			return attrVal.substring(5, attrVal.indexOf('"',6));
 		}
 		// url('#somegrad')
 		else if (attrVal.indexOf("url('") === 0) {
-			return attrVal.substring(5,attrVal.indexOf("'",6));
+			return attrVal.substring(5, attrVal.indexOf("'",6));
 		}
 		else if (attrVal.indexOf("url(") === 0) {
-			return attrVal.substring(4,attrVal.indexOf(')'));
+			return attrVal.substring(4, attrVal.indexOf(')'));
 		}
 	}
 	return null;
@@ -298,30 +295,32 @@ svgedit.utilities.getUrlFromAttr = function(attrVal) {
 // Function: svgedit.utilities.getHref
 // Returns the given element's xlink:href value
 svgedit.utilities.getHref = function(elem) {
-	return elem.getAttributeNS(XLINKNS, "href");
-}
+	return elem.getAttributeNS(NS.XLINK, 'href');
+};
 
 // Function: svgedit.utilities.setHref
 // Sets the given element's xlink:href value
 svgedit.utilities.setHref = function(elem, val) {
-	elem.setAttributeNS(XLINKNS, "xlink:href", val);
-}
+	elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
+};
 
 // Function: findDefs
-// Parameters:
-// svgElement - The <svg> element.
 //
 // Returns:
 // The document's <defs> element, create it first if necessary
-svgedit.utilities.findDefs = function(svgElement) {
-	var svgElement = editorContext_.getSVGContent().documentElement;
-	var defs = svgElement.getElementsByTagNameNS(SVGNS, "defs");
+svgedit.utilities.findDefs = function() {
+	var svgElement = editorContext_.getSVGContent();
+	var defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs');
 	if (defs.length > 0) {
 		defs = defs[0];
-	}
-	else {
-		// first child is a comment, so call nextSibling
-		defs = svgElement.insertBefore( svgElement.ownerDocument.createElementNS(SVGNS, "defs" ), svgElement.firstChild.nextSibling);
+	} else {
+		defs = svgElement.ownerDocument.createElementNS(NS.SVG, 'defs');
+		if (svgElement.firstChild) {
+			// first child is a comment, so call nextSibling
+			svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
+		} else {
+			svgElement.appendChild(defs);
+		}
 	}
 	return defs;
 };
@@ -332,7 +331,7 @@ svgedit.utilities.findDefs = function(svgElement) {
 // Get correct BBox for a path in Webkit
 // Converted from code found here:
 // http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
-// 
+//
 // Parameters:
 // path - The path DOM element to get the BBox for
 //
@@ -341,7 +340,7 @@ svgedit.utilities.findDefs = function(svgElement) {
 svgedit.utilities.getPathBBox = function(path) {
 	var seglist = path.pathSegList;
 	var tot = seglist.numberOfItems;
-	
+
 	var bounds = [[], []];
 	var start = seglist.getItem(0);
 	var P0 = [start.x, start.y];
@@ -354,7 +353,7 @@ svgedit.utilities.getPathBBox = function(path) {
 		// Add actual points to limits
 		bounds[0].push(P0[0]);
 		bounds[1].push(P0[1]);
-		
+
 		if(seg.x1) {
 			var P1 = [seg.x1, seg.y1],
 				P2 = [seg.x2, seg.y2],
@@ -363,16 +362,16 @@ svgedit.utilities.getPathBBox = function(path) {
 			for(var j=0; j < 2; j++) {
 
 				var calc = function(t) {
-					return Math.pow(1-t,3) * P0[j] 
+					return Math.pow(1-t,3) * P0[j]
 						+ 3 * Math.pow(1-t,2) * t * P1[j]
-						+ 3 * (1-t) * Math.pow(t,2) * P2[j]
+						+ 3 * (1-t) * Math.pow(t, 2) * P2[j]
 						+ Math.pow(t,3) * P3[j];
 				};
 
 				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
 				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
 				var c = 3 * P1[j] - 3 * P0[j];
-				
+
 				if(a == 0) {
 					if(b == 0) {
 						continue;
@@ -383,7 +382,6 @@ svgedit.utilities.getPathBBox = function(path) {
 					}
 					continue;
 				}
-				
 				var b2ac = Math.pow(b,2) - 4 * c * a;
 				if(b2ac < 0) continue;
 				var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
@@ -397,7 +395,7 @@ svgedit.utilities.getPathBBox = function(path) {
 			bounds[1].push(seg.y);
 		}
 	}
-	
+
 	var x = Math.min.apply(null, bounds[0]);
 	var w = Math.max.apply(null, bounds[0]) - x;
 	var y = Math.min.apply(null, bounds[1]);
@@ -416,15 +414,16 @@ svgedit.utilities.getPathBBox = function(path) {
 // Note that performance is currently terrible, so some way to improve would
 // be great.
 //
-// Parameters: 
+// Parameters:
 // selected - Container or <use> DOM element
 function groupBBFix(selected) {
 	if(svgedit.browser.supportsHVLineContainerBBox()) {
-		try { return selected.getBBox();} catch(e){} 
+		try { return selected.getBBox();} catch(e){}
 	}
 	var ref = $.data(selected, 'ref');
 	var matched = null;
-	
+	var ret;
+
 	if(ref) {
 		var copy = $(ref).children().clone().attr('visibility', 'hidden');
 		$(svgroot_).append(copy);
@@ -432,7 +431,7 @@ function groupBBFix(selected) {
 	} else {
 		matched = $(selected).find('line, path');
 	}
-	
+
 	var issue = false;
 	if(matched.length) {
 		matched.each(function() {
@@ -467,7 +466,7 @@ svgedit.utilities.getBBox = function(elem) {
 	if (elem.nodeType != 1) return null;
 	var ret = null;
 	var elname = selected.nodeName;
-	
+
 	switch ( elname ) {
 	case 'text':
 		if(selected.textContent === '') {
@@ -494,8 +493,7 @@ svgedit.utilities.getBBox = function(elem) {
 		if(elname === 'use') {
 			ret = groupBBFix(selected, true);
 		}
-		
-		if(elname === 'use' || ( elname === "foreignObject" && svgedit.browser.isWebkit() ) ) {
+		if(elname === 'use' || ( elname === 'foreignObject' && svgedit.browser.isWebkit() ) ) {
 			if(!ret) ret = selected.getBBox();
 			// This is resolved in later versions of webkit, perhaps we should
 			// have a featured detection for correct 'use' behavior?
@@ -509,10 +507,10 @@ svgedit.utilities.getBBox = function(elem) {
 				ret = bb;
 			//}
 		} else if(~visElems_arr.indexOf(elname)) {
-			try { ret = selected.getBBox();} 
-			catch(e) { 
+			try { ret = selected.getBBox();}
+			catch(e) {
 				// Check if element is child of a foreignObject
-				var fo = $(selected).closest("foreignObject");
+				var fo = $(selected).closest('foreignObject');
 				if(fo.length) {
 					try {
 						ret = fo[0].getBBox();
@@ -525,7 +523,6 @@ svgedit.utilities.getBBox = function(elem) {
 			}
 		}
 	}
-	
 	if(ret) {
 		ret = svgedit.utilities.bboxToObj(ret);
 	}
@@ -558,6 +555,15 @@ svgedit.utilities.getRotationAngle = function(elem, to_rad) {
 	return 0.0;
 };
 
+// Function getRefElem
+// Get the reference element associated with the given attribute value
+//
+// Parameters:
+// attrVal - The attribute value as a string
+svgedit.utilities.getRefElem = function(attrVal) {
+	return svgedit.utilities.getElem(svgedit.utilities.getUrlFromAttr(attrVal).substr(1));
+};
+
 // Function: getElem
 // Get a DOM element by ID within the SVG root element.
 //
@@ -573,8 +579,8 @@ if (svgedit.browser.supportsSelectors()) {
 		// xpath lookup
 		return domdoc_.evaluate(
 			'svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
-			domcontainer_, 
-			function() { return "http://www.w3.org/2000/svg"; },
+			domcontainer_,
+			function() { return svgedit.NS.SVG; },
 			9,
 			null).singleNodeValue;
 	};
@@ -600,9 +606,9 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 	if (!svgedit.browser.isOpera()) svgroot_.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
-		var ns = (i.substr(0,4) === "xml:" ? XMLNS : 
-			i.substr(0,6) === "xlink:" ? XLINKNS : null);
-			
+		var ns = (i.substr(0,4) === 'xml:' ? NS.XML :
+			i.substr(0,6) === 'xlink:' ? NS.XLINK : null);
+
 		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);
 		} else if(!unitCheck) {
@@ -610,9 +616,7 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 		} else {
 			svgedit.units.setUnitAttr(node, i, attrs[i]);
 		}
-		
 	}
-	
 	if (!svgedit.browser.isOpera()) svgroot_.unsuspendRedraw(handle);
 };
 
@@ -635,17 +639,29 @@ svgedit.utilities.cleanupElement = function(element) {
 		'stroke-width':1,
 		'rx':0,
 		'ry':0
-	}
-	
+	};
+
 	for(var attr in defaults) {
 		var val = defaults[attr];
 		if(element.getAttribute(attr) == val) {
 			element.removeAttribute(attr);
 		}
 	}
-	
+
 	svgroot_.unsuspendRedraw(handle);
 };
 
+// Function: snapToGrid
+// round value to for snapping
+// NOTE: This function did not move to svgutils.js since it depends on curConfig.
+svgedit.utilities.snapToGrid = function(value) {
+	var stepSize = editorContext_.getSnappingStep();
+	var unit = editorContext_.getBaseUnit();
+	if (unit !== "px") {
+		stepSize *= svgedit.units.getTypeMap()[unit];
+	}
+	value = Math.round(value/stepSize)*stepSize;
+	return value;
+};
 
 })();

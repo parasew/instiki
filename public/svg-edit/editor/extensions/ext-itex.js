@@ -9,16 +9,10 @@
  */
 
 svgEditor.addExtension("itex", function(S) {
-		var svgcontent = S.svgcontent,
+		var NS = svgedit.NS,
+		svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
 			selElems,
-			svgns = "http://www.w3.org/2000/svg",
-			xlinkns = "http://www.w3.org/1999/xlink",
-			xmlns = "http://www.w3.org/XML/1998/namespace",
-			xmlnsns = "http://www.w3.org/2000/xmlns/",
-			se_ns = "http://svg-edit.googlecode.com",
-			htmlns = "http://www.w3.org/1999/xhtml",
-			mathns = "http://www.w3.org/1998/Math/MathML",
 			ajaxEndpoint = "../../itex",
 			editingitex = false,
 			svgdoc = S.svgroot.parentNode.ownerDocument,
@@ -59,8 +53,8 @@ svgEditor.addExtension("itex", function(S) {
 		function setItexString(tex) {
 			var elt = selElems[0];
 			try {
-				var math = svgdoc.createElementNS(mathns, 'math');
-				math.setAttributeNS(xmlnsns, 'xmlns', mathns);
+				var math = svgdoc.createElementNS(NS.MATH, 'math');
+				math.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
 				math.setAttribute('display', 'inline');
 				// make an AJAX request to the server, to get the MathML
 				$.post(ajaxEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
@@ -70,11 +64,11 @@ svgEditor.addExtension("itex", function(S) {
 					if (first.localName == 'semantics') {
 					  math.appendChild(svgdoc.adoptNode(first, true));
 					} else {
-					  var semantics = document.createElementNS(mathns, 'semantics');
-					  var annotation = document.createElementNS(mathns, 'annotation');
+					  var semantics = document.createElementNS(NS.MATH, 'semantics');
+					  var annotation = document.createElementNS(NS.MATH, 'annotation');
 					  annotation.setAttribute('encoding', 'application/x-tex');
 					  annotation.textContent = tex;
-					  var mrow = document.createElementNS(mathns, 'mrow');
+					  var mrow = document.createElementNS(NS.MATH, 'mrow');
 					  semantics.appendChild(mrow);
 					  semantics.appendChild(annotation);
 					  math.appendChild(semantics);
@@ -237,19 +231,19 @@ svgEditor.addExtension("itex", function(S) {
 							"style": "pointer-events:inherit"
 						}
 					});
-					var m = svgdoc.createElementNS(mathns, 'math');
-					m.setAttributeNS(xmlnsns, 'xmlns', mathns);
+					var m = svgdoc.createElementNS(NS.MATH, 'math');
+					m.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
 					m.setAttribute('display', 'inline');
-					var semantics = svgdoc.createElementNS(mathns, 'semantics');
-					var mrow = svgdoc.createElementNS(mathns, 'mrow');
-					var mi = svgdoc.createElementNS(mathns, 'mi');
+					var semantics = svgdoc.createElementNS(NS.MATH, 'semantics');
+					var mrow = svgdoc.createElementNS(NS.MATH, 'mrow');
+					var mi = svgdoc.createElementNS(NS.MATH, 'mi');
 					mi.setAttribute('mathvariant', 'normal');
 					mi.textContent = "\u03A6";
-					var mo = svgdoc.createElementNS(mathns, 'mo');
+					var mo = svgdoc.createElementNS(NS.MATH, 'mo');
 					mo.textContent = "\u222A";
-					var mi2 = svgdoc.createElementNS(mathns, 'mi');
+					var mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
 					mi2.textContent = "\u2133";
-					var annotation = svgdoc.createElementNS(mathns, 'annotation');
+					var annotation = svgdoc.createElementNS(NS.MATH, 'annotation');
 					annotation.setAttribute('encoding', 'application/x-tex');
 					annotation.textContent = "\\Phi \\union \\mathcal{M}";
 					mrow.appendChild(mi);
@@ -289,7 +283,7 @@ svgEditor.addExtension("itex", function(S) {
 					var elem = selElems[i];
 					if(elem && elem.tagName == "foreignObject") {
 						if(opts.selectedElement && !opts.multiselected &&
-							  elem.firstElementChild.namespaceURI == mathns ) {
+							  elem.firstElementChild.namespaceURI == NS.MATH ) {
 							$('#itex_font_size').val(elem.getAttribute("font-size"));
 							$('#itex_width').val(elem.getAttribute("width"));
 							$('#itex_height').val(elem.getAttribute("height"));

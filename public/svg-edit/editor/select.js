@@ -13,8 +13,6 @@
 // 3) math.js
 // 4) svgutils.js
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.select) {
@@ -24,13 +22,11 @@ if (!svgedit.select) {
 var svgFactory_;
 var config_;
 var selectorManager_; // A Singleton
-
-var gripRadius;
-svgedit.browser.isTouch() ? gripRadius = 10 : gripRadius = 4;
+var gripRadius = svgedit.browser.isTouch() ? 10 : 4;
 
 // Class: svgedit.select.Selector
 // Private class for DOM element selection boxes
-// 
+//
 // Parameters:
 // id - integer to internally indentify the selector
 // elem - DOM element associated with this selector
@@ -82,10 +78,10 @@ svgedit.select.Selector = function(id, elem) {
 };
 
 
-// Function: svgedit.select.Selector.reset 
+// Function: svgedit.select.Selector.reset
 // Used to reset the id and element that the selector is attached to
 //
-// Parameters: 
+// Parameters:
 // e - DOM element associated with this selector
 svgedit.select.Selector.prototype.reset = function(e) {
 	this.locked = true;
@@ -102,11 +98,11 @@ svgedit.select.Selector.prototype.reset = function(e) {
 svgedit.select.Selector.prototype.updateGripCursors = function(angle) {
 	var dir_arr = [];
 	var steps = Math.round(angle / 45);
-	if(steps < 0) steps += 8;
+	if (steps < 0) steps += 8;
 	for (var dir in selectorManager_.selectorGrips) {
 		dir_arr.push(dir);
 	}
-	while(steps > 0) {
+	while (steps > 0) {
 		dir_arr.push(dir_arr.shift());
 		steps--;
 	}
@@ -114,7 +110,7 @@ svgedit.select.Selector.prototype.updateGripCursors = function(angle) {
 	for (var dir in selectorManager_.selectorGrips) {
 		selectorManager_.selectorGrips[dir].setAttribute('style', ('cursor:' + dir_arr[i] + '-resize'));
 		i++;
-	};
+	}
 };
 
 // Function: svgedit.select.Selector.showGrips
@@ -128,7 +124,7 @@ svgedit.select.Selector.prototype.showGrips = function(show) {
 	selectorManager_.selectorGripsGroup.setAttribute('display', bShow);
 	var elem = this.selectedElement;
 	this.hasGrips = show;
-	if(elem && show) {
+	if (elem && show) {
 		this.selectorGroup.appendChild(selectorManager_.selectorGripsGroup);
 		this.updateGripCursors(svgedit.utilities.getRotationAngle(elem));
 	}
@@ -163,32 +159,32 @@ svgedit.select.Selector.prototype.resize = function() {
 	m.f *= current_zoom;
 
 	var bbox = svgedit.utilities.getBBox(selected);
-	if(tagName === 'g' && !$.data(selected, 'gsvg')) {
+	if (tagName === 'g' && !$.data(selected, 'gsvg')) {
 		// The bbox for a group does not include stroke vals, so we
-		// get the bbox based on its children. 
+		// get the bbox based on its children.
 		var stroked_bbox = svgFactory_.getStrokedBBox(selected.childNodes);
-		if(stroked_bbox) {
+		if (stroked_bbox) {
 			bbox = stroked_bbox;
 		}
 	}
 
 	// apply the transforms
-	var l=bbox.x, t=bbox.y, w=bbox.width, h=bbox.height,
+	var l = bbox.x, t = bbox.y, w = bbox.width, h = bbox.height,
 		bbox = {x:l, y:t, width:w, height:h};
 
 	// we need to handle temporary transforms too
 	// if skewed, get its transformed box, then find its axis-aligned bbox
-	
+
 	//*
 	offset *= current_zoom;
-	
+
 	var nbox = svgedit.math.transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
 		aabox = nbox.aabox,
 		nbax = aabox.x - offset,
 		nbay = aabox.y - offset,
 		nbaw = aabox.width + (offset * 2),
 		nbah = aabox.height + (offset * 2);
-		
+
 	// now if the shape is rotated, un-rotate it
 	var cx = nbax + nbaw/2,
 		cy = nbay + nbah/2;
@@ -196,12 +192,12 @@ svgedit.select.Selector.prototype.resize = function() {
 	var angle = svgedit.utilities.getRotationAngle(selected);
 	if (angle) {
 		var rot = svgFactory_.svgRoot().createSVGTransform();
-		rot.setRotate(-angle,cx,cy);
+		rot.setRotate(-angle, cx, cy);
 		var rotm = rot.matrix;
-		nbox.tl = svgedit.math.transformPoint(nbox.tl.x,nbox.tl.y,rotm);
-		nbox.tr = svgedit.math.transformPoint(nbox.tr.x,nbox.tr.y,rotm);
-		nbox.bl = svgedit.math.transformPoint(nbox.bl.x,nbox.bl.y,rotm);
-		nbox.br = svgedit.math.transformPoint(nbox.br.x,nbox.br.y,rotm);
+		nbox.tl = svgedit.math.transformPoint(nbox.tl.x, nbox.tl.y, rotm);
+		nbox.tr = svgedit.math.transformPoint(nbox.tr.x, nbox.tr.y, rotm);
+		nbox.bl = svgedit.math.transformPoint(nbox.bl.x, nbox.bl.y, rotm);
+		nbox.br = svgedit.math.transformPoint(nbox.br.x, nbox.br.y, rotm);
 
 		// calculate the axis-aligned bbox
 		var tl = nbox.tl;
@@ -229,12 +225,12 @@ svgedit.select.Selector.prototype.resize = function() {
 				+ ' ' + (nbax+nbaw) + ',' + (nbay+nbah)
 				+ ' ' + nbax + ',' + (nbay+nbah) + 'z';
 	selectedBox.setAttribute('d', dstr);
-	
-	var xform = angle ? 'rotate(' + [angle,cx,cy].join(',') + ')' : '';
+
+	var xform = angle ? 'rotate(' + [angle, cx, cy].join(',') + ')' : '';
 	this.selectorGroup.setAttribute('transform', xform);
 
 	// TODO(codedread): Is this if needed?
-//	if(selected === selectedElements[0]) {
+//	if (selected === selectedElements[0]) {
 		this.gripCoords = {
 			'nw': [nbax, nbay],
 			'ne': [nbax+nbaw, nbay],
@@ -246,11 +242,11 @@ svgedit.select.Selector.prototype.resize = function() {
 			's':	[nbax + (nbaw)/2, nbay + nbah]
 		};
 
-		for(var dir in this.gripCoords) {
+		for (var dir in this.gripCoords) {
 			var coords = this.gripCoords[dir];
 			selectedGrips[dir].setAttribute('cx', coords[0]);
 			selectedGrips[dir].setAttribute('cy', coords[1]);
-		};
+		}
 
 		// we want to go 20 pixels in the negative transformed y direction, ignoring scale
 		mgr.rotateGripConnector.setAttribute('x1', nbax + (nbaw)/2);
@@ -258,7 +254,7 @@ svgedit.select.Selector.prototype.resize = function() {
 		mgr.rotateGripConnector.setAttribute('x2', nbax + (nbaw)/2);
 		mgr.rotateGripConnector.setAttribute('y2', nbay - (gripRadius*5));
 
-		mgr.rotateGrip.setAttribute('cx', nbax + (nbaw)/2); 
+		mgr.rotateGrip.setAttribute('cx', nbax + (nbaw)/2);
 		mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius*5));
 //	}
 
@@ -340,7 +336,7 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 				'pointer-events': 'all'
 			}
 		});
-		
+
 		$.data(grip, 'dir', dir);
 		$.data(grip, 'type', 'resize');
 		this.selectorGrips[dir] = this.selectorGripsGroup.appendChild(grip);
@@ -373,7 +369,7 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 	);
 	$.data(this.rotateGrip, 'type', 'rotate');
 
-	if($('#canvasBackground').length) return;
+	if ($('#canvasBackground').length) return;
 
 	var dims = config_.dimensions;
 	var canvasbg = svgFactory_.createSVGElement({
@@ -439,7 +435,7 @@ svgedit.select.SelectorManager.prototype.requestSelector = function(elem) {
 };
 
 // Function: svgedit.select.SelectorManager.releaseSelector
-// Removes the selector of the given element (hides selection box) 
+// Removes the selector of the given element (hides selection box)
 //
 // Parameters:
 // elem - DOM element to remove the selector for
