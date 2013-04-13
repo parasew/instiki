@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Unit Tests for path.js</title>
+  <title>Unit Tests for jquery-svg.js</title>
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-  <script src='../editor/jquery.js'></script>
-  <script src='../editor/path.js'></script>
-  <script src='qunit/qunit.js'></script>
-  <script>
+  <script type='text/javascript' src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
   $(function() {
     // log function
     QUnit.log = function(result, message) {
@@ -14,14 +13,15 @@
         window.console.log(result +' :: '+ message);
       }
     };
+
   });
   </script>
-</head>
-<body>
-  <h1 id='qunit-header'>Unit Tests for path.js</h1>
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for jquery-svg</h1>
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'></ol>
-  <div id='anchor' style='visibility:hidden'></div>
+  <div id='root' style=''></div>
 </body>
 </html>

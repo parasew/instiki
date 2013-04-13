@@ -5,7 +5,7 @@ svgEditor.readLang({
 		"ok": "OK",
 		"cancel": "キャンセル",
 		"key_backspace": "backspace", 
-		"key_del": "delete", 
+		"key_del": "削除", 
 		"key_down": "down", 
 		"key_up": "up", 
 		"more_opts": "More Options",
@@ -139,7 +139,6 @@ svgEditor.readLang({
 		"paste": "Paste",
 		"paste_in_place": "Paste in Place",
 		"delete": "Delete",
-		"group": "Group",
 		"move_front": "Bring to Front",
 		"move_up": "Bring Forward",
 		"move_down": "Send Backward",
@@ -182,7 +181,8 @@ svgEditor.readLang({
 		"base_unit": "Base Unit:",
 		"grid": "Grid",
 		"snapping_onoff": "Snapping on/off",
-		"snapping_stepsize": "Snapping Step-Size:"
+		"snapping_stepsize": "Snapping Step-Size:",
+		"grid_color": "Grid color"
 	},
 	shape_cats: {
 		"basic": "Basic",
@@ -216,7 +216,7 @@ svgEditor.readLang({
 		"layerHasThatName":"既に同名が付いています。",
 		"QmoveElemsToLayer":"選択した要素をレイヤー '%s' に移動しますか？",
 		"QwantToClear":"キャンバスをクリアしますか？\nアンドゥ履歴も消去されます。",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
+		"QwantToOpen":"新しいファイルを開きますか?\nアンドゥ履歴も消去されます。",
 		"QerrorsRevertToSource":"ソースにエラーがあります。\n元のソースに戻しますか？",
 		"QignoreSourceChanges":"ソースの変更を無視しますか？",
 		"featNotSupported":"機能はサポートされていません。",

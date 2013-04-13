@@ -10,30 +10,28 @@
 // Dependencies:
 // 1) browser.js
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.transformlist) {
 	svgedit.transformlist = {};
 }
 
-var svgroot = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
 
 // Helper function.
 function transformToString(xform) {
 	var m = xform.matrix,
-		text = "";
+		text = '';
 	switch(xform.type) {
 		case 1: // MATRIX
-			text = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
+			text = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')';
 			break;
 		case 2: // TRANSLATE
-			text = "translate(" + m.e + "," + m.f + ")";
+			text = 'translate(' + m.e + ',' + m.f + ')';
 			break;
 		case 3: // SCALE
-			if (m.a == m.d) text = "scale(" + m.a + ")";
-			else text = "scale(" + m.a + "," + m.d + ")";
+			if (m.a == m.d) text = 'scale(' + m.a + ')';
+			else text = 'scale(' + m.a + ',' + m.d + ')';
 			break;
 		case 4: // ROTATE
 			var cx = 0, cy = 0;
@@ -43,11 +41,11 @@ function transformToString(xform) {
 				cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
 				cx = ( m.e - m.b * cy ) / K;
 			}
-			text = "rotate(" + xform.angle + " " + cx + "," + cy + ")";
+			text = 'rotate(' + xform.angle + ' ' + cx + ',' + cy + ')';
 			break;
 	}
 	return text;
-};
+}
 
 
 /**
@@ -80,53 +78,51 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	this._xforms = [];
 	// TODO: how do we capture the undo-ability in the changed transform list?
 	this._update = function() {
-		var tstr = "";
+		var tstr = '';
 		var concatMatrix = svgroot.createSVGMatrix();
 		for (var i = 0; i < this.numberOfItems; ++i) {
 			var xform = this._list.getItem(i);
-			tstr += transformToString(xform) + " ";
+			tstr += transformToString(xform) + ' ';
 		}
-		this._elem.setAttribute("transform", tstr);
+		this._elem.setAttribute('transform', tstr);
 	};
 	this._list = this;
 	this._init = function() {
 		// Transform attribute parser
-		var str = this._elem.getAttribute("transform");
-		if(!str) return;
-		
+		var str = this._elem.getAttribute('transform');
+		if (!str) return;
+
 		// TODO: Add skew support in future
 		var re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
-		var arr = [];
 		var m = true;
-		while(m) {
+		while (m) {
 			m = str.match(re);
-			str = str.replace(re,'');
-			if(m && m[1]) {
+			str = str.replace(re, '');
+			if (m && m[1]) {
 				var x = m[1];
 				var bits = x.split(/\s*\(/);
 				var name = bits[0];
 				var val_bits = bits[1].match(/\s*(.*?)\s*\)/);
-				val_bits[1] = val_bits[1].replace(/(\d)-/g, "$1 -");
+				val_bits[1] = val_bits[1].replace(/(\d)-/g, '$1 -');
 				var val_arr = val_bits[1].split(/[, ]+/);
 				var letters = 'abcdef'.split('');
 				var mtx = svgroot.createSVGMatrix();
 				$.each(val_arr, function(i, item) {
 					val_arr[i] = parseFloat(item);
-					if(name == 'matrix') {
+					if (name == 'matrix') {
 						mtx[letters[i]] = val_arr[i];
 					}
 				});
 				var xform = svgroot.createSVGTransform();
 				var fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
-				var values = name=='matrix'?[mtx]:val_arr;
-				
+				var values = name == 'matrix' ? [mtx] : val_arr;
+
 				if (name == 'scale' && values.length == 1) {
 					values.push(values[0]);
 				} else if (name == 'translate' && values.length == 1) {
 					values.push(0);
 				} else if (name == 'rotate' && values.length == 1) {
-					values.push(0);
-					values.push(0);
+					values.push(0, 0);
 				}
 				xform[fname].apply(xform, values);
 				this._list.appendItem(xform);
@@ -141,7 +137,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			for (var id in listMap_) {
 				var tl = listMap_[id];
 				for (var i = 0, len = tl._xforms.length; i < len; ++i) {
-					if(tl._xforms[i] == item) {
+					if (tl._xforms[i] == item) {
 						found = true;
 						tl.removeItem(i);
 						break;
@@ -153,26 +149,26 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			}
 		}
 	};
-	
+
 	this.numberOfItems = 0;
-	this.clear = function() { 
+	this.clear = function() {
 		this.numberOfItems = 0;
 		this._xforms = [];
 	};
-	
+
 	this.initialize = function(newItem) {
 		this.numberOfItems = 1;
 		this._removeFromOtherLists(newItem);
 		this._xforms = [newItem];
 	};
-	
+
 	this.getItem = function(index) {
 		if (index < this.numberOfItems && index >= 0) {
 			return this._xforms[index];
 		}
 		throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 	};
-	
+
 	this.insertItemBefore = function(newItem, index) {
 		var retValue = null;
 		if (index >= 0) {
@@ -198,7 +194,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		}
 		return retValue;
 	};
-	
+
 	this.replaceItem = function(newItem, index) {
 		var retValue = null;
 		if (index < this.numberOfItems && index >= 0) {
@@ -209,7 +205,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		}
 		return retValue;
 	};
-	
+
 	this.removeItem = function(index) {
 		if (index < this.numberOfItems && index >= 0) {
 			var retValue = this._xforms[index];
@@ -224,11 +220,10 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			this._xforms = newxforms;
 			this._list._update();
 			return retValue;
-		} else {
-			throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 		}
+		throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 	};
-	
+
 	this.appendItem = function(newItem) {
 		this._removeFromOtherLists(newItem);
 		this._xforms.push(newItem);
@@ -261,31 +256,26 @@ svgedit.transformlist.removeElementFromListMap = function(elem) {
 // elem - DOM element to get a transformlist from
 svgedit.transformlist.getTransformList = function(elem) {
 	if (!svgedit.browser.supportsNativeTransformLists()) {
-		var id = elem.id;
-		if(!id) {
-			// Get unique ID for temporary element
-			id = 'temp';
-		}
+		var id = elem.id || 'temp';
 		var t = listMap_[id];
-		if (!t || id == 'temp') {
+		if (!t || id === 'temp') {
 			listMap_[id] = new svgedit.transformlist.SVGTransformList(elem);
 			listMap_[id]._init();
 			t = listMap_[id];
 		}
 		return t;
 	}
-	else if (elem.transform) {
+	if (elem.transform) {
 		return elem.transform.baseVal;
 	}
-	else if (elem.gradientTransform) {
+	if (elem.gradientTransform) {
 		return elem.gradientTransform.baseVal;
 	}
-	else if (elem.patternTransform) {
+	if (elem.patternTransform) {
 		return elem.patternTransform.baseVal;
 	}
 
 	return null;
 };
-
 
 })();
