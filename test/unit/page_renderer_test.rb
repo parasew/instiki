@@ -45,7 +45,7 @@ class PageRendererTest < ActiveSupport::TestCase
   end
 
   def test_wiki_links_after_empty
-    assert_markup_parsed_as(%{<code></code>\n<p>This is a <span class='newWikiWord'>wikilink<a href=} +
+    assert_markup_parsed_as(%{<p><code></code></p>\n\n<p>This is a <span class='newWikiWord'>wikilink<a href=} +
       %{'../show/wikilink'>?</a></span>.</p>},
       "<code></code>\n\nThis is a [[wikilink]].")
   end
@@ -233,7 +233,7 @@ END_THM
     "Rapid development</li>\n</ol>\n<a href='#fnref:3' rev='footnote'>\342\206\251</a></li></ol></div>",
     "Ruby on Rails is a web-framework[^framework]. It uses the MVC[^MVC] architecture pattern." +
     " It has its good points[^points].\n\n[^framework]: a reusable set of libraries\n\n[^MVC]:" +
-    " Model View Controller\n\n[^points]: Here are its good points\n1. Ease of use\n2. Rapid d" +
+    " Model View Controller\n\n[^points]: Here are its good points\n    1. Ease of use\n    2. Rapid d" +
     "evelopment")
   end
 

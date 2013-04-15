@@ -996,7 +996,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n<em>Recursive include detected: Bar \342\206\222 Bar<\/em>/, r.body.as_utf8
+    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n+<p><em>Recursive include detected: Bar \342\206\222 Bar<\/em><\/p>/, r.body.as_utf8
   end
 
   def test_nonrecursive_include
