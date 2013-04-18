@@ -74,13 +74,13 @@ class PageRendererTest < ActiveSupport::TestCase
         %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
         "equation $\\sin(x)$")
   
-    re = Regexp.new('\\A<h1 id=\'my_headline_\\d{1,4}\'>My Headline</h1>\n\n<p>that <span class=\'newWikiWord\'>Smart Engine GUI<a href=\'../show/SmartEngineGUI\'>\?</a></span></p>\\Z')
+    re = Regexp.new('\\A<h1 id=\'my_headline(_\\d{1,4})?\'>My Headline</h1>\n\n<p>that <span class=\'newWikiWord\'>Smart Engine GUI<a href=\'../show/SmartEngineGUI\'>\?</a></span></p>\\Z')
 
     assert_match_markup_parsed_as(re, "My Headline\n===========\n\nthat SmartEngineGUI")
   
     assert_match_markup_parsed_as(re, "#My Headline#\n\nthat SmartEngineGUI")
 
-    str1 = %{<div class='un_defn'>\n<h6 id='definition_\\d\{1,4\}'>Definition</h6>\n\n<p>Let <math} +
+    str1 = %{<div class='un_defn'>\n<h6 id='definition(_\\d\{1,4\})?'>Definition</h6>\n\n<p>Let <math} +
     %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi>} +
     %{</math> be a subgroup of a group <math class='maruku-mathml' display='inline' xmlns='http://w} +
     %{ww.w3.org/1998/Math/MathML'><mi>G</mi></math>. A <em>left coset</em> of <math class='maruku-m} +
@@ -102,7 +102,7 @@ class PageRendererTest < ActiveSupport::TestCase
     %{maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi><mi>x</m} +
     %{i><mo>=</mo><mo stretchy='false'>\\\{</mo><mi>h</mi><mi>x</mi><mo>:</mo><mi>h</mi><mo>\342\210\210} +
     %{</mo><mi>H</mi><mo stretchy='false'>\\\}</mo></math>.</p>\n</div>\n\n} +
-    %{<div class='num_lemma' id='LeftCosetsDisjoint'>\n<h6 id='lemma_\\d\{1,4\}'>Lemma</h6>\n\n<p>} +
+    %{<div class='num_lemma' id='LeftCosetsDisjoint'>\n<h6 id='lemma(_\\d\{1,4\})?'>Lemma</h6>\n\n<p>} +
     %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
     %{<mi>H</mi></math> be a subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
     %{='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>, and let <math class='maruku-mathml'} +
@@ -113,15 +113,20 @@ class PageRendererTest < ActiveSupport::TestCase
     %{s='http://www.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>} +
     %{H</mi></math> is non-empty. Then <math class='maruku-mathml' display='inline' xmlns='http://ww} +
     %{w.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>=</mo><mi>y</mi><mi>H</mi></math>.</p>\n</d} +
-    %{iv>\n\n<div class='proof'>\n<h6 id='proof_\\d\{1,4\}'>Proof</h6>\n\n<p>Let <math class='maruku-m} +
+    %{iv>\n\n<div class='proof'>\n<h6 id='proof(_\\d\{1,4\})?'>Proof</h6>\n\n<p>Let <math class='maruku-m} +
     %{athml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>z</mi></math> be some e} +
     %{lement of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/Math} +
     %{ML'><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>H</mi></math>.</p>\n</div>\n\n} +
-    %{<div class='num_lemma' id='SizeOfLeftCoset'>\n<h6 id='lemma_\\d\{1,4\}'>Lemma</h6>\n\n<p>} +
+    %{<div class='num_lemma' id='SizeOfLeftCoset'>\n<h6 id='lemma(_\\d\{1,4\})?'>Lemma</h6>\n\n<p>} +
     %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
     %{<mi>H</mi></math> be a finite subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
     %{='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>.</p>\n</div>\n\n} +
-    %{<div class='num_theorem' id='Lagrange'>\n<h6 id='theorem_\\d\{1,4\}'>Theorem</h6>\n\n<p><strong>\\(Lagrange\342\200\231s Theorem\\).</strong> Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math> be a finite group, and let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi></math> be a subgroup of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>.</p>\n</div>}
+    %{<div class='num_theorem' id='Lagrange'>\n<h6 id='theorem(_\\d\{1,4\})?'>Theorem</h6>\n\n<p>} +
+    %{<strong>\\(Lagrange\342\200\231s Theorem\\).</strong> Let <math class='maruku-mathml' disp} +
+    %{lay='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math> be a finite group} +
+    %{, and let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/M} +
+    %{athML'><mi>H</mi></math> be a subgroup of <math class='maruku-mathml' display='inline' xmln} +
+    %{s='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>.</p>\n</div>}
 
     str2 = <<END_THM
 +-- {: .un_defn}
@@ -239,10 +244,10 @@ END_THM
 
   def test_toc
     assert_markup_parsed_as(
-      %{<h1 id='title_1'>Title</h1>\n<div class='maruku_toc'><ul><li><a href='#title_1'>Title<} +
-      %{/a><ul><li><a href='#section_1_2'>Section 1</a></l} +
-      %{i><li><a href='#section_2_3'>Section 2</a></li></ul></li></ul></div>\n<h2 id='section_} +
-      %{1_2'>Section 1</h2>\n\n<p>Foo</p>\n\n<h2 id='section_2_3'>Section 2</h2>\n\n<p>Bar</p>},
+      %{<h1 id='title'>Title</h1>\n<div class='maruku_toc'><ul><li><a href='#title'>Title<} +
+      %{/a><ul><li><a href='#section_1'>Section 1</a></l} +
+      %{i><li><a href='#section_2'>Section 2</a></li></ul></li></ul></div>\n<h2 id='section_} +
+      %{1'>Section 1</h2>\n\n<p>Foo</p>\n\n<h2 id='section_2'>Section 2</h2>\n\n<p>Bar</p>},
       "#Title\n* Toc\n{:toc}\n\n##Section 1\n\nFoo\n\n##Section 2\n\nBar\n")
   end
 
@@ -434,7 +439,7 @@ END_THM
     
     set_web_property :markup, :markdownMML
     re = Regexp.new(
-      '<h1 id=\'markdown_heading_\d{1,4}\'>Markdown heading</h1>\n\n' +
+      '<h1 id=\'markdown_heading(_\d{1,4})?\'>Markdown heading</h1>\n\n' +
       "<p>h2. Textile heading</p>\n\n" +
       "<p><em>some</em> <strong>text</strong> <em>with</em> -styles-</p>\n\n" +
       "<ul>\n<li>list 1</li>\n\n<li>list 2</li>\n</ul>")
