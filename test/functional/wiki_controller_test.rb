@@ -1023,7 +1023,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'Bar', 'web' => 'wiki1')
 
     assert_response :success
-    resp = %{<div class='num_lemma' id='Leftcosetsdisjoint'>\n<h6 id='lemma_1'>Lemma</h6>\n\n} +
+    resp = %{<div class='num_lemma' id='Leftcosetsdisjoint'>\n<h6 id='lemma'>Lemma</h6>\n\n} +
       %{<p>Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Mat} +
       %{h/MathML'><mi>H</mi></math> be a subgroup of a group <math class='maruku-mathml' displ} +
       %{ay='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>, and let <ma} +
