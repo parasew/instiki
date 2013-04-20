@@ -11,5 +11,6 @@ gem "rake"
 gem "rdoc"
 gem "json"
 gem "file_signature", :git => 'http://github.com/distler/file_signature.git'
+gem 'syntax', :git => 'http://github.com/distler/syntax.git'
 gem "maruku", :git => 'http://github.com/distler/maruku.git', :branch => 'nokogiri'
 gem "rake"
