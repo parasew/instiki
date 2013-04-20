@@ -242,6 +242,7 @@ EOL
   end
   
   def new
+    redirect_to :web => @web_name, :action => 'edit', :id => @page_name unless @page.nil?
     # to template
   end
 
