@@ -1294,17 +1294,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			svgCanvas.cloneSelectedElements(0, 0);
 		}
 	
-		root_sctm = svgcontent.getScreenCTM().inverse();
-
-		// Firefox issue 1046
-		if (current_zoom != 1 && root_sctm.a == 1) {
-			matrix_e = root_sctm.e / current_zoom - root_sctm.e;
-			matrix_f = root_sctm.f / current_zoom - root_sctm.f;
-			matrix_scale = 1/current_zoom;
-			root_sctm = svgcontent.getScreenCTM().inverse()
-			.translate(matrix_e, matrix_f)
-			.scale(matrix_scale);
-		}
+		root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
 		
 		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
@@ -2452,7 +2442,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		e.preventDefault();
 		var evt = e.originalEvent;
 
-		root_sctm = svgcontent.getScreenCTM().inverse();
+		root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
 		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm );
 
 		var bbox = {
@@ -4121,6 +4111,13 @@ this.svgToString = function(elem, indent) {
 			// Check elements for namespaces, add if found
 			$(elem).find('*').andSelf().each(function() {
 				var el = this;
+        // for some elements have no attribute
+        var uri = this.namespaceURI;
+        if(uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
+          nsuris[uri] = true;
+          out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+        }
+        
 				$.each(this.attributes, function(i, attr) {
 					var uri = attr.namespaceURI;
 					if (uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
@@ -5418,7 +5415,7 @@ this.getZoom = function(){return current_zoom;};
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
-	return "svgcanvas.js ($Rev: 2498 $)";
+	return "svgcanvas.js ($Rev: 2524 $)";
 };
 
 // Function: setUiStrings
@@ -7390,6 +7387,10 @@ this.cloneSelectedElements = function(x, y) {
 	var batchCmd = new svgedit.history.BatchCommand("Clone Elements");
 	// find all the elements selected (stop at first null)
 	var len = selectedElements.length;
+	function sortfunction(a, b){
+		return ($(b).index() - $(a).index()); //causes an array to be sorted numerically and ascending
+	}
+	selectedElements.sort(sortfunction);
 	for (var i = 0; i < len; ++i) {
 		var elem = selectedElements[i];
 		if (elem == null) break;
