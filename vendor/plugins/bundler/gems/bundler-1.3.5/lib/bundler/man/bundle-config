@@ -1,0 +1,139 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "BUNDLE\-CONFIG" "1" "April 2013" "" ""
+.
+.SH "NAME"
+\fBbundle\-config\fR \- Set bundler configuration options
+.
+.SH "SYNOPSIS"
+\fBbundle config\fR [\fIname\fR [\fIvalue\fR]]
+.
+.SH "DESCRIPTION"
+This command allows you to interact with bundler\'s configuration system\. Bundler retrieves its configuration from the local application (\fBapp/\.bundle/config\fR), environment variables, and the user\'s home directory (\fB~/\.bundle/config\fR), in that order of priority\.
+.
+.P
+Executing \fBbundle config\fR with no parameters will print a list of all bundler configuration for the current bundle, and where that configuration was set\.
+.
+.P
+Executing \fBbundle config <name>\fR will print the value of that configuration setting, and where it was set\.
+.
+.P
+Executing \fBbundle config <name> <value>\fR will set that configuration to the value specified for all bundles executed as the current user\. The configuration will be stored in \fB~/\.bundle/config\fR\. If \fIname\fR already is set, \fIname\fR will be overridden and user will be warned\.
+.
+.P
+Executing \fBbundle config \-\-global <name> <value>\fR works the same as above\.
+.
+.P
+Executing \fBbundle config \-\-local <name> <value>\fR will set that configuration to the local application\. The configuration will be stored in \fBapp/\.bundle/config\fR\.
+.
+.P
+Executing \fBbundle config \-\-delete <name>\fR will delete the configuration in both local and global sources\. Not compatible with \-\-global or \-\-local flag\.
+.
+.P
+Executing bundle with the \fBBUNDLE_IGNORE_CONFIG\fR environment variable set will cause it to ignore all configuration\.
+.
+.SH "BUILD OPTIONS"
+You can use \fBbundle config\fR to give bundler the flags to pass to the gem installer every time bundler tries to install a particular gem\.
+.
+.P
+A very common example, the \fBmysql\fR gem, requires Snow Leopard users to pass configuration flags to \fBgem install\fR to specify where to find the \fBmysql_config\fR executable\.
+.
+.IP "" 4
+.
+.nf
+
+gem install mysql \-\- \-\-with\-mysql\-config=/usr/local/mysql/bin/mysql_config
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Since the specific location of that executable can change from machine to machine, you can specify these flags on a per\-machine basis\.
+.
+.IP "" 4
+.
+.nf
+
+bundle config build\.mysql \-\-with\-mysql\-config=/usr/local/mysql/bin/mysql_config
+.
+.fi
+.
+.IP "" 0
+.
+.P
+After running this command, every time bundler needs to install the \fBmysql\fR gem, it will pass along the flags you specified\.
+.
+.SH "CONFIGURATION KEYS"
+Configuration keys in bundler have two forms: the canonical form and the environment variable form\.
+.
+.P
+For instance, passing the \fB\-\-without\fR flag to bundle install(1) \fIbundle\-install\.1\.html\fR prevents Bundler from installing certain groups specified in the Gemfile(5)\. Bundler persists this value in \fBapp/\.bundle/config\fR so that calls to \fBBundler\.setup\fR do not try to find gems from the \fBGemfile\fR that you didn\'t install\. Additionally, subsequent calls to bundle install(1) \fIbundle\-install\.1\.html\fR remember this setting and skip those groups\.
+.
+.P
+The canonical form of this configuration is \fB"without"\fR\. To convert the canonical form to the environment variable form, capitalize it, and prepend \fBBUNDLE_\fR\. The environment variable form of \fB"without"\fR is \fBBUNDLE_WITHOUT\fR\.
+.
+.SH "LIST OF AVAILABLE KEYS"
+The following is a list of all configuration keys and their purpose\. You can learn more about their operation in bundle install(1) \fIbundle\-install\.1\.html\fR\.
+.
+.TP
+\fBpath\fR (\fBBUNDLE_PATH\fR)
+The location on disk to install gems\. Defaults to \fB$GEM_HOME\fR in development and \fBvendor/bundler\fR when \fB\-\-deployment\fR is used
+.
+.TP
+\fBfrozen\fR (\fBBUNDLE_FROZEN\fR)
+Disallow changes to the \fBGemfile\fR\. Defaults to \fBtrue\fR when \fB\-\-deployment\fR is used\.
+.
+.TP
+\fBwithout\fR (\fBBUNDLE_WITHOUT\fR)
+A \fB:\fR\-separated list of groups whose gems bundler should not install
+.
+.TP
+\fBbin\fR (\fBBUNDLE_BIN\fR)
+Install executables from gems in the bundle to the specified directory\. Defaults to \fBfalse\fR\.
+.
+.TP
+\fBgemfile\fR (\fBBUNDLE_GEMFILE\fR)
+The name of the file that bundler should use as the \fBGemfile\fR\. This location of this file also sets the root of the project, which is used to resolve relative paths in the \fBGemfile\fR, among other things\. By default, bundler will search up from the current working directory until it finds a \fBGemfile\fR\.
+.
+.P
+In general, you should set these settings per\-application by using the applicable flag to the bundle install(1) \fIbundle\-install\.1\.html\fR command\.
+.
+.P
+You can set them globally either via environment variables or \fBbundle config\fR, whichever is preferable for your setup\. If you use both, environment variables will take preference over global settings\.
+.
+.SH "LOCAL GIT REPOS"
+Bundler also allows you to work against a git repository locally instead of using the remote version\. This can be achieved by setting up a local override:
+.
+.IP "" 4
+.
+.nf
+
+bundle config local\.GEM_NAME /path/to/local/git/repository
+.
+.fi
+.
+.IP "" 0
+.
+.P
+For example, in order to use a local Rack repository, a developer could call:
+.
+.IP "" 4
+.
+.nf
+
+bundle config local\.rack ~/Work/git/rack
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Now instead of checking out the remote git repository, the local override will be used\. Similar to a path source, every time the local git repository change, changes will be automatically picked up by Bundler\. This means a commit in the local git repo will update the revision in the \fBGemfile\.lock\fR to the local git repo revision\. This requires the same attention as git submodules\. Before pushing to the remote, you need to ensure the local override was pushed, otherwise you may point to a commit that only exists in your local machine\.
+.
+.P
+Bundler does many checks to ensure a developer won\'t work with invalid references\. Particularly, we force a developer to specify a branch in the \fBGemfile\fR in order to use this feature\. If the branch specified in the \fBGemfile\fR and the current branch in the local git repository do not match, Bundler will abort\. This ensures that a developer is always working against the correct branches, and prevents accidental locking to a different branch\.
+.
+.P
+Finally, Bundler also ensures that the current revision in the \fBGemfile\.lock\fR exists in the local git repository\. By doing this, Bundler forces you to fetch the latest changes in the remotes\.
