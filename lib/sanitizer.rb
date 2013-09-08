@@ -178,7 +178,7 @@ module Sanitizer
           node.attributes.delete attr; next
         end
         if ATTR_VAL_IS_URI.include?(attr)
-          val_unescaped = val.unescapeHTML.as_bytes.gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/,'').downcase
+          val_unescaped = val.unescapeHTML.as_bytes.gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/n,'').downcase
           if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ && !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
             node.attributes.delete attr; next
           end                        

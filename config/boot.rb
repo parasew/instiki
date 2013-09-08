@@ -3,6 +3,21 @@
 
 RAILS_ROOT = File.join(File.dirname(__FILE__), '..') unless defined?(RAILS_ROOT)
 
+if RUBY_VERSION >= "2.0.0"
+  module Gem
+    def self.source_index
+      sources
+    end
+
+    def self.cache
+      sources
+    end
+
+    SourceIndex = Specification
+
+  end
+end
+
 module Rails
   class << self
     def boot!

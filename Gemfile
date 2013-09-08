@@ -6,7 +6,7 @@ gem "mongrel", ">=1.2.0.pre2"
 gem "rubyzip", '~> 0.9.9'
 gem "RedCloth", ">=4.0.0"
 gem "erubis"
-gem "nokogiri"
+gem "nokogiri", '~>1.5.6'
 gem "rake"
 gem "rdoc"
 gem "json"
@@ -14,3 +14,5 @@ gem "file_signature", "~> 1.2.0"
 gem 'syntax', :git => 'http://github.com/distler/syntax.git'
 gem "maruku", :git => 'http://github.com/distler/maruku.git', :branch => 'nokogiri'
 gem "rake"
+gem 'iconv', :platforms => :ruby_20
+gem 'rdoc-data', :platforms => :ruby_18
