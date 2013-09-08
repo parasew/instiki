@@ -5,7 +5,7 @@ module ActiveRecord
     # If the association has a <tt>:through</tt> option further specialization
     # is provided by its child HasManyThroughAssociation.
     class HasManyAssociation < AssociationCollection #:nodoc:
-      protected
+#      protected
         def owner_quoted_id
           if @reflection.options[:primary_key]
             quote_value(@owner.send(@reflection.options[:primary_key]))
