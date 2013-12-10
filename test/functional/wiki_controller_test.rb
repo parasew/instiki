@@ -1025,16 +1025,16 @@ class WikiControllerTest < ActionController::TestCase
     assert_response :success
     resp = %{<div class='num_lemma' id='Leftcosetsdisjoint'>\n<h6 id='lemma'>Lemma</h6>\n\n} +
       %{<p>Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Mat} +
-      %{h/MathML'><mi>H</mi></math> be a subgroup of a group <math class='maruku-mathml' displ} +
-      %{ay='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>, and let <ma} +
-      %{th class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-      %{<mi>x</mi></math> and <math class='maruku-mathml' display='inline' xmlns='http://www.} +
-      %{w3.org/1998/Math/MathML'><mi>y</mi></math> be elements of <math class='maruku-mathml'} +
-      %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>. Suppo} +
+      %{h/MathML'><semantics><mrow><mi>H</mi></mrow><annotation encoding='application/x-tex'>H</annotation></semantics></math> be a subgroup of a group <math class='maruku-mathml' displ} +
+      %{ay='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math>, and let <ma} +
+      %{th class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
+      %{<mi>x</mi></mrow><annotation encoding='application/x-tex'>x</annotation></semantics></math> and <math class='maruku-mathml' display='inline' xmlns='http://www.} +
+      %{w3.org/1998/Math/MathML'><semantics><mrow><mi>y</mi></mrow><annotation encoding='application/x-tex'>y</annotation></semantics></math> be elements of <math class='maruku-mathml'} +
+      %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math>. Suppo} +
       %{se that <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Ma} +
-      %{th/MathML'><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>H</mi></math> is no} +
+      %{th/MathML'><semantics><mrow><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>H</mi></mrow><annotation encoding='application/x-tex'>x H \\\\cap y H</annotation></semantics></math> is no} +
       %{n-empty. Then <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1} +
-      %{998/Math/MathML'><mi>x</mi><mi>H</mi><mo>=</mo><mi>y</mi><mi>H</mi></math>.</p>\n</di} +
+      %{998/Math/MathML'><semantics><mrow><mi>x</mi><mi>H</mi><mo>=</mo><mi>y</mi><mi>H</mi></mrow><annotation encoding='application/x-tex'>x H = y H</annotation></semantics></math>.</p>\n</di} +
       %{v>\n\n<p>See Lemma <a class='maruku-ref' href='#Leftcosetsdisjoint'>1</a>.</p>}
     assert_match Regexp.new(resp), r.body
   end
