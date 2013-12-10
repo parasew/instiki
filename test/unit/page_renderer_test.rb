@@ -53,9 +53,11 @@ class PageRendererTest < ActiveSupport::TestCase
   def test_content_with_wiki_links
     assert_equal "<p><span class='newWikiWord'>His Way<a href='../show/HisWay'>?</a></span> " +
         "would be <a class='existingWikiWord' href='../show/MyWay'>My Way</a> " +
-        "<math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>" +
+        "<math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>" +
         "<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics>" +
-        "<annotation-xml encoding='SVG1.1'><svg></svg></annotation-xml></semantics></math> in kinda " +
+        "<annotation-xml encoding='SVG1.1'><svg></svg></annotation-xml></semantics></mrow><annot" +
+        "ation encoding='application/x-tex'>\\sin(x)\\begin{svg}&lt;svg/&gt;\\end{svg}\\includeg" +
+        "raphics[width=3em]{foo}</annotation></semantics></math> in kinda " +
         "<a class='existingWikiWord' href='../show/ThatWay'>That Way</a> in " +
         "<span class='newWikiWord'>His Way<a href='../show/HisWay'>?</a></span> " +
         %{though <a class='existingWikiWord' href='../show/MyWay'>My Way</a> OverThere \342\200\223 see } +
@@ -70,8 +72,8 @@ class PageRendererTest < ActiveSupport::TestCase
   
     assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' } +
-        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></mrow><annotation encoding='application/x-tex'>\\sin(x)</annotation></semantics></math></p>},
         "equation $\\sin(x)$")
   
     re = Regexp.new('\\A<h1 id=\'my_headline(_\\d{1,4})?\'>My Headline</h1>\n\n<p>that <span class=\'newWikiWord\'>Smart Engine GUI<a href=\'../show/SmartEngineGUI\'>\?</a></span></p>\\Z')
@@ -81,53 +83,58 @@ class PageRendererTest < ActiveSupport::TestCase
     assert_match_markup_parsed_as(re, "#My Headline#\n\nthat SmartEngineGUI")
 
     str1 = %{<div class='un_defn'>\n<h6 id='definition(_\\d\{1,4\})?'>Definition</h6>\n\n<p>Let <math} +
-    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi>} +
-    %{</math> be a subgroup of a group <math class='maruku-mathml' display='inline' xmlns='http://w} +
-    %{ww.w3.org/1998/Math/MathML'><mi>G</mi></math>. A <em>left coset</em> of <math class='maruku-m} +
-    %{athml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi></math> in <math} +
-    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi>} +
-    %{</math> is a subset of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/} +
-    %{1998/Math/MathML'><mi>G</mi></math> that is of the form <math class='maruku-mathml' display='} +
-    %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi></math>, where <math} +
-    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>x</mi>} +
-    %{<mo>\342\210\210</mo><mi>G</mi></math> and <math class='maruku-mathml' display='inline' xmlns} +
-    %{='http://www.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>=</mo><mo stretchy='false'>\\\{<} +
+    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>H</mi>} +
+    %{</mrow><annotation encoding='application/x-tex'>H</annotation></semantics></math> be a subgroup} +
+    %{ of a group <math class='maruku-mathml' display='inline' xmlns='http://w} +
+    %{ww.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application} +
+    %{/x-tex'>G</annotation></semantics></math>. A <em>left coset</em> of <math class='maruku-m} +
+    %{athml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>H} +
+    %{</mi></mrow><annotation encoding='application/x-tex'>H</annotation></semantics></math> in <math} +
+    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi>} +
+    %{</mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math> is a subset of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/} +
+    %{1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math> that is of the form <math class='maruku-mathml' display='} +
+    %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>x</mi><mi>H</mi></mrow><annotation encoding='application/x-tex'>x H</annotation></semantics></math>, where <math} +
+    %{ class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>x</mi>} +
+    %{<mo>\342\210\210</mo><mi>G</mi></mrow><annotation encoding='application/x-tex'>x \\\\in G</annotation></semantics></math> and <math class='maruku-mathml' display='inline' xmlns} +
+    %{='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>x</mi><mi>H</mi><mo>=</mo><mo stretchy='false'>\\\{<} +
     %{/mo><mi>x</mi><mi>h</mi><mo>:</mo><mi>h</mi><mo>\342\210\210</mo><mi>H</mi><mo stretchy='fals} +
-    %{e'>\\\}</mo></math>.</p>\n\n<p>Similarly a <em>right coset</em> of <math class='maruku-mathml'} +
-    %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi></math> in <math class} +
-    %{='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math} +
+    %{e'>\\\}</mo></mrow><annotation encoding='application/x-tex'>x H = \\\\\{ x h : h \\\\in H \\\\\}</annotation></semantics></math>.</p>\n\n<p>Similarly a <em>right coset</em> of <math class='maruku-mathml'} +
+    %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>H</mi></mrow><annotation encoding='application/x-tex'>H</annotation></semantics></math> in <math class} +
+    %{='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math} +
     %{> is a subset of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/M} +
-    %{ath/MathML'><mi>G</mi></math> that is of the form <math class='maruku-mathml' display='inline} +
-    %{' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi><mi>x</mi></math>, where <math class='} +
-    %{maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>H</mi><mi>x</m} +
+    %{ath/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math> that is of the form <math class='maruku-mathml' display='inline} +
+    %{' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>H</mi><mi>x</mi></mrow><annotation encoding='application/x-tex'>H x</annotation></semantics></math>, where <math class='} +
+    %{maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>H</mi><mi>x</m} +
     %{i><mo>=</mo><mo stretchy='false'>\\\{</mo><mi>h</mi><mi>x</mi><mo>:</mo><mi>h</mi><mo>\342\210\210} +
-    %{</mo><mi>H</mi><mo stretchy='false'>\\\}</mo></math>.</p>\n</div>\n\n} +
+    %{</mo><mi>H</mi><mo stretchy='false'>\\\}</mo></mrow><annotation encoding='application/x-tex'>H x = \\\\\{ h x : h \\\\in H \\\\\}</annotation></semantics></math>.</p>\n</div>\n\n} +
     %{<div class='num_lemma' id='LeftCosetsDisjoint'>\n<h6 id='lemma(_\\d\{1,4\})?'>Lemma</h6>\n\n<p>} +
-    %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-    %{<mi>H</mi></math> be a subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
-    %{='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>, and let <math class='maruku-mathml'} +
-    %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>x</mi></math> and <math cla} +
-    %{ss='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>y</mi></ma} +
+    %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
+    %{<mi>H</mi></mrow><annotation encoding='application/x-tex'>H</annotation></semantics></math> be a subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
+    %{='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math>, and let <math class='maruku-mathml'} +
+    %{ display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>x</mi></mrow><annotation encoding='application/x-tex'>x</annotation></semantics></math> and <math cla} +
+    %{ss='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>y</mi></mrow><annotation encoding='application/x-tex'>y</annotation></semantics></ma} +
     %{th> be elements of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/} +
-    %{Math/MathML'><mi>G</mi></math>. Suppose that <math class='maruku-mathml' display='inline' xmln} +
-    %{s='http://www.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>} +
-    %{H</mi></math> is non-empty. Then <math class='maruku-mathml' display='inline' xmlns='http://ww} +
-    %{w.w3.org/1998/Math/MathML'><mi>x</mi><mi>H</mi><mo>=</mo><mi>y</mi><mi>H</mi></math>.</p>\n</d} +
+    %{Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math>. Suppose that <math class='maruku-mathml' display='inline' xmln} +
+    %{s='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>} +
+    %{H</mi></mrow><annotation encoding='application/x-tex'>x H \\\\cap y H</annotation></semantics></math> is non-empty. Then <math class='maruku-mathml' display='inline' xmlns='http://ww} +
+    %{w.w3.org/1998/Math/MathML'><semantics><mrow><mi>x</mi><mi>H</mi><mo>=</mo><mi>y</mi><mi>H</mi></mrow><annotation encoding='application/x-tex'>x H = y H</annotation></semantics></math>.</p>\n</d} +
     %{iv>\n\n<div class='proof'>\n<h6 id='proof(_\\d\{1,4\})?'>Proof</h6>\n\n<p>Let <math class='maruku-m} +
-    %{athml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>z</mi></math> be some e} +
+    %{athml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>z</mi></mrow><annotation encoding='application/x-tex'>z</annotation></semantics></math> be some e} +
     %{lement of <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/Math} +
-    %{ML'><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>H</mi></math>.</p>\n</div>\n\n} +
+    %{ML'><semantics><mrow><mi>x</mi><mi>H</mi><mo>\342\210\251</mo><mi>y</mi><mi>H</mi></mrow><annotation encoding='application/x-tex'>x H \\\\cap y H</annotation></semantics></math>.</p>\n</div>\n\n} +
     %{<div class='num_lemma' id='SizeOfLeftCoset'>\n<h6 id='lemma(_\\d\{1,4\})?'>Lemma</h6>\n\n<p>} +
-    %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-    %{<mi>H</mi></math> be a finite subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
-    %{='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>.</p>\n</div>\n\n} +
+    %{Let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
+    %{<mi>H</mi></mrow><annotation encoding='application/x-tex'>H</annotation></semantics></math> be a finite subgroup of a group <math class='maruku-mathml' display='inline' xmlns} +
+    %{='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math>.</p>\n</div>\n\n} +
     %{<div class='num_theorem' id='Lagrange'>\n<h6 id='theorem(_\\d\{1,4\})?'>Theorem</h6>\n\n<p>} +
     %{<strong>\\(Lagrange\342\200\231s Theorem\\).</strong> Let <math class='maruku-mathml' disp} +
-    %{lay='inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math> be a finite group} +
+    %{lay='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math> be a finite group} +
     %{, and let <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/M} +
-    %{athML'><mi>H</mi></math> be a subgroup of <math class='maruku-mathml' display='inline' xmln} +
-    %{s='http://www.w3.org/1998/Math/MathML'><mi>G</mi></math>.</p>\n</div>}
+    %{athML'><semantics><mrow><mi>H</mi></mrow><annotation encoding='application/x-tex'>H</annotation></semantics></math> be a subgroup of <math class='maruku-mathml' display='inline' xmln} +
+    %{s='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>G</mi></mrow><annotation encoding='application/x-tex'>G</annotation></semantics></math>.</p>\n</div>}
 
+    
+    
     str2 = <<END_THM
 +-- {: .un_defn}
 ###### Definition
@@ -167,10 +174,9 @@ END_THM
   
     assert_markup_parsed_as(
         %{<div class='maruku-equation'><math class='maruku-mathml' display='block' } +
-        %{xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi><mo stretchy='false'>} +
+        %{xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>sin</mi><mo stretchy='false'>} +
         %{(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics><annotation-xml encoding='SVG1.1'>} +
-        %{<svg></svg></annotation-xml></semantics></math><span class='maruku-eq-tex'><code style='display: none;'>} +
-        %{\\sin(x) \\begin{svg}&lt;svg/&gt;\\end{svg}</code></span></div>},
+        %{<svg></svg></annotation-xml></semantics></mrow><annotation encoding='application/x-tex'>\\sin(x) \\begin\{svg\}&lt;svg/&gt;\\end\{svg\}</annotation></semantics></math></div>},
         "$$\\sin(x) \\begin{svg}<svg/>\\end{svg}$$")
   
     code_block = [ 
@@ -196,33 +202,31 @@ END_THM
 
     assert_markup_parsed_as(
         %{<p><math class='maruku-mathml' } +
-        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math> ecuasi\303\263n</p>},
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></mrow><annotation encoding='application/x-tex'>\\sin(x)</annotation></semantics></math> ecuasi\303\263n</p>},
         "$\\sin(x)$ ecuasi\303\263n")
    
     assert_markup_parsed_as(
         %{<p>ecuasi\303\263n</p>\n<div class='maruku-equation'><math class='maruku-mathml' } +
-        %{display='block' xmlns='http://www.w3.org/1998/Math/MathML'><mi>sin</mi>} +
-        %{<mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math>} +
-        %{<span class='maruku-eq-tex'><code style='display: none;'>\\sin(x)</code></span></div>}, 
+        %{display='block' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>sin</mi>} +
+        %{<mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></mrow><annotation encoding='application/x-tex'>\\sin(x)</annotation></semantics></math></div>}, 
         "ecuasi\303\263n\n$$\\sin(x)$$")
   
     assert_markup_parsed_as(
         %{<p>ecuasi\303\263n</p>\n\n<p><math class='maruku-mathml' } +
-        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></mrow><annotation encoding='application/x-tex'>\\sin(x)</annotation></semantics></math></p>},
         "ecuasi\303\263n \n\n$\\sin(x)$")
   
     assert_markup_parsed_as(
         %{<p>ecuasi\303\263n <math class='maruku-mathml' } +
-        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></math></p>},
+        %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
+        %{<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo></mrow><annotation encoding='application/x-tex'>\\sin(x)</annotation></semantics></math></p>},
         "ecuasi\303\263n $\\sin(x)$")
   
     assert_markup_parsed_as(
         %{<div class='maruku-equation'><math class='maruku-mathml' display='block' xmlns='http://w} +
-        %{ww.w3.org/1998/Math/MathML'><mo>⋅</mo><mi>p</mi></math><span class='maruku-eq-tex'><code} +
-        %{ style='display: none;'>\\cdot\np</code></span></div>},
+        %{ww.w3.org/1998/Math/MathML'><semantics><mrow><mo>⋅</mo><mi>p</mi></mrow><annotation encoding='application/x-tex'>\\cdot\np\n</annotation></semantics></math></div>},
         "$$\\cdot\np$$")
   
   end
@@ -291,105 +295,112 @@ END_THM
 
     assert_markup_parsed_as(
       %{<p>equation <math class='maruku-mathml' display='i} +
-      %{nline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+      %{nline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
       %{<msub><mo lspace='thinmathspace' rspace='thinmaths} +
       %{pace'>\342\250\205</mo> <mi>i</mi></msub><msub><mi} +
-      %{>A</mi> <mi>i</mi></msub></math></p>},
+      %{>A</mi> <mi>i</mi></msub></mrow><annotation encodi} +
+      %{ng='application/x-tex'>\\bigsqcap_i A_i</annotatio} +
+      %{n></semantics></math></p>},
       "equation $\\bigsqcap_i A_i$")
 
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>x</mi><menclose notation='box'><mp} +
+        %{MathML'><semantics><mrow><mi>x</mi><menclose notation='box'><mp} +
         %{added depth='2ex' height='3ex' voffset='5ex'><} +
-        %{mi>x</mi></mpadded></menclose></math></p>},
+        %{mi>x</mi></mpadded></menclose></mrow><annotati} +
+        %{on encoding='application/x-tex'>x\\boxed\{\\mat} +
+        %{hraisebox\{5ex\}[3ex][2ex]\{x\}\}</annotation></semantics></math></p>},
         "equation $x\\boxed{\\mathraisebox{5ex}[3ex][2ex]{x}}$")
 
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mrow href='http://ex.com' xlink:href=} +
+        %{MathML'><semantics><mrow><mrow href='http://ex.com' xlink:href=} +
         %{'http://ex.com' xlink:type='simple' xmlns:xlin} +
         %{k='http://www.w3.org/1999/xlink'><mn>47.3</mn>} +
         %{</mrow><mn>47</mn><mo>,</mo><mn>3</mn><mn>47,3} +
-        %{</mn></math></p>},
+        %{</mn></mrow><annotation encoding='application/} +
+        %{x-tex'>\\href\{http://ex.com\}\{47.3\} 47,3 \\itex} +
+        %{num{47,3}</annotation></semantics></math></p>},
         "equation $\\href{http://ex.com}{47.3} 47,3 \\itexnum{47,3}$")
 
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>A</mi><mi>\342\200\246</mi><mo>\342\253\275</mo><mi>B</} +
-        %{mi></math></p>},
+        %{MathML'><semantics><mrow><mi>A</mi><mi>\342\200\246</mi><mo>\342\253\275</mo><mi>B</} +
+        %{mi></mrow><annotation encoding='application/x-} +
+        %{tex'>A\\dots\\sslash B</annotation></semantics></math></p>},
         "equation $A\\dots\\sslash B$")
 
       assert_markup_parsed_as(
         %{<p>boxed equation <math class='maruku-mathml' } +
         %{display='inline' xmlns='http://www.w3.org/1998} +
-        %{/Math/MathML'><menclose notation='box'><mrow><} +
+        %{/Math/MathML'><semantics><mrow><menclose notation='box'><mrow><} +
         %{menclose notation='updiagonalstrike'><mi>D</mi} +
         %{></menclose><mi>\317\210</mi><mo>=</mo><mn>0</} +
-        %{mn></mrow></menclose></math></p>},
+        %{mn></mrow></menclose></mrow><annotation encoding='application/x-tex'>\\boxed{\\slash{D}\\psi=0}</annotation></semantics></math></p>},
         "boxed equation $\\boxed{\\slash{D}\\psi=0}$")
 
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>\316\265</mi><mo>\342\211\240</mo>} +
-        %{<mi>\317\265</mi></math></p>},
+        %{MathML'><semantics><mrow><mi>\316\265</mi><mo>\342\211\240</mo>} +
+        %{<mi>\317\265</mi></mrow><annotation encoding='application/x-tex'>\\varepsilon\\neq\\epsilon</annotation></semantics></math></p>},
         "equation $\\varepsilon\\neq\\epsilon$")
 
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>A</mi><mo>=</mo><maction actiontyp} +
+        %{MathML'><semantics><mrow><mi>A</mi><mo>=</mo><maction actiontyp} +
         %{e='tooltip'><mi>B</mi><mtext>Spoons!</mtext></} +
-        %{maction></math></p>},
+        %{maction></mrow><annotation encoding='application/x-tex'>A=\\tooltip{Spoons!}{B}</annotation></semantics></math></p>},
         "equation $A=\\tooltip{Spoons!}{B}$")
 
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>A</mi><mpadded lspace='-100%width'} +
-        %{ width='0'><mi>B</mi></mpadded></math></p>},
+        %{MathML'><semantics><mrow><mi>A</mi><mpadded lspace='-100%width'} +
+        %{ width='0'><mi>B</mi></mpadded></mrow><annotation encoding='application/x-tex'>A \\mathllap{B}</annotation></semantics></math></p>},
         "equation $A \\mathllap{B}$")
 
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>A</mi><mo>\342\211\224</mo><mi>B</} +
-        %{mi></math></p>},
+        %{MathML'><semantics><mrow><mi>A</mi><mo>\342\211\224</mo><mi>B</} +
+        %{mi></mrow><annotation encoding='application/x-tex'>A \\coloneqq B</annotation></semantics></math></p>},
         "equation $A \\coloneqq B$")
   
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><mi>A</mi><mo>\342\206\255</mo><mi>B</} +
-        %{mi></math></p>},
+        %{MathML'><semantics><mrow><mi>A</mi><mo>\342\206\255</mo><mi>B</} +
+        %{mi></mrow><annotation encoding='application/x-tex'>A \\leftrightsquigarrow B</annotation></semantics></math></p>},
         "equation $A \\leftrightsquigarrow B$")
 
     assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
-        %{MathML'><munder><mi>A</mi><mo>\314\262</mo></m} +
-        %{under></math></p>},
+        %{MathML'><semantics><mrow><munder><mi>A</mi><mo>\314\262</mo></m} +
+        %{under></mrow><annotation encoding='application/x-tex'>\\underline{A}</annotation></semantics></math></p>},
         "equation $\\underline{A}$")
 
     assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' } +
         %{display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-        %{<mi>A</mi><mo>\342\205\213</mo><mi>B</mi></math></p>},
+        %{<semantics><mrow><mi>A</mi><mo>\342\205\213</mo><mi>B</mi></mrow><annotation encoding='application/x-tex'>A \\invamp B</annotation></semantics></math></p>},
         "equation $A \\invamp B$")
 
     assert_markup_parsed_as(
         %{<p>blackboard digits: <math class='maruku-mathml' display='} +
-        %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><mi>math} +
-        %{bb</mi><mn>123</mn></math></p>},
+        %{inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>math} +
+        %{bb</mi><mn>123</mn></mrow><annotation encoding='application/x-tex'>\mathbb{123}</annotation></semantics></math></p>},
         "blackboard digits: $\mathbb{123}$")
 
     assert_markup_parsed_as(
         %{<p>\\rlap: <math class='maruku-mathml' display='} +
         %{inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
-        %{<mn>123</mn></math></p>},
+        %{<semantics><mrow><mn>123</mn></mrow><annotation encoding='application/x-tex'>\\rlap{123}</annotation></semantics></math></p>},
         '\rlap: $\rlap{123}$')
   end
   
@@ -406,8 +417,7 @@ END_THM
       re = Regexp.new(
       %{<div class='maruku-equation'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
       %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.3(3)+} +
-      %{33333ex;'/><span class='maruku-eq-tex'><code style='display: none;'>a\\\\sin} +
-      %{\\(\\\\theta\\)<\/code><\/span><\/div>})
+      %{33333ex;'/><\/div>})
       assert_match_markup_parsed_as(re, '$$a\sin(\theta)$$')
 
     else
@@ -515,31 +525,30 @@ END_THM
 
   def test_content_with_wikiword_in_equations
     assert_markup_parsed_as(
-        "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
-	    "That Way</a> or</p>\n<div class='maruku-equation' id='eq:eq1'>" +
-	    "<span class='maruku-eq-number'>(1)</span><math class='maruku-mathml' display='block' " +
-	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math>" +
-	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay</code>" +
-	    "</span></div>", 
+      "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
+      "That Way</a> or</p>\n<div class='maruku-equation' id='eq:eq1'>" +
+      "<span class='maruku-eq-number'>(1)</span><math class='maruku-mathml' display='block' " +
+      "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><m" +
+      "i>ThisWay</mi></mrow><annotation encoding='application/x-tex'>" +
+      "ThisWay</annotation></semantics></math></div>", 
         "should we go ThatWay or \n\\[ThisWay\\]\n")
 
     assert_markup_parsed_as(
         "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
-	    "That Way</a> or</p>\n<div class='maruku-equation'>" +
-	    "<math class='maruku-mathml' display='block' " +
-	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math>" +
-	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay</code>" +
-	    "</span></div>", 
+        "That Way</a> or</p>\n<div class='maruku-equation'>" +
+        "<math class='maruku-mathml' display='block' " +
+        "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>Thi" +
+        "sWay</mi></mrow><annotation encoding='application/x-tex'>ThisWay</a" +
+        "nnotation></semantics></math></div>", 
         "should we go ThatWay or \n$$ThisWay$$\n")
         
     assert_markup_parsed_as(
         "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
 	    "That Way</a> or</p>\n<div class='maruku-equation'>" +
 	    "<math class='maruku-mathml' display='block' " +
-	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi><mi>$</mi>" +
-	    "<mn>100</mn><mi>ThatWay</mi></math>" +
-	    "<span class='maruku-eq-tex'><code style='display: none;'>ThisWay \\$100 " +
-	    "ThatWay</code></span></div>", 
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>ThisWay</mi><mi>$</mi>" +
+	    "<mn>100</mn><mi>ThatWay</mi></mrow><annotation encoding='application/x-tex'>ThisWay \\$100 ThatWay </annotation></semantics></math>" +
+	    "</div>", 
         "should we go ThatWay or \n$$ThisWay \\$100 ThatWay $$\n")
 
     assert_markup_parsed_as(
@@ -552,7 +561,7 @@ END_THM
     assert_markup_parsed_as(
         "<p>should we go <a class='existingWikiWord' href='../show/ThatWay'>" +
 	    "That Way</a> or <math class='maruku-mathml' display='inline' " +
-	    "xmlns='http://www.w3.org/1998/Math/MathML'><mi>ThisWay</mi></math>.</p>", 
+	    "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>ThisWay</mi></mrow><annotation encoding='application/x-tex'>ThisWay</annotation></semantics></math>.</p>", 
         "should we go ThatWay or $ThisWay$.")
   end
   
@@ -684,8 +693,10 @@ END_THM
     assert_equal "<p><span class='newWikiWord'>His Way</span> would be " +
         "<a class='existingWikiWord' href='MyWay.html'>My Way</a> " +
         "<math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'>" +
-        "<mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)</mo><semantics>" +
-        "<annotation-xml encoding='SVG1.1'><svg></svg></annotation-xml></semantics></math> in kinda " +
+        "<semantics><mrow><mi>sin</mi><mo stretchy='false'>(</mo><mi>x</mi><mo stretchy='false'>)" +
+        "</mo><semantics><annotation-xml encoding='SVG1.1'><svg></svg></annotation-xml></semantic" +
+        "s></mrow><annotation encoding='application/x-tex'>\\sin(x)\\begin{svg}&lt;svg/&gt;\\end{" +
+        "svg}\\includegraphics[width=3em]{foo}</annotation></semantics></math> in kinda " +
         "<a class='existingWikiWord' href='ThatWay.html'>That Way</a> in " +
         "<span class='newWikiWord'>His Way</span> though " +
         %{<a class='existingWikiWord' href='MyWay.html'>My Way</a> OverThere \342\200\223 see } +
@@ -925,9 +936,9 @@ END_THM
     main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', x_test_renderer)
     
     assert_equal "<p>\\ <math class='maruku-mathml' display='inline' " +
-                 "xmlns='http://www.w3.org/1998/Math/MathML'><mrow><mtable rowspacing='0.5ex'>" +
+                 "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mrow><mtable rowspacing='0.5ex'>" +
                  "<mtr><mtd><mi>a</mi></mtd></mtr> <mtr><mtd><mi>b</mi></mtd></mtr></mtable>" +
-                 "</mrow></math></p>", 
+                 "</mrow></mrow><annotation encoding='application/x-tex'>\\begin{matrix} a \\\\ b\\end{matrix}</annotation></semantics></math></p>", 
                  x_test_renderer(main).display_content
   end
 

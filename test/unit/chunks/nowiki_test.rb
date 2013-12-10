@@ -34,13 +34,13 @@ class NoWikiTest < Test::Unit::TestCase
 # I think that's OK.
   def test_sanitize_nowiki_ill_formed
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/></nowiki>",
-                :plain_text => '<animateColor href="#foo"/>'
+                :plain_text => '<animateColor xlink:href="#foo"/>'
     )
   end
 
   def test_sanitize_nowiki_ill_formed_II
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/>\000</nowiki>",
-                :plain_text => '<animateColor href="#foo"/>'
+                :plain_text => '<animateColor xlink:href="#foo"/>'
     )
   end
 
