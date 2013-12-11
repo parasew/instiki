@@ -248,9 +248,9 @@ END_THM
 
   def test_toc
     assert_markup_parsed_as(
-      %{<h1 id='title'>Title</h1>\n<div class='maruku_toc'><ul><li><a href='#title'>Title<} +
-      %{/a><ul><li><a href='#section_1'>Section 1</a></l} +
-      %{i><li><a href='#section_2'>Section 2</a></li></ul></li></ul></div>\n<h2 id='section_} +
+      %{<h1 id='title'>Title</h1>\n<div class='maruku_toc'>} +
+      %{<ul><li><a href='#section_1'>Section 1</a></l} +
+      %{i><li><a href='#section_2'>Section 2</a></li></ul></div>\n<h2 id='section_} +
       %{1'>Section 1</h2>\n\n<p>Foo</p>\n\n<h2 id='section_2'>Section 2</h2>\n\n<p>Bar</p>},
       "#Title\n* Toc\n{:toc}\n\n##Section 1\n\nFoo\n\n##Section 2\n\nBar\n")
   end
