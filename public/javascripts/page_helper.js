@@ -189,6 +189,7 @@ function setupSVGedit(path){
     }
   }
   Event.observe(t, 'mouseup', callback );
+  Event.observe(SVGeditButton, 'click', callback );
   var my_loc = window.location.protocol + '//' + window.location.host;
   Event.observe(window, "message", function(event){
     if(event.origin !== my_loc) { return;}
