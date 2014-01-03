@@ -2,9 +2,16 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../../test_helper')
 require 'chunks/nowiki'
+require 'nokogiri'
 
 class NoWikiTest < Test::Unit::TestCase
   include ChunkMatch
+
+  def ns
+  # LibXML is #%$* strange. How it treats this (not namespace well-formed) input varies
+  # from version to version.
+    Nokogiri::XML::Document.parse('<a foo:bar=""/>').to_xml =~ /foo/ ? 'xlink:' : ''
+  end
 
   def test_simple_nowiki
 	match(NoWiki, 'This sentence contains <nowiki>[[raw text]]</nowiki>. Do not touch!',
@@ -34,13 +41,13 @@ class NoWikiTest < Test::Unit::TestCase
 # I think that's OK.
   def test_sanitize_nowiki_ill_formed
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/></nowiki>",
-                :plain_text => '<animateColor xlink:href="#foo"/>'
+                :plain_text => "<animateColor #{ns}href=\"#foo\"/>"
     )
   end
 
   def test_sanitize_nowiki_ill_formed_II
     match(NoWiki, "<nowiki><animateColor xlink:href='#foo'/>\000</nowiki>",
-                :plain_text => '<animateColor xlink:href="#foo"/>'
+                :plain_text => "<animateColor #{ns}href=\"#foo\"/>"
     )
   end
 
