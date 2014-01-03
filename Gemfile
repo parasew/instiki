@@ -13,6 +13,5 @@ gem "json"
 gem "file_signature", "~> 1.2.0"
 gem 'syntax', :git => 'git://github.com/distler/syntax.git'
 gem "maruku", :git => 'git://github.com/distler/maruku.git', :branch => 'nokogiri'
-gem "rake"
-gem 'iconv', :platforms => :ruby_20
+gem 'iconv', :platforms => [:ruby_20, :ruby_21]
 gem 'rdoc-data', :platforms => :ruby_18
