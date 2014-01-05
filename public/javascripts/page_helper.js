@@ -64,6 +64,23 @@ function mactionWorkarounds() {
      Event.observe(mstatus, 'mouseover', function(){window.status =  v;});
      Event.observe(mstatus, 'mouseout',  function(){window.status = '';});
      });
+  $$('maction[actiontype="highlight"]').each( function(mhighlight){
+     var elt = Element.firstDescendant(mhighlight);
+     var a = mhighlight.getAttribute('other').split(/\s*=\s*/);
+     var pp = /^.(#?\w+).$/.exec(a[1]);
+     if (pp) var colspec = pp[1];
+     switch (a[0]) {
+       case 'color' :
+         var oldColspec = window.getComputedStyle(elt, null).color;
+         break;
+       case 'background' :
+         var oldColspec = window.getComputedStyle(elt, null).backgroundColor;
+     }
+     if (colspec && oldColspec) {
+       Event.observe(mhighlight, 'mouseover', function(){elt.setAttribute('style', a[0]+':'+colspec);});
+       Event.observe(mhighlight, 'mouseout',  function(){elt.setAttribute('style', a[0]+':'+oldColspec);});
+     }
+   });
 }
 
 function embedCDFs () {
