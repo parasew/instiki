@@ -295,6 +295,15 @@ END_THM
 
     assert_markup_parsed_as(
       %{<p>equation <math class='maruku-mathml' display='i} +
+      %{nline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+      %{<semantics><mrow><maction actiontype='toggle'><mi>} +
+      %{a</mi><mi>b</mi><mi>c</mi></maction></mrow><annota} +
+      %{tion encoding='application/x-tex'>\\begintoggle a } +
+      %{b c\\endtoggle</annotation></semantics></math></p>},
+      "equation $\\begintoggle a b c\\endtoggle$")
+
+    assert_markup_parsed_as(
+      %{<p>equation <math class='maruku-mathml' display='i} +
       %{nline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
       %{<msub><mo lspace='thinmathspace' rspace='thinmaths} +
       %{pace'>\342\250\205</mo> <mi>i</mi></msub><msub><mi} +
