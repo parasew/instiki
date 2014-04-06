@@ -53,7 +53,7 @@ rescue Exception
 end
 unless server
   begin
-    server = Rack::Handler::Mongrel
+    server = Rack::Handler::Thin
   rescue LoadError => e
     server = Rack::Handler::WEBrick
   end
