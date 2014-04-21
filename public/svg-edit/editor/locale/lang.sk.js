@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "sk",
 	dir : "ltr",
@@ -84,7 +85,7 @@ svgEditor.readLang({
 		"smallest_object": "najmenšiemu objektu",
 		"new_doc": "Nový obrázok",
 		"open_doc": "Otvoriť obrázok",
-		"export_png": "Exportovať ako PNG",
+		"export_img": "Export",
 		"save_doc": "Uložiť obrázok",
 		"import_doc": "Import SVG",
 		"align_to_page": "Zarovnať element na stránku",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Zobraz/Skry mriežku",
 		"clone": "Klonuj element(y)",
 		"del": "Zmaž element(y)",
-		"group": "Zoskupiť elementy",
+		"group_elements": "Zoskupiť elementy",
 		"make_link": "Naviaž odkaz (hyper)link",
 		"set_link_url": "Nastav odkaz URL (ak prázdny, odstráni sa)",
 		"to_path": "Previesť na krivku",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Vloženie",
 		"paste_in_place": "Vloženie na pôvodnom mieste",
 		"delete": "Zmazanie",
+		"group": "Group",
 		"move_front": "Vysuň navrch",
 		"move_up": "Vysuň vpred",
 		"move_down": "Zasuň na spodok",
@@ -230,5 +232,19 @@ svgEditor.readLang({
 		"errorLoadingSVG": "Chyba: Nedajú sa načítať SVG data",
 		"URLloadFail": "Nemožno čítať z URL",
 		"retrieving": "Načítavanie \"%s\"..."
+	},
+	confirmSetStorage: {
+		message: "By default and where supported, SVG-Edit can store your editor "+
+		"preferences and SVG content locally on your machine so you do not "+
+		"need to add these back each time you load SVG-Edit. If, for privacy "+
+		"reasons, you do not wish to store this information on your machine, "+
+		"you can change away from the default option below.",
+		storagePrefsAndContent: "Store preferences and SVG content locally",
+		storagePrefsOnly: "Only store preferences locally",
+		storagePrefs: "Store preferences locally",
+		storageNoPrefsOrContent: "Do not store my preferences or SVG content locally",
+		storageNoPrefs: "Do not store my preferences locally",
+		rememberLabel: "Remember this choice?",
+		rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
 	}
 });

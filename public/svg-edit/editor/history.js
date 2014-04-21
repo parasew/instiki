@@ -1,3 +1,5 @@
+/*globals svgedit*/
+/*jslint vars: true, eqeq: true, continue: true, forin: true*/
 /**
  * Package: svedit.history
  *
@@ -11,7 +13,7 @@
 // 2) svgtransformlist.js
 // 3) svgutils.js
 
-(function() {
+(function() {'use strict';
 
 if (!svgedit.history) {
 	svgedit.history = {};
@@ -28,10 +30,9 @@ svgedit.history.HistoryEventTypes = {
 var removedElements = {};
 
 /**
- * Interface: svgedit.history.HistoryCommand
  * An interface that all command objects must implement.
- *
- * interface svgedit.history.HistoryCommand {
+ * @typedef svgedit.history.HistoryCommand
+ * @type {object}
  *   void apply(svgedit.history.HistoryEventHandler);
  *   void unapply(svgedit.history.HistoryEventHandler);
  *   Element[] elements();
@@ -51,15 +52,15 @@ var removedElements = {};
  * command is an object fulfilling the HistoryCommand interface.
  */
 
-// Class: svgedit.history.MoveElementCommand
-// implements svgedit.history.HistoryCommand
-// History command for an element that had its DOM position changed
-//
-// Parameters:
-// elem - The DOM element that was moved
-// oldNextSibling - The element's next sibling before it was moved
-// oldParent - The element's parent before it was moved
-// text - An optional string visible to user related to this change
+/**
+ * @class svgedit.history.MoveElementCommand
+ * @implements svgedit.history.HistoryCommand
+ * History command for an element that had its DOM position changed
+ * @param {Element} elem - The DOM element that was moved
+ * @param {Element} oldNextSibling - The element's next sibling before it was moved
+ * @param {Element} oldParent - The element's parent before it was moved
+ * @param {string} [text] - An optional string visible to user related to this change
+*/
 svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
 	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
@@ -71,13 +72,14 @@ svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, t
 svgedit.history.MoveElementCommand.type = function() { return 'svgedit.history.MoveElementCommand'; };
 svgedit.history.MoveElementCommand.prototype.type = svgedit.history.MoveElementCommand.type;
 
-// Function: svgedit.history.MoveElementCommand.getText
 svgedit.history.MoveElementCommand.prototype.getText = function() {
 	return this.text;
 };
 
-// Function: svgedit.history.MoveElementCommand.apply
-// Re-positions the element
+/**
+ * Re-positions the element
+ * @param {handleHistoryEvent: function}
+*/
 svgedit.history.MoveElementCommand.prototype.apply = function(handler) {
 	// TODO(codedread): Refactor this common event code into a base HistoryCommand class.
 	if (handler) {
@@ -91,8 +93,10 @@ svgedit.history.MoveElementCommand.prototype.apply = function(handler) {
 	}
 };
 
-// Function: svgedit.history.MoveElementCommand.unapply
-// Positions the element back to its original location
+/**
+ * Positions the element back to its original location
+ * @param {handleHistoryEvent: function}
+*/
 svgedit.history.MoveElementCommand.prototype.unapply = function(handler) {
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
@@ -220,7 +224,9 @@ svgedit.history.RemoveElementCommand.prototype.unapply = function(handler) {
 
 	svgedit.transformlist.removeElementFromListMap(this.elem);
 	if (this.nextSibling == null) {
-		if (window.console) console.log('Error: reference element was lost');
+		if (window.console) {
+            console.log('Error: reference element was lost');
+        }
 	}
 	this.parent.insertBefore(this.elem, this.nextSibling);
 
@@ -251,10 +257,11 @@ svgedit.history.ChangeElementCommand = function(elem, attrs, text) {
 	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
 	this.newValues = {};
 	this.oldValues = attrs;
-	for (var attr in attrs) {
-		if (attr == "#text") this.newValues[attr] = elem.textContent;
-		else if (attr == "#href") this.newValues[attr] = svgedit.utilities.getHref(elem);
-		else this.newValues[attr] = elem.getAttribute(attr);
+	var attr;
+	for (attr in attrs) {
+		if (attr == "#text") {this.newValues[attr] = elem.textContent;}
+		else if (attr == "#href") {this.newValues[attr] = svgedit.utilities.getHref(elem);}
+		else {this.newValues[attr] = elem.getAttribute(attr);}
 	}
 };
 svgedit.history.ChangeElementCommand.type = function() { return 'svgedit.history.ChangeElementCommand'; };
@@ -273,11 +280,12 @@ svgedit.history.ChangeElementCommand.prototype.apply = function(handler) {
 	}
 
 	var bChangedTransform = false;
-	for (var attr in this.newValues ) {
+	var attr;
+	for (attr in this.newValues ) {
 		if (this.newValues[attr]) {
-			if (attr == "#text") this.elem.textContent = this.newValues[attr];
-			else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.newValues[attr]);
-			else this.elem.setAttribute(attr, this.newValues[attr]);
+			if (attr == "#text") {this.elem.textContent = this.newValues[attr];}
+			else if (attr == "#href") {svgedit.utilities.setHref(this.elem, this.newValues[attr]);}
+			else {this.elem.setAttribute(attr, this.newValues[attr]);}
 		}
 		else {
 			if (attr == "#text") {
@@ -296,6 +304,8 @@ svgedit.history.ChangeElementCommand.prototype.apply = function(handler) {
 	if (!bChangedTransform) {
 		var angle = svgedit.utilities.getRotationAngle(this.elem);
 		if (angle) {
+			// TODO: These instances of elem either need to be declared as global
+			//				(which would not be good for conflicts) or declare/use this.elem
 			var bbox = elem.getBBox();
 			var cx = bbox.x + bbox.width/2,
 				cy = bbox.y + bbox.height/2;
@@ -321,17 +331,20 @@ svgedit.history.ChangeElementCommand.prototype.unapply = function(handler) {
 	}
 
 	var bChangedTransform = false;
-	for (var attr in this.oldValues ) {
+	var attr;
+	for (attr in this.oldValues ) {
 		if (this.oldValues[attr]) {
-			if (attr == "#text") this.elem.textContent = this.oldValues[attr];
-			else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.oldValues[attr]);
-			else this.elem.setAttribute(attr, this.oldValues[attr]);
+			if (attr == "#text") {this.elem.textContent = this.oldValues[attr];}
+			else if (attr == "#href") {svgedit.utilities.setHref(this.elem, this.oldValues[attr]);}
+			else {
+				this.elem.setAttribute(attr, this.oldValues[attr]);
+			}
 		}
 		else {
 			if (attr == "#text") {
 				this.elem.textContent = "";
 			}
-			else this.elem.removeAttribute(attr);
+			else {this.elem.removeAttribute(attr);}
 		}
 		if (attr == "transform") { bChangedTransform = true; }
 	}
@@ -396,8 +409,9 @@ svgedit.history.BatchCommand.prototype.apply = function(handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
 	}
 
-	var len = this.stack.length;
-	for (var i = 0; i < len; ++i) {
+	var i,
+		len = this.stack.length;
+	for (i = 0; i < len; ++i) {
 		this.stack[i].apply(handler);
 	}
 
@@ -413,7 +427,8 @@ svgedit.history.BatchCommand.prototype.unapply = function(handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
 	}
 
-	for (var i = this.stack.length-1; i >= 0; i--) {
+	var i;
+	for (i = this.stack.length-1; i >= 0; i--) {
 		this.stack[i].unapply(handler);
 	}
 
@@ -431,7 +446,7 @@ svgedit.history.BatchCommand.prototype.elements = function() {
 		var thisElems = this.stack[cmd].elements();
 		var elem = thisElems.length;
 		while (elem--) {
-			if (elems.indexOf(thisElems[elem]) == -1) elems.push(thisElems[elem]);
+			if (elems.indexOf(thisElems[elem]) == -1) {elems.push(thisElems[elem]);}
 		}
 	}
 	return elems;
@@ -558,7 +573,7 @@ svgedit.history.UndoManager.prototype.beginUndoableChange = function(attrName, e
 	var oldValues = new Array(i), elements = new Array(i);
 	while (i--) {
 		var elem = elems[i];
-		if (elem == null) continue;
+		if (elem == null) {continue;}
 		elements[i] = elem;
 		oldValues[i] = elem.getAttribute(attrName);
 	}
@@ -584,7 +599,7 @@ svgedit.history.UndoManager.prototype.finishUndoableChange = function() {
 	var batchCmd = new svgedit.history.BatchCommand("Change " + attrName);
 	while (i--) {
 		var elem = changeset.elements[i];
-		if (elem == null) continue;
+		if (elem == null) {continue;}
 		var changes = {};
 		changes[attrName] = changeset.oldValues[i];
 		if (changes[attrName] != elem.getAttribute(attrName)) {
@@ -595,4 +610,4 @@ svgedit.history.UndoManager.prototype.finishUndoableChange = function() {
 	return batchCmd;
 };
 
-})();
+}());

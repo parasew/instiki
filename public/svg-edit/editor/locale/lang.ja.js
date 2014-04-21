@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "ja",
 	dir : "ltr",
@@ -84,7 +85,7 @@ svgEditor.readLang({
 		"smallest_object": "最小のオブジェクト",
 		"new_doc": "新規イメージ",
 		"open_doc": "イメージを開く",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "画像を保存",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Show/Hide Grid",
 		"clone": "Clone Element(s)",
 		"del": "Delete Element(s)",
-		"group": "グループ化",
+		"group_elements": "グループ化",
 		"make_link": "Make (hyper)link",
 		"set_link_url": "Set link URL (leave empty to remove)",
 		"to_path": "パスに変換",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Paste",
 		"paste_in_place": "Paste in Place",
 		"delete": "Delete",
+		"group": "Group",
 		"move_front": "Bring to Front",
 		"move_up": "Bring Forward",
 		"move_down": "Send Backward",
@@ -230,5 +232,19 @@ svgEditor.readLang({
 		"errorLoadingSVG": "Error: Unable to load SVG data",
 		"URLloadFail": "Unable to load from URL",
 		"retrieving": "Retrieving \"%s\"..."
+	},
+	confirmSetStorage: {
+		message: "By default and where supported, SVG-Edit can store your editor "+
+		"preferences and SVG content locally on your machine so you do not "+
+		"need to add these back each time you load SVG-Edit. If, for privacy "+
+		"reasons, you do not wish to store this information on your machine, "+
+		"you can change away from the default option below.",
+		storagePrefsAndContent: "Store preferences and SVG content locally",
+		storagePrefsOnly: "Only store preferences locally",
+		storagePrefs: "Store preferences locally",
+		storageNoPrefsOrContent: "Do not store my preferences or SVG content locally",
+		storageNoPrefs: "Do not store my preferences locally",
+		rememberLabel: "Remember this choice?",
+		rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
 	}
 });

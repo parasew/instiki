@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "zh-CN",
 	dir : "ltr",
@@ -84,7 +85,7 @@ svgEditor.readLang({
 		"smallest_object": "最小的对象",
 		"new_doc": "新文档",
 		"open_doc": "打开文档",
-		"export_png": "导出为PNG格式",
+		"export_img": "导出",
 		"save_doc": "保存图像",
 		"import_doc": "导入SVG",
 		"align_to_page": "对齐元素到页面",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "显示/隐藏 网格",
 		"clone": "克隆元素",
 		"del": "删除元素",
-		"group": "组合元素",
+		"group_elements": "组合元素",
 		"make_link": "创建超链接",
 		"set_link_url": "设置链接URL (设置为空以删除)",
 		"to_path": "转换为路径",
@@ -231,5 +232,19 @@ svgEditor.readLang({
 		"errorLoadingSVG": "错误: 无法加载SVG数据",
 		"URLloadFail": "无法从URL中加载",
 		"retrieving": "检索 \"%s\"..."
+	},
+	confirmSetStorage: {
+		message: "By default and where supported, SVG-Edit can store your editor "+
+		"preferences and SVG content locally on your machine so you do not "+
+		"need to add these back each time you load SVG-Edit. If, for privacy "+
+		"reasons, you do not wish to store this information on your machine, "+
+		"you can change away from the default option below.",
+		storagePrefsAndContent: "Store preferences and SVG content locally",
+		storagePrefsOnly: "Only store preferences locally",
+		storagePrefs: "Store preferences locally",
+		storageNoPrefsOrContent: "Do not store my preferences or SVG content locally",
+		storageNoPrefs: "Do not store my preferences locally",
+		rememberLabel: "Remember this choice?",
+		rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
 	}
 });

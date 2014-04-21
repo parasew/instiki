@@ -1,3 +1,5 @@
+/*globals $, svgedit*/
+/*jslint vars: true, eqeq: true*/
 /**
  * Package: svgedit.sanitize
  *
@@ -12,7 +14,7 @@
 // 2) browser.js
 // 3) svgutils.js
 
-(function() {
+(function() {'use strict';
 
 if (!svgedit.sanitize) {
   svgedit.sanitize = {};
@@ -138,12 +140,12 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 
   var allowedAttrs = svgWhiteList_[node.nodeName];
   var allowedAttrsNS = svgWhiteListNS_[node.nodeName];
-
+  var i;
   // if this element is supported, sanitize it
   if (typeof allowedAttrs !== 'undefined') {
 
     var seAttrs = [];
-    var i = node.attributes.length;
+    i = node.attributes.length;
     while (i--) {
       // if the attribute is not in our whitelist, then remove it
       // could use jQuery's inArray(), but I don't know if that's any better
@@ -154,13 +156,13 @@ svgedit.sanitize.sanitizeSvg = function(node) {
       // Check that an attribute with the correct localName in the correct namespace is on 
       // our whitelist or is a namespace declaration for one of our allowed namespaces
       if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != NS.XMLNS) &&
-        !(attrNsURI == NS.XMLNS && REVERSE_NS[attr.nodeValue]) )
+        !(attrNsURI == NS.XMLNS && REVERSE_NS[attr.value]) )
       {
         // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
         // Bypassing the whitelist to allow se: prefixes.
         // Is there a more appropriate way to do this?
         if (attrName.indexOf('se:') === 0) {
-          seAttrs.push([attrName, attr.nodeValue]);
+          seAttrs.push([attrName, attr.value]);
         }
         node.removeAttributeNS(attrNsURI, attrLocalName);
       }
@@ -171,14 +173,15 @@ svgedit.sanitize.sanitizeSvg = function(node) {
         case 'transform':
         case 'gradientTransform':
         case 'patternTransform':
-          var val = attr.nodeValue.replace(/(\d)-/g, '$1 -');
+          var val = attr.value.replace(/(\d)-/g, '$1 -');
           node.setAttribute(attrName, val);
+          break;
         }
       }
 
       // For the style attribute, rewrite it in terms of XML presentational attributes
       if (attrName == 'style') {
-        var props = attr.nodeValue.split(';'),
+        var props = attr.value.split(';'),
           p = props.length;
         while (p--) {
           var nv = props[p].split(':');
@@ -202,8 +205,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
     var href = svgedit.utilities.getHref(node);
     if (href &&
       ['filter', 'linearGradient', 'pattern',
-      'radialGradient', 'textPath', 'use'].indexOf(node.nodeName) >= 0)
-    {
+      'radialGradient', 'textPath', 'use'].indexOf(node.nodeName) >= 0) {
       // TODO: we simply check if the first character is a #, is this bullet-proof?
       if (href[0] != '#') {
         // remove the attribute (but keep the element)
@@ -248,9 +250,9 @@ svgedit.sanitize.sanitizeSvg = function(node) {
     parent.removeChild(node);
 
     // call sanitizeSvg on each of those children
-    var i = children.length;
+    i = children.length;
     while (i--) { svgedit.sanitize.sanitizeSvg(children[i]); }
   }
 };
 
-})();
+}());
