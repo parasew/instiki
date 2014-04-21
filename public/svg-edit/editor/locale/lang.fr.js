@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "fr",
 	dir : "ltr",
@@ -84,7 +85,7 @@ svgEditor.readLang({
 		"smallest_object": "Objet plus petit",
 		"new_doc": "Nouvelle image",
 		"open_doc": "Ouvrir une image",
-		"export_png": "Exporter au format PNG",
+		"export_img": "Export",
 		"save_doc": "Enregistrer l'image",
 		"import_doc": "Importer un objet SVG",
 		"align_to_page": "Aligner l'élément relativement à la Page",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Montrer/cacher la grille",
 		"clone": "Cloner élement(s)",
 		"del": "Supprimer élement(s)",
-		"group": "Grouper les éléments",
+		"group_elements": "Grouper les éléments",
 		"make_link": "Créer hyperlien",
 		"set_link_url": "Définir le lien URL (laisser vide pour supprimer)",
 		"to_path": "Convertir en tracé",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Coller",
 		"paste_in_place": "Coller sur place",
 		"Retour Arr.": "Supprimer",
+		"group": "Group",
 		"move_front": "Placer au premier plan",
 		"move_up": "Avancer d'un plan",
 		"move_down": "Placer en arrière plan",
@@ -230,5 +232,19 @@ svgEditor.readLang({
 		"errorLoadingSVG": "Erreur: Impossible de charger le document SVG",
 		"URLloadFail": "Impossible de charger l'URL",
 		"retrieving": "Récupère \"%s\"..."
+	},
+	confirmSetStorage: {
+		message: "By default and where supported, SVG-Edit can store your editor "+
+		"preferences and SVG content locally on your machine so you do not "+
+		"need to add these back each time you load SVG-Edit. If, for privacy "+
+		"reasons, you do not wish to store this information on your machine, "+
+		"you can change away from the default option below.",
+		storagePrefsAndContent: "Store preferences and SVG content locally",
+		storagePrefsOnly: "Only store preferences locally",
+		storagePrefs: "Store preferences locally",
+		storageNoPrefsOrContent: "Do not store my preferences or SVG content locally",
+		storageNoPrefs: "Do not store my preferences locally",
+		rememberLabel: "Remember this choice?",
+		rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
 	}
 });

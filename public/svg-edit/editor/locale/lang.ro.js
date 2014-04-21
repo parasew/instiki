@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "ro",
 	dir : "ltr",
@@ -84,7 +85,7 @@ svgEditor.readLang({
 		"smallest_object": "cel mai mic obiect",
 		"new_doc": "Imagine nouă",
 		"open_doc": "Imagine deschisă",
-		"export_png": "Exportare ca şi PNG",
+		"export_img": "Export",
 		"save_doc": "Salvare imagine",
 		"import_doc": "Importare SVG",
 		"align_to_page": "Aliniere la pagină",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Arată/ascunde Caroiaj",
 		"clone": "Clonează Elementul/ele",
 		"del": "Şterge Elementul/ele",
-		"group": "Grupare Elemente",
+		"group_elements": "Grupare Elemente",
 		"make_link": "Crează (hyper)link",
 		"set_link_url": "Setează link URL (lăsaţi liber pentru eliminare)",
 		"to_path": "Converteşte in Traiectorie",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Reproducere",
 		"paste_in_place": "Reproducere pe loc",
 		"delete": "Ştergere",
+		"group": "Group",
 		"move_front": "Pune in faţa",
 		"move_up": "Pune in spate",
 		"move_down": "Trimite in faţa",
@@ -229,5 +231,19 @@ svgEditor.readLang({
 		"errorLoadingSVG": "Eroare: Nu se pot încărca datele SVG",
 		"URLloadFail": "Nu se poate încărca de la URL",
 		"retrieving": "În preluare \"%s\"..."
+	},
+	confirmSetStorage: {
+		message: "By default and where supported, SVG-Edit can store your editor "+
+		"preferences and SVG content locally on your machine so you do not "+
+		"need to add these back each time you load SVG-Edit. If, for privacy "+
+		"reasons, you do not wish to store this information on your machine, "+
+		"you can change away from the default option below.",
+		storagePrefsAndContent: "Store preferences and SVG content locally",
+		storagePrefsOnly: "Only store preferences locally",
+		storagePrefs: "Store preferences locally",
+		storageNoPrefsOrContent: "Do not store my preferences or SVG content locally",
+		storageNoPrefs: "Do not store my preferences locally",
+		rememberLabel: "Remember this choice?",
+		rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
 	}
 });

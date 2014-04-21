@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "pt-BR",
 	dir : "ltr",
@@ -84,7 +85,7 @@ svgEditor.readLang({
 		"smallest_object": "menor objeto",
 		"new_doc": "Nova imagem",
 		"open_doc": "Abrir imagem",
-		"export_png": "Exportar como PNG",
+		"export_img": "Export",
 		"save_doc": "Salvar imagem",
 		"import_doc": "Importar SVG",
 		"align_to_page": "Alinhar elemento na página",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Mostrar/Esconder grade",
 		"clone": "Clonar Elemento(s)",
 		"del": "Deletar Elemento(s)",
-		"group": "Agrupar Elementos",
+		"group_elements": "Agrupar Elementos",
 		"make_link": "Criar (hyper)link",
 		"set_link_url": "Alterar URL (em branco para remover)",
 		"to_path": "Converter para Contorno",
@@ -214,7 +215,7 @@ svgEditor.readLang({
 		"enterUniqueLayerName":"Insira um nome único",
 		"enterNewLayerName":"Insira um novo nome",
 		"layerHasThatName":"A camada já pussui este nome",
-    "QmoveElemsToLayer":"Mover elementos selecionados para a camada: \"%s\"?",
+		"QmoveElemsToLayer":"Mover elementos selecionados para a camada: \"%s\"?",
 		"QwantToClear":"Deseja criar um novo arquivo?\nO histórico também será apagado!",
 		"QwantToOpen":"Deseja abrir um novo arquivo?\nO histórico também será apagado!",
 		"QerrorsRevertToSource":"Foram encontrados erros ná análise do código SVG.\nReverter para o código SVG original?",
@@ -230,5 +231,19 @@ svgEditor.readLang({
 		"errorLoadingSVG": "Erro: Impossível carregar dados SVG",
 		"URLloadFail": "Impossível carregar deste URL",
 		"retrieving": "Recuperando \"%s\"..."
+	},
+	confirmSetStorage: {
+		message: "By default and where supported, SVG-Edit can store your editor "+
+		"preferences and SVG content locally on your machine so you do not "+
+		"need to add these back each time you load SVG-Edit. If, for privacy "+
+		"reasons, you do not wish to store this information on your machine, "+
+		"you can change away from the default option below.",
+		storagePrefsAndContent: "Store preferences and SVG content locally",
+		storagePrefsOnly: "Only store preferences locally",
+		storagePrefs: "Store preferences locally",
+		storageNoPrefsOrContent: "Do not store my preferences or SVG content locally",
+		storageNoPrefs: "Do not store my preferences locally",
+		rememberLabel: "Remember this choice?",
+		rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
 	}
 });

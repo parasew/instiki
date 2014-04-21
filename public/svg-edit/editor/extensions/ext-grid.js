@@ -1,3 +1,5 @@
+/*globals svgEditor, svgedit, svgCanvas, $*/
+/*jslint vars: true*/
 /*
  * ext-grid.js
  *
@@ -12,11 +14,11 @@
 // 1) units.js
 // 2) everything else
 
-svgEditor.addExtension('view_grid', function() {
+svgEditor.addExtension('view_grid', function() { 'use strict';
 
 	var NS = svgedit.NS,
 		svgdoc = document.getElementById('svgcanvas').ownerDocument,
-		showGrid = false,
+		showGrid = svgEditor.curConfig.showGrid || false,
 		assignAttributes = svgCanvas.assignAttributes,
 		hcanvas = document.createElement('canvas'),
 		canvBG = $('#canvasBackground'),
@@ -73,16 +75,17 @@ svgEditor.addExtension('view_grid', function() {
 	$('#canvasGrid').append(gridBox);
 
 	function updateGrid(zoom) {
+		var i;
 		// TODO: Try this with <line> elements, then compare performance difference
 		var unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
 		var u_multi = unit * zoom;
 		// Calculate the main number interval
 		var raw_m = 100 / u_multi;
 		var multi = 1;
-		for(var i = 0; i < intervals.length; i++) {
+		for (i = 0; i < intervals.length; i++) {
 			var num = intervals[i];
 			multi = num;
-			if(raw_m <= num) {
+			if (raw_m <= num) {
 				break;
 			}
 		}
@@ -97,7 +100,7 @@ svgEditor.addExtension('view_grid', function() {
 
 		ctx.globalAlpha = 0.2;
 		ctx.strokeStyle = svgEditor.curConfig.gridColor;
-		for (var i = 1; i < 10; i++) {
+		for (i = 1; i < 10; i++) {
 			var sub_d = Math.round(part * i) + 0.5;
 			// var line_num = (i % 2)?12:10;
 			var line_num = 0;
@@ -124,14 +127,25 @@ svgEditor.addExtension('view_grid', function() {
 		svgCanvas.setHref(gridimg, datauri);
 	}
 
+	function gridUpdate () {
+		if (showGrid) {
+			updateGrid(svgCanvas.getZoom());
+		}
+		$('#canvasGrid').toggle(showGrid);
+		$('#view_grid').toggleClass('push_button_pressed tool_button');
+	}
 	return {
 		name: 'view_grid',
-		svgicons: 'extensions/grid-icon.xml',
+		svgicons: svgEditor.curConfig.extPath + 'grid-icon.xml',
 
 		zoomChanged: function(zoom) {
-			if(showGrid) updateGrid(zoom);
+			if (showGrid) {updateGrid(zoom);}
 		},
-
+		callback: function () {
+			if (showGrid) {
+				gridUpdate();
+			}
+		},
 		buttons: [{
 			id: 'view_grid',
 			type: 'context',
@@ -140,11 +154,7 @@ svgEditor.addExtension('view_grid', function() {
 			events: {
 				click: function() {
 					svgEditor.curConfig.showGrid = showGrid = !showGrid;
-					if (showGrid) {
-						updateGrid(svgCanvas.getZoom());
-					}
-					$('#canvasGrid').toggle(showGrid);
-					$('#view_grid').toggleClass('push_button_pressed tool_button');
+					gridUpdate();
 				}
 			}
 		}]

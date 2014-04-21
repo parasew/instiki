@@ -2,8 +2,8 @@
 <html>
 <!-- removed for now, causes problems in Firefox: manifest="svg-editor.manifest" -->
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <link rel="icon" type="image/png" href="images/logo.png"/>
@@ -13,49 +13,53 @@
 <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
 
 <!--{if jquery_release}>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <!{else}-->
-  <script type="text/javascript" src="jquery.js"></script>
+  <script src="jquery.js"></script>
 <!--{endif}-->
 
-<script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
-<script type="text/javascript" src="jquerybbq/jquery.bbq.min.js"></script>
-<script type="text/javascript" src="svgicons/jquery.svgicons.js"></script>
-<script type="text/javascript" src="jgraduate/jquery.jgraduate.min.js"></script>
-<script type="text/javascript" src="spinbtn/JQuerySpinBtn.min.js"></script>
-<script type="text/javascript" src="touch.js"></script>
+<script src="js-hotkeys/jquery.hotkeys.min.js"></script>
+<script src="jquerybbq/jquery.bbq.min.js"></script>
+<script src="svgicons/jquery.svgicons.js"></script>
+<script src="jgraduate/jquery.jgraduate.min.js"></script>
+<script src="spinbtn/JQuerySpinBtn.min.js"></script>
+<script src="touch.js"></script>
+
+<script src="jspdf/underscore-min.js"></script>
+<script src="jspdf/jspdf.js"></script>
+<script src="jspdf/jspdf.plugin.svgToPdf.js"></script>
 
 <!--{if svg_edit_release}>
-  <script type="text/javascript" src="svgedit.compiled.js"></script>
+  <script src="svgedit.compiled.js"></script>
 <!{else}-->
-  <script type="text/javascript" src="svgedit.js"></script>
-  <script type="text/javascript" src="jquery-svg.js"></script>
-  <script type="text/javascript" src="contextmenu/jquery.contextMenu.js"></script>
-  <script type="text/javascript" src="browser.js"></script>
-  <script type="text/javascript" src="svgtransformlist.js"></script>
-  <script type="text/javascript" src="math.js"></script>
-  <script type="text/javascript" src="units.js"></script>
-  <script type="text/javascript" src="svgutils.js"></script>
-  <script type="text/javascript" src="sanitize.js"></script>
-  <script type="text/javascript" src="history.js"></script>
-  <script type="text/javascript" src="coords.js"></script>
-  <script type="text/javascript" src="recalculate.js"></script>
-  <script type="text/javascript" src="select.js"></script>
-  <script type="text/javascript" src="draw.js"></script>
-  <script type="text/javascript" src="path.js"></script>
-  <script type="text/javascript" src="svgcanvas.js"></script>
-  <script type="text/javascript" src="svg-editor.js"></script>
-  <script type="text/javascript" src="locale/locale.js"></script>
-  <script type="text/javascript" src="contextmenu.js"></script>
+  <script src="svgedit.js"></script>
+  <script src="jquery-svg.js"></script>
+  <script src="contextmenu/jquery.contextMenu.js"></script>
+  <script src="browser.js"></script>
+  <script src="svgtransformlist.js"></script>
+  <script src="math.js"></script>
+  <script src="units.js"></script>
+  <script src="svgutils.js"></script>
+  <script src="sanitize.js"></script>
+  <script src="history.js"></script>
+  <script src="coords.js"></script>
+  <script src="recalculate.js"></script>
+  <script src="select.js"></script>
+  <script src="draw.js"></script>
+  <script src="path.js"></script>
+  <script src="svgcanvas.js"></script>
+  <script src="svg-editor.js"></script>
+  <script src="locale/locale.js"></script>
+  <script src="contextmenu.js"></script>
 <!--{endif}-->
 
-<!-- you can load extensions here -->
-<!-- <script type="text/javascript" src="extensions/ext-helloworld.js"></script> -->
-<script type="text/javascript" src="extensions/ext-panning.js"></script>
+<!-- If you do not wish to add extensions by URL, you can load them
+by creating the following file and adding by calls to svgEditor.setConfig -->
+<script src="config.js"></script>
 
 <!-- always minified scripts -->
-<script type="text/javascript" src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
-<script type="text/javascript" src="jgraduate/jpicker.js"></script>
+<script src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
+<script src="jgraduate/jpicker.js"></script>
 
 <!-- feeds -->
 <link rel="alternate" type="application/atom+xml" title="SVG-edit General Discussion" href="http://groups.google.com/group/svg-edit/feed/atom_v1_0_msgs.xml" />
@@ -151,7 +155,7 @@
 			
 			<li id="tool_export">
 				<div></div>
-				Export as PNG
+				Export
 			</li>
 			
 			<li id="tool_docprops">
@@ -184,7 +188,7 @@
 		<div class="tool_button" id="tool_wireframe" title="Wireframe Mode [F]"></div>
 	</div>
 
-    <!-- History buttons -->
+	<!-- History buttons -->
 	<div id="history_panel">
 		<div class="tool_sep"></div>
 		<div class="push_button tool_button_disabled" id="tool_undo" title="Undo [Z]"></div>
@@ -251,7 +255,7 @@
 		<div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
 		<div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
 		<div class="tool_sep"></div>
-		<div class="push_button" id="tool_group" title="Group Elements [G]"></div>
+		<div class="push_button" id="tool_group_elements" title="Group Elements [G]"></div>
 		<div class="push_button" id="tool_make_link_multi" title="Make (hyper)link"></div>
 		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
 		<div class="push_button" id="tool_aligncenter" title="Align Center"></div>
@@ -476,7 +480,7 @@
 
 <div id="tools_bottom" class="tools_panel">
 
-    <!-- Zoom buttons -->
+	<!-- Zoom buttons -->
 	<div id="zoom_panel" class="toolset" title="Change zoom level">
 		<label>
 		<span id="zoomLabel" class="zoom_tool icon_label"></span>
@@ -527,7 +531,7 @@
 				
 				<label class="stroke_tool">
 					<select id="stroke_style" title="Change stroke dash style">
-						<option selected="selected" value="none">&mdash;</option>
+						<option selected="selected" value="none">&#8212;</option>
 						<option value="2,2">...</option>
 						<option value="5,5">- -</option>
 						<option value="5,2,2,2">- .</option>
@@ -693,6 +697,7 @@
 					<option id="lang_it" value="it">Italiano</option>
 					<option id="lang_ja" value="ja">日本語</option>
 					<option id="lang_nl" value="nl">Nederlands</option>
+					<option id="lang_pl" value="pl">Polski</option>
 					<option id="lang_pt-BR" value="pt-BR">Português (BR)</option>
 					<option id="lang_ro" value="ro">Română</option>
 					<option id="lang_ru" value="ru">Русский</option>
@@ -719,14 +724,14 @@
 
 			<fieldset id="change_grid">
 				<legend id="svginfo_grid_settings">Grid</legend>
-				<label><span id="svginfo_snap_onoff">Snapping on/off</span><input type="checkbox" value="snapping_on" id="grid_snapping_on"></label>
+				<label><span id="svginfo_snap_onoff">Snapping on/off</span><input type="checkbox" value="snapping_on" id="grid_snapping_on"/></label>
 				<label><span id="svginfo_snap_step">Snapping Step-Size:</span> <input type="text" id="grid_snapping_step" size="3" value="10"/></label>
 				<label><span id="svginfo_grid_color">Grid color:</span> <input type="text" id="grid_color" size="3" value="#000"/></label>
 			</fieldset>
 
 			<fieldset id="units_rulers">
-				<legend id="svginfo_units_rulers">Units & Rulers</legend>
-				<label><span id="svginfo_rulers_onoff">Show rulers</span><input type="checkbox" value="show_rulers" id="show_rulers" checked></label>
+				<legend id="svginfo_units_rulers">Units &amp; Rulers</legend>
+				<label><span id="svginfo_rulers_onoff">Show rulers</span><input type="checkbox" value="show_rulers" id="show_rulers" checked="checked"/></label>
 				<label>
 					<span id="svginfo_unit">Base Unit:</span>
 					<select id="base_unit">
@@ -777,10 +782,10 @@
 	<li class="separator"><a href="#delete">Delete</a></li>
 	<li class="separator"><a href="#group">Group<span class="shortcut">G</span></a></li>
 	<li><a href="#ungroup">Ungroup<span class="shortcut">G</span></a></li>
-        <li class="separator"><a href="#move_front">Bring to Front<span class="shortcut">SHFT+CTRL+]</span></a></li>
+	<li class="separator"><a href="#move_front">Bring to Front<span class="shortcut">SHFT+CTRL+]</span></a></li>
 	<li><a href="#move_up">Bring Forward<span class="shortcut">CTRL+]</span></a></li>
 	<li><a href="#move_down">Send Backward<span class="shortcut">CTRL+[</span></a></li>
-        <li><a href="#move_back">Send to Back<span class="shortcut">SHFT+CTRL+[</span></a></li>
+	<li><a href="#move_back">Send to Back<span class="shortcut">SHFT+CTRL+[</span></a></li>
 </ul>
 
 

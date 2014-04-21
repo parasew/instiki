@@ -29,7 +29,7 @@ svgEditor.addExtension("itex", function(S) {
 		function showPanel(on) {
 			var fc_rules = $('#fc_rules');
 			if(!fc_rules.length) {
-				fc_rules = $('<style id="fc_rules"><\/style>').appendTo('head');
+				fc_rules = $('<style id="fc_rules"></style>').appendTo('head');
 			} 
 			fc_rules.text(!on?"":" #tool_topath { display: none !important; }");
 			$('#itex_panel').toggle(on);
@@ -113,7 +113,7 @@ svgEditor.addExtension("itex", function(S) {
 		
 		return {
 			name: "itex",
-			svgicons: "extensions/itex-icons.xml",
+			svgicons: svgEditor.curConfig.extPath + "itex-icons.xml",
 			buttons: [{
 				id: "tool_itex",
 				type: "mode",
