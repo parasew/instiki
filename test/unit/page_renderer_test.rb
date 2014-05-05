@@ -645,7 +645,7 @@ END_THM
        
     # currently, upper case HTML elements are not allowed
     assert_markup_parsed_as( 
-      "<p>This &lt;IMG SRC='http://hobix.com/sample.jpg' alt=''&gt;&lt;/IMG&gt; is an inline image link.</p>", 
+      "<p>This</p>\n&lt;IMG SRC='http://hobix.com/sample.jpg' alt=''&gt;&lt;/IMG&gt;\n<p> is an inline image link.</p>", 
       'This <IMG SRC="http://hobix.com/sample.jpg" alt="" /> is an inline image link.')
   end
   
