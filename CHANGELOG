@@ -6,6 +6,30 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.7
+
+New Features:
+* Supports Ruby 2.0 and 2.1
+* itex2MML 1.5.1:
+  * readers can access TeX source by
+     - double-clicking on a formula (Firefox)
+     - using the MathJax contextual menu (other browsers)
+  * Several new commands, including
+      \begintoggle{expr1}{expr2}...{exprN}\endtoggle
+* Support for LaTeX \cite{} command (with auto-linking of
+  INSPIRE and MathSciNet Bibtex keys).
+* MathJax 2.3
+* SVG-Edit 2.7.1
+* Rails 2.3.18
+
+Bugs Fixed:
+* Many SVG-Edit and Maruku bugs fixed
+* Maruku is now up to 50% faster
+* Fixed DNSBLcheck
+* Redirect #new to #edit if the page already exists
+* Unvendored several gems
+
+------------------------------------------------------------------------------
 * 0.19.6
 
 New Features:
