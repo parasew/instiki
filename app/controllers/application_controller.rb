@@ -255,6 +255,11 @@ class ApplicationController < ActionController::Base
     cookies.signed[CGI.escape(@web_name)] == @web.password or
     password_check(params['password']) or
     (@web.published? and action_name == 's5')
+    
+    rescue ActiveSupport::MessageVerifier::InvalidSignature
+      flash[:info] = 'Bad cookie. Please reauthenticate.'
+      cookies.signed[CGI.escape(@web_name)] = ''
+      return false
   end
 
   def is_post
