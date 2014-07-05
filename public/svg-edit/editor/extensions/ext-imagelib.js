@@ -32,6 +32,11 @@ svgEditor.addExtension("imagelib", function() {'use strict';
 			name: 'IAN Symbol Libraries',
 			url: 'http://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php',
 			description: 'Free library of illustrations'
+		},
+		{
+			name: 'Openclipart',
+			url: 'http://openclipart.org/svgedit',
+			description: 'Share and Use Images. Over 50,000 Public Domain SVG Images and Growing.'
 		}
 	];
 
@@ -58,7 +63,6 @@ svgEditor.addExtension("imagelib", function() {'use strict';
 
 	var mode = 's';
 	var multi_arr = [];
-	var cur_meta;
 	var tranfer_stopped = false;
 	var pending = {};
 	var preview, submit;

@@ -15,7 +15,7 @@
 // 3) svgtransformlist.js
 // 4) units.js
 
-(function() {'use strict';
+(function(undef) {'use strict';
 
 if (!svgedit.utilities) {
 	svgedit.utilities = {};
@@ -88,8 +88,9 @@ svgedit.utilities.encode64 = function(input) {
 	// input = svgedit.utilities.convertToXMLReferences(input);
 	if (window.btoa) {
 		return window.btoa(input); // Use native if available
-  }
-	var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
+    }
+    var output = [];
+	output.length = Math.floor( (input.length + 2) / 3 ) * 4;
 	var chr1, chr2, chr3;
 	var enc1, enc2, enc3, enc4;
 	var i = 0, p = 0;
@@ -123,7 +124,7 @@ svgedit.utilities.encode64 = function(input) {
 // Converts a string from base64
 svgedit.utilities.decode64 = function(input) {
 	if(window.atob) {
-        return window.atob(input);
+        return svgedit.utilities.decodeUTF8(window.atob(input));
     }
 	var output = '';
 	var chr1, chr2, chr3 = '';
@@ -156,67 +157,16 @@ svgedit.utilities.decode64 = function(input) {
 		enc1 = enc2 = enc3 = enc4 = '';
 
 	} while (i < input.length);
-	return unescape(output);
+    return svgedit.utilities.decodeUTF8(output);
 };
 
-// based on http://phpjs.org/functions/utf8_encode
+svgedit.utilities.decodeUTF8 = function (argString) {
+    return decodeURIComponent(escape(argString));
+};
+
 // codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
 svgedit.utilities.encodeUTF8 = function (argString) {
-	//return unescape(encodeURIComponent(input)); //may or may not work
-  if (argString === null || typeof argString === 'undefined') {
-    return '';
-  }
-
-  // .replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-  var string = String(argString);
-  var utftext = '',
-    start, end, stringl = 0;
-
-  start = end = 0;
-  stringl = string.length;
-  var n;
-  for (n = 0; n < stringl; n++) {
-    var c1 = string.charCodeAt(n);
-    var enc = null;
-
-    if (c1 < 128) {
-      end++;
-    } else if (c1 > 127 && c1 < 2048) {
-      enc = String.fromCharCode(
-        (c1 >> 6) | 192, (c1 & 63) | 128
-      );
-    } else if ((c1 & 0xF800) != 0xD800) {
-      enc = String.fromCharCode(
-        (c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-      );
-    } else {
-      // surrogate pairs
-      if ((c1 & 0xFC00) != 0xD800) {
-        throw new RangeError('Unmatched trail surrogate at ' + n);
-      }
-      var c2 = string.charCodeAt(++n);
-      if ((c2 & 0xFC00) != 0xDC00) {
-        throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
-      }
-      c1 = ((c1 & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
-      enc = String.fromCharCode(
-        (c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-      );
-    }
-    if (enc !== null) {
-      if (end > start) {
-        utftext += string.slice(start, end);
-      }
-      utftext += enc;
-      start = end = n + 1;
-    }
-  }
-
-  if (end > start) {
-    utftext += string.slice(start, stringl);
-  }
-
-  return utftext;
+  return unescape(encodeURIComponent(argString));
 };
 
 // Function: svgedit.utilities.convertToXMLReferences
@@ -398,13 +348,13 @@ svgedit.utilities.getPathBBox = function(path) {
 	for (i = 0; i < tot; i++) {
 		var seg = seglist.getItem(i);
 
-		if(typeof seg.x === 'undefined') {continue;}
+		if(seg.x === undef) {continue;}
 
 		// Add actual points to limits
 		bounds[0].push(P0[0]);
 		bounds[1].push(P0[1]);
 
-		if(seg.x1) {
+		if (seg.x1) {
 			var P1 = [seg.x1, seg.y1],
 				P2 = [seg.x2, seg.y2],
 				P3 = [seg.x, seg.y];
@@ -721,6 +671,44 @@ svgedit.utilities.snapToGrid = function(value) {
 svgedit.utilities.preg_quote = function (str, delimiter) {
   // From: http://phpjs.org/functions
   return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+};
+
+/**
+* @param {string} globalCheck A global which can be used to determine if the script is already loaded
+* @param {array} scripts An array of scripts to preload (in order)
+* @param {function} cb The callback to execute upon load.
+*/
+svgedit.utilities.executeAfterLoads = function (globalCheck, scripts, cb) {
+	return function () {
+		var args = arguments;
+		function endCallback () {
+			cb.apply(null, args);
+		}
+		if (window[globalCheck]) {
+			endCallback();
+		}
+		else {
+			scripts.reduceRight(function (oldFunc, script) {
+				return function () {
+					$.getScript(script, oldFunc);
+				};
+			}, endCallback)();
+		}
+	};
+};
+
+svgedit.utilities.buildCanvgCallback = function (callCanvg) {
+	return svgedit.utilities.executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
+};
+
+svgedit.utilities.buildJSPDFCallback = function (callJSPDF) {
+	return svgedit.utilities.executeAfterLoads('RGBColor', ['canvg/rgbcolor.js'], function () {
+		var arr = [];
+		if (!RGBColor || RGBColor.ok === undef) { // It's not our RGBColor, so we'll need to load it
+			arr.push('canvg/rgbcolor.js');
+		}
+		svgedit.utilities.executeAfterLoads('jsPDF', arr.concat('jspdf/underscore-min.js', 'jspdf/jspdf.min.js', 'jspdf/jspdf.plugin.svgToPdf.js'), callJSPDF)();
+	});
 };
 
 }());

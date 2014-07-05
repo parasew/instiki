@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="jgraduate/css/jgraduate.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
 <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
-
+<link rel="stylesheet" href="custom.css" type="text/css"/>
 <!--{if jquery_release}>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <!{else}-->
@@ -24,10 +24,6 @@
 <script src="jgraduate/jquery.jgraduate.min.js"></script>
 <script src="spinbtn/JQuerySpinBtn.min.js"></script>
 <script src="touch.js"></script>
-
-<script src="jspdf/underscore-min.js"></script>
-<script src="jspdf/jspdf.js"></script>
-<script src="jspdf/jspdf.plugin.svgToPdf.js"></script>
 
 <!--{if svg_edit_release}>
   <script src="svgedit.compiled.js"></script>
@@ -138,7 +134,7 @@ by creating the following file and adding by calls to svgEditor.setConfig -->
 				<div id="fileinputs">
 					<div></div>
 				</div>
-				Open Image
+				Open SVG
 			</li>
 			
 			<li id="tool_import" style="display:none;">
@@ -702,6 +698,7 @@ by creating the following file and adding by calls to svgEditor.setConfig -->
 					<option id="lang_ro" value="ro">Română</option>
 					<option id="lang_ru" value="ru">Русский</option>
 					<option id="lang_sk" value="sk">Slovenčina</option>
+					<option id="lang_sl" value="sl">Slovenščina</option>
 					<option id="lang_zh-TW" value="zh-TW">繁體中文</option>
 				</select>
 			</label>
