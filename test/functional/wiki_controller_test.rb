@@ -51,10 +51,10 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_authenticate
     set_web_property :password, 'pswd'
-  
-    get :authenticate, :web => 'wiki1', :password => 'pswd'
+
+    r = process('authenticate', 'web' => 'wiki1', 'password' => 'pswd')
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
-    assert_equal 'pswd', @response.cookies['wiki1']
+    assert_equal 'pswd', @controller.send(:cookies).signed['wiki1']   
   end
 
   def test_authenticate_wrong_password
