@@ -242,7 +242,7 @@ END_THM
     "Rapid development</li>\n</ol>\n<a href='#fnref:3' rev='footnote'>\342\206\251</a></li></ol></div>",
     "Ruby on Rails is a web-framework[^framework]. It uses the MVC[^MVC] architecture pattern." +
     " It has its good points[^points].\n\n[^framework]: a reusable set of libraries\n\n[^MVC]:" +
-    " Model View Controller\n\n[^points]: Here are its good points\n    1. Ease of use\n    2. Rapid d" +
+    " Model View Controller\n\n[^points]: Here are its good points\n\n    1. Ease of use\n    2. Rapid d" +
     "evelopment")
   end
 
