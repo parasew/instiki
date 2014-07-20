@@ -2,7 +2,7 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
-  protect_forms_from_spam
+  protect_forms_from_spam :only => [:edit, :new]
   before_filter :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
   after_filter :remember_location, :teardown_url_generator
 
