@@ -261,10 +261,11 @@ EOL
   def print
     if @page.nil?
       redirect_home
+    else
+      @link_mode ||= :show
+      @renderer = PageRenderer.new(@page.current_revision)
+      # to template
     end
-    @link_mode ||= :show
-    @renderer = PageRenderer.new(@page.current_revision)
-    # to template
   end
 
   def published
@@ -290,9 +291,13 @@ EOL
   end
   
   def revision
-    get_page_and_revision
-    @show_diff = (params[:mode] == 'diff')
-    @renderer = PageRenderer.new(@revision)
+    if @page.nil?    
+      redirect_home
+    else
+      get_page_and_revision
+      @show_diff = (params[:mode] == 'diff')
+      @renderer = PageRenderer.new(@revision)
+    end
   end
 
   def rollback
@@ -402,7 +407,11 @@ EOL
   end
 
   def source
-    @revision = @page.revisions[params['rev'].to_i - 1] if params['rev']
+    if @page.nil?
+      redirect_home
+    else
+      @revision = @page.revisions[params['rev'].to_i - 1] if params['rev']
+    end
   end
 
   def tex
@@ -508,10 +517,12 @@ EOL
 #  end
 
   def get_page_and_revision
-    if params['rev']
-      @revision_number = params['rev'].to_i
+    rev = params['rev'].to_i if params['rev']
+    prs = @page.rev_ids.size
+    if rev && rev > 0 && rev <= prs
+      @revision_number = rev
     else
-      @revision_number = @page.rev_ids.size
+      @revision_number = prs
     end
     @revision = @page.revisions[@revision_number - 1]
   end
