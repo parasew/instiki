@@ -268,6 +268,7 @@ class ApplicationController < ActionController::Base
       layout = false if %w(tex tex_list).include?(action_name)
       headers['Allow'] = 'POST'
       render(:status => 405, :text => 'You must use an HTTP POST', :layout => layout)
+      return false
     end
     return true
   end
