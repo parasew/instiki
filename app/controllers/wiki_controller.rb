@@ -280,13 +280,22 @@ EOL
     if @page
        @renderer = PageRenderer.new(@page.current_revision)
     else
-      real_page = WikiReference.page_that_redirects_for(@web, @page_name)
-        if real_page
+      real_pages = WikiReference.pages_that_redirect_for(@web, @page_name)
+      real_page = real_pages.last
+      if real_page
+        if real_pages.length == 1
           flash[:info] = "Redirected from \"#{@page_name}\"."
-          redirect_to :web => @web_name, :action => 'published', :id => real_page, :status => 301
         else
-          render(:text => "Page '#{@page_name}' not found", :status => 404, :layout => 'error')
+          list_pages = real_pages.collect do |r| 
+            "<a href=\"#{url_for(:web => @web.address, :action => 'published', :id => r, :only_path => true)}\">#{r.escapeHTML}</a>"
+          end
+          c = list_pages.length > 2 ? 'all' : 'both'
+          flash[:error] = "Redirected from \"#{@page_name}\".\nNote: #{list_pages.to_sentence} #{c} redirect for \"#{@page_name}\".".html_safe
         end
+          redirect_to :web => @web_name, :action => 'published', :id => real_page, :status => 301
+      else
+        render(:text => "Page '#{@page_name}' not found", :status => 404, :layout => 'error')
+      end
      end
   end
   
@@ -370,9 +379,18 @@ EOL
       end
     else
       if not @page_name.nil? and not @page_name.empty?
-        real_page = WikiReference.page_that_redirects_for(@web, @page_name)
+        real_pages = WikiReference.pages_that_redirect_for(@web, @page_name)
+        real_page = real_pages.last
         if real_page
-          flash[:info] = "Redirected from \"#{@page_name}\"."
+          if real_pages.length == 1
+            flash[:info] = "Redirected from \"#{@page_name}\"."
+          else
+            list_pages = real_pages.collect do |r|
+              "<a href=\"#{url_for(:web => @web.address, :action => 'show', :id => r, :only_path => true)}\">#{r.escapeHTML}</a>"
+            end
+            c = list_pages.length > 2 ? 'all' : 'both'
+            flash[:error] = "Redirected from \"#{@page_name}\".\nNote: #{list_pages.to_sentence} #{c} redirect for \"#{@page_name}\".".html_safe
+          end
           redirect_to :web => @web_name, :action => 'show', :id => real_page, :status => 301
         else
           flash[:info] = "Page \"#{@page_name}\" does not exist.\n" +

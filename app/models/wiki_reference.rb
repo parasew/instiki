@@ -71,14 +71,18 @@ class WikiReference < ActiveRecord::Base
     names.uniq    
   end
 
-  def self.page_that_redirects_for(web, page_name)
+  def self.pages_that_redirect_for(web, page_name)
     query = 'SELECT name FROM pages JOIN wiki_references ' +
       'ON pages.id = wiki_references.page_id ' +
       'WHERE wiki_references.referenced_name = ? ' +
       "AND wiki_references.link_type = '#{REDIRECTED_PAGE}' " +
       "AND pages.web_id = '#{web.id}'"
-    row = connection.select_one(sanitize_sql([query, page_name]))
-    row['name'].as_utf8 if row
+    rows = connection.select_all(sanitize_sql([query, page_name]))
+    rows.collect {|r| r['name'].as_utf8}
+  end
+
+  def self.page_that_redirects_for(web, page_name)
+    self.pages_that_redirect_for(web, page_name).last
   end
 
   def self.pages_in_category(web, category)
