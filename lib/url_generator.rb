@@ -10,7 +10,7 @@ class AbstractUrlGenerator
   # Create a link for the given page (or file) name and link text based
   # on the render mode in options and whether the page (file) exists
   # in the web.
-  def make_link(current_web, asked_name, web, text = nil, options = {})
+  def make_link(current_web, asked_name, anchor_name, web, text = nil, options = {})
     @web = current_web
     mode = (options[:mode] || :show).to_sym
     link_type = (options[:link_type] || :show).to_sym
@@ -49,7 +49,7 @@ class AbstractUrlGenerator
     
     case link_type
     when :show
-      page_link(mode, name, text, web.address, known_page)
+      page_link(mode, name, anchor_name, text, web.address, known_page)
     when :file
       file_link(mode, name, text, web.address, known_page, description)
     when :pic
@@ -104,23 +104,23 @@ class UrlGenerator < AbstractUrlGenerator
     end
   end
 
-  def page_link(mode, name, text, web_address, known_page)
+  def page_link(mode, name, anchor_name, text, web_address, known_page)
     case mode
     when :export
       if known_page 
-        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.#{html_ext}">#{text}</a>}
+        %{<a class="existingWikiWord" href="#{CGI.escape(name)}.#{html_ext}#{'#'+anchor_name if anchor_name}">#{text}</a>}
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
     when :publish
       if known_page
-        wikilink_for(mode, name, text, web_address)
+        wikilink_for(mode, name, anchor_name, text, web_address)
       else 
         %{<span class="newWikiWord">#{text}</span>} 
       end
     else 
       if known_page
-        wikilink_for(mode, name, text, web_address)
+        wikilink_for(mode, name, anchor_name, text, web_address)
       else 
         href = @controller.url_for :controller => 'wiki', :web => web_address, :action => 'new', 
             :id => name, :only_path => true
@@ -244,13 +244,13 @@ class UrlGenerator < AbstractUrlGenerator
       "<span class='badWikiWord'>[[invalid filename: #{name}]]</span>"
     end
 
-    def wikilink_for(mode, name, text, web_address)
+    def wikilink_for(mode, name, anchor_name, text, web_address)
       web = Web.find_by_address(web_address)
       action = web.published? && (web != @web || [:publish, :s5].include?(mode) ) ? 'published' : 'show'
       href = @controller.url_for :controller => 'wiki', :web => web_address, :action => action, 
             :id => name, :only_path => true
       title = web == @web ? '' : %{ title="#{web_address}"}
-      %{<a class="existingWikiWord" href="#{href}"#{title}>#{text}</a>}
+      %{<a class="existingWikiWord" href="#{href}#{'#'+anchor_name if anchor_name}"#{title}>#{text}</a>}
     end
     
     def html_ext
