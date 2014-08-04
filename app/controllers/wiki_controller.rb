@@ -120,7 +120,7 @@ class WikiController < ApplicationController
   <div class="byline">
   #{page.revisions? ? "Revised" : "Created" } on #{ page.revised_at.strftime('%B %d, %Y %H:%M:%S') }
   by
-  #{ UrlGenerator.new(self).make_link(@web, page.author.name, @web, nil, { :mode => :export }) }
+  #{ UrlGenerator.new(self).make_link(@web, page.author.name, nil, @web, nil, { :mode => :export }) }
   </div>
   </div>
  </div>

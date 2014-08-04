@@ -831,11 +831,41 @@ END_THM
   	  "<p><a class='existingWikiWord' href='../show/HomePage'>HomePage</a></p>",
   	  '[[wiki1:HomePage]]')
   end
-  
+
+  def test_wiki_link_with_fragment
+  	assert_markup_parsed_as(
+  	  "<p><a class='existingWikiWord' href='../show/HomePage#foo'>HomePage</a></p>",
+  	  '[[HomePage#foo]]')
+  end
+
+  def test_wiki_link_with_fragment_escaped
+  	assert_markup_parsed_as(
+  	  "<p><a class='existingWikiWord' href='../show/HomePage#foo&lt;bar'>HomePage</a></p>",
+  	  '[[HomePage#foo<bar]]')
+  end
+
   def test_wiki_link_with_colon_interwiki
   	assert_markup_parsed_as(
   	  "<p><a class='existingWikiWord' href='../../instiki/show/HomePage' title='instiki'>HomePage</a></p>",
   	  '[[instiki:HomePage]]')
+  end
+
+  def test_wiki_link_with_fragment_interwiki
+  	assert_markup_parsed_as(
+  	  "<p><a class='existingWikiWord' href='../../instiki/show/HomePage#foo' title='instiki'>HomePage</a></p>",
+  	  '[[instiki:HomePage#foo]]')
+  end
+
+  def test_wiki_link_with_fragment_and_alias_interwiki
+  	assert_markup_parsed_as(
+  	  "<p><a class='existingWikiWord' href='../../instiki/show/HomePage#foo' title='instiki'>fubar</a></p>",
+  	  '[[instiki:HomePage#foo|fubar]]')
+  end
+
+  def test_wiki_link_with_fragment_escaped_interwiki
+  	assert_markup_parsed_as(
+  	  "<p><a class='existingWikiWord' href='../../instiki/show/HomePage#foo&amp;bar' title='instiki'>HomePage</a></p>",
+  	  '[[instiki:HomePage#foo&bar]]')
   end
 
   def test_list_with_tildas

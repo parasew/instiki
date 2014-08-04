@@ -69,6 +69,11 @@ class WikiTest < Test::Unit::TestCase
 	      {:page_name => 'Sperberg-McQueen', :web_name => 'Froogle'})
   end
   
+  def test_fragment_links
+	match(WikiChunk::Link, 'This link has a URL fragment [[Froogle:Sperberg-McQueen#foo]]', 
+	      {:page_name => 'Sperberg-McQueen', :web_name => 'Froogle', :anchor_name => 'foo'})
+  end
+
   def test_void_include
     # double brackets with only spaces inside are not a WikiInclude
     no_match(Include, "This [[!include ]] are [[!include]] no [[!include \t ]] links")

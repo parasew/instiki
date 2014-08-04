@@ -12,8 +12,11 @@ module WikiChunk
     # Name of the referenced page
     attr_reader :page_name
 
-    # Name of the referenced page
+    # Web to which it belongs
     attr_reader :web_name
+
+    # An @id on the page
+    attr_reader :anchor_name
 
     # the referenced page
     def refpage
@@ -92,7 +95,7 @@ module WikiChunk
         @escaped_text = nil
       end
       @link_text = WikiWords.separate(@page_name)
-      @unmask_text = (@escaped_text || @content.page_link(@web_name, @page_name, @link_text, @link_type))
+      @unmask_text = (@escaped_text || @content.page_link(@web_name, @page_name, @anchor_name, @link_text, @link_type))
     end
 
   end
@@ -111,6 +114,7 @@ module WikiChunk
     unless defined? WIKI_LINK
       WIKI_LINK = /(":)?\[\[\s*([^\]\s][^\]]*?)\s*\]\]/
       LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic)|(video)|(audio)|(cdf)|(delete))$', 0)
+      ANCHOR_SEPARATION = Regexp.new('^(.+)#(.+)$', 0)
       ALIAS_SEPARATION = Regexp.new('^(.+)\|(.+)$', 0)
       WEB_SEPARATION = Regexp.new('^(.+):(.+)$', 0)
     end
@@ -121,10 +125,12 @@ module WikiChunk
       super
       @textile_link_suffix = match_data[1]
       @link_text = @page_name = normalize_whitespace(match_data[2])
+      #@anchor_name = nil
       separate_link_type
       separate_alias
+      separate_anchor
       separate_web
-      @unmask_text = @content.page_link(@web_name, @page_name, @link_text, @link_type)
+      @unmask_text = @content.page_link(@web_name, @page_name, @anchor_name, @link_text, @link_type)
     end
 
     private
@@ -147,6 +153,16 @@ module WikiChunk
         @link_text = alias_match[2]
       end
       # note that [[filename|link text:file]] is also supported
+    end
+
+    # We can link to an anchor point on the page. This will look like [[page name#id]]
+    def separate_anchor
+      anchor_match = ANCHOR_SEPARATION.match(@page_name)
+      if anchor_match
+        @page_name = normalize_whitespace(anchor_match[1])
+        @anchor_name = anchor_match[2]
+        @link_text = @page_name if @link_text == anchor_match[0]
+      end
     end
 
     # Interweb links have the form [[Web Name:Page Name]] or

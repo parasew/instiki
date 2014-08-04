@@ -160,10 +160,10 @@ class WikiContent < ActiveSupport::SafeBuffer
   end
 
   # Call @web.page_link using current options.
-  def page_link(web_name, name, text, link_type)
+  def page_link(web_name, name, anchor_name, text=nil, link_type)
     web = Web.find_by_name(web_name) || Web.find_by_address(web_name) || @web
     @options[:link_type] = (link_type || :show)
-    @url_generator.make_link(@web, name, web, text, @options)
+    @url_generator.make_link(@web, name, anchor_name, web, text, @options)
   end
 
   def build_chunks

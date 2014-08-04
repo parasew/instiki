@@ -149,24 +149,24 @@ class StubUrlGenerator < AbstractUrlGenerator
     end
   end
 
-  def page_link(mode, name, text, web_address, known_page)
+  def page_link(mode, name, anchor_name, text, web_address, known_page)
     link = CGI.escape(name)
     title = web_address == 'wiki1' ? '' : " title='#{web_address}'"
     case mode
     when :export
-      if known_page then %{<a class="existingWikiWord" href="#{link}.html">#{text}</a>}
+      if known_page then %{<a class="existingWikiWord" href="#{link}.html#{'#'+anchor_name if anchor_name}">#{text}</a>}
       else %{<span class="newWikiWord">#{text}</span>} end
     when :publish
-      if known_page then %{<a class="existingWikiWord" href="../published/#{link}"#{title}>#{text}</a>}
+      if known_page then %{<a class="existingWikiWord" href="../published/#{link}#{'#'+anchor_name if anchor_name}" #{title}>#{text}</a>}
       else %{<span class="newWikiWord">#{text}</span>} end
-    else 
+    else
       if known_page
         if web_address == 'instiki'
-          %{<a class="existingWikiWord" href="../../#{web_address}/show/#{link}"#{title}>#{text}</a>}
+          %{<a class="existingWikiWord" href="../../#{web_address}/show/#{link}#{'#'+anchor_name if anchor_name}" #{title}>#{text}</a>}
         else
-          %{<a class="existingWikiWord" href="../show/#{link}"#{title}>#{text}</a>}        
+          %{<a class="existingWikiWord" href="../show/#{link}#{'#'+anchor_name if anchor_name}" #{title}>#{text}</a>}        
         end
-      else 
+      else
         if web_address == 'instiki'
            %{<span class="newWikiWord">#{text}<a href="../../#{web_address}/show/#{link}">?</a></span>}
         else
