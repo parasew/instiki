@@ -64,6 +64,7 @@ class WikiReference < ActiveRecord::Base
     names = []
     redirected_pages = []
     page = web.page(page_name)
+    return [] unless page
     redirected_pages.concat page.redirects
     redirected_pages.concat Thread.current[:page_redirects][page] if
             Thread.current[:page_redirects] && Thread.current[:page_redirects][page]
