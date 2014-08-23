@@ -37,12 +37,20 @@
   <%- if @web -%>
    <%- if @web.markup == :markdownMML -%>
   <script type="text/x-mathjax-config">
+  <!--//--><![CDATA[//><!--
     MathJax.Hub.Config({
       MathML: { useMathMLspacing: true },
       "HTML-CSS": { scale: 90,
                     extensions: ["handle-floats.js"]
        }
     });
+    MathJax.Hub.Queue( function () {
+       var fos = document.getElementsByTagName('foreignObject');
+       for (var i = 0; i < fos.length; i++) {
+         MathJax.Hub.Typeset(fos[i]);
+       }
+    });
+  //--><!]]>
   </script>
   <script type="text/javascript">
     if (!(Prototype.Browser.Gecko || navigator.userAgent.match(/MathPlayer/))) {
