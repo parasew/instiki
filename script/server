@@ -77,7 +77,7 @@ ENV["RAILS_ENV"] = options[:environment]
 RAILS_ENV.replace(options[:environment]) if defined?(RAILS_ENV)
 
 if File.exist?(options[:config])
-  config = options[:config]
+  config = options[:config].to_s
   if config =~ /\.ru$/
     cfgfile = File.read(config)
     if cfgfile[/^#\\(.*)/]
