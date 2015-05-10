@@ -34,7 +34,8 @@ module Sanitizer
   acceptable_attributes = Set.new %w[abbr accept accept-charset accesskey action
       align alt autocomplete axis bgcolor border cellpadding cellspacing char charoff
       checked cite class clear cols colspan color compact contenteditable contextmenu
-      controls coords datetime dir disabled draggable enctype face for formaction frame
+      controls coords datetime data-video-id data-video-width data-video-height
+      dir disabled draggable enctype face for formaction frame
       headers height high href hreflang hspace icon id ismap label list lang longdesc
       loop low max maxlength media method min multiple name nohref noshade nowrap open
       optimumpattern placeholder poster preload pubdate radiogroup readonly rel
