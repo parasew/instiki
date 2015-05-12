@@ -868,6 +868,12 @@ END_THM
   	  '[[instiki:HomePage#foo&bar]]')
   end
 
+  def test_youtube_link
+  	assert_markup_parsed_as(
+  	  "<p><div class='ytplayer' data-video-height='390' data-video-id='pusX8MuWmbE' data-video-width='640'></div></p>",
+  	  '[[pusX8MuWmbE | 640 x 390 :youtube]]')
+  end
+
   def test_list_with_tildas
     list_with_tildas = <<-EOL
 * [a](~b)

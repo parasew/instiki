@@ -113,7 +113,7 @@ module WikiChunk
 
     unless defined? WIKI_LINK
       WIKI_LINK = /(":)?\[\[\s*([^\]\s][^\]]*?)\s*\]\]/
-      LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic)|(video)|(audio)|(cdf)|(delete))$', 0)
+      LINK_TYPE_SEPARATION = Regexp.new('^(.+):((file)|(pic)|(video)|(audio)|(cdf)|(youtube)|(delete))$', 0)
       ANCHOR_SEPARATION = Regexp.new('^(.+)#(.+)$', 0)
       ALIAS_SEPARATION = Regexp.new('^(.+)\|(.+)$', 0)
       WEB_SEPARATION = Regexp.new('^(.+):(.+)$', 0)
@@ -125,7 +125,6 @@ module WikiChunk
       super
       @textile_link_suffix = match_data[1]
       @link_text = @page_name = normalize_whitespace(match_data[2])
-      #@anchor_name = nil
       separate_link_type
       separate_alias
       separate_anchor

@@ -118,6 +118,10 @@ class WikiTest < Test::Unit::TestCase
     assert_link_parsed_as 'foo.tar.gz', 'foo.tar.gz', :pic, '[[foo.tar.gz:pic]]'
     # link, text and type
     assert_link_parsed_as 'foo.tar.gz', 'FooTar', :file, '[[foo.tar.gz|FooTar:file]]'
+    # link, text and type (youtube)
+    assert_link_parsed_as "pusX8MuWmbE", 'pusX8MuWmbE', :youtube, '[[pusX8MuWmbE:youtube]]'
+    # link, text and type (youtube)
+    assert_link_parsed_as "pusX8MuWmbE", '480 x 360', :youtube, '[[pusX8MuWmbE|480 x 360:youtube]]'
 
     # NEGATIVE TEST CASES
 
