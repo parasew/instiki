@@ -14,6 +14,14 @@ class CategoryTest < Test::Unit::TestCase
 	match(Category, ':category: test', :list => ['test'], :hidden => ':')
   end
 
+  def test_single_category_no_space
+	match(Category, 'category:test', :list => ['test'], :hidden => nil, :unmask_text => 
+	"<div class=\"property\"> category: <a class=\"category_link\" href=\"/wiki1/list/test\">test</a></div>")
+	match(Category, 'category :chunk test   ', :list => ['chunk test'], :hidden => nil, :unmask_text => 
+	"<div class=\"property\"> category: <a class=\"category_link\" href=\"/wiki1/list/chunk+test\">chunk test</a></div>")
+	match(Category, ':category:test', :list => ['test'], :hidden => ':')
+  end
+
   def test_no_category
 	match(Category, 'category:  ', :list => [], :hidden => nil)
 	match(Category, 'category :   chunk test  , ', :list => ['chunk test'], :hidden => nil)

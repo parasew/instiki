@@ -60,6 +60,8 @@ class AbstractUrlGenerator
       media_link(mode, namelist, text, web.address, known_pages, 'video')
     when :cdf
       cdf_link(mode, name, text, web.address, known_page)
+    when :youtube
+      youtube_link(mode, name, text)
     when :delete
       delete_link(mode, name, web.address, known_page)
     else
@@ -226,6 +228,19 @@ class UrlGenerator < AbstractUrlGenerator
     %{<div class="cdf_object" src="#{s}" width="#{w}" height="#{h}">} +
     %{<a href="http://www.wolfram.com/cdf-player/" title="Get the free Wolfram CDF } +
     %{Player"><img src="#{b}"/></a></div>}
+  end
+
+  def youtube_link(mode, name, text)
+    re = /\s*(\d{1,4})\s*x\s*(\d{1,4})\s*/
+    tt = re.match(text)
+    if tt
+      width = tt[1]
+      height = tt[2]
+    else
+      width = '640'
+      height = '390'
+    end
+    %{<div class='ytplayer' data-video-id='#{CGI.escape(name.strip)}' data-video-width='#{width}' data-video-height='#{height}'></div>}
   end
 
   def delete_link(mode, name, web_address, known_file)

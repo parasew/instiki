@@ -266,6 +266,19 @@ end
     %{Player"><img src="#{b}"/></a></div>}
   end
 
+  def youtube_link(mode, name, text)
+    re = /\s*(\d{1,4})\s*x\s*(\d{1,4})\s*/
+    tt = re.match(text)
+    if tt
+      width = tt[1]
+      height = tt[2]
+    else
+      width = '640'
+      height = '390'
+    end
+    %{<div class='ytplayer' data-video-id='#{CGI.escape(name.strip)}' data-video-width='#{width}' data-video-height='#{height}'></div>}
+  end
+
 module Test
   module Unit
     module Assertions
