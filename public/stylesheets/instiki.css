@@ -370,6 +370,7 @@ font-size:80%;
 margin-left:0.7em;
 padding-left:1.5em;
 width:25%;
+min-width:8em;
 }
 
 .newsList {
