@@ -61,21 +61,21 @@ class XHTMLDiff
 
 	class << self
 		BLOCK_CONTAINERS = ['div', 'ul', 'li']
-		def diff(a, b)
+		def diff(a, b, styles = {})
 			if a == b
 				return a.deep_clone
 			end
 			if REXML::HashableElementDelegator === a and REXML::HashableElementDelegator === b and a.name == b.name
 				o = REXML::Element.new(a.name)
 				o.add_attributes  a.attributes
-				hd = self.new(o)
+				hd = self.new(o, styles)
 				Diff::LCS.traverse_balanced(a, b, hd)
 				o
 			elsif REXML::Text === a and REXML::Text === b
 				o = REXML::Element.new('span')
 				aa = a.value.split(/\s/)
 				ba = b.value.split(/\s/)
-				hd = XHTMLTextDiff.new(o)
+				hd = XHTMLTextDiff.new(o, styles)
 				Diff::LCS.traverse_balanced(aa, ba, hd)
 				o
 			else
@@ -85,11 +85,12 @@ class XHTMLDiff
 	end
 
 	def diff(a, b)
-		self.class.diff(a,b)
+		self.class.diff(a,b,@styles)
 	end
 
-  def initialize(output)
+  def initialize(output, styles = {})
     @output = output
+    @styles = styles
   end
 
     # This will be called with both elements are the same
@@ -134,6 +135,10 @@ class XHTMLDiff
                 if class_name
                    el.add_attribute('class', class_name)
                 end
+                style = @styles[tag + '.' + class_name]
+                if style
+                   el.add_attribute('style', style)
+                end
 		el
 	end
 
@@ -165,6 +170,10 @@ class XHTMLDiff
                         wrapper_element.add_text element
                         if class_name
                            wrapper_element.add_attribute('class', class_name)
+                        end
+                        style = @styles[tag + '.' + class_name]
+                        if style
+                          wrapper_element.add_attribute('style', style)
                         end
                         wrapper_element
 		end
