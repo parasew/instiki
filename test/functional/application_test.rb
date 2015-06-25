@@ -59,6 +59,11 @@ class ApplicationTest < ActionController::TestCase
     assert_equal 'application/atom+xml; charset=utf-8', @response.headers['Content-Type']
   end
   
+  def test_atom_mime_type_changes
+    get :atom_with_changes, :web => 'wiki1'
+    assert_equal 'application/atom+xml; charset=utf-8', @response.headers['Content-Type']
+  end
+
   def test_connect_to_model_unknown_wiki
     get :show, :web => 'unknown_wiki', :id => 'HomePage'
     assert_response :missing
