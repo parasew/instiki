@@ -674,6 +674,33 @@ class WikiControllerTest < ActionController::TestCase
                :content => Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%SZ")
   end
   
+  def test_atom_with_changes
+    r = process 'atom_with_changes', 'web' => 'wiki1'
+
+    assert_response(:success)
+    revisions = r.template_objects['revisions']
+    assert_equal [ revisions(:elephant_first_revision),
+                   revisions(:liquor_first_revision),
+                   revisions(:oak_first_revision),
+                   revisions(:no_wiki_word_first_revision),
+                   revisions(:that_way_first_revision),
+                   revisions(:smart_engine_first_revision),
+                   revisions(:my_way_first_revision),
+                   revisions(:first_page_first_revision),
+                   revisions(:home_page_second_revision),
+                   revisions(:home_page_first_revision) ], revisions,
+                 "Revisions are not as expected: #{revisions.map {|r| r.id}.inspect}"
+    assert !r.template_objects['hide_description']
+  end
+
+  def test_atom_with_changes_when_blocked
+    @web.update_attributes(:password => 'aaa', :published => false)
+    @web = Web.find(@web.id)
+
+    r = process 'atom_with_changes', 'web' => 'wiki1'
+    assert_equal 403, r.response_code
+  end
+
   def test_save
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => 'AuthorOfNewPage'
