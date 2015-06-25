@@ -1,5 +1,5 @@
 xml.feed('xmlns' => "http://www.w3.org/2005/Atom", "xml:lang" => 'en') do
-  styles = { 'del.diffdel' => 'background-color:#FAA; text-decoration:line-through;', 'del.diffmod' => 'background-color:#FAA; text-decoration:line-through; border: 2px solid #FE0;', 'ins.diffins' => 'background-color:#AFA; text-decoration:underline;' }
+  styles = { 'del.diffdel' => 'background-color:#FAA; text-decoration:line-through;', 'del.diffmod' => 'background-color:#FAA; text-decoration:line-through; border: 2px solid #FE0;', 'ins.diffins' => 'background-color:#AFA; text-decoration:underline;', 'ins.diffmod' => 'background-color:#AFA; text-decoration:underline; border: 2px solid #FE0;' }
   xml.title(@web.name + ' Changes')
   xml.link( 'rel' => 'alternate', 'type' => "application/xhtml+xml", 'href' =>  url_for(:only_path => false, :web => @web_name, :action => @link_action, :id => 'HomePage') )
   xml.link( 'rel' => 'self', 'href' =>  url_for(:only_path => false, :web => @web_name, :action => :atom_with_changes) )
