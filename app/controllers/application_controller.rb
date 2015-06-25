@@ -199,7 +199,7 @@ class ApplicationController < ActionController::Base
 
   def set_content_type_header
     response.charset = 'utf-8'
-    if %w(atom_with_content atom_with_headlines).include?(action_name)
+    if %w(atom_with_content atom_with_headlines atom_with_changes).include?(action_name)
       response.content_type = Mime::ATOM
     elsif %w(tex tex_list).include?(action_name)
       response.content_type = Mime::TEXT
@@ -246,7 +246,7 @@ class ApplicationController < ActionController::Base
   end
   
   def authorization_needed?
-    not %w(login authenticate feeds published atom_with_headlines atom_with_content file blahtex_png).include?(action_name)
+    not %w(login authenticate feeds published atom_with_headlines atom_with_content atom_with_changes file blahtex_png).include?(action_name)
   end
 
   def authorized?

@@ -37,7 +37,7 @@ class PageRenderer
     @display_published ||= render(:mode => :publish)
   end
 
-  def display_diff
+  def display_diff(styles = {})
     previous_revision = @revision.page.previous_revision(@revision)
     if previous_revision
 
@@ -47,7 +47,7 @@ class PageRenderer
       div = REXML::Element.new('div', nil, {:respect_whitespace =>:all})
       div.attributes['class'] = 'xhtmldiff_wrapper'
       diff_doc << div
-      hd = XHTMLDiff.new(div)
+      hd = XHTMLDiff.new(div, styles)
 
       parsed_previous_revision = REXML::HashableElementDelegator.new(
            REXML::XPath.first(REXML::Document.new(previous_content), '/div'))

@@ -126,6 +126,10 @@ class Web < ActiveRecord::Base
     end
   end
 
+  def revisions_by_date
+    revisions.all(:order  => "revised_at")
+  end
+
   # OPTIMIZE Use the +delete_all+ with conditions for extra efficiency
   def remove_pages(pages_to_be_removed)
     pages_to_be_removed.each { |p| p.destroy }
