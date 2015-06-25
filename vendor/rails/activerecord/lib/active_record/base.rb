@@ -1285,7 +1285,7 @@ module ActiveRecord #:nodoc:
       alias :sequence_name= :set_sequence_name
 
       # Turns the +table_name+ back into a class name following the reverse rules of +table_name+.
-      def class_name(table_name = table_name) # :nodoc:
+      def class_name(table_name = table_name()) # :nodoc:
         ActiveSupport::Deprecation.warn("ActiveRecord::Base#class_name is deprecated and will be removed in Rails 3.", caller)
 
         # remove any prefix and/or suffix from the table name
