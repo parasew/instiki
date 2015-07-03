@@ -16,7 +16,7 @@ module CacheSweepingHelper
       end
     end
 
-    %w(authors atom_with_content atom_with_headlines file_list).each do |action|
+    %w(authors atom_with_content atom_with_headlines atom_with_changes file_list).each do |action|
       expire_action :controller => 'wiki', :web => web.address, :action => action
     end
     
