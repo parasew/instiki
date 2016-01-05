@@ -34,7 +34,7 @@ class WikiControllerTest < ActionController::TestCase
     @oak = pages(:oak)
     @liquor = pages(:liquor)
     @elephant = pages(:elephant)
-    @eternity = Regexp.new('author=.*; path=/; expires=' + Time.utc(2030).strftime("%a, %d %b %Y %H:%M:%S -0000"))
+    @eternity = Regexp.new('author=.*; path=/; expires=' + Time.utc(2030).strftime("%a, %d( |-)%b( |-)%Y %H:%M:%S (-0000|GMT)"))
     set_tex_header
   end
 

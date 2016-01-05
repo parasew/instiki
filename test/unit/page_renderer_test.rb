@@ -420,13 +420,13 @@ END_THM
       re = Regexp.new(
       %{<p>equation <span class='maruku-inline'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
       %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='vertical-align: -0\.5} +
-      %{(5)+6ex; height: 2\.3(3)+ex;'/></span></p>})
+      %{(5)+6ex; height: 2\.([23])+3ex;'/></span></p>})
       assert_match_markup_parsed_as(re, 'equation $a\sin(\theta)$')
 
       re = Regexp.new(
       %{<div class='maruku-equation'><img alt='\\$a\\\\sin\\(\\\\theta\\)\\$' } +
-      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.3(3)+} +
-      %{33333ex;'/><\/div>})
+      %{class='maruku-png' src='\.\./files/pngs/\\w+\.png' style='height: 2\.([23])+} +
+      %{3ex;'/><\/div>})
       assert_match_markup_parsed_as(re, '$$a\sin(\theta)$$')
 
     else
