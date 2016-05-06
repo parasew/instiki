@@ -11,9 +11,10 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js
-// 3) math.js
-// 4) svgutils.js
+// 2) pathseg.js
+// 3) browser.js
+// 4) math.js
+// 5) svgutils.js
 
 (function() {'use strict';
 
@@ -32,7 +33,8 @@ var gripRadius = svgedit.browser.isTouch() ? 10 : 4;
 // Parameters:
 // id - integer to internally indentify the selector
 // elem - DOM element associated with this selector
-svgedit.select.Selector = function(id, elem) {
+// bbox - Optional bbox to use for initialization (prevents duplicate getBBox call).
+svgedit.select.Selector = function(id, elem, bbox) {
 	// this is the selector's unique number
 	this.id = id;
 
@@ -76,7 +78,7 @@ svgedit.select.Selector = function(id, elem) {
 		'w' : null
 	};
 
-	this.reset(this.selectedElement);
+	this.reset(this.selectedElement, bbox);
 };
 
 
@@ -85,12 +87,14 @@ svgedit.select.Selector = function(id, elem) {
 //
 // Parameters:
 // e - DOM element associated with this selector
-svgedit.select.Selector.prototype.reset = function(e) {
+// bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+svgedit.select.Selector.prototype.reset = function(e, bbox) {
 	this.locked = true;
 	this.selectedElement = e;
-	this.resize();
+	this.resize(bbox);
 	this.selectorGroup.setAttribute('display', 'inline');
 };
+
 
 // Function: svgedit.select.Selector.updateGripCursors
 // Updates cursors for corner grips on rotation so arrows point the right way
@@ -122,7 +126,6 @@ svgedit.select.Selector.prototype.updateGripCursors = function(angle) {
 // Parameters:
 // show - boolean indicating whether grips should be shown or not
 svgedit.select.Selector.prototype.showGrips = function(show) {
-	// TODO: use suspendRedraw() here
 	var bShow = show ? 'inline' : 'none';
 	selectorManager_.selectorGripsGroup.setAttribute('display', bShow);
 	var elem = this.selectedElement;
@@ -135,7 +138,8 @@ svgedit.select.Selector.prototype.showGrips = function(show) {
 
 // Function: svgedit.select.Selector.resize
 // Updates the selector to match the element's size
-svgedit.select.Selector.prototype.resize = function() {
+// bbox - Optional bbox to use for resize (prevents duplicate getBBox call).
+svgedit.select.Selector.prototype.resize = function(bbox) {
 	var selectedBox = this.selectorRect,
 		mgr = selectorManager_,
 		selectedGrips = mgr.selectorGrips,
@@ -161,7 +165,11 @@ svgedit.select.Selector.prototype.resize = function() {
 	m.e *= current_zoom;
 	m.f *= current_zoom;
 
-	var bbox = svgedit.utilities.getBBox(selected);
+	if (!bbox) {
+		bbox = svgedit.utilities.getBBox(selected);
+	}
+	// TODO: svgedit.utilities.getBBox (previous line) already knows to call getStrokedBBox when tagName === 'g'. Remove this?
+	// TODO: svgedit.utilities.getBBox doesn't exclude 'gsvg' and calls getStrokedBBox for any 'g'. Should getBBox be updated?
 	if (tagName === 'g' && !$.data(selected, 'gsvg')) {
 		// The bbox for a group does not include stroke vals, so we
 		// get the bbox based on its children.
@@ -221,7 +229,6 @@ svgedit.select.Selector.prototype.resize = function() {
 		nbaw = (maxx-minx);
 		nbah = (maxy-miny);
 	}
-	var sr_handle = svgFactory_.svgRoot().suspendRedraw(100);
 
 	var dstr = 'M' + nbax + ',' + nbay
 				+ ' L' + (nbax+nbaw) + ',' + nbay
@@ -260,8 +267,6 @@ svgedit.select.Selector.prototype.resize = function() {
 		mgr.rotateGrip.setAttribute('cx', nbax + (nbaw)/2);
 		mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius*5));
 //	}
-
-	svgFactory_.svgRoot().unsuspendRedraw(sr_handle);
 };
 
 
@@ -415,7 +420,8 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 //
 // Parameters:
 // elem - DOM element to get the selector for
-svgedit.select.SelectorManager.prototype.requestSelector = function(elem) {
+// bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+svgedit.select.SelectorManager.prototype.requestSelector = function(elem, bbox) {
 	if (elem == null) {return null;}
 	var i,
 		N = this.selectors.length;
@@ -427,13 +433,13 @@ svgedit.select.SelectorManager.prototype.requestSelector = function(elem) {
 	for (i = 0; i < N; ++i) {
 		if (this.selectors[i] && !this.selectors[i].locked) {
 			this.selectors[i].locked = true;
-			this.selectors[i].reset(elem);
+			this.selectors[i].reset(elem, bbox);
 			this.selectorMap[elem.id] = this.selectors[i];
 			return this.selectors[i];
 		}
 	}
 	// if we reached here, no available selectors were found, we create one
-	this.selectors[N] = new svgedit.select.Selector(N, elem);
+	this.selectors[N] = new svgedit.select.Selector(N, elem, bbox);
 	this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
 	this.selectorMap[elem.id] = this.selectors[N];
 	return this.selectors[N];
@@ -449,12 +455,12 @@ svgedit.select.SelectorManager.prototype.releaseSelector = function(elem) {
 	var i,
 		N = this.selectors.length,
 		sel = this.selectorMap[elem.id];
+	if (!sel.locked) {
+		// TODO(codedread): Ensure this exists in this module.
+		console.log('WARNING! selector was released but was already unlocked');
+	}
 	for (i = 0; i < N; ++i) {
 		if (this.selectors[i] && this.selectors[i] == sel) {
-			if (sel.locked == false) {
-				// TODO(codedread): Ensure this exists in this module.
-				console.log('WARNING! selector was released but was already unlocked');
-			}
 			delete this.selectorMap[elem.id];
 			sel.locked = false;
 			sel.selectedElement = null;
