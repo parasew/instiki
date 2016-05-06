@@ -283,6 +283,7 @@ svgedit.path.getControlPoints = function(seg) {
 // This replaces the segment at the given index. Type is given as number.
 svgedit.path.replacePathSeg = function(type, index, pts, elem) {
 	var path = elem || svgedit.path.path.elem;
+
 	var func = 'createSVGPathSeg' + pathFuncs[type];
 	var seg = path[func].apply(path, pts);
 
@@ -478,11 +479,12 @@ svgedit.path.Segment.prototype.move = function(dx, dy) {
 	var cur_pts, item = this.item;
 
 	if (this.ctrlpts) {
-		cur_pts = [item.x += dx, item.y += dy, 
+		cur_pts = [item.x += dx, item.y += dy,
 			item.x1, item.y1, item.x2 += dx, item.y2 += dy];
 	} else {
 		cur_pts = [item.x += dx, item.y += dy];
 	}
+
 	svgedit.path.replacePathSeg(this.type, this.index, cur_pts);
 
 	if (this.next && this.next.ctrlpts) {
@@ -520,9 +522,8 @@ svgedit.path.Segment.prototype.setLinked = function(num) {
 	}
 
 	var item = seg.item;
-
-	item['x' + anum] = pt.x + (pt.x - this.item['x' + num]);
-	item['y' + anum] = pt.y + (pt.y - this.item['y' + num]);
+	item['x' + anum ] = pt.x + (pt.x - this.item['x' + num]);
+	item['y' + anum ] = pt.y + (pt.y - this.item['y' + num]);
 
 	var pts = [item.x, item.y,
 		item.x1, item.y1,
@@ -534,11 +535,11 @@ svgedit.path.Segment.prototype.setLinked = function(num) {
 
 svgedit.path.Segment.prototype.moveCtrl = function(num, dx, dy) {
 	var item = this.item;
-
 	item['x' + num] += dx;
 	item['y' + num] += dy;
 
-	var pts = [item.x, item.y, item.x1, item.y1, item.x2, item.y2];
+	var pts = [item.x,item.y,
+		item.x1,item.y1, item.x2,item.y2];
 
 	svgedit.path.replacePathSeg(this.type, this.index, pts);
 	this.update(true);
@@ -569,7 +570,10 @@ svgedit.path.Path = function(elem) {
 // Reset path data
 svgedit.path.Path.prototype.init = function() {
 	// Hide all grips, etc
-	$(svgedit.path.getGripContainer()).find('*').attr('display', 'none');
+
+	//fixed, needed to work on all found elements, not just first
+	$(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none') });
+
 	var segList = this.elem.pathSegList;
 	var len = segList.numberOfItems;
 	this.segs = [];

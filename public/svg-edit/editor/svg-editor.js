@@ -91,13 +91,13 @@ TODOS
 				'ext-markers.js',
 				'ext-connector.js',
 				'ext-eyedropper.js',
-				'ext-shapes.js',
 				'ext-imagelib.js',
 				'ext-grid.js',
 				'ext-polygon.js',
 				'ext-star.js',
 				'ext-panning.js',
-				'ext-storage.js'
+				'ext-storage.js',
+				'ext-itex.js'
 			],
 			defaultConfig = {
 				// Todo: svgcanvas.js also sets and checks: show_outside_canvas, selectNew; add here?
@@ -109,9 +109,14 @@ TODOS
 					opacity: 1
 				},
 				initStroke: {
-					width: 5,
+					width: 2,
 					color: '000000', // solid black
 					opacity: 1
+				},
+				text: {
+					stroke_width: 0,
+					font_size: 24,
+					font_family: 'serif'
 				},
 				initOpacity: 1,
 				colorPickerCSS: null, // Defaults to 'left' with a position equal to that of the fill_color or stroke_color element minus 140, and a 'bottom' equal to 40
@@ -529,21 +534,6 @@ TODOS
 					setupCurPrefs();
 				}
 			}());
-
-			// For external openers
-			(function() {
-				// let the opener know SVG Edit is ready (now that config is set up)
-				var svgEditorReadyEvent,
-					w = window.opener;
-				if (w) {
-					try {
-						svgEditorReadyEvent = w.document.createEvent('Event');
-						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
-						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
-					}
-					catch(e) {}
-				}
-			}());
 			
 			var setIcon = editor.setIcon = function(elem, icon_id, forcedSize) {
 				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
@@ -803,6 +793,21 @@ TODOS
 				ui_context = 'toolbars',
 				origSource = '',
 				paintBox = {fill: null, stroke:null};
+
+			// For external openers
+			(function() {
+				// let the opener know SVG Edit is ready (now that config is set up)
+				var svgEditorReadyEvent,
+					w = window.opener;
+				if (w) {
+					try {
+						svgEditorReadyEvent = w.document.createEvent('Event');
+						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
+						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
+					}
+					catch(e) {}
+				}
+			}());
 			
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -1527,6 +1532,7 @@ TODOS
 					$('#group_opacity').val(opac_perc);
 					$('#opac_slider').slider('option', 'value', opac_perc);
 					$('#elem_id').val(selectedElement.id);
+					$('#elem_class').val(selectedElement.getAttribute("class"));
 				}
 
 				updateToolButtonState();
@@ -1562,7 +1568,7 @@ TODOS
 					$('#blur_slider').slider('option', 'value', blurval);
 
 					if (svgCanvas.addedNew) {
-						if (elname === 'image') {
+						if (elname === 'image' && svgCanvas.getMode() === 'image') {
 							// Prompt for URL if not a data URL
 							if (svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
@@ -1687,6 +1693,7 @@ TODOS
 
 						if (el_name == 'text') {
 							$('#text_panel').css('display', 'inline');
+							$('#tool_font_size').css('display', 'inline');
 							if (svgCanvas.getItalic()) {
 								$('#tool_italic').addClass('push_button_pressed').removeClass('tool_button');
 							} else {
@@ -1707,7 +1714,7 @@ TODOS
 								}, 100);
 							}
 						} // text
-						else if (el_name == 'image') {
+						else if (el_name == 'image' && svgCanvas.getMode() == 'image') {
 							setImageURL(svgCanvas.getHref(elem));
 						} // image
 						else if (el_name === 'g' || el_name === 'use') {
@@ -1828,6 +1835,15 @@ TODOS
 				});
 			};
 
+			/**
+			 * Test whether an element is a layer or not.
+			 * @param {SVGGElement} elem - The SVGGElement to test.
+			 * @returns {boolean} True if the element is a layer
+			 */
+			function isLayer(elem) {
+				return elem && elem.tagName === 'g' && svgedit.draw.Layer.CLASS_REGEX.test(elem.getAttribute('class'))
+			}
+
 			// called when any element has changed
 			var elementChanged = function(win, elems) {
 				var i,
@@ -1839,10 +1855,13 @@ TODOS
 				for (i = 0; i < elems.length; ++i) {
 					var elem = elems[i];
 
-					// if the element changed was the svg, then it could be a resolution change
-					if (elem && elem.tagName === 'svg') {
+					var isSvgElem = (elem && elem.tagName === 'svg');
+					if (isSvgElem || isLayer(elem)) {
 						populateLayers();
-						updateCanvas();
+						// if the element changed was the svg, then it could be a resolution change
+						if (isSvgElem) {
+							updateCanvas();
+						}
 					}
 					// Update selectedElement if element is no longer part of the image.
 					// This occurs for the text elements in Firefox
@@ -2171,7 +2190,7 @@ TODOS
 //				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
 				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,'+
 '				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,'+
-'				#g_panel > *, .tools_flyout';
+'				#g_panel > *, #tool_font_size > *, .tools_flyout';
 
 				var elems = $(sel_toscale);
 				var scale = 1;
@@ -2960,7 +2979,7 @@ TODOS
 				svgCanvas.setSegType($(this).val());
 			});
 
-			$('#text').keyup(function() {
+			$('#text').bind("keyup input", function() {
 				svgCanvas.setTextContent(this.value);
 			});
 
@@ -2991,7 +3010,7 @@ TODOS
 					return false;
 				}
 
-				if (attr !== 'id') {
+				if (attr !== 'id' && attr !== 'class') {
 					if (isNaN(val)) {
 						val = svgCanvas.convertToNum(attr, val);
 					} else if (curConfig.baseUnit !== 'px') {
@@ -4493,8 +4512,8 @@ TODOS
 					{sel: '#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
 					{sel: '#tool_topath', fn: convertToPath, evt: 'click'},
 					{sel: '#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click'},
-					{sel: '#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
-					{sel: '#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
+					{sel: '#tool_undo', fn: clickUndo, evt: 'click'},
+					{sel: '#tool_redo', fn: clickRedo, evt: 'click'},
 					{sel: '#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true]},
 					{sel: '#tool_group_elements', fn: clickGroup, evt: 'click', key: ['G', true]},
 					{sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
@@ -4767,6 +4786,7 @@ TODOS
 						case 'paste_in_place':
 							svgCanvas.pasteElements('in_place');
 							break;
+						case 'group':
 						case 'group_elements':
 							svgCanvas.groupSelectedElements();
 							break;
@@ -4904,12 +4924,14 @@ TODOS
 						if (file.type.indexOf('svg') != -1) {
 							reader = new FileReader();
 							reader.onloadend = function(e) {
-								svgCanvas.importSvgString(e.target.result, true);
+								var newElement = svgCanvas.importSvgString(e.target.result, true);
 								svgCanvas.ungroupSelectedElement();
 								svgCanvas.ungroupSelectedElement();
 								svgCanvas.groupSelectedElements();
 								svgCanvas.alignSelectedElements('m', 'page');
 								svgCanvas.alignSelectedElements('c', 'page');
+								// highlight imported element, otherwise we get strange empty selectbox
+								svgCanvas.selectOnly([newElement]);
 								$('#dialog_box').hide();
 							};
 							reader.readAsText(file);
@@ -4986,7 +5008,7 @@ TODOS
 				updateCanvas(true);
 //			});
 
-			//	var revnums = "svg-editor.js ($Rev: 2875 $) ";
+			//	var revnums = "svg-editor.js ($Rev$) ";
 			//	revnums += svgCanvas.getVersion();
 			//	$('#copyright')[0].setAttribute('title', revnums);
 

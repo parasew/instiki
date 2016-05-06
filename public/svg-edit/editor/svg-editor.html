@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
 <link rel="stylesheet" href="custom.css" type="text/css"/>
 <!--{if jquery_release}>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <!{else}-->
   <script src="jquery.js"></script>
 <!--{endif}-->
@@ -31,6 +31,7 @@
   <script src="svgedit.js"></script>
   <script src="jquery-svg.js"></script>
   <script src="contextmenu/jquery.contextMenu.js"></script>
+  <script src="pathseg.js"></script>
   <script src="browser.js"></script>
   <script src="svgtransformlist.js"></script>
   <script src="math.js"></script>
@@ -38,10 +39,12 @@
   <script src="svgutils.js"></script>
   <script src="sanitize.js"></script>
   <script src="history.js"></script>
+  <script src="historyrecording.js"></script>
   <script src="coords.js"></script>
   <script src="recalculate.js"></script>
   <script src="select.js"></script>
   <script src="draw.js"></script>
+  <script src="layer.js"></script>
   <script src="path.js"></script>
   <script src="svgcanvas.js"></script>
   <script src="svg-editor.js"></script>
@@ -49,13 +52,13 @@
   <script src="contextmenu.js"></script>
 <!--{endif}-->
 
-<!-- If you do not wish to add extensions by URL, you can load them
-by creating the following file and adding by calls to svgEditor.setConfig -->
-<script src="config.js"></script>
-
 <!-- always minified scripts -->
 <script src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
 <script src="jgraduate/jpicker.js"></script>
+
+<!-- If you do not wish to add extensions by URL, you can load them
+by creating the following file and adding by calls to svgEditor.setConfig -->
+<script src="config.js"></script>
 
 <!-- feeds -->
 <link rel="alternate" type="application/atom+xml" title="SVG-edit General Discussion" href="http://groups.google.com/group/svg-edit/feed/atom_v1_0_msgs.xml" />
@@ -161,7 +164,7 @@ by creating the following file and adding by calls to svgEditor.setConfig -->
 		</ul>
 
 		<p>
-			<a href="http://svg-edit.googlecode.com/" target="_blank">
+			<a href="https://github.com/SVG-Edit/svgedit" target="_blank">
 				SVG-edit Home Page
 			</a>
 		</p>
@@ -210,6 +213,10 @@ by creating the following file and adding by calls to svgEditor.setConfig -->
 				<input id="elem_id" class="attr_changer" data-attr="id" size="10" type="text"/>
 			</label>
 -->
+			<label id="classLabel" title="Element class">
+				<span>class:</span>
+				<input id="elem_class" class="attr_changer" data-attr="class" size="10" type="text"/>
+			</label>
 		</div>
 
 		<label id="tool_angle" title="Change rotation angle" class="toolset">
