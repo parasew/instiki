@@ -6,6 +6,26 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.19.8
+
+New Features:
+* Embedding Youtube videos: [[pusX8MuWmbE:youtube]] or [[pusX8MuWmbE | 640 x 390 :youtube]]
+* URL fragments in Wikilinks: [[foo#bar]]
+* More mobile-friendly
+* "Changes" feed
+* Supports Ruby 2.0-2.3
+* Passenger 5 compatibility
+* MathJax 2.6.1
+* SVG-Edit 2.8.1
+* Bundler 1.11.2
+
+Bugs Fixed:
+* Fix some page-expiry bugs
+* Additional spam/XSS protection
+* (Really) enforce POST on some actions
+* Fix session cookie overflow problem
+* Signed cookies
+------------------------------------------------------------------------------
 * 0.19.7
 
 New Features:
