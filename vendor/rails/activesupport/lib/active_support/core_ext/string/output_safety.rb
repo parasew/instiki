@@ -19,7 +19,7 @@ class ERB
       if s.html_safe?
         s
       else
-        s.gsub(/[&"'><]/n) { |special| HTML_ESCAPE[special] }.html_safe
+        s.gsub(/[&"'><]/) { |special| HTML_ESCAPE[special] }.html_safe
       end
     end
 
