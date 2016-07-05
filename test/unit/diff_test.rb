@@ -16,9 +16,9 @@ class DiffTest < Test::Unit::TestCase
     diff_doc << div
     hd = XHTMLDiff.new(div)
     parsed_a = REXML::HashableElementDelegator.new(
-           REXML::XPath.first(REXML::Document.new("<div>"+a+"</div>"), '/div'))
+           REXML::XPath.first(REXML::Document.new("<div xmlns:se='http://svg-edit.googlecode.com' xmlns:xlink='http://www.w3.org/1999/xlink'>"+a+"</div>"), '/div'))
     parsed_b = REXML::HashableElementDelegator.new(
-           REXML::XPath.first(REXML::Document.new("<div>"+b+"</div>"), '/div'))
+           REXML::XPath.first(REXML::Document.new("<div xmlns:se='http://svg-edit.googlecode.com' xmlns:xlink='http://www.w3.org/1999/xlink'>"+b+"</div>"), '/div'))
     Diff::LCS.traverse_balanced(parsed_a, parsed_b, hd)
     diffs = ''
     diff_doc.write(diffs, -1, true, true)
@@ -97,6 +97,12 @@ class DiffTest < Test::Unit::TestCase
     b = "<ol>\n<li>x</li>\n<li>y</li>\n</ol>"
     assert_equal "<del class='diffmod'><ul>\n<li>x</li>\n<li>y</li>\n</ul>" +
           "</del><ins class='diffmod'><ol>\n<li>x</li>\n<li>y</li>\n</ol></ins>", diff(a, b)
+  end
+
+  def test_diff_for_tag_change_with_namespaced_attribute
+    a = "<a xlink:href='#foo'>foo</a>"
+    b = "<b>foo</b>"
+    assert_equal("<del class='diffmod'><a xlink:href='#foo'>foo</a></del><ins class='diffmod'><b>foo</b></ins>", diff(a,b))
   end
 
   # FIXME this test fails (ticket #67, http://dev.instiki.org/ticket/67)
