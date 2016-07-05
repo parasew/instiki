@@ -41,8 +41,8 @@ class PageRenderer
     previous_revision = @revision.page.previous_revision(@revision)
     if previous_revision
 
-      previous_content = "<div>" + WikiContent.new(previous_revision, @@url_generator).render!.to_s + "</div>"
-      current_content = "<div>" + display_content.to_s  + "</div>"
+      previous_content = "<div xmlns:se='http://svg-edit.googlecode.com' xmlns:xlink='http://www.w3.org/1999/xlink'>" + WikiContent.new(previous_revision, @@url_generator).render!.to_s + "</div>"
+      current_content = "<div xmlns:se='http://svg-edit.googlecode.com' xmlns:xlink='http://www.w3.org/1999/xlink'>" + display_content.to_s  + "</div>"
       diff_doc = REXML::Document.new
       div = REXML::Element.new('div', nil, {:respect_whitespace =>:all})
       div.attributes['class'] = 'xhtmldiff_wrapper'
