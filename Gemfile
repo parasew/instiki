@@ -1,12 +1,12 @@
 source "http://rubygems.org"
 gem "sqlite3", :require => "sqlite3"
-gem "itextomml", ">=1.5.1"
+gem "itextomml", ">=1.5.4"
 gem "rack", "1.4.5"
 gem "thin"
 gem "rubyzip", '~> 0.9.9'
 gem "RedCloth", ">=4.0.0"
 gem "erubis"
-gem "nokogiri", '~>1.5.6'
+gem "nokogiri", '~>1.6.8'
 gem "rake", '~>10.4.0'
 gem "rdoc"
 gem "json"
