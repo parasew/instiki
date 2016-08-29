@@ -487,6 +487,12 @@ END_THM
      "<pre>\n<code>\n  a == 16\n</code>\n</pre>\nfoo bar\n<pre>\n<code>\n  b == 16\n</code>\n</pre>")
   end
 
+# RedCloth has XSS issues.
+  def test_textile_XSS
+    set_web_property :markup, :textile
+    assert_markup_parsed_as('<p><a>clickme</a></p>', '["clickme":javascript:alert(%27XSS%27)]')
+  end
+
   def test_rdoc
     set_web_property :markup, :rdoc
     re=Regexp.new("(<code>hello</code>|<tt>hello</tt>) that <span class='newWikiWord'>" +
@@ -573,7 +579,7 @@ END_THM
 	    "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mi>ThisWay</mi></mrow><annotation encoding='application/x-tex'>ThisWay</annotation></semantics></math>.</p>", 
         "should we go ThatWay or $ThisWay$.")
   end
-  
+
   def test_content_with_wikiword_in_equations_textile
     set_web_property :markup, :textile
     assert_markup_parsed_as(
@@ -582,21 +588,21 @@ END_THM
       "href='../show/foo'>?</a></span>$</p>",
       "$$[[foo]]$$\n$[[foo]]$")
   end
-  
+
   # wikiwords are invalid as styles, must be in "name: value" form
   def test_content_with_wikiword_in_style_tag
     assert_markup_parsed_as(
         "<p>That is some <em style=''>Stylish Emphasis</em></p>", 
 	    "That is some <em style='WikiWord'>Stylish Emphasis</em>")
   end
- 
+
   # validates format of style..
   def test_content_with_valid_style_in_style_tag
     assert_markup_parsed_as(
         "<p>That is some <em style='text-align: right;'>Stylish Emphasis</em></p>", 
 	    "That is some <em style='text-align: right'>Stylish Emphasis</em>")
   end
-  
+
   def test_content_with_escaped_wikiword
     # there should be no wiki link
     assert_markup_parsed_as('<p>WikiWord</p>', '\WikiWord')
@@ -981,7 +987,7 @@ END_THM
     main = @web.add_page('Main', '[[!include Included]]', Time.now, 'AnAuthor', x_test_renderer)
     
     assert_equal "<p>\\ <math class='maruku-mathml' display='inline' " +
-                 "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mrow><mtable rowspacing='0.5ex'>" +
+                 "xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow><mrow><mtable displaystyle='false' rowspacing='0.5ex'>" +
                  "<mtr><mtd><mi>a</mi></mtd></mtr> <mtr><mtd><mi>b</mi></mtd></mtr></mtable>" +
                  "</mrow></mrow><annotation encoding='application/x-tex'>\\begin{matrix} a \\\\ b\\end{matrix}</annotation></semantics></math></p>", 
                  x_test_renderer(main).display_content
