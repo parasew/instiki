@@ -690,6 +690,26 @@ END_THM
       '<nowiki>[[test]]&<a href="a&b">shebang</a> <script>alert("xss!");</script> *foo*</nowiki>')
   end
 
+  def test_header_id_nowiki
+    assert_markup_parsed_as(
+      "<h2 id='opaque_content'><p id='foo' xmlns='http://www.w3.org/2000/svg'>bar</p></h2>",
+      "##<nowiki><p id='foo' xmlns='http://www.w3.org/2000/svg'>bar</p></nowiki>")
+  end
+
+  def test_header_id_nowiki_II
+    assert_markup_parsed_as(
+      "<h2 id='opaque_content'><p id='foo' xmlns='http://www.w3.org/2000/svg'>bar</p></h2>\n\n"+
+      "<h2 id='opaque_content_2'><p xmlns='http://www.w3.org/2000/svg'>bar</p></h2>",
+      "##<nowiki><p id='foo' xmlns='http://www.w3.org/2000/svg'>bar</p></nowiki>\n"+
+      "##<nowiki><p xmlns='http://www.w3.org/2000/svg'>bar</p></nowiki>")
+  end
+
+  def test_header_id_nowiki_III
+    assert_markup_parsed_as(
+      "<h2 id='foo_opaque_content'>foo <p xmlns='http://www.w3.org/2000/svg'>bar</p></h2>",
+      "##foo <nowiki><p src='http://www.w3.org/2000/svg'>bar</p></nowiki>")
+  end
+
   def test_entities
     assert_markup_parsed_as(
       "<p>Known: \342\210\256. Pass-through: &amp;. Unknown: &amp;foo;.</p>",
