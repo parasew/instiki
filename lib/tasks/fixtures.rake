@@ -14,7 +14,7 @@ namespace :db do
   namespace :fixtures do
     task :export_for_tables => :environment do 
       sql = "SELECT * FROM %s" 
-      tables = ENV['TABLES'] 
+      tables = ENV['TABLES'].split(',')
       ActiveRecord::Base.establish_connection 
       tables.each do |table_name| 
         write_yaml_fixtures_to_file(sql % table_name, table_name)
@@ -45,7 +45,7 @@ desc 'use rake db:fixtures:import_for_models MODELS=Foo[,Bar,Land] to import the
 namespace :db do
   namespace :fixtures do
     task :import_for_models => :environment do
-      models = ENV['MODELS']
+      models = ENV['MODELS'].split(',')
       ActiveRecord::Base.establish_connection
       models.each do |model_name|
         import_model_fixture(model_name)
@@ -59,7 +59,7 @@ desc 'use rake db:fixtures:import_for_tables TABLES=foos[,bars,lands] to import 
 namespace :db do
   namespace :fixtures do
     task :import_for_tables => :environment do
-      tables = ENV['TABLES']
+      tables = ENV['TABLES'].split(',')
       ActiveRecord::Base.establish_connection
       tables.each do |table_name|
         import_table_fixture(table_name)

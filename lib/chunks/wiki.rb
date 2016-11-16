@@ -1,5 +1,5 @@
 require 'chunks/chunk'
-require 'instiki_stringsupport'
+require 'itex_stringsupport'
 
 # Contains all the methods for finding and replacing wiki related links.
 module WikiChunk

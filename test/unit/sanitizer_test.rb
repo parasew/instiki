@@ -4,7 +4,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '/../test_helper'))
 require 'sanitizer'
 require 'json'
-require 'instiki_stringsupport'
+require 'itex_stringsupport'
 
 class SanitizerTest < Test::Unit::TestCase
 

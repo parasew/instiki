@@ -1,4 +1,4 @@
-require 'instiki_stringsupport'
+require 'itex_stringsupport'
 require 'file_signature'
 
 class Web < ActiveRecord::Base

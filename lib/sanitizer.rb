@@ -7,7 +7,7 @@ module Sanitizer
 
   require 'action_controller/vendor/html-scanner/html/tokenizer'
   require 'node'
-  require 'instiki_stringsupport'
+  require 'itex_stringsupport'
   require 'set'
   require 'nokogiri'
 
