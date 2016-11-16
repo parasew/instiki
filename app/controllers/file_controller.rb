@@ -1,7 +1,7 @@
 # Controller responsible for serving files and pictures.
 
 require 'zip/zip'
-require 'instiki_stringsupport'
+require 'itex_stringsupport'
 
 class FileController < ApplicationController
 

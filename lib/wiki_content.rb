@@ -7,7 +7,7 @@ require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
 require 'sanitizer'
-require 'instiki_stringsupport'
+require 'itex_stringsupport'
 require 'set'
 
 

@@ -2,7 +2,7 @@ require 'fileutils'
 require 'maruku'
 require 'maruku/ext/math'
 require 'zip/zip'
-require 'instiki_stringsupport'
+require 'itex_stringsupport'
 require 'resolv'
 
 class WikiController < ApplicationController
