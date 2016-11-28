@@ -39,6 +39,7 @@
    <%- if @web.markup == :markdownMML -%>
   <script type="text/x-mathjax-config">
   <!--//--><![CDATA[//><!--
+    MathJax.Ajax.config.path["Contrib"] = "<%= compute_public_path('', 'MathJax').split('/?')[0] %>";
     MathJax.Hub.Config({
       MathML: { useMathMLspacing: true },
       "HTML-CSS": { scale: 90,
