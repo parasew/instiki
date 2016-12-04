@@ -55,13 +55,30 @@
     });
   //--><!]]>
   </script>
-  <script type="text/javascript">
-    if (!(Prototype.Browser.Gecko || navigator.userAgent.match(/MathPlayer/))) {
-      var s = document.createElement('script');
-      s.src = "<%= compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>?config=MML_HTMLorMML-full";
-      document.querySelector('head').appendChild(s);
-    };
-  </script>
+
+    <script type="text/javascript">
+      <!--//--><![CDATA[//><!--
+      window.addEventListener("DOMContentLoaded", function () {
+        var div = document.createElement('div');
+        var math = document.createElementNS('http://www.w3.org/1998/Math/MathML', 'math');
+        document.body.appendChild(div);
+        div.appendChild(math);
+      // Test for MathML support comparable to WebKit version https://trac.webkit.org/changeset/203640 or higher.
+        div.setAttribute('style', 'font-style: italic');
+        var mathml_unsupported = !(window.getComputedStyle(div.firstChild).getPropertyValue('font-style') === 'normal');
+        div.parentNode.removeChild(div);
+        if (mathml_unsupported) {
+          // MathML does not seem to be supported...
+          var s = document.createElement('script');
+          s.src = "<%= compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>?config=MML_HTMLorMML";
+          document.querySelector('head').appendChild(s);
+        } else {
+          document.head.insertAdjacentHTML("beforeend", '<style>svg {max-width: 100%}</style>');
+        }
+      });
+      //--><!]]>
+    </script>
+
    <%- end -%>
   	<%= auto_discovery_link_tag(:atom, {:controller => 'wiki', :web => @web.address, :action => 'atom_with_headlines'},
   	      :title => 'Atom with headlines') %>

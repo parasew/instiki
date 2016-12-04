@@ -315,6 +315,20 @@ function initializeYoutubePlayer() {
   }
 }
 
+function columnAlignShim() {
+  var mtables = document.querySelectorAll('mtable[columnalign]');
+  for (var i = 0; i < mtables.length; i++) {
+    var mtable = mtables[i];
+    var colAligns = mtable.getAttribute('columnalign').split(/\s+/);
+    if (colAligns.length > 1) {
+      var mtds = mtable.querySelectorAll(':scope > mtr > mtd');
+      for (var j = 0; j < mtds.length; j++) {
+        mtds[j].style.textAlign = colAligns[j];
+      }
+    }
+  }
+}
+
 document.observe("dom:loaded", function (){
         extractBlockquoteCitations();
         fixRunIn();
@@ -323,4 +337,5 @@ document.observe("dom:loaded", function (){
         embedCDFs();
         retrieveTexSource();
         initializeYoutubePlayer();
+        columnAlignShim();
 });
