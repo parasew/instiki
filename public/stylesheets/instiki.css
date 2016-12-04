@@ -516,11 +516,6 @@ span.theorem_label {font-style:normal; font-weight:bold;}
 [actiontype="toggle"]:hover {text-shadow: #ccc 2px 2px 5px;}
 .maruku_toc ul { list-style: none; }
 
-/* hack to work around  https://bugs.webkit.org/show_bug.cgi?id=160075 */
-[columnalign="right left right left right left right left right left"] mtd:nth-child(2n+1) {text-align: right;}
-[columnalign="right left right left right left right left right left"] mtd:nth-child(2n+0) {text-align: left;}
-[columnalign="left left"] mtd {text-align:left;}
-
 /* The STIX Two fonts are licensed under the SIL Open Font License, Version 1.1, http://scripts.sil.org/OFL */
 math  {font-family: STIX Two Math;}
 mtext {font-family: STIX Two Text;}
