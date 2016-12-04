@@ -523,3 +523,38 @@ span.theorem_label {font-style:normal; font-weight:bold;}
 }
 [actiontype="toggle"]:hover {text-shadow: #ccc 2px 2px 5px;}
 .maruku_toc ul { list-style: none; }
+
+math  {font-family: STIX Two Math;}
+mtext {font-family: STIX Two Text;}
+
+/* The STIX Two fonts are licensed under the SIL Open Font License, Version 1.1, http://scripts.sil.org/OFL */
+
+@font-face {
+    font-family: STIX Two Text;
+    src: local('STIX Two Text'), local('STIX2Text-Regular'),
+         url('../fonts/STIX2/STIX2Text-Regular.woff2'), url('../fonts/STIX2/STIX2Text-Regular.woff');
+}
+@font-face {
+    font-family: STIX Two Text;
+    src: local('STIX Two Text Bold'), local('STIX2Text-Bold'),
+         url('../fonts/STIX2/STIX2Text-Bold.woff2'), url('../fonts/STIX2/STIX2Text-Bold.woff');
+    font-weight: bold;
+}
+@font-face {
+    font-family: STIX Two Text;
+    src: local('STIX Two Text Italic'), local('STIX2Text-Italic'),
+         url('../fonts/STIX2/STIX2Text-Italic.woff2'), url('../fonts/STIX2/STIX2Text-Italic.woff');
+    font-style: italic;
+}
+@font-face {
+    font-family: STIX Two Text;
+    src: local('STIX Two Text Bold Italic'), local('STIX2Text-BoldItalic'),
+         url('../fonts/STIX2/STIX2Text-BoldItalic.woff2'), url('../fonts/STIX2/STIX2Text-BoldItalic.woff');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: STIX Two Math;
+    src: local('STIX Two Math'), local('STIX2Math'),
+         url('../fonts/STIX2/STIX2Math.woff2'), url('../fonts/STIX2/STIX2Math.woff');
+}
