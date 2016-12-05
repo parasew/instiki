@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Ajuster à la sélection",
 		"align_relative_to": "Aligner par rapport à ...",
 		"relativeTo": "Relativement à:",
-		"Page": "Page",
+		"page": "Page",
 		"largest_object": "Objet plus gros ",
 		"selected_objects": "Objets sélectionnés",
 		"smallest_object": "Objet plus petit",
@@ -139,12 +139,12 @@ svgEditor.readLang({
 		"copy": "Copier",
 		"paste": "Coller",
 		"paste_in_place": "Coller sur place",
-		"Retour Arr.": "Supprimer",
+		"delete": "Supprimer",
 		"group": "Group",
 		"move_front": "Placer au premier plan",
 		"move_up": "Avancer d'un plan",
-		"move_down": "Placer en arrière plan",
-		"move_back": "Reculer d'un plan"
+		"move_down": "Reculer d'un plan",
+		"move_back": "Placer en arrière plan"
 	},
 	layers: {
 		"layer":"Calque",
