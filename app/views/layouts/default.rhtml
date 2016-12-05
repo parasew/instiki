@@ -73,7 +73,7 @@
           s.src = "<%= compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>?config=MML_HTMLorMML";
           document.querySelector('head').appendChild(s);
         } else {
-          document.head.insertAdjacentHTML("beforeend", '<style>svg {max-width: 100%}</style>');
+          document.head.insertAdjacentHTML("beforeend", '<style>svg {max-width: 90vw}</style>');
         }
       });
       //--><!]]>
