@@ -329,6 +329,13 @@ function columnAlignShim() {
   }
 }
 
+function minMathWidth() {
+  var maths = document.querySelectorAll('math[display=block]');
+  for (var i = 0; i < maths.length; i++) {
+    var m = maths[i];
+    m.style.minWidth = m.firstElementChild.clientWidth;
+  }
+}
 document.observe("dom:loaded", function (){
         extractBlockquoteCitations();
         fixRunIn();
@@ -338,4 +345,5 @@ document.observe("dom:loaded", function (){
         retrieveTexSource();
         initializeYoutubePlayer();
         columnAlignShim();
+        minMathWidth();
 });
