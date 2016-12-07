@@ -317,7 +317,7 @@ function initializeYoutubePlayer() {
 
 function columnAlignShim() {
   var mtables = document.querySelectorAll('mtable[columnalign]');
-  if (mtables[0].style) {
+  if (mtables[0] && mtables[0].style) {
     for (var i = 0; i < mtables.length; i++) {
       var mtable = mtables[i];
       var colAligns = mtable.getAttribute('columnalign').split(/\s+/);
@@ -333,7 +333,7 @@ function columnAlignShim() {
 
 function minMathWidth() {
   var maths = document.querySelectorAll('math[display=block]');
-  if (maths[0].style) {
+  if (maths[0] && maths[0].style) {
     for (var i = 0; i < maths.length; i++) {
       var m = maths[i];
       m.style.minWidth = m.firstElementChild.clientWidth;
