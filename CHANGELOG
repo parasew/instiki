@@ -6,6 +6,20 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.20.0
+
+New Features:
+
+* Enable native MathML in Safari 10.1 (or, really, any browser
+  with good-enough MathML support)
+* Bundle the STIX Two fonts (no more user font problems!)
+* MathJax 2.7
+
+Bugs Fixed:
+* Several well-formedness issues fixed
+* Updates to SVG-Edit
+
+------------------------------------------------------------------------------
 * 0.19.8
 
 New Features:
