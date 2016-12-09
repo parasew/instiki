@@ -1083,6 +1083,7 @@ class WikiControllerTest < ActionController::TestCase
     @tex_header1 = %q!\documentclass[12pt,titlepage]{article}
 
 \usepackage{amsmath}
+\usepackage{mathrsfs}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
