@@ -411,6 +411,15 @@ END_THM
         %{inline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
         %{<semantics><mrow><mn>123</mn></mrow><annotation encoding='application/x-tex'>\\rlap{123}</annotation></semantics></math></p>},
         '\rlap: $\rlap{123}$')
+
+    assert_markup_parsed_as(
+        %{<p>Foo <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org} +
+        %{/1998/Math/MathML'><semantics><mrow><mi class='mathscript'>} +
+        %{𝒜ℬ𝒞𝒟</mi><mi>𝒜ℬ𝒞𝒟} +
+        %{</mi></mrow><annotation encoding='application/x-tex'>\\mat} +
+        %{hscr{ABCD}\\mathcal{ABCD}</annotation></semantics></math></p>},
+        'Foo $\mathscr{ABCD}\mathcal{ABCD}$')
+
   end
   
   def test_blahtex
