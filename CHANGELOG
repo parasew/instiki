@@ -6,6 +6,17 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.20.1
+
+New Features:
+
+* Supports both \mathcal{} AND \mathscr{}
+  via itextomml 1.5.5.
+
+Bugs Fixed:
+* Fixes incorrect font-path in 0.20.0
+
+------------------------------------------------------------------------------
 * 0.20.0
 
 New Features:
