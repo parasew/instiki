@@ -548,5 +548,5 @@ mtext {font-family: STIX Two Text;}
 @font-face {
     font-family: STIX Two Math;
     src: local('STIX Two Math'), local('STIX2Math'),
-         url('../fonts/STIX2Math.woff2'), url('../STIX2/STIX2Math.woff');
+         url('../fonts/STIX2Math.woff2'), url('../fonts/STIX2Math.woff');
 }
