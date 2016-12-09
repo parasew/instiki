@@ -298,7 +298,7 @@ module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
     MINOR = 20
-    TINY  = 0 
+    TINY  = 1 
     SUFFIX = '(MML+)'
     PRERELEASE = false
     if PRERELEASE
