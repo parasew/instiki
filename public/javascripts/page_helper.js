@@ -294,11 +294,11 @@ function initializeYoutubePlayer() {
   if (video_elts.length > 0) {
     // Load the IFrame Player API code asynchronously.
     var youtube_script = document.createElement('script');
-    youtube_script.src = "https://www.youtube.com/player_api";
+    youtube_script.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(youtube_script, firstScriptTag);
  
-    window.onYouTubePlayerAPIReady = function () {
+    window.onYouTubeIframeAPIReady = function () {
       video_elts.each(function(elt){
         var video_id = (elt.dataset.videoId && elt.dataset.videoId.match(/\w+/)) ? elt.dataset.videoId : '';
         var video_width  = (elt.dataset.videoWidth  && elt.dataset.videoWidth.match(/\d+/) ) ? elt.dataset.videoWidth  : '640';
@@ -316,6 +316,7 @@ function initializeYoutubePlayer() {
 }
 
 function columnAlignShim() {
+// https://bugs.webkit.org/show_bug.cgi?id=160075
   var mtables = document.querySelectorAll('mtable[columnalign]');
   if (mtables[0] && mtables[0].style) {
     for (var i = 0; i < mtables.length; i++) {
@@ -332,6 +333,7 @@ function columnAlignShim() {
 }
 
 function minMathWidth() {
+// https://bugs.webkit.org/show_bug.cgi?id=160547
   var maths = document.querySelectorAll('math[display=block]');
   if (maths[0] && maths[0].style) {
     for (var i = 0; i < maths.length; i++) {
@@ -340,6 +342,7 @@ function minMathWidth() {
     }
   }
 }
+
 document.observe("dom:loaded", function (){
         extractBlockquoteCitations();
         fixRunIn();
