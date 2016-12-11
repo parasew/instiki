@@ -519,7 +519,10 @@ span.theorem_label {font-style:normal; font-weight:bold;}
 /* The STIX Two fonts are licensed under the SIL Open Font License, Version 1.1, http://scripts.sil.org/OFL */
 math  {font-family: STIX Two Math;}
 mtext {font-family: STIX Two Text;}
-.mathscript {font-feature-settings: "ss01" on;}
+.mathscript {
+    font-variant-alternates: styleset(1); /* Recommended syntax */
+    font-feature-settings: ss01;          /* E.g. Chrome doesn't support the above */
+}
 
 @font-face {
     font-family: STIX Two Text;
