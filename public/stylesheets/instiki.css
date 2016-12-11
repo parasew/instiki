@@ -521,7 +521,7 @@ math  {font-family: STIX Two Math;}
 mtext {font-family: STIX Two Text;}
 .mathscript {
     font-variant-alternates: styleset(1); /* Recommended syntax */
-    font-feature-settings: ss01;          /* E.g. Chrome doesn't support the above */
+    font-feature-settings: "ss01" on;     /* E.g. Firefox doesn't support the above */
 }
 
 @font-face {
