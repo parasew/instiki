@@ -595,7 +595,7 @@ module ActiveRecord
           quoted_column_names = case length
           when Hash
             column_names.map {|name| length[name] ? "#{quote_column_name(name)}(#{length[name]})" : quote_column_name(name) }
-          when Fixnum
+          when 0.class
             column_names.map {|name| "#{quote_column_name(name)}(#{length})"}
           else
             column_names.map {|name| quote_column_name(name) }

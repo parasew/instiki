@@ -735,7 +735,7 @@ module ActionView
       private
         %w( sec min hour day month year ).each do |method|
           define_method(method) do
-            @datetime.kind_of?(Fixnum) ? @datetime : @datetime.send(method) if @datetime
+            @datetime.kind_of?(0.class) ? @datetime : @datetime.send(method) if @datetime
           end
         end
 

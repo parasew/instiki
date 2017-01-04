@@ -49,7 +49,7 @@ module ActionView
       line_counter = start_on_line
       return unless source_code = source_code[start_on_line..end_on_line]
 
-      source_code.sum do |line|
+      source_code.sum('') do |line|
         line_counter += 1
         "#{indent}#{line_counter}: #{line}\n"
       end

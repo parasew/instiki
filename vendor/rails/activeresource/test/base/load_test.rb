@@ -131,7 +131,7 @@ class BaseLoadTest < Test::Unit::TestCase
     postal_codes = state.postal_codes
     assert_kind_of Array, postal_codes
     assert_equal 2, postal_codes.size
-    assert_kind_of Fixnum, postal_codes.first
+    assert_kind_of 0.class, postal_codes.first
     assert_equal @deep[:street][:state][:postal_codes].first, postal_codes.first
     assert_kind_of Numeric, postal_codes.last
     assert_equal @deep[:street][:state][:postal_codes].last, postal_codes.last

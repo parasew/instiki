@@ -6,7 +6,7 @@ module ActiveSupport
   # such as in this example:
   #
   #   1.month.ago       # equivalent to Time.now.advance(:months => -1)
-  class Duration < BasicObject
+  class Duration
     attr_accessor :value, :parts
 
     def initialize(value, parts) #:nodoc:
@@ -34,7 +34,12 @@ module ActiveSupport
     end
 
     def is_a?(klass) #:nodoc:
-      klass == Duration || super
+      Duration == klass || value.is_a?(klass)
+    end
+    alias :kind_of? :is_a?
+
+    def instance_of?(klass) # :nodoc:
+      Duration == klass || value.instance_of?(klass)
     end
 
     # Returns true if <tt>other</tt> is also a Duration instance with the
@@ -47,8 +52,24 @@ module ActiveSupport
       end
     end
 
+    def to_i
+      @value.to_i
+    end
+
+    # Returns +true+ if +other+ is also a Duration instance, which has the
+    # same parts as this one.
+    def eql?(other)
+      Duration === other && other.value.eql?(value)
+    end
+
+    def hash
+      @value.hash
+    end
+
     def self.===(other) #:nodoc:
-      other.is_a?(Duration) rescue super
+      other.is_a?(Duration)
+    rescue ::NoMethodError
+      false
     end
 
     # Calculates a new Time or Date that is as far in the future
@@ -75,6 +96,14 @@ module ActiveSupport
       parts.to_sentence(:locale => :en)
     end
 
+    def as_json(options = nil) #:nodoc:
+      to_i
+    end
+
+    def respond_to_missing?(method, include_private=false) #:nodoc:
+      @value.respond_to?(method, include_private)
+    end
+
     protected
 
       def sum(sign, time = ::Time.current) #:nodoc:
@@ -82,6 +111,10 @@ module ActiveSupport
           if t.acts_like?(:time) || t.acts_like?(:date)
             if type == :seconds
               t.since(sign * number)
+            elsif type == :minutes
+              t.since(sign * number * 60)
+            elsif type == :hours
+              t.since(sign * number * 3600)
             else
               t.advance(type => sign * number)
             end

@@ -96,7 +96,7 @@ module ActionController #:nodoc:
       extra_keys = ActionController::Routing::Routes.extra_keys(parameters)
       non_path_parameters = get? ? query_parameters : request_parameters
       parameters.each do |key, value|
-        if value.is_a? Fixnum
+        if value.is_a? 0.class
           value = value.to_s
         elsif value.is_a? Array
           value = ActionController::Routing::PathSegment::Result.new(value)

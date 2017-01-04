@@ -73,7 +73,7 @@ module ActionController
     # hash to convert it.
     def interpret_status(status)
       case status
-      when Fixnum then
+      when 0.class then
         "#{status} #{STATUS_CODES[status]}".strip
       when Symbol then
         interpret_status(SYMBOL_TO_STATUS_CODE[status] ||

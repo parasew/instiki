@@ -35,6 +35,7 @@ module ActiveSupport #:nodoc:
 
         XML_TYPE_NAMES = {
           "Symbol"     => "symbol",
+          "Integer"    => "integer",
           "Fixnum"     => "integer",
           "Bignum"     => "integer",
           "BigDecimal" => "decimal",
