@@ -12,7 +12,7 @@ end
 class Symbol
   def dclone ; self ; end
 end
-class Fixnum
+class Integer
   def dclone ; self ; end
 end
 class Float

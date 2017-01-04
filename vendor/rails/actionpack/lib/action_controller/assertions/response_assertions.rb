@@ -25,7 +25,7 @@ module ActionController
         clean_backtrace do
           if [ :success, :missing, :redirect, :error ].include?(type) && @response.send("#{type}?")
             assert_block("") { true } # to count the assertion
-          elsif type.is_a?(Fixnum) && @response.response_code == type
+          elsif type.is_a?(0.class) && @response.response_code == type
             assert_block("") { true } # to count the assertion
           elsif type.is_a?(Symbol) && @response.response_code == ActionController::StatusCodes::SYMBOL_TO_STATUS_CODE[type]
             assert_block("") { true } # to count the assertion

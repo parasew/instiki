@@ -19,7 +19,7 @@ end
 
 if ! defined?(Builder::XChar)
   Builder.check_for_name_collision(String, "to_xs")
-  Builder.check_for_name_collision(Fixnum, "xchr")
+  Builder.check_for_name_collision(0.class, "xchr")
 end
 
 ######################################################################
@@ -86,7 +86,7 @@ end
 ######################################################################
 # Enhance the Fixnum class with a XML escaped character conversion.
 #
-class Fixnum
+class Integer
   XChar = Builder::XChar if ! defined?(XChar)
 
   # XML escaped version of chr

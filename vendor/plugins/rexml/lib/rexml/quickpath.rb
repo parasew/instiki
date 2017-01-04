@@ -191,7 +191,7 @@ module REXML
 				case res
 				when true
 					results << element
-				when Fixnum
+				when 0.class
 					results << element if Functions.pair[0] == res
 				when String
 					results << element
@@ -227,7 +227,7 @@ module REXML
 				case res
 				when true
 					results << element
-				when Fixnum
+				when 0.class
 					results << element if Functions.pair[0] == res
 				end
 			end

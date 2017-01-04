@@ -50,7 +50,7 @@ module ActiveRecord
       # Returns the Ruby class that corresponds to the abstract data type.
       def klass
         case type
-          when :integer       then Fixnum
+          when :integer       then 0.class
           when :float         then Float
           when :decimal       then BigDecimal
           when :datetime      then Time

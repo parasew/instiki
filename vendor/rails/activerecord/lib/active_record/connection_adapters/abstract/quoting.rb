@@ -21,7 +21,7 @@ module ActiveRecord
           when NilClass                 then "NULL"
           when TrueClass                then (column && column.type == :integer ? '1' : quoted_true)
           when FalseClass               then (column && column.type == :integer ? '0' : quoted_false)
-          when Float, Fixnum, Bignum    then value.to_s
+          when Float, 0.class, (2**100).class    then value.to_s
           # BigDecimals need to be output in a non-normalized form and quoted.
           when BigDecimal               then value.to_s('F')
           else

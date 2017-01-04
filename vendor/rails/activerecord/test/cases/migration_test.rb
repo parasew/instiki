@@ -503,7 +503,7 @@ if ActiveRecord::Base.connection.supports_migrations?
       assert_equal String, bob.first_name.class
       assert_equal String, bob.last_name.class
       assert_equal String, bob.bio.class
-      assert_equal Fixnum, bob.age.class
+      assert_equal 0.class, bob.age.class
       assert_equal Time, bob.birthday.class
 
       if current_adapter?(:OracleAdapter, :SybaseAdapter)
@@ -974,7 +974,7 @@ if ActiveRecord::Base.connection.supports_migrations?
       # is_a?(Bignum)
       assert_kind_of Integer, b.world_population
       assert_equal 6000000000, b.world_population
-      assert_kind_of Fixnum, b.my_house_population
+      assert_kind_of 0.class, b.my_house_population
       assert_equal 3, b.my_house_population
       assert_kind_of BigDecimal, b.bank_balance
       assert_equal BigDecimal("1586.43"), b.bank_balance
@@ -1000,7 +1000,7 @@ if ActiveRecord::Base.connection.supports_migrations?
         assert_equal BigDecimal("2.71828182845905"), b.value_of_e
       else
         # - SQL standard is an integer
-        assert_kind_of Fixnum, b.value_of_e
+        assert_kind_of 0.class, b.value_of_e
         assert_equal 2, b.value_of_e
       end
 
