@@ -29,6 +29,7 @@ You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your Syst
 - git mv Gemfile.lock.heroku Gemfile.lock
 - git commit -m "Setup for heroku"
 - git push heroku master
+- heroku config:set RAILS_ENV=production
 - heroku run rake db:migrate
 
 ### If you are on Windows
