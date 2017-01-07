@@ -17,7 +17,7 @@ Instiki only requires a working Ruby installation (it includes all other depende
 
 ## Details
 
-You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your System. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
+You need at least Ruby Version 1.9.3, and Rubygems 1.3.6, installed on your System. Instiki is known to work well with Ruby 2.0-2.3 (the current development version works with Ruby 2.4). The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
 
 ### Deploy to Heroku
 
@@ -29,6 +29,7 @@ You need at least Ruby Version 1.8.6, and Rubygems 1.3.6, installed on your Syst
 - git mv Gemfile.lock.heroku Gemfile.lock
 - git commit -m "Setup for heroku"
 - git push heroku master
+- heroku config:set RAILS_ENV=production
 - heroku run rake db:migrate
 
 ### If you are on Windows
