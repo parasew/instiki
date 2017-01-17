@@ -155,7 +155,7 @@
   {
     "name": "non_alpha_non_digit_III",
     "input": "<a/href=\"javascript:alert('XSS');\">foo</a>",
-    "output": "<a>foo</a>",
+    "output": "<a/>foo</a>",
     "rexml": "Ill-formed XHTML!"
   },
 

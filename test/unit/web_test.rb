@@ -9,7 +9,14 @@ class WebTest < ActiveSupport::TestCase
   
   def test_pages_by_revision
     add_sample_pages
-    assert_equal 'EverBeenHated', @web.select.by_revision.first.name
+
+    # Since @web is set from the 'webs' fixtures, it includes a
+    # revision ID 11 / page ID 10 of 'HomePage'; we then add a
+    # couple of sample pages. We expect the first of these to be
+    # the 'EverBeenHated' revision, so skipping 'HomePage', it's
+    # at array index 1.
+    #
+    assert_equal 'EverBeenHated', @web.select.by_revision[1].name
   end
   
   def test_pages_by_match
