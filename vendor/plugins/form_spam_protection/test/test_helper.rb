@@ -20,7 +20,7 @@ class ProtectedController < ActionController::Base
   private
   def form
     <<-EOD
-    <% form_tag do %>
+    <%= form_tag do %>
     	MyField: <%= text_field_tag 'testme' %>
     	<%= submit_tag %>
     <% end %>

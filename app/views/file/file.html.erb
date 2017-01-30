@@ -6,7 +6,7 @@
 
 <%= error_messages_for 'file' %>
 
-<% form_tag({ :controller => 'file', :web => @web_name, :action => 'file' }, 
+<%= form_tag({ :controller => 'file', :web => @web_name, :action => 'file' }, 
         { 'multipart' => true , 'accept-charset' => 'utf-8' }) do %>
   <div class="inputFieldWithPrompt">
     <input type="hidden" name="referring_page" value="<%= h @referring_page %>" />

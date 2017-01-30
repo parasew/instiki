@@ -1,6 +1,6 @@
 <%- @title = "#{@web_name} Login" %><% @hide_navigation = true -%>
 
-<% form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
+<%= form_tag({ :controller => 'wiki', :action => 'authenticate', :web => @web.address},
     { 'id' => 'loginForm', 'method' => 'post', 'accept-charset' => 'utf-8' }) do %>
     <p>
     This web is password-protected. Please enter the password.

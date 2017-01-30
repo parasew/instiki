@@ -11,7 +11,7 @@
 <%- end -%>
 
 <% if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) -%>
-<% form_tag({ :controller => 'wiki', :action => 'tex_list', :web => @web.address },
+<%= form_tag({ :controller => 'wiki', :action => 'tex_list', :web => @web.address },
              {'method' => 'post', 'accept-charset' => 'utf-8' }) do
 %>
 <div>

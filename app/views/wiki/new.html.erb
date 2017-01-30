@@ -10,7 +10,7 @@
 </div>
 
 <div id="editForm">
-	<% form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
+	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page_name },
 	        { 'id' => 'editForm', 'method' => 'post', 'onsubmit' => 'cleanAuthorName();', 'accept-charset' => 'utf-8' }) do %>
 	
 	    <textarea name="content" id="content" rows="24" cols="60"><%= h(flash[:content] || 

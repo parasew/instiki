@@ -2,6 +2,11 @@ require 'itex_stringsupport'
 require 'file_signature'
 
 class Web < ActiveRecord::Base
+
+  ## Security
+
+  attr_accessible :name, :address, :password
+
   ## Associations
 
   has_many :pages,      :dependent => :destroy
@@ -29,8 +34,8 @@ class Web < ActiveRecord::Base
   end
 
   def settings_changed?(markup, safe_mode, brackets_only)
-    self.markup != markup || 
-    self.safe_mode != safe_mode || 
+    self.markup != markup ||
+    self.safe_mode != safe_mode ||
     self.brackets_only != brackets_only
   end
 
@@ -39,7 +44,7 @@ class Web < ActiveRecord::Base
     page.revise(content, name, time, author, renderer)
   end
 
-  # @return [Array<String>] a collection of all the names of the authors that 
+  # @return [Array<String>] a collection of all the names of the authors that
   #   have ever contributed to the pages for this Web
   def authors
     revisions.all(
@@ -53,7 +58,7 @@ class Web < ActiveRecord::Base
   end
 
   # @param [String] name the name of some associated Page record to find
-  # @return [Page, nil] the associated Page record, or +nil+ if no record is 
+  # @return [Page, nil] the associated Page record, or +nil+ if no record is
   #   found with the provided name
   def page(name)
     pages.find_by_name(name)
@@ -65,14 +70,14 @@ class Web < ActiveRecord::Base
   end
 
   # @param [String] name the name of some potential Page record
-  # @return [Boolean] whether or not a given Page record exists with a given 
+  # @return [Boolean] whether or not a given Page record exists with a given
   #   name
   def has_page?(name)
     pages.exists?(:name => name)
   end
 
   def has_redirect_for?(name)
-     WikiReference.page_that_redirects_for(self, name) 
+     WikiReference.page_that_redirects_for(self, name)
   end
 
   def page_that_redirects_for(name)
@@ -100,7 +105,7 @@ class Web < ActiveRecord::Base
   end
 
   # @param [String] file_name the name of some WikiFile of interest
-  # @return [String, nil] the description of some WikiFile of interest, nil if 
+  # @return [String, nil] the description of some WikiFile of interest, nil if
   #   the WikiFile could not be found
   def description(file_name)
     wiki_files.find_by_file_name(file_name).try(:description)
@@ -111,7 +116,7 @@ class Web < ActiveRecord::Base
     self[:markup].to_sym
   end
 
-  # @return [Hash] a Hash wherein the key is some author's name, and the 
+  # @return [Hash] a Hash wherein the key is some author's name, and the
   #   values are an array of page names for that author.
   def page_names_by_author
     data = revisions.all(
@@ -152,7 +157,7 @@ class Web < ActiveRecord::Base
     address
   end
 
-  # Called by an +after_save+ hook. Creates the directory that houses this 
+  # Called by an +after_save+ hook. Creates the directory that houses this
   # Web's associated files.
   #
   # TODO Move this into the WikiFile model
@@ -215,7 +220,7 @@ class Web < ActiveRecord::Base
     def validate_address
       if ['create_system', 'create_web', 'delete_web', 'delete_files', 'web_list', ''].include?(address)
          self.errors.add(:address, 'is not a valid address')
-        raise Instiki::ValidationError.new("\"#{address.purify.escapeHTML}\" #{errors.on(:address)}")     
+        raise Instiki::ValidationError.new("\"#{address.purify.escapeHTML}\" #{errors.on(:address)}")
       end
       unless address == CGI.escape(address)
         self.errors.add(:address, 'should contain only valid URI characters')

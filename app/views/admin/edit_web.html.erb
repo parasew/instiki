@@ -1,6 +1,6 @@
 <%- @title = "Edit Web" -%>
 
-<% form_tag({ :controller => 'admin', :action => 'edit_web', :web => @web.address },
+<%= form_tag({ :controller => 'admin', :action => 'edit_web', :web => @web.address },
              { 'id' => 'setup', 'method' => 'post', 
                'onsubmit' => 'cleanAddress(); return validateSetup()',
                'accept-charset' => 'utf-8' }) do
@@ -117,7 +117,7 @@
 
 <h1>Other administrative tasks</h1>
 
-<% form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages'},
+<%= form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages'},
         { :id => 'remove_orphaned_pages', 
           :onsubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned').value)",
           'accept-charset' => 'utf-8' }) do
@@ -137,7 +137,7 @@
 
 <%- categories = WikiReference.list_categories(@web).sort
   if categories.length > 0 -%>
-<% form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages_in_category'},
+<%= form_tag({:controller => 'admin', :web => @web.address, :action => 'remove_orphaned_pages_in_category'},
         { :id => 'remove_orphaned_pages_in_category', 
           :onsubmit => "return checkSystemPassword(document.getElementById('system_password_orphaned_in_category').value)",
           'accept-charset' => 'utf-8' }) do
@@ -156,7 +156,7 @@
 <%- end -%>
 
 <div class="inputBox">
-<% form_tag({:controller => 'admin', :web => @web.address, :action => 'delete_web'},
+<%= form_tag({:controller => 'admin', :web => @web.address, :action => 'delete_web'},
         { :id => 'delete_web', 
           :onsubmit => "return checkSystemPassword(document.getElementById('system_password_delete_web').value)",
           'accept-charset' => 'utf-8' }) do

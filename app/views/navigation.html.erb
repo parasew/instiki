@@ -17,7 +17,7 @@ end
     <%= list_item 'Authors', {:action => 'authors'}, 'Who wrote what' %> | 
     <%= list_item 'Feeds', {:action => 'feeds'}, 'Subscribe to changes by Atom' %> | 
     <%= list_item 'Export', {:action => 'export'}, 'Download a zip with all the pages in this wiki', 'X' %> |
-    <% form_tag({ :controller => 'wiki', :action => 'search', :web => @web.address},
+    <%= form_tag({ :controller => 'wiki', :action => 'search', :web => @web.address},
                  {'id' => 'navigationSearchForm', 'method' => 'get', 'accept-charset' => 'utf-8' }) do %>
       <fieldset class="search"><input type="text" id="searchField" name="query" value="Search"
              onfocus="this.value == 'Search' ? this.value = '' : true"

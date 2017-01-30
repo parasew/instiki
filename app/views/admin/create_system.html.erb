@@ -1,13 +1,13 @@
 <%- @title = "Instiki Setup"; @content_width = 500 -%>
 
 <p>
-  Congratulations on succesfully installing and starting Instiki. 
-  Since this is the first time Instiki has been run on this port, 
+  Congratulations on succesfully installing and starting Instiki.
+  Since this is the first time Instiki has been run on this port,
   you'll need to do a brief one-time setup.
 </p>
 
-<% form_tag({ :controller => 'admin', :action => 'create_system' },
-             { 'id' => 'setup', 'method' => 'post', 'onsubmit' => 'return validateSetup()', 
+<%= form_tag({ :controller => 'admin', :action => 'create_system' },
+             { 'id' => 'setup', 'method' => 'post', 'onsubmit' => 'return validateSetup()',
                'accept-charset' => 'utf-8' }) do
 %>
 <ol class="setup">
@@ -15,14 +15,14 @@
 
     <h2 style="margin-bottom: 3px">Name and address for your first web</h2>
     <div class="help">
-      The name of the web is included in the title on all pages. 
-      The address is the base path that all pages within the web live beneath. 
-      Ex: the address "rails" gives URLs like <i>/rails/show/HomePage</i>. 
+      The name of the web is included in the title on all pages.
+      The address is the base path that all pages within the web live beneath.
+      Ex: the address "rails" gives URLs like <i>/rails/show/HomePage</i>.
       The address can only consist of letters and digits.
     </div>
     <div class="inputBox">
-      <label for="web_name">Name:</label> <input type="text" id="web_name" name="web_name" value="Wiki" 
-            onchange="proposeAddress();" onclick="this.value == 'Wiki' ? this.value = '' : true" /> 
+      <label for="web_name">Name:</label> <input type="text" id="web_name" name="web_name" value="Wiki"
+            onchange="proposeAddress();" onclick="this.value == 'Wiki' ? this.value = '' : true" />
       &#xa0;&#xa0;
       <label for="web_address">Address:</label> <input type="text" id="web_address" name="web_address" onchange="cleanAddress();"
                value="wiki" />
@@ -64,12 +64,12 @@ function validateSetup() {
     alert("You must pick a name for the first web");
     return false;
   }
-  
+
   if (document.getElementById('web_address').value == "") {
     alert("You must pick an address for the first web");
     return false;
   }
-  
+
   if (document.getElementById('password').value == "") {
     alert("You must pick a system password");
     return false;
@@ -80,7 +80,7 @@ function validateSetup() {
     alert("The password and its verification doesn't match");
     return false;
   }
-  
+
   return true;
 }
 </script>

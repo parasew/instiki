@@ -9,7 +9,7 @@
 <%= render(:file => 'wiki_words_help') unless @web.brackets_only? -%>
 </div>
 
-	<% form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
+	<%= form_tag({ :action => 'save', :web => @web.address, :id => @page.name },
 	             { 'id' => 'editForm', 'method' => 'post', 'onsubmit' => 'cleanAuthorName()',
 	               'accept-charset' => 'utf-8' }) do %>
 	   <div>	
