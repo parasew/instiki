@@ -25,7 +25,7 @@
 <%- if @web.markup == :markdownMML -%>
 <script type="text/x-mathjax-config">
 <!--//--><![CDATA[//><!--
-  MathJax.Ajax.config.path["Contrib"] = "<%= compute_public_path('', 'MathJax').split('/?')[0] %>";
+  MathJax.Ajax.config.path["Contrib"] = "<%= asset_paths.compute_public_path('', 'MathJax').split('/?')[0] %>";
   MathJax.Hub.Config({
     MathML: { useMathMLspacing: true },
     "HTML-CSS": { scale: 90,
@@ -55,7 +55,7 @@
     if (mathml_unsupported) {
       // MathML does not seem to be supported...
       var s = document.createElement('script');
-      s.src = "<%= compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>?config=MML_HTMLorMML";
+      s.src = "<%= asset_paths.compute_public_path('MathJax.js', 'MathJax').split('?')[0] %>?config=MML_HTMLorMML";
       document.querySelector('head').appendChild(s);
     } else {
       document.head.insertAdjacentHTML("beforeend", '<style>svg[viewBox] {max-width: 100%}</style>');
