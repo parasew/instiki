@@ -11,19 +11,19 @@
 
   <meta charset="UTF-8" />
   <meta name="robots" content="<%= @robots_metatag_value %>" />
-  
+
   <style type="text/css">
-    h1#pageName, div.info, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, [actiontype="toggle"]:hover, #TextileHelp h3 { 
-      color: #<%= @web ? @web.color : "393" %>; 
+    h1#pageName, div.info, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, [actiontype="toggle"]:hover, #TextileHelp h3 {
+      color: #<%= @web ? @web.color : "393" %>;
     }
     <%= Rails.root.join('public', 'stylesheets', 'instiki.css').read if @inline_style %>
   </style>
   <%= stylesheet_link_tag 'instiki', :media => 'all'  unless @inline_style %>
   <%= "<style type='text/css'>#{@style_additions}</style>".html_safe if @style_additions %>
-  <style type="text/css"><!--/*--><![CDATA[/*><!--*/    
+  <style type="text/css"><!--/*--><![CDATA[/*><!--*/
     <%= @web ? @web.additional_style : '' %>
   /*]]>*/--></style>
-  <%= javascript_include_tag :defaults %>
+  <%= javascript_include_tag "application" %>
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--
 function updateSize(elt, w, h) {

@@ -1,4 +1,4 @@
-require 'chunks/wiki'
+require 'chunks/wiki_chunk'
 
 # Includes the contents of another page for rendering.
 # The include command looks like this: "[[!include PageName]]".

@@ -7,8 +7,8 @@ class WikiFileTest < ActiveSupport::TestCase
 
   def setup
     @web = webs(:test_wiki)
-    mkdir_p("#{RAILS_ROOT}/webs/wiki1/files/")
-    rm_rf("#{RAILS_ROOT}/webs/wiki1/files/*")
+    mkdir_p("#{Rails.root}/webs/wiki1/files/")
+    rm_rf("#{Rails.root}/webs/wiki1/files/*")
     WikiFile.delete_all
   end
 
@@ -25,8 +25,8 @@ class WikiFileTest < ActiveSupport::TestCase
   end
 
   def test_storing_an_image
-    rails_gif = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
-    assert_equal rails_gif.size, File.size("#{RAILS_ROOT}/test/fixtures/rails.gif")
+    rails_gif = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    assert_equal rails_gif.size, File.size("#{Rails.root}/test/fixtures/rails.gif")
 
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'Rails logo', :content => rails_gif)
 

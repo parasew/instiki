@@ -1,31 +1,72 @@
-# The production environment is meant for finished, "live" apps.
-# Code is not reloaded between requests
-config.cache_classes = true
+Instiki::Application.configure do
+  # Settings specified here will take precedence over those in config/application.rb
 
-# Use a different logger for distributed setups
-# config.logger        = SyslogLogger.new
+  # Code is not reloaded between requests
+  config.cache_classes = true
 
-####
-# This rotates the log file, keeping 25 files, of 1MB each.
-# If we are running on heroku, log to STDOUT instead.
-config.action_controller.logger = ENV["HEROKU_POSTGRESQL_NAVY_URL"] ? Logger.new(STDOUT) : 
-                                    Logger.new(Rails.root.join('log', "#{RAILS_ENV}.log"), 25, 1024000)
+  # Full error reports are disabled and caching is turned on
+  config.consider_all_requests_local       = false
+  config.action_controller.perform_caching = true
 
-# Unfortunately, the above does not work well under Mongrel, as the default Ruby logger class
-# does no locking and you will have several processes running, each wanting to write to (and 
-# rotate) the log file. One solution is to have each mongrel instance writes to a different log file:
-#   http://blog.caboo.se/articles/2006/11/14/configure-mongrel-rails-logger-per-port for a solution.
-# Another is to use the default logging behaviour (comment out the above line)
-# and use an external program (e.g. logrotate) to rotate the logs.
-####
+  # Disable Rails's static asset server (Apache or nginx will already do this)
+  config.serve_static_assets = false
 
-# Full error reports are disabled and caching is turned on
-config.action_controller.consider_all_requests_local = false
-config.action_controller.perform_caching             = true
-config.action_view.cache_template_loading            = true
+  # Compress JavaScripts and CSS
+  config.assets.compress = true
 
-# Enable serving of images, stylesheets, and javascripts from an asset server
-# config.action_controller.asset_host                  = "http://assets.example.com"
+  # Don't fallback to assets pipeline if a precompiled asset is missed
+  config.assets.compile = false
 
-# Disable delivery errors if you bad email addresses should just be ignored
-# config.action_mailer.raise_delivery_errors = false
+  # Generate digests for assets URLs
+  config.assets.digest = true
+
+  # Defaults to nil and saved in location specified by config.assets.prefix
+  # config.assets.manifest = YOUR_PATH
+
+  # Specifies the header that your server uses for sending files
+  # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
+  # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  # config.force_ssl = true
+
+  # See everything in the log (default is :info)
+  # config.log_level = :debug
+
+  # Prepend all log lines with the following tags
+  # config.log_tags = [ :subdomain, :uuid ]
+
+  # Use a different logger for distributed setups
+  # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
+  ####
+  # This rotates the log file, keeping 25 files, of 1MB each.
+  # If we are running on heroku, log to STDOUT instead.
+  config.logger = ENV["HEROKU_POSTGRESQL_NAVY_URL"] ? Logger.new(STDOUT) : 
+                    Logger.new(Rails.root.join('log', "#{Rails.env}.log"), 25, 1024000)
+
+  # Use a different cache store in production
+  # config.cache_store = :mem_cache_store
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server
+  # config.action_controller.asset_host = "http://assets.example.com"
+
+  # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
+  # config.assets.precompile += %w( search.js )
+
+  # Disable delivery errors, bad email addresses will be ignored
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Enable threaded mode
+  # config.threadsafe!
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation can not be found)
+  config.i18n.fallbacks = true
+
+  # Send deprecation notices to registered listeners
+  config.active_support.deprecation = :notify
+
+  # Log the query plan for queries taking more than this (works
+  # with SQLite, MySQL, and PostgreSQL)
+  # config.active_record.auto_explain_threshold_in_seconds = 0.5
+end

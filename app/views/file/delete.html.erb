@@ -5,7 +5,7 @@
 
 <%= error_messages_for 'delete' %>
 
-<% form_tag({ :controller => 'file', :web => @web_name, :action => 'delete' }, 
+<%= form_tag({ :controller => 'file', :web => @web_name, :action => 'delete' }, 
         {'accept-charset' => 'utf-8' }) do %>
   <div class="inputFieldWithPrompt">
     <%= hidden_field 'file', 'file_name' %>

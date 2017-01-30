@@ -1,6 +1,6 @@
 def write_yaml_fixtures_to_file(sql, fixture_name)
   i = "000"
-  File.open("#{RAILS_ROOT}/dump/fixtures/#{fixture_name}.yml", 'w' ) do |file|
+  File.open("#{Rails.root}/dump/fixtures/#{fixture_name}.yml", 'w' ) do |file|
     data = ActiveRecord::Base.connection.select_all(sql)
     file.write data.inject({}) { |hash, record|
       hash["#{fixture_name}_#{i.succ!}"] = record
@@ -10,7 +10,7 @@ def write_yaml_fixtures_to_file(sql, fixture_name)
 end
 
 def import_table_fixture(table)
-  filename = File.join(RAILS_ROOT,'dump','fixtures',table + '.yml')
+  filename = File.join(Rails.root,'dump','fixtures',table + '.yml')
   success = Hash.new
   records = YAML::load( File.open(filename))
 
@@ -43,7 +43,7 @@ def import_table_fixture(table)
 end
 
 def import_model_fixture(model)
-  filename = File.join(RAILS_ROOT,'dump','fixtures',model.tableize + '.yml')
+  filename = File.join(Rails.root,'dump','fixtures',model.tableize + '.yml')
   success = Hash.new
   records = YAML::load( File.open(filename))
     @model = Class.const_get(model)

@@ -1,4 +1,4 @@
-RAILS_ENV = 'test'
+Rails.env = 'test'
 require File.expand_path(File.join(File.dirname(__FILE__), '../../../../config/environment.rb'))
 require 'action_controller/test_process'
 require 'breakpoint'
@@ -20,7 +20,7 @@ class ProtectedController < ActionController::Base
   private
   def form
     <<-EOD
-    <% form_tag do %>
+    <%= form_tag do %>
     	MyField: <%= text_field_tag 'testme' %>
     	<%= submit_tag %>
     <% end %>

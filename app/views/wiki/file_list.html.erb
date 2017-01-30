@@ -1,6 +1,6 @@
 <%- @title = "Uploaded Files" -%>
 
-<% form_tag({ :controller => 'admin', :action => 'delete_files', :web => @web.address },
+<%= form_tag({ :controller => 'admin', :action => 'delete_files', :web => @web.address },
              {'method' => 'post', 'accept-charset' => 'utf-8' }) do
 %>
 <div id="allFiles">
