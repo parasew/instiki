@@ -15,7 +15,7 @@ class Category < Chunk::Abstract
 
   attr_reader :hidden, :list
 
-def initialize(match_data, content)
+  def initialize(match_data, content)
     super(match_data, content)
     @content = content
     @hidden = match_data[1]

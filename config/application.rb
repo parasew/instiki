@@ -20,13 +20,13 @@ module Instiki
     #   in a file, for reuse between server restarts. If you want to
     #   change the key, just delete the file, and it will be regenerated
     #   on the next restart. Doing so will invalitate all existing sessions.
-    secret_file = Rails.root.join("secret")  
-    if File.exist?(secret_file)  
-      secret = secret_file.read  
-    else  
+    secret_file = Rails.root.join("secret")
+    if File.exist?(secret_file)
+      secret = secret_file.read
+    else
       secret =  ActiveSupport::SecureRandom.hex(64)
-      File.open(secret_file, 'w', 0600) { |f| f.write(secret) }  
-    end  
+      File.open(secret_file, 'w', 0600) { |f| f.write(secret) }
+    end
 
     # Enable page/fragment caching by setting a file-based store
     # (remember to create the caching directory and make it readable to the application)
@@ -35,8 +35,8 @@ module Instiki
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
 
-    config.autoload_paths += %W( #{config.root}/lib {config.root}/lib/chunks)
-    
+    config.autoload_paths += %W( #{config.root}/lib #{config.root}/lib/chunks)
+
     # Legacy Rails 2 JS code uses Prototype, not jQuery.#
 
     config.action_view.javascript_expansions[:legacy] = %w(prototype.js scriptaculous.js)

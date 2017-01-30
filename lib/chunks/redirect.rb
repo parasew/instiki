@@ -1,4 +1,4 @@
-require 'chunks/wiki'
+require 'chunks/wiki_chunk'
 
 #      [[!redirects Foo]]
 # redirects Wikilinks for the (nonexistent) page "Foo" to this page.

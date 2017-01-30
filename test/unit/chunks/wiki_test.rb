@@ -2,7 +2,7 @@
 #coding: UTF-8
 
 require Rails.root.join('test', 'test_helper')
-require 'chunks/wiki'
+require 'chunks/wiki_chunk'
 
 class WikiTest < Test::Unit::TestCase
 

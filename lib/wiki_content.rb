@@ -3,7 +3,7 @@ require 'chunks/engines'
 require 'chunks/category'
 require_dependency 'chunks/include'
 require_dependency 'chunks/redirect'
-require_dependency 'chunks/wiki'
+require_dependency 'chunks/wiki_chunk'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
 require 'sanitizer'
@@ -62,10 +62,10 @@ module ChunkManager
   end
 
   def add_chunk(c)
-      @chunks_by_type[c.class] << c
-      @chunks_by_id[c.object_id] = c
-      @chunks << c
-      @chunk_id += 1
+    @chunks_by_type[c.class] << c
+    @chunks_by_id[c.object_id] = c
+    @chunks << c
+    @chunk_id += 1
   end
 
   def delete_chunk(c)
@@ -147,7 +147,7 @@ class WikiContent < ActiveSupport::SafeBuffer
     if @options[:engine] == Engines::MarkdownPNG
       @options[:png_url] =
          @options[:mode] == :export ? 'files/pngs/' :
-           (@url_generator.url_for :controller => 'file', :web => @web.address, 
+           (@url_generator.url_for :controller => 'file', :web => @web.address,
              :action => 'file', :id => 'pngs', :only_path => true) + '/'
     end
 
@@ -221,7 +221,10 @@ class WikiContent < ActiveSupport::SafeBuffer
       end
     end
     self.replace xhtml_sanitize(text)
-    self.html_safe
+    @dirty = false # Instance variable from ActiveSupport::SafeBuffer, so we
+                   # are self-marking this instance as HTML-safe
+
+    self
   end
 
   def page_name
