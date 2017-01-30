@@ -2,8 +2,8 @@ require 'rake'
 
 desc "This task will perform necessary upgrades to your Instiki installation"
 task :upgrade_instiki => :environment do
-  ENV['RAILS_ENV'] ||= 'production'
-  puts "Upgrading Instiki in #{ENV['RAILS_ENV']} environment."
+  ENV['Rails.env'] ||= 'production'
+  puts "Upgrading Instiki in #{ENV['Rails.env']} environment."
 
   InstikiUpgrade.migrate_db
   InstikiUpgrade.move_uploaded_files
@@ -12,7 +12,7 @@ end
 class InstikiUpgrade
 
   def self.migrate_db
-    ActiveRecord::Base.establish_connection ENV['RAILS_ENV']
+    ActiveRecord::Base.establish_connection ENV['Rails.env']
     Rake::Task["db:migrate"].invoke
   end
 

@@ -113,7 +113,7 @@
     <div class="errorExplanation"><%= escape_preserving_linefeeds(@error || flash[:error]) %></div>
 <%- end -%>
 
-<%= @content_for_layout %>
+<%= yield %>
 
 <%- if @show_footer -%>
     <div id="footer">

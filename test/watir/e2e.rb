@@ -319,7 +319,7 @@ class InstikiController
 
     clear_database
     startup_command =
-        "ruby #{RAILS_ROOT}/instiki.rb --port #{INSTIKI_PORT} --environment development"
+        "ruby #{Rails.root}/instiki.rb --port #{INSTIKI_PORT} --environment development"
 
     result = Win32API.new('kernel32.dll', 'CreateProcess', 'pplllllppp', 'L').call(
         nil, 

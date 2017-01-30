@@ -25,7 +25,7 @@ class AdminControllerTest < ActionController::TestCase
     @elephant = pages(:elephant)
     @web = webs(:test_wiki)
     @home = @page = pages(:home_page)
-    FileUtils.rm_rf("#{RAILS_ROOT}/webs/renamed_wiki1")
+    FileUtils.rm_rf("#{Rails.root}/webs/renamed_wiki1")
   end
 
   def test_create_system_form_displayed

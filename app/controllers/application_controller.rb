@@ -2,6 +2,7 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
+  protect_from_forgery
   protect_forms_from_spam :only => [:edit, :new, :rollback, :file, :delete, :save]
   before_filter :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
   after_filter :remember_location, :teardown_url_generator
@@ -16,7 +17,7 @@ class ApplicationController < ActionController::Base
   end
 
   def self.wiki
-    Wiki.new
+    ::Wiki.new
   end
 
   helper_method :xhtml_enabled?, :html_ext, :darken
@@ -55,7 +56,7 @@ class ApplicationController < ActionController::Base
   def connect_to_model
     @action_name = params['action'] || 'index'
     @web_name = params['web']
-    @wiki = wiki
+    @wiki = wiki()
     @author = cookies['author'] || 'AnonymousCoward'
     if @web_name
       @web = @wiki.webs[@web_name]

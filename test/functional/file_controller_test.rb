@@ -24,7 +24,7 @@ class FileControllerTest < ActionController::TestCase
     @wiki = Wiki.new
     WikiFile.delete_all
     require 'fileutils'
-    FileUtils.rm_rf("#{RAILS_ROOT}/webs/wiki1")
+    FileUtils.rm_rf("#{Rails.root}/webs/wiki1")
   end
 
   def test_file_upload_form
@@ -69,7 +69,7 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_download_gif
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
@@ -84,7 +84,7 @@ class FileControllerTest < ActionController::TestCase
   def test_pic_download_gif_published_web
     @web.update_attribute(:published, true)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
@@ -99,7 +99,7 @@ class FileControllerTest < ActionController::TestCase
   def test_pic_download_gif_unpublished_web
     @web.update_attribute(:published, false)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
 
@@ -107,7 +107,7 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_x_sendfile
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
@@ -123,7 +123,7 @@ class FileControllerTest < ActionController::TestCase
   def test_pic_x_sendfile_published_web
     @web.update_attribute(:published, true)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
@@ -139,7 +139,7 @@ class FileControllerTest < ActionController::TestCase
   def test_pic_x_sendfile_unpublished_web
     @web.update_attribute(:published, false)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
@@ -149,7 +149,7 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_x_sendfile_type_nonlocal
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
@@ -219,9 +219,9 @@ class FileControllerTest < ActionController::TestCase
 
     # User uploads the picture
     begin # Ruby 1.9
-      picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif", :encoding => 'ascii-8bit')
+      picture = File.read("#{Rails.root}/test/fixtures/rails.gif", :encoding => 'ascii-8bit')
     rescue #Ruby 1.8
-      picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
+      picture = File.read("#{Rails.root}/test/fixtures/rails.gif")
     end
     # updated from post to get - post fails the spam protection (no javascript)
     #   Moron! If substituting GET for POST actually works, you
@@ -244,7 +244,7 @@ class FileControllerTest < ActionController::TestCase
 
   def test_import
     # updated from post to get - post fails the spam protection (no javascript)
-    r = get :import, :web => 'wiki1', :file => uploaded_file("#{RAILS_ROOT}/test/fixtures/exported_markup.zip")
+    r = get :import, :web => 'wiki1', :file => uploaded_file("#{Rails.root}/test/fixtures/exported_markup.zip")
     assert_response(:redirect)
     assert @web.has_page?('ImportedPage')
   end
