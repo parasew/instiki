@@ -7,3 +7,4 @@ db/test.db.sqlite3
 log
 secret
 storage/
+tmp/cache/assets
