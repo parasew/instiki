@@ -557,6 +557,8 @@ TODOS
 							s.src = curConfig.extPath + extname;
 							document.querySelector('head').appendChild(s);
 						}
+					}).fail(function(jqxhr, settings, exception){
+						console.log(exception);
 					});
 				});
 
@@ -798,7 +800,7 @@ TODOS
 			(function() {
 				// let the opener know SVG Edit is ready (now that config is set up)
 				var svgEditorReadyEvent,
-					w = window.opener;
+					w = window.opener || window.parent;
 				if (w) {
 					try {
 						svgEditorReadyEvent = w.document.createEvent('Event');
@@ -1047,8 +1049,13 @@ TODOS
 					return;
 				}
 
-				// Opens the SVG in new window
-				var win = wind.open('data:image/svg+xml;base64,' + Utils.encode64(svg));
+				// Since saving SVGs by opening a new window was removed in Chrome use artificial link-click
+				// https://stackoverflow.com/questions/45603201/window-is-not-allowed-to-navigate-top-frame-navigations-to-data-urls
+				var a  = document.createElement('a');
+				a.href = 'data:image/svg+xml;base64,' + Utils.encode64(svg);
+				a.download = 'icon.svg';
+		
+				a.click();
 
 				// Alert will only appear the first time saved OR the first time the bug is encountered
 				var done = $.pref('save_notice_done');
@@ -4811,9 +4818,6 @@ TODOS
 							}
 							break;
 					}
-					if (svgCanvas.clipBoard.length) {
-						canv_menu.enableContextMenuItems('#paste,#paste_in_place');
-					}
 				}
 			);
 
@@ -4857,6 +4861,15 @@ TODOS
 
 			$('#cmenu_canvas li').disableContextMenu();
 			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
+
+			canv_menu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems']
+				('#paste,#paste_in_place');
+			window.addEventListener('storage', function(e) {
+				if(e.key != 'svgedit_clipboard') return;
+
+				canv_menu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems']
+					('#paste,#paste_in_place');
+			});
 
 			window.addEventListener('beforeunload', function(e) {
 				// Suppress warning if page is empty

@@ -1193,8 +1193,9 @@ svgedit.utilities.copyElem = function(el, getNextId) {
 		var ref = $(el).data('symbol');
 		$(new_el).data('ref', ref).data('symbol', ref);
 	} else if (new_el.tagName == 'image') {
-		preventClickDefault(new_el);
+		svgedit.utilities.preventClickDefault(new_el);
 	}
+
 	return new_el;
 };
 
@@ -1258,6 +1259,10 @@ svgedit.utilities.convertPath = function(path, toRel) {
 		switch (type) {
 			case 1: // z,Z closepath (Z/z)
 				d += 'z';
+				if (last_m && !toRel) {
+					curx = last_m[0];
+					cury = last_m[1];
+				}
 				break;
 			case 12: // absolute horizontal line (H)
 				x -= curx;
@@ -1294,12 +1299,6 @@ svgedit.utilities.convertPath = function(path, toRel) {
 				y -= cury;
 			case 5: // relative line (l)
 			case 3: // relative move (m)
-				// If the last segment was a "z", this must be relative to
-				if (last_m && segList.getItem(i-1).pathSegType === 1 && !toRel) {
-					curx = last_m[0];
-					cury = last_m[1];
-				}
-
 			case 19: // relative smooth quad (t)
 				if (toRel) {
 					curx += x;
@@ -1310,7 +1309,7 @@ svgedit.utilities.convertPath = function(path, toRel) {
 					curx = x;
 					cury = y;
 				}
-				if (type === 3) {last_m = [curx, cury];}
+				if (type === 2 || type === 3) {last_m = [curx, cury];}
 
 				d += pathDSegment(letter,[[x, y]]);
 				break;
