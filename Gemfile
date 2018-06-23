@@ -6,7 +6,7 @@ gem "thin"
 gem "rubyzip", '~> 0.9.9'
 gem "RedCloth", ">=4.0.0"
 gem "erubis"
-gem "nokogiri", '~>1.7.0'
+gem "nokogiri", '~>1.8.0'
 gem "rake", '~>10.4.0'
 gem "rdoc"
 gem "json"
