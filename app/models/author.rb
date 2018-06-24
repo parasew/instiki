@@ -9,9 +9,9 @@ class Author < String
   def name=(value)
     self.gsub!(/.+/, value)
   end
-  
+
   alias_method :name, :to_s
-  
+
   def <=>(other)
     name <=> other.to_s
   end

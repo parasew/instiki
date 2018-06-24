@@ -779,6 +779,22 @@ class WikiControllerTest < ActionController::TestCase
     assert !home_page.locked?(Time.now)
   end
 
+  def test_save_new_revision_of_existing_page_whitespace_trimmed
+    @home.lock(Time.now, 'Batman')
+    current_revisions = @home.revisions.size
+
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Revised HomePage', 
+      'author' => '  Batman  '
+
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
+    assert_equal 'Batman', r.cookies['author']
+    home_page = @wiki.read_page('wiki1', 'HomePage')
+    assert_equal current_revisions+1, home_page.revisions.size
+    assert_equal 'Revised HomePage', home_page.content
+    assert_equal 'Batman', home_page.author
+    assert !home_page.locked?(Time.now)
+  end
+
   def test_save_new_revision_of_existing_page_invalid_utf8
     @home.lock(Time.now, 'Batman')
     current_revisions = @home.revisions.size

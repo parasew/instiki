@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
 
   # For injecting a different wiki model implementation. Intended for use in tests
   def self.wiki=(the_wiki)
-    # a global variable is used here because Rails reloads controller and model classes in the 
+    # a global variable is used here because Rails reloads controller and model classes in the
     # development environment; therefore, storing it as a class variable does not work
     # class variable is, anyway, not much different from a global variable
     #$instiki_wiki_service = the_wiki
@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
        'xhtml'
     else
       'html'
-    end       
+    end
   end
 
   def darken(s)
@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
      s.scan( %r(\w{#{n},#{n}}) ).collect {|a| (a.hex * 2/3).to_s(16).rjust(n,'0')}.join
   end
 
-  def check_authorization    
+  def check_authorization
     redirect_to(:controller => 'wiki', :action => 'login',
                 :web => @web_name) if in_a_web? and authorization_needed? and not authorized?
   end
@@ -65,10 +65,10 @@ class ApplicationController < ActionController::Base
   end
 
   FILE_TYPES = {
-    '.aif' => 'audio/x-aiff',  
-    '.aiff'=> 'audio/x-aiff',  
-    '.avi' => 'video/x-msvideo',  
-    '.cdf' => 'application/vnd.wolfram.cdf.text',  
+    '.aif' => 'audio/x-aiff',
+    '.aiff'=> 'audio/x-aiff',
+    '.avi' => 'video/x-msvideo',
+    '.cdf' => 'application/vnd.wolfram.cdf.text',
     '.exe' => 'application/octet-stream',
     '.gif' => 'image/gif',
     '.jpg' => 'image/jpeg',
@@ -113,7 +113,7 @@ class ApplicationController < ActionController::Base
     'text/plain'               => 'inline',
     'application/zip'          => 'attachment'
   } unless defined? DISPOSITION
- 
+
   def determine_file_options_for(file_name, original_options = {})
     original_options[:type] ||= (FILE_TYPES[File.extname(file_name)] or 'application/octet-stream')
     original_options[:disposition] ||= (DISPOSITION[original_options[:type]] or 'attachment')
@@ -122,7 +122,7 @@ class ApplicationController < ActionController::Base
             ( request.remote_addr == LOCALHOST || defined?(PhusionPassenger) )
     original_options
   end
-  
+
   def send_file(file, options = {})
     determine_file_options_for(file, options)
     super(file, options)
@@ -140,7 +140,7 @@ class ApplicationController < ActionController::Base
   def password_error(password)
     if password.nil? or password.empty?
       'Please enter the password.'
-    else 
+    else
       'You entered a wrong password. Please enter the right one.'
     end
   end
@@ -154,7 +154,7 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_to_page(page_name = @page_name, web = @web_name)
-    redirect_to :web => web, :controller => 'wiki', :action => 'show', 
+    redirect_to :web => web, :controller => 'wiki', :action => 'show',
         :id => (page_name or 'HomePage')
   end
 
@@ -205,9 +205,9 @@ class ApplicationController < ActionController::Base
       response.content_type = Mime::TEXT
     elsif xhtml_enabled?
       if request.user_agent =~ /Validator/ or request.env.include?('HTTP_ACCEPT') &&
-           Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)  
+           Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)
         response.content_type = Mime::XHTML
-      elsif request.user_agent =~ /MathPlayer/ 
+      elsif request.user_agent =~ /MathPlayer/
         response.charset = nil
         response.content_type = Mime::XHTML
         response.extend(MathPlayerHack)
@@ -244,7 +244,7 @@ class ApplicationController < ActionController::Base
   def in_a_web?
     not @web_name.nil?
   end
-  
+
   def authorization_needed?
     not %w(login authenticate feeds published atom_with_headlines atom_with_content atom_with_changes file blahtex_png).include?(action_name)
   end
@@ -255,7 +255,7 @@ class ApplicationController < ActionController::Base
     cookies.signed[CGI.escape(@web_name)] == @web.password or
     password_check(params['password']) or
     (@web.published? and action_name == 's5')
-    
+
     rescue ActiveSupport::MessageVerifier::InvalidSignature
       flash[:info] = 'Bad cookie. Please reauthenticate.'
       cookies.signed[CGI.escape(@web_name)] = ''
@@ -282,7 +282,7 @@ module Mime
 
   # Add XHTML
   XHTML  = Type.new "application/xhtml+xml", :xhtml
-  
+
   # Fix xhtml and html lookups
   LOOKUP["text/html"]             = HTML
   LOOKUP["application/xhtml+xml"] = XHTML
@@ -298,7 +298,7 @@ module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
     MINOR = 20
-    TINY  = 1 
+    TINY  = 1
     SUFFIX = '(MML+)'
     PRERELEASE = false
     if PRERELEASE

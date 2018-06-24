@@ -15,9 +15,9 @@
     <br />
     <input type="file" id="file_content" name="file[content]" size="40" />
     <br />
-    Please note that the file you are uploading will be named <%= h @file_name %> on the wiki - 
-    regardless of how it is named on your computer. To change the wiki name of the file, please go 
-    <%= link_to("back", @referring_page) %> and edit the wiki page that refers to the file.
+    <p>Please note that the file you are uploading will be named <%= h @file_name %> on the wiki -
+    regardless of how it is named on your computer. To change the wiki name of the file, please go
+    <%= link_to("back", @referring_page) %> and edit the wiki page that refers to the file.</p>
   </div>
   <div class="inputFieldWithPrompt">
     <label for="file_description"><b>Description</b>:</label>
@@ -25,7 +25,7 @@
     <%= text_field "file", "description", "size" => 40 %>
   </div>
   <div>
-    <input type="submit" value="Upload" /> as 
+    <input type="submit" value="Upload" /> as
     <%= text_field_tag :author, @author, 
             :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
             :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>

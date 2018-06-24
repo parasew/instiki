@@ -137,6 +137,12 @@ class SanitizerTest < Test::Unit::TestCase
     check_sanitization(input, output, output, output)
   end
 
+  def test_comments_in_attributes
+    input = %(<a href='examp<!--" script=foo>-->le.com'>test</a> bar)
+    output=%(<a href='examp&lt;!--&quot; script=foo&gt;--&gt;le.com'>test</a> bar)
+    check_sanitization(input, output, output, output)
+  end
+
 # This affects only NS4. Is it worth fixing?
 #  def test_javascript_includes
 #    input = %(<div size="&{alert('XSS')}">foo</div>)
