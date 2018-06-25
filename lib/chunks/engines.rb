@@ -35,7 +35,7 @@ module Engines
       redcloth = RedCloth.new(@content, [:hard_breaks] + @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false  
-      html = redcloth.to_html(:textile)
+      redcloth.to_html(:textile)
     end
   end
 
@@ -50,8 +50,7 @@ module Engines
                             :title => @content.options[:engine_opts][:title]})
         @content.options[:renderer].s5_theme = my_content.s5_theme
       else
-        html = Maruku.new(text, {:math_enabled => false}).to_html
-        html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
+        Maruku.new(text, {:math_enabled => false}).to_html
       end
 
     end
@@ -72,13 +71,10 @@ module Engines
         @content.options[:renderer].s5_theme = my_content.s5_theme
         my_content.to_s5
       else
-        (t = Time.now; nil)        
-        html = Maruku.new(text,
+        Maruku.new(text,
              {:math_enabled => true,
               :html_math_generate_ids => false,
               :math_numbered => ['\\[','\\begin{equation}']}).to_html
-        (ApplicationController.logger.info("Maruku took " + (Time.now-t).to_s + " seconds."); nil)
-        html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
     end
   end
@@ -102,7 +98,7 @@ module Engines
         @content.options[:renderer].s5_theme = my_content.s5_theme
         my_content.to_s5
       else
-        html = Maruku.new(text,
+        Maruku.new(text,
              {:math_enabled => true,
               :math_numbered => ['\\[','\\begin{equation}'],
               :html_math_output_mathml => false,
@@ -110,7 +106,6 @@ module Engines
               :html_png_engine => 'blahtex',
               :html_png_dir => @content.web.files_path.join('pngs').to_s,
               :html_png_url => @content.options[:png_url]}).to_html
-        html.gsub(/\A<div class="maruku_wrapper_div">\n?(.*?)\n?<\/div>\Z/m, '\1')
       end
     end
   end
@@ -121,13 +116,13 @@ module Engines
       redcloth = OldRedCloth.new(@content.to_str, @content.options[:engine_opts])
       redcloth.filter_html = false
       redcloth.no_span_caps = false
-      html = redcloth.to_html
+      redcloth.to_html
     end
   end
 
   class RDoc < AbstractEngine
     def mask
-      html = RDocSupport::RDocFormatter.new(@content.as_utf8.to_str).to_html
+      RDocSupport::RDocFormatter.new(@content.as_utf8.to_str).to_html
     end
   end
 

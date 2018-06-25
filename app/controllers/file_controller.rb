@@ -6,7 +6,7 @@ require 'itex_stringsupport'
 class FileController < ApplicationController
 
   layout 'default'
-  
+
   before_filter :check_authorized
   before_filter :check_allow_uploads, :dnsbl_check, :except => [:file, :blahtex_png]
 
@@ -39,11 +39,11 @@ class FileController < ApplicationController
       end
     end
   end
-  
+
   def blahtex_png
     send_file(@web.blahtex_pngs_path.join(params['id']))
   end
-    
+
   def delete
     @file_name = params['id']
     file = WikiFile.find_by_file_name(@file_name)
@@ -59,7 +59,7 @@ class FileController < ApplicationController
          file.destroy
          flash[:info] = "File '#{@file_name}' deleted."
        else
-        flash[:error] = "System Password incorrect."        
+        flash[:error] = "System Password incorrect."
       end
       redirect_to_page(@page_name)
     else
@@ -70,7 +70,7 @@ class FileController < ApplicationController
   def cancel_upload
     return_to_last_remembered
   end
-  
+
   def import
     if params['file']
       @problems = []
@@ -79,7 +79,7 @@ class FileController < ApplicationController
       if @problems.empty?
         flash[:info] = 'Import successfully finished'
       else
-        flash[:error] = 'Import finished, but some pages were not imported:<li>' + 
+        flash[:error] = 'Import finished, but some pages were not imported:<li>' +
             @problems.join('</li><li>') + '</li>'
       end
       return_to_last_remembered
@@ -89,12 +89,12 @@ class FileController < ApplicationController
   end
 
   protected
-  
+
   def check_authorized
     unless authorized? or @web.published?
       @hide_navigation  = true
       render(:status => 403, :text => 'This web is private', :layout => true)
-    end    
+    end
   end
 
   def check_allow_uploads
@@ -110,9 +110,9 @@ class FileController < ApplicationController
       render(:status => 404, :text => "Web #{params['web'].inspect} not found", :layout => 'error')
     end
   end
-  
-  private 
-  
+
+  private
+
   def import_from_archive(archive)
     logger.info "Importing pages from #{archive}"
     zip = Zip::ZipInputStream.open(archive)
