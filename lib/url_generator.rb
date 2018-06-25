@@ -271,6 +271,6 @@ class UrlGenerator < AbstractUrlGenerator
     def html_ext
       @html_ext ||= @controller.method(:html_ext).call
       # Why method().call ? A Ruby 1.9.2preview1 bug:
-      # http://redmine.ruby-lang.org/issues/show/1802
+      # http://redmine.ruby-lang.org/issues/1802
     end
 end
