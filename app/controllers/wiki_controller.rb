@@ -567,7 +567,7 @@ EOL
       @set_name = 'the web'
     end
   end
-  
+
   def render_atom(hide_description = false, limit = 15)
     @pages_by_revision = @web.select.by_revision.first(limit)
     @hide_description = hide_description

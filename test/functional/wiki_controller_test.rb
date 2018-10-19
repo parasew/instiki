@@ -1255,6 +1255,8 @@ class WikiControllerTest < ActionController::TestCase
 \Decl@Mn@Close{\rrangle}{mnomx}{'171}
 \Decl@Mn@Open{\lmoustache}{mnomx}{'245}
 \Decl@Mn@Close{\rmoustache}{mnomx}{'244}
+\Decl@Mn@Open{\llbracket}{stmry}{'112}
+\Decl@Mn@Close{\rrbracket}{stmry}{'113}
 \makeatother
 
 % Widecheck

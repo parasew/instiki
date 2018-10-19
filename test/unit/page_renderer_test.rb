@@ -420,6 +420,18 @@ END_THM
         %{hscr{ABCD}\\mathcal{ABCD}</annotation></semantics></math></p>},
         'Foo $\mathscr{ABCD}\mathcal{ABCD}$')
 
+        assert_markup_parsed_as(
+          %{<p>Foo <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics>} +
+          %{<mrow><mrow><mo>⟦</mo><mrow><mtable displaystyle='false' rowspacing='0.5ex'><} +
+          %{mtr><mtd><mi>a</mi></mtd></mtr> <mtr><mtd><mi>b</mi></mtd></mtr> <mtr><mtd><mi>c</mi>} +
+          %{</mtd></mtr></mtable></mrow><mo>⟧</mo></mrow><mrow><mo>‖</mo><mrow><mtable displaystyle='false' rowspacing='0.5ex'>} +
+          %{<mtr><mtd><mi>a</mi></mtd></mtr> <mtr><m} +
+          %{td><mi>b</mi></mtd></mtr> <mtr><mtd><mi>c</mi></mtd></mtr></mtable></mrow><mo>|} +
+          %{</mo></mrow></mrow><annotation encoding='application/x-tex'>\\left\\llbracket\\begin{matrix}} +
+          %{a\\\\ b\\\\ c\\end{matrix}\\right\\rrbracket \\left\\lVert\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}} +
+          %{\\right\\rvert</annotation></semantics></math></p>},
+          %{Foo $\\left\\llbracket\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}\\right\\rrbracket \\left\\lVert\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}\\right\\rvert$})
+
   end
   
   def test_blahtex

@@ -29,12 +29,12 @@ class PageSet < Array
   def by_revision
     PageSet.new(@web, sort_by { |page| page.revised_at }).reverse 
   end
-  
+
   def pages_that_reference(page_name)
     all_referring_pages = WikiReference.pages_that_reference(@web, page_name)
     self.select { |page| all_referring_pages.include?(page.name) }
   end
-  
+
   def pages_that_link_to(page_name)
     all_linking_pages = WikiReference.pages_that_link_to(@web, page_name)
     self.select { |page| all_linking_pages.include?(page.name) }
@@ -60,7 +60,7 @@ class PageSet < Array
   # pages in this set for which there is no reference in the web.
   # The HomePage and author pages are always assumed to have
   # references and so cannot be orphans
-  # Pages that refer to themselves and have no links from outside are oprphans.
+  # Pages that refer to themselves and have no links from outside are orphans.
   def orphaned_pages
     never_orphans = web.authors + ['HomePage']
     self.select { |page|
