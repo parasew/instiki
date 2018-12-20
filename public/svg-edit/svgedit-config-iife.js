@@ -8526,7 +8526,7 @@
           // ——————————
 
 
-          if (!isWebkit()) {
+          if ('width' in ret) {
             var bb = {};
             bb.width = ret.width;
             bb.height = ret.height;
