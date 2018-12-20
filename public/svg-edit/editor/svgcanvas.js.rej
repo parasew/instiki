@@ -1,0 +1,18 @@
+***************
+*** 171,177 ****
+  
+  	// TODO: make this string optional and set by the client
+  	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
+- 	svgcontent.appendChild(comment);
+  };
+  clearSvgContentElement();
+  
+--- 171,178 ----
+  
+  	// TODO: make this string optional and set by the client
+  	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
++          // Lead to invalid content with Instiki's Sanitizer
++          // svgcontent.appendChild(comment);
+  };
+  clearSvgContentElement();
+  
