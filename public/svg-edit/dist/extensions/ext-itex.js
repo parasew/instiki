@@ -51,7 +51,7 @@ var svgEditorExtension_itex = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2(S) {
-        var svgEditor, $, text2xml, NS, importLocale, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingitex, setItexString, showItexEditor, setAttr, buttons, contextTools, ajaxEndpoint;
+        var svgEditor, $, text2xml, NS, importLocale, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingitex, setItexString, showItexEditor, setAttr, buttons, contextTools, itexEndpoint;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -87,7 +87,7 @@ var svgEditorExtension_itex = (function () {
                     math.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
                     math.setAttribute('display', 'inline');
                     // make an AJAX request to the server, to get the MathML
-                    $.post(ajaxEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
+                    $.post(itexEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
                     var first = data.documentElement.firstElementChild;
                     // If itex2MML included the original tex source as an <annotation>,
                     // then we don't have to. Otherwise, let's do that ourselves.
@@ -139,7 +139,7 @@ var svgEditorExtension_itex = (function () {
 
                 svgEditor = this;
                 $ = S.$, text2xml = S.text2xml, NS = S.NS, importLocale = S.importLocale;
-                ajaxEndpoint = '../../itex';
+                itexEndpoint = svgEditor.curConfig.itexEndpoint;
                 svgCanvas = svgEditor.canvas;
                 svgdoc = S.svgroot.parentNode.ownerDocument;
                 _context2.next = 11;

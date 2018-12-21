@@ -28751,6 +28751,8 @@
     // EXTENSION-RELATED (GRID)
     showGrid: false,
     // Set by ext-grid.js
+    // ENTENSION-RELATED (ITEX)
+    itexEndpoint: '../../itex',
     // EXTENSION-RELATED (STORAGE)
     noStorageOnLoad: false,
     // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
@@ -29310,7 +29312,7 @@
         // ways with other script resources
 
 
-        ['langPath', 'extPath', 'canvgPath', 'jspdfPath', 'imgPath', 'jGraduatePath', 'extIconsPath'].forEach(function (pathConfig) {
+        ['langPath', 'extPath', 'canvgPath', 'jspdfPath', 'imgPath', 'jGraduatePath', 'extIconsPath', 'itexEndpoint'].forEach(function (pathConfig) {
           if (urldata[pathConfig]) {
             delete urldata[pathConfig];
           }
@@ -36596,4 +36598,6 @@
     allowInitialUserOverride: true
   });
 
+  editor.setConfig({// itexEndpoint: '../../itex'
+  });
 }());
