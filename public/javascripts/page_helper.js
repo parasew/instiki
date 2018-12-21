@@ -151,7 +151,7 @@ function setupSVGedit(path){
     f.insert({top: SVGeditButton});
     SVGeditButton.disabled = true;
     Event.observe(SVGeditButton, 'click', function(){
-      var editor = window.open(path + "?initStroke[width]=2", 'Edit SVG graphic', 'status=1,resizable=1,scrollbars=1');
+      var editor = window.open(path, 'Edit SVG graphic', 'status=1,resizable=1,scrollbars=1');
       editor.addEventListener("load", function() {
         editor.svgEditor.setCustomHandlers({
             'save': function(window,svg){
@@ -332,6 +332,26 @@ function columnAlignShim() {
   }
 }
 
+function tableAlignShim() {
+  var mtables = document.querySelectorAll('mtable[align]');
+  if (mtables[0] && mtables[0].style) {
+    for (var i = 0; i < mtables.length; i++) {
+      var mtable = mtables[i];
+      switch (mtable.getAttribute('align')) {
+        case 'axis -1':
+          mtable.style.verticalAlign = 'text-bottom';
+          break;
+        case 'axis 1':
+          mtable.style.verticalAlign = 'text-top';
+          break;
+        case 'center':
+          mtable.style.verticalAlign = 'middle';
+          break;
+      }
+    }
+  }
+}
+
 function minMathWidth() {
 // https://bugs.webkit.org/show_bug.cgi?id=160547
   var maths = document.querySelectorAll('math[display=block]');
@@ -352,5 +372,6 @@ document.observe("dom:loaded", function (){
         retrieveTexSource();
         initializeYoutubePlayer();
         columnAlignShim();
+        tableAlignShim();
         minMathWidth();
 });
