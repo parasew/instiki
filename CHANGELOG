@@ -6,6 +6,21 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.20.2
+
+New Features:
+
+* Support Ruby 2.4, 2.5
+* MathJax 2.7.5
+* SVG-Edit 4.2.0 
+* Updated Youtube API
+
+Bugs Fixed:
+
+* Trim whitespace from author names
+* Update to Nokogiri 1.8.x (required by Windows)
+
+------------------------------------------------------------------------------
 * 0.20.1
 
 New Features:
