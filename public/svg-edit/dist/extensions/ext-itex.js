@@ -42,7 +42,7 @@ var svgEditorExtension_itex = (function () {
    *
    * @license Apache-2.0
    *
-   * @copyright 2010 Jacques Distler, 2010 Alexis Deveria
+   * @copyright 2010,2018 Jacques Distler, 2010 Alexis Deveria
    *
    */
   var extItex = {
@@ -51,7 +51,7 @@ var svgEditorExtension_itex = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee2(S) {
-        var svgEditor, $, text2xml, NS, importLocale, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingitex, setItexString, showItexEditor, setAttr, buttons, contextTools, itexEndpoint;
+        var svgEditor, $, NS, importLocale, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingitex, setItexString, showItexEditor, setAttr, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -87,7 +87,7 @@ var svgEditorExtension_itex = (function () {
                     math.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
                     math.setAttribute('display', 'inline');
                     // make an AJAX request to the server, to get the MathML
-                    $.post(itexEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
+                    $.post(svgEditor.curConfig.itexEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
                     var first = data.documentElement.firstElementChild;
                     // If itex2MML included the original tex source as an <annotation>,
                     // then we don't have to. Otherwise, let's do that ourselves.
@@ -138,8 +138,7 @@ var svgEditorExtension_itex = (function () {
                 };
 
                 svgEditor = this;
-                $ = S.$, text2xml = S.text2xml, NS = S.NS, importLocale = S.importLocale;
-                itexEndpoint = svgEditor.curConfig.itexEndpoint;
+                $ = S.$, NS = S.NS, importLocale = S.importLocale;
                 svgCanvas = svgEditor.canvas;
                 svgdoc = S.svgroot.parentNode.ownerDocument;
                 _context2.next = 11;
