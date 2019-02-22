@@ -42,6 +42,7 @@ You need at least Ruby Version 1.9.3, and Rubygems 1.3.6, installed on your Syst
 ### If you are on Mac OSX
 
 On Snow Leopard (10.6) or later, you are all set.
+
 - run "sudo gem update --system" via the command-line.
 - run "ruby bundle install --path vendor/bundle" in the instiki directory.
 - run "ruby instiki" and there you go!
@@ -100,9 +101,11 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 
 ## Migrating from Instiki 0.11-0.18 to 0.19
 
-   ruby bundle install --path vendor/bundle
-   ruby bundle exec rake upgrade_instiki
-   
+~~~~~
+ruby bundle install --path vendor/bundle
+ruby bundle exec rake upgrade_instiki
+~~~~~
+
 ## Download the latest release from:
 
 * https://github.com/parasew/instiki/releases
