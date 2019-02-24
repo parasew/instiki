@@ -12,7 +12,7 @@
 .mp4: video/mp4
 .mpd: video/vnd.mpeg.dash.mpd
 .pdf: application/pdf
-.svg: application/svg+xml
+.svg: image/svg+xml
 .tar: application/x-tar
 .tex: application/x-tex
 .webm: video/webm

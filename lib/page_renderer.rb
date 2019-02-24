@@ -21,7 +21,7 @@ class PageRenderer
 
   def revision=(r)
     @revision = r
-    @display_content = @display_published = @wiki_words_cache = @wiki_includes_cache = 
+    @display_content = @display_published = @wiki_words_cache = @wiki_includes_cache =
         @wiki_references_cache = nil
   end
 
@@ -77,7 +77,7 @@ class PageRenderer
 
   # Returns an array of all the WikiIncludes present in the content of this revision.
   def wiki_includes
-    unless @wiki_includes_cache 
+    unless @wiki_includes_cache
       chunks = display_content.find_chunks(Include)
       @wiki_includes_cache = chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     end
@@ -97,7 +97,7 @@ class PageRenderer
   def wiki_words
     @wiki_words_cache ||= find_wiki_words(display_content) 
   end
-  
+
   def find_wiki_words(rendering_result)
     the_wiki_words = wiki_links(rendering_result)
     # Exclude backslash-escaped wiki words, such as \WikiWord, as well as links to files 
@@ -111,7 +111,7 @@ class PageRenderer
   def wiki_files
     @wiki_files_cache ||= find_wiki_files(display_content) 
   end
-    
+
   def find_wiki_files(rendering_result)
      the_wiki_files = wiki_links(rendering_result)
      the_wiki_files.delete_if { |link| ![:pic, :file, :cdf, :audio, :video].include?(link.link_type) }
@@ -160,31 +160,31 @@ class PageRenderer
       end
       references.build :referenced_name => referenced_name, :link_type => link_type
     end
-    
+
     wiki_files = find_wiki_files(rendering_result)
     wiki_files.each do |referenced_name|
       references.build :referenced_name => referenced_name, :link_type => WikiReference::FILE
     end
-    
+
     include_chunks = rendering_result.find_chunks(Include)
     includes = include_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     includes.each do |included_page_name|
-      references.build :referenced_name => included_page_name, 
+      references.build :referenced_name => included_page_name,
           :link_type => WikiReference::INCLUDED_PAGE
     end
-    
+
     redirect_chunks = rendering_result.find_chunks(Redirect)
     redirects = redirect_chunks.map { |c| ( c.escaped? ? nil : c.page_name ) }.compact.uniq
     redirects.each do |redirected_page_name|
-      references.build :referenced_name => redirected_page_name, 
+      references.build :referenced_name => redirected_page_name,
           :link_type => WikiReference::REDIRECTED_PAGE
     end
-    
+
     # ugly hack: store these in a thread-local variable, so that the cache-sweeper has access to it.
     Thread.current[:page_redirects] ?
       Thread.current[:page_redirects].update({ @revision.page => redirects}) :
       Thread.current[:page_redirects] = { @revision.page => redirects}
-    
+
     categories = rendering_result.find_chunks(Category).map { |cat| cat.list }.flatten
     categories.each do |category|
       references.build :referenced_name => category, :link_type => WikiReference::CATEGORY
