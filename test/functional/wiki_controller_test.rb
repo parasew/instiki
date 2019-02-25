@@ -304,7 +304,6 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'NewPage', r.template_objects['page_name']
   end
 
-
   if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
 
 #    def test_pdf
@@ -702,9 +701,9 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
       'author' => 'AuthorOfNewPage'
-    
+
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
     assert_equal 'AuthorOfNewPage', r.cookies['author']
     assert_match @eternity, r.headers["Set-Cookie"][0]
@@ -867,6 +866,22 @@ class WikiControllerTest < ActionController::TestCase
   
     r = process 'save', {'web' => 'wiki1', 'id' => 'liquor', 
         'content' => @liquor.revisions.last.content.dup, 'new_name' => 'booze',
+        'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
+
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'booze'
+
+    revisions_after = @liquor.revisions.size
+    assert_equal revisions_before + 1, revisions_after
+    @booze = Page.find(@liquor.id)
+    assert !@booze.locked?(Time.now), 'booze should be unlocked if an edit was unsuccessful'
+  end
+
+  def test_save_new_revision_identical_to_last_but_new_name_stripped
+    revisions_before = @liquor.revisions.size
+    @liquor.lock(Time.now, 'AnAuthor')
+  
+    r = process 'save', {'web' => 'wiki1', 'id' => 'liquor', 
+        'content' => @liquor.revisions.last.content.dup, 'new_name' => ' booze ',
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
 
     assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'booze'
