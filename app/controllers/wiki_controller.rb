@@ -339,7 +339,7 @@ EOL
       filter_spam(the_content)
       cookies['author'] = { :value => author_name.dup.as_bytes, :expires => Time.utc(2030) }
       if @page
-        new_name = params['new_name'] ? params['new_name'].purify : @page_name
+        new_name = params['new_name'] ? params['new_name'].purify.strip : @page_name
         new_name = @page_name if new_name.empty?
         prev_content = @page.current_revision.content
         raise Instiki::ValidationError.new('A page named "' + new_name.escapeHTML + '" already exists.') if
