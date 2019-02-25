@@ -4,7 +4,7 @@ require 'httparty'
 
 # This chunks support tikzpicture and tikzcd environments
 # It relies on an external service to render the tikzcode into SVG.
-# Created: 8th June 2004
+# Created: 24th Feb 2019
 
 class Tikz < Chunk::Abstract
 
