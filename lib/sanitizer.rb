@@ -16,7 +16,7 @@ module Sanitizer
       col colgroup command datalist dd del details dfn dialog dir div dl dt
       em fieldset figcaption figure font footer form h1 h2 h3 h4 h5 h6 header
       hgroup hr i img input ins kbd label legend li map mark menu meter nav
-      ol optgroup option p pre progress q rp rt ruby s samp section select small
+      ol optgroup option output p pre progress q rp rt ruby s samp section select small
       source span strike strong sub summary sup table tbody td textarea tfoot
       th thead time tr track tt u ul var video wbr]
       
@@ -29,7 +29,7 @@ module Sanitizer
       circle clipPath defs desc ellipse feGaussianBlur filter font-face
       font-face-name font-face-src foreignObject g glyph hkern linearGradient
       line marker mask metadata missing-glyph mpath path pattern polygon
-      polyline radialGradient rect set stop svg switch text textPath title tspan use]
+      polyline radialGradient rect set stop svg switch symbol text textPath title tspan use]
       
   acceptable_attributes = Set.new %w[abbr accept accept-charset accesskey action
       align alt autocomplete axis bgcolor border cellpadding cellspacing char charoff
@@ -62,7 +62,7 @@ module Sanitizer
        hanging height horiz-adv-x horiz-origin-x id ideographic k keyPoints
        keySplines keyTimes lang marker-end marker-mid marker-start
        markerHeight markerUnits markerWidth maskContentUnits maskUnits
-       mathematical max method min name offset opacity orient origin
+       mathematical max method min name offset opacity orient origin overflow
        overline-position overline-thickness panose-1 path pathLength
        patternContentUnits patternTransform patternUnits points
        preserveAspectRatio primitiveUnits r refX refY repeatCount repeatDur
@@ -195,7 +195,7 @@ module Sanitizer
       style = style.to_s.gsub(/url\s*\(\s*[^\s)]+?\s*\)\s*/, ' ')
 
       # gauntlet
-      return '' unless style =~ /\A([-:,;#%.\sa-zA-Z0-9!]|\w-\w|\'[\s\w]+\'|\"[\s\w]+\"|\([\d,\s]+\))*\z/
+      return '' unless style =~ /\A([-:,;#%.\sa-zA-Z0-9!]|\w-\w|\'[\s\w]+\'|\"[\s\w]+\"|\([\d,.%\s]+\))*\z/
       return '' unless style =~ /\A\s*([-\w]+\s*:[^:;]*(;\s*|$))*\z/
 
       clean = []
@@ -207,7 +207,7 @@ module Sanitizer
         elsif self.class.const_get("SHORTHAND_CSS_PROPERTIES").include?(prop.split('-')[0])
           clean << "#{prop}: #{val};" unless val.split().any? do |keyword|
             !self.class.const_get("ALLOWED_CSS_KEYWORDS").include?(keyword) and
-            keyword !~ /\A(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)\z/
+            keyword !~ /\A(#[0-9a-f]+|rgb\([\d.]+%?,[\d.]*%?,?[\d.]*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)\z/
           end
         elsif self.class.const_get("ALLOWED_SVG_PROPERTIES").include?(prop)
           clean << "#{prop}: #{val};"
