@@ -22,11 +22,15 @@ class Tikz < Chunk::Abstract
   private
 
   def get_svg(tex, type)
-    response = HTTParty.post(ENV['tikz_server'], body: { tex: tex, type: type })
-    if response.code == 200
-      return response.body.sub(/<\?xml .*?\?>\n/, '').chop
-    else
-      return '<div>Could not render Tikz code to SVG.</div>'
+    begin
+      response = HTTParty.post(ENV['tikz_server'], body: { tex: tex, type: type }, timeout: 4)
+      if response.code == 200
+        return response.body.sub(/<\?xml .*?\?>\n/, '').chop
+      else
+        return '<div>Could not render Tikz code to SVG.</div>'
+      end
+    rescue Net::ReadTimeout => exception
+      return '<div>The Tikz Server timed out or was unreachable.</div>'
     end
   end
 
