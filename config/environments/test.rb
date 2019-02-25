@@ -21,3 +21,7 @@ config.action_mailer.delivery_method = :test
 # config.transactional_fixtures = true
 # config.instantiated_fixtures = false
 # config.pre_loaded_fixtures = false
+
+# URL for Tikz server
+# Tikz conversion is disabled if you comment this out
+#ENV['tikz_server'] = 'http://localhost:9292/'

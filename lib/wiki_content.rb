@@ -6,6 +6,7 @@ require_dependency 'chunks/redirect'
 require_dependency 'chunks/wiki'
 require_dependency 'chunks/literal'
 require 'chunks/nowiki'
+require 'chunks/tikz'
 require 'sanitizer'
 require 'itex_stringsupport'
 require 'set'
@@ -41,7 +42,7 @@ require 'set'
 module ChunkManager
   attr_reader :chunks_by_type, :chunks_by_id, :chunks, :chunk_id
 
-  ACTIVE_CHUNKS = [ NoWiki, Category, Redirect, WikiChunk::Link,
+  ACTIVE_CHUNKS = [ NoWiki, Tikz, Category, Redirect, WikiChunk::Link,
                     WikiChunk::Word ]
 
   HIDE_CHUNKS = [ Literal::Pre, Literal::Tags, Literal::Math ]
@@ -142,6 +143,7 @@ class WikiContent < ActiveSupport::SafeBuffer
     @options[:engine] = Engines::MAP[@web.markup]
     @options[:engine_opts] = [:filter_html, :filter_styles] if @web.safe_mode?
     @options[:active_chunks] = (ACTIVE_CHUNKS - [WikiChunk::Word] ) if @web.brackets_only?
+    @options[:active_chunks] = (@options[:active_chunks] - [Tikz] ) unless ENV['tikz_server']
     @options[:hide_chunks] = (HIDE_CHUNKS - [Literal::Math] ) unless
                   [Engines::MarkdownMML, Engines::MarkdownPNG].include?(@options[:engine])
     if @options[:engine] == Engines::MarkdownPNG
@@ -170,7 +172,8 @@ class WikiContent < ActiveSupport::SafeBuffer
     # create and mask Includes and "active_chunks" chunks
     NoWiki.apply_to(self) if @options[:active_chunks].include?(NoWiki)
     Include.apply_to(self)
-    @options[:active_chunks].each{|chunk_type| chunk_type.apply_to(self) unless chunk_type == NoWiki}
+    Tikz.apply_to(self) if @options[:active_chunks].include?(Tikz)
+    @options[:active_chunks].each{|chunk_type| chunk_type.apply_to(self) unless [NoWiki, Tikz].include?(chunk_type)}
 
     # Handle hiding contexts like "pre" and "code" etc..
     # The markup (textile, rdoc etc) can produce such contexts with its own syntax.

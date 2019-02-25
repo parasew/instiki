@@ -29,3 +29,7 @@ config.action_view.cache_template_loading            = true
 
 # Disable delivery errors if you bad email addresses should just be ignored
 # config.action_mailer.raise_delivery_errors = false
+
+# URL for Tikz server
+# Tikz conversion is disabled if you comment this out
+#ENV['tikz_server'] = 'http://localhost:9292/'
