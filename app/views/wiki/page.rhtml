@@ -12,7 +12,7 @@
     </p>
     <%= @renderer.display_diff %>
   <%- else -%>
-    <%= @renderer.display_content %>
+    <%= cached_content(@page) %>
   <%- end -%>
 </div>
 

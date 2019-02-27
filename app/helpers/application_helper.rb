@@ -108,6 +108,17 @@ require 'itex_stringsupport'
     end
   end
 
+  def cached_content(page)
+    cache = File.join(RAILS_ROOT, 'tmp', 'cache', "#{page.web.name}_#{CGI.escape(page.name)}.cache")
+    if File.exist?(cache)
+      content = File.open(cache, 'r').readlines.join
+      File.delete(cache)
+      content.html_safe
+    else
+      @renderer.display_content
+    end
+  end
+
   def rendered_content(page)
     PageRenderer.new(page.current_revision).display_content
   end
