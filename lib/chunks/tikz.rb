@@ -25,7 +25,10 @@ class Tikz < Chunk::Abstract
     begin
       response = HTTParty.post(ENV['tikz_server'], body: { tex: tex, type: type }, timeout: 4)
       if response.code == 200
-        return response.body.sub(/<\?xml .*?\?>\n/, '').chop
+        svg = response.body.sub(/<\?xml .*?\?>\n/, '').chop
+        # since the page may contain multiple tikz pictures, we need to make the glyph id's unique
+        num = rand(10000)
+        return svg.gsub(/(id=\"|xlink:href=\"#)glyph/, "\\1glyph#{num}-")
       else
         return '<div>Could not render Tikz code to SVG.</div>'
       end

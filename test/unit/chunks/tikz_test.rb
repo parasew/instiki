@@ -18,12 +18,12 @@ if ENV['tikz_server']
   end
 
   def test_equation_nowiki
-  match(Tikz, '\begin{tikzpicture}\node[anchor=east] at (-1,-0.5) {$a$};\end{tikzpicture}',
-    :plain_text => '\node[anchor=east] at (-1,-0.5) {$a$};',
-    :unmask_text => "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
+  match_pattern(Tikz, '\begin{tikzpicture}\node[anchor=east] at (-1,-0.5) {$a$};\end{tikzpicture}',
+    :plain_text => Regexp.new('\\\node\[anchor=east\] at \(-1,-0\.5\) \{\$a\$\};'),
+    :unmask_text => Regexp.new("<svg xmlns=\"http:\/\/www.w3.org\/2000\/svg\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" " +
     "width=\"11.907pt\" height=\"10.931pt\" viewBox=\"0 0 11.907 10.931\" version=\"1.1\">\n<defs>\n<g>\n<symb" +
-    "ol overflow=\"visible\" id=\"glyph0-0\">\n<path style=\"stroke:none;\" d=\"\"/>\n</symbol>\n<symbol overf" +
-    "low=\"visible\" id=\"glyph0-1\">\n<path style=\"stroke:none;\" d=\"M 3.71875 -3.765625 C 3.53125 -4.14062" +
+    "ol overflow=\"visible\" id=\"glyph[0-9]+-0-0\">\n<path style=\"stroke:none;\" d=\"\"\/>\n<\/symbol>\n<symbol overf" +
+    "low=\"visible\" id=\"glyph[0-9]+-0-1\">\n<path style=\"stroke:none;\" d=\"M 3.71875 -3.765625 C 3.53125 -4.14062" +
     "5 3.25 -4.40625 2.796875 -4.40625 C 1.640625 -4.40625 0.40625 -2.9375 0.40625 -1.484375 C 0.40625 -0.5468" +
     "75 0.953125 0.109375 1.71875 0.109375 C 1.921875 0.109375 2.421875 0.0625 3.015625 -0.640625 C 3.09375 -0" +
     ".21875 3.453125 0.109375 3.921875 0.109375 C 4.28125 0.109375 4.5 -0.125 4.671875 -0.4375 C 4.828125 -0.7" +
@@ -35,9 +35,9 @@ if ENV['tikz_server']
     "71875 -3.765625 Z M 3.078125 -1.1875 C 3.015625 -1 3.015625 -0.984375 2.875 -0.8125 C 2.4375 -0.265625 2." +
     "03125 -0.109375 1.75 -0.109375 C 1.25 -0.109375 1.109375 -0.65625 1.109375 -1.046875 C 1.109375 -1.546875" +
     " 1.421875 -2.765625 1.65625 -3.234375 C 1.96875 -3.8125 2.40625 -4.1875 2.8125 -4.1875 C 3.453125 -4.1875" +
-    " 3.59375 -3.375 3.59375 -3.3125 C 3.59375 -3.25 3.578125 -3.1875 3.5625 -3.140625 Z \"/>\n</symbol>\n</g>" +
-    "\n</defs>\n<g id=\"surface1\">\n<g style=\"fill:rgb(0%,0%,0%);fill-opacity:1;\">\n  <use xlink:href=\"#gl" +
-    "yph0-1\" x=\"3.321\" y=\"7.61\"/>\n</g>\n</g>\n</svg>"
+    " 3.59375 -3.375 3.59375 -3.3125 C 3.59375 -3.25 3.578125 -3.1875 3.5625 -3.140625 Z \"\/>\n<\/symbol>\n<\/g>" +
+    "\n<\/defs>\n<g id=\"surface1\">\n<g style=\"fill:rgb\\(0%,0%,0%\\);fill-opacity:1;\">\n  <use xlink:href=\"#gl" +
+    "yph[0-9]+-0-1\" x=\"3.321\" y=\"7.61\"\/>\n<\/g>\n<\/g>\n<\/svg>")
   )
   end
 end
