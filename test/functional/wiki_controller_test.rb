@@ -771,11 +771,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal 'Batman', r.cookies['author']
+    assert File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
     home_page = @wiki.read_page('wiki1', 'HomePage')
     assert_equal current_revisions+1, home_page.revisions.size
     assert_equal 'Revised HomePage', home_page.content
     assert_equal 'Batman', home_page.author
     assert !home_page.locked?(Time.now)
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
   end
 
   def test_save_new_revision_of_existing_page_whitespace_trimmed
@@ -787,11 +789,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal 'Batman', r.cookies['author']
+    assert File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
     home_page = @wiki.read_page('wiki1', 'HomePage')
     assert_equal current_revisions+1, home_page.revisions.size
     assert_equal 'Revised HomePage', home_page.content
     assert_equal 'Batman', home_page.author
     assert !home_page.locked?(Time.now)
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
   end
 
   def test_save_new_revision_of_existing_page_invalid_utf8
@@ -803,11 +807,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal 'Batman', r.cookies['author']
+    assert File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
     home_page = @wiki.read_page('wiki1', 'HomePage')
     assert_equal current_revisions+1, home_page.revisions.size
     assert_equal 'Newly revised HomePage', home_page.content
     assert_equal 'Batman', home_page.author
     assert !home_page.locked?(Time.now)
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
   end
 
   def test_dnsbl_filter_deny_action
@@ -821,10 +827,13 @@ class WikiControllerTest < ActionController::TestCase
            %{'>here</a> for more information.</p>\n<p>See <a href='http://www.spamhaus.org/query/bl?ip=1} +
            %{27.0.0.2'>here</a> for more information.</p>\n}
     assert_match Regexp.new(Regexp.escape(resp)), r.body
+    assert !File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
   end
 
   def test_dnsbl_filter_allow_action
     @request.remote_addr = "127.0.0.2"
+    # Dunno why this is here. Detritus from another test?
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_Oak.cache"))
     r = process 'show', 'id' => 'Oak', 'web' => 'wiki1'
     assert_response :success
     assert_tag :content => /All about oak/
@@ -1065,6 +1074,8 @@ class WikiControllerTest < ActionController::TestCase
     @wiki.write_page('wiki1', 'HomePage', "Nonrecursive-include:\n\n[[!include Foo]]", Time.now, 
         Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
 
+    # Again, this shouldn't be here. Detritus from another test?
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
