@@ -109,6 +109,25 @@ module ChunkMatch
     end
   end
 
+  def match_pattern(chunk_type, test_text, expected_chunk_state)
+    if chunk_type.respond_to? :pattern
+      assert_match(chunk_type.pattern, test_text)
+    end
+
+    content = ContentStub.new(test_text)
+      chunk_type.apply_to(content)
+
+    # Test if requested parts are correct.
+    expected_chunk_state.each_pair do |a_method, expected_value|
+      content.chunks.each do |c|
+        assert c.kind_of?(chunk_type)
+        assert_respond_to(c, a_method)
+        assert_match(expected_value, c.send(a_method.to_sym),
+        "Wrong #{a_method} value")
+      end
+    end
+  end
+
   # Asserts that test_text doesn't match the chunk_type
   def no_match(chunk_type, test_text)
     if chunk_type.respond_to? :pattern
