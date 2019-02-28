@@ -6,6 +6,27 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.30.0
+
+New Features:
+
+* Optionally support \begin{tikzpicture}...\end{tikzpicture} and
+  \begin{tikzcd}...\end{tikzcd} environments. Requires an additional
+  install: https://github.com/distler/tex2svg and then needs to be
+  enabled in config/environments/production.rb
+* Support Ruby 2.6
+* Much faster saving (eliminate the double-rendering that used to
+  happen every time you saved a page).
+* Bundler 1.17.3
+* itextomml 1.5.8
+
+Bugs Fixed:
+
+* Trim whitespace from page names (according to David Tanzer, the
+  source of some caching bugs).
+* Update to Nokogiri 1.8.x (required by Windows)
+
+------------------------------------------------------------------------------
 * 0.20.2
 
 New Features:
