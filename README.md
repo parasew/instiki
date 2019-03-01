@@ -17,7 +17,7 @@ Instiki only requires a working Ruby installation (it includes all other depende
 
 ## Details
 
-You need at least Ruby Version 1.9.3, and Rubygems 1.3.6, installed on your System. Instiki is known to work well with Ruby 2.0-2.3 (the current development version works with Ruby 2.4). The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
+You need at least Ruby Version 2.0 installed on your System. Instiki is known to work well with Ruby 2.0-2.6. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
 
 ### Deploy to Heroku
 
@@ -82,13 +82,14 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
      Markdown
    Textile [http://www.textism.com/tools/textile]
    RDoc [http://rdoc.sourceforge.net/doc]
-* Support for Math (using [itex syntax](https://golem.ph.utexas.edu/~distler/blog/itex2MMLcommands.html)) 
+* Support for Math (using [itex syntax](https://golem.ph.utexas.edu/~distler/blog/itex2MMLcommands.html))
 * Support for WYSIWYG SVG editing -- embed SVG graphics right in your wiki page.
 * Embedded webserver: uses Mongrel (if installed), or the bundled WEBrick webserver (if not).
 * Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
 * Color diffs: Track changes through revisions
 * Runs on SQLite3 per default, can be configured to run on PostgreSQL, MySQL, DB2, Firebird, Openbase, Oracle, SQL Server or Sybase
-
+* Optional support for Tikz pictures. Requires an [optional install](https://github.com/distler/tex2svg). See
+  [here](https://golem.ph.utexas.edu/~distler/blog/archives/003093.html) for details.
 
 ## Command-line options:
 
@@ -99,7 +100,7 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 
  * See CHANGELOG
 
-## Migrating from Instiki 0.11-0.18 to 0.19
+## Migrating from Instiki 0.11-0.19 to 0.20
 
 ~~~~~
 ruby bundle install --path vendor/bundle
