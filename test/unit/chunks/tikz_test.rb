@@ -10,10 +10,10 @@ class TikzTest < Test::Unit::TestCase
 if ENV['tikz_server']
 
   def test_simple_tikzpicture
-  match(Tikz, '\begin{tikzpicture}a\end{tikzpicture}',
+  match_pattern(Tikz, '\begin{tikzpicture}a\end{tikzpicture}',
     :plain_text => 'a',
-    :unmask_text => "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"" +
-    " width=\"343.711pt\" height=\"0pt\" viewBox=\"0 0 343.711 0\" version=\"1.1\">\n<g id=\"surface1\">\n</g>\n</svg>"
+    :unmask_text => Regexp.new("<svg xmlns=\"http:\/\/www.w3.org\/2000\/svg\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\"" +
+    " width=\"343.711pt\" height=\"0pt\" viewBox=\"0 0 343.711 0\" version=\"1.1\">\n<g id=\"surface[0-9]+-1\">\n</g>\n</svg>")
   )
   end
 
@@ -36,7 +36,7 @@ if ENV['tikz_server']
     "03125 -0.109375 1.75 -0.109375 C 1.25 -0.109375 1.109375 -0.65625 1.109375 -1.046875 C 1.109375 -1.546875" +
     " 1.421875 -2.765625 1.65625 -3.234375 C 1.96875 -3.8125 2.40625 -4.1875 2.8125 -4.1875 C 3.453125 -4.1875" +
     " 3.59375 -3.375 3.59375 -3.3125 C 3.59375 -3.25 3.578125 -3.1875 3.5625 -3.140625 Z \"\/>\n<\/symbol>\n<\/g>" +
-    "\n<\/defs>\n<g id=\"surface1\">\n<g style=\"fill:rgb\\(0%,0%,0%\\);fill-opacity:1;\">\n  <use xlink:href=\"#gl" +
+    "\n<\/defs>\n<g id=\"surface[0-9]+-1\">\n<g style=\"fill:rgb\\(0%,0%,0%\\);fill-opacity:1;\">\n  <use xlink:href=\"#gl" +
     "yph[0-9]+-0-1\" x=\"3.321\" y=\"7.61\"\/>\n<\/g>\n<\/g>\n<\/svg>")
   )
   end

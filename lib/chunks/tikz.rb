@@ -28,7 +28,7 @@ class Tikz < Chunk::Abstract
         svg = response.body.sub(/<\?xml .*?\?>\n/, '').chop
         # since the page may contain multiple tikz pictures, we need to make the glyph id's unique
         num = rand(10000)
-        return svg.gsub(/(id=\"|xlink:href=\"#)glyph/, "\\1glyph#{num}-")
+        return svg.gsub(/(id=\"|xlink:href=\"#)glyph/, "\\1glyph#{num}-").gsub(/id=\"surface/, "id=\"surface#{num}-")
       else
         return '<div>Could not render Tikz code to SVG.</div>'
       end
