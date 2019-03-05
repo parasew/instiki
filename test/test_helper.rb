@@ -37,12 +37,12 @@ class Test::Unit::TestCase
     @page = Page.find(@page.id)
     @wiki.webs[@web.name] = @web
   end
-  
-  def setup_wiki_with_30_pages
+
+  def setup_wiki_with_60_pages
     ActiveRecord::Base.silence do
-      (1..30).each do |i|
+      (1..60).each do |i|
         @wiki.write_page('wiki1', "page#{i}", "Test page #{i}\ncategory: test", 
-                         Time.local(1976, 10, i, 12, 00, 00), Author.new('Dema', '127.0.0.2'),
+                         Time.local(1976, 10+i/31, i <= 30 ? i : i-30, 12, 00, 00), Author.new('Dema', '127.0.0.2'),
                          x_test_renderer)
       end
     end
