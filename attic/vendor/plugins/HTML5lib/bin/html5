@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'html5/cli'
-
-HTML5::CLI.run
