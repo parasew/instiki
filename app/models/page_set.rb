@@ -17,17 +17,17 @@ class PageSet < Array
   end
 
   def most_recent_revision
-    self.map { |page| page.revised_at }.max || Time.at(0)
+    self.lazy.map { |page| page.revised_at }.max || Time.at(0)
   end
 
   def by_name
-    PageSet.new(@web, sort_by { |page| page.name })
+    PageSet.new(@web, lazy.sort_by { |page| page.name })
   end
 
   alias :sort :by_name
 
   def by_revision
-    PageSet.new(@web, sort_by { |page| page.revised_at }).reverse 
+    PageSet.new(@web, lazy.sort_by { |page| page.revised_at }).reverse
   end
 
   def pages_that_reference(page_name)
@@ -46,9 +46,6 @@ class PageSet < Array
   end
 
   def pages_authored_by(author)
-    all_pages_authored_by_the_author = 
-        Page.connection.select_all(sanitize_sql([
-            "SELECT page_id FROM revision WHERE author = '?'", author]))
     self.select { |page| page.authors.include?(author) }
   end
 

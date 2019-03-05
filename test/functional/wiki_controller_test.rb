@@ -610,6 +610,15 @@ class WikiControllerTest < ActionController::TestCase
     end
   end
 
+  def test_recently_revised_limit
+    setup_wiki_with_60_pages
+
+    r = process 'recently_revised',  'web' => 'wiki1'
+    assert_response(:success)
+    pages = r.template_objects['pages_by_revision']
+    assert_equal 50, pages.size
+  end
+
 #  def test_atom_with_params
 #    setup_wiki_with_30_pages
 #
@@ -818,6 +827,8 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_dnsbl_filter_deny_action
     @request.remote_addr = "127.0.0.2"
+    # Dunno why this is here. Detritus from another test?
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n",
       'author' => 'AuthorOfNewPage'
 
