@@ -1,5 +1,4 @@
 require 'chunks/chunk'
-require 'sanitizer'
 require 'httparty'
 
 # This chunks support tikzpicture and tikzcd environments
