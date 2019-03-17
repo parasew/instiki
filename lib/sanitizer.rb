@@ -202,15 +202,13 @@ module Sanitizer
       style.scan(/([-\w]+)\s*:\s*([^:;]*)/) do |prop, val|
         next if val.empty?
         prop.downcase!
-        if self.class.const_get("ALLOWED_CSS_PROPERTIES").include?(prop)
+        if self.class.const_get("ALLOWED_CSS_PROPERTIES").include?(prop) || self.class.const_get("ALLOWED_SVG_PROPERTIES").include?(prop)
           clean << "#{prop}: #{val};"
         elsif self.class.const_get("SHORTHAND_CSS_PROPERTIES").include?(prop.split('-')[0])
           clean << "#{prop}: #{val};" unless val.split().any? do |keyword|
             !self.class.const_get("ALLOWED_CSS_KEYWORDS").include?(keyword) and
             keyword !~ /\A(#[0-9a-f]+|rgb\([\d.]+%?,[\d.]*%?,?[\d.]*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)\z/
           end
-        elsif self.class.const_get("ALLOWED_SVG_PROPERTIES").include?(prop)
-          clean << "#{prop}: #{val};"
         end
       end
 
