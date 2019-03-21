@@ -68,7 +68,7 @@ oak_first_revision:
   updated_at: <%= 5.days.ago.to_formatted_s(:db) %>
   revised_at: <%= 5.days.ago.to_formatted_s(:db) %>
   page_id: 7
-  content: "All about oak.\ncategory: trees"
+  content: "All about oak.\nHere is an ant.\ncategory: trees"
   author: TreeHugger
   ip: 127.0.0.2
 

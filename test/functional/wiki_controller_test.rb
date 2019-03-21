@@ -997,15 +997,15 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_search_partial_title_match
-    r = process 'search', 'web' => 'wiki1', 'query' => 'tan'
+    r = process 'search', 'web' => 'wiki1', 'query' => 'ant'
 
     assert_response(:success)
-    assert_equal 'tan', r.template_objects['query']
-    assert_equal [], r.template_objects['results']
-    assert_equal [], r.template_objects['title_results']
+    assert_equal 'ant', r.template_objects['query']
+    assert_equal [@elephant, @oak], r.template_objects['results']
+    assert_equal [@elephant], r.template_objects['title_results']
     create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"}+
-        %{<span class='newWikiWord'><a href=\"/wiki1/new/tan}+
-        %{\">tan</a></span>}))
+        %{<span class='newWikiWord'><a href=\"/wiki1/new/ant}+
+        %{\">ant</a></span>}))
     assert_match create_pattern, r.body
   end
 
