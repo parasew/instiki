@@ -36,6 +36,8 @@
     "[a-z]*Leet?RegExpSkill(s|z)"
   </p>
   <p>
-    <b>Create a new page, named:</b> "<span class='newWikiWord'><%= link_to h(@query).html_safe, :web => @web.address, :action => 'new', :id => @query %></span>"
+<%- end -%>
+<%- q = @query.strip; if !(@title_results.map{|page| page.plain_name}.include? q) -%>
+    <b>Create a new page, named:</b> "<span class='newWikiWord'><%= link_to h(q).html_safe, :web => @web.address, :action => 'new', :id => q %></span>"
   </p>
 <%- end -%>

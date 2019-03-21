@@ -968,7 +968,7 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_search_multiple_results
     r = process 'search', 'web' => 'wiki1', 'query' => 'All about'
-    
+
     assert_response(:success)
     assert_equal 'All about', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
@@ -977,7 +977,7 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_search_by_content_and_title
     r = process 'search', 'web' => 'wiki1', 'query' => '(Oak|Elephant)'
-    
+
     assert_response(:success)
     assert_equal '(Oak|Elephant)', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
@@ -986,7 +986,7 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_search_zero_results
     r = process 'search', 'web' => 'wiki1', 'query' => 'non-existant < text'
-    
+
     assert_response(:success)
     assert_equal [], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
@@ -996,16 +996,29 @@ class WikiControllerTest < ActionController::TestCase
     assert_match create_pattern, r.body
   end
 
+  def test_search_partial_title_match
+    r = process 'search', 'web' => 'wiki1', 'query' => 'tan'
+
+    assert_response(:success)
+    assert_equal 'tan', r.template_objects['query']
+    assert_equal [], r.template_objects['results']
+    assert_equal [], r.template_objects['title_results']
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"}+
+        %{<span class='newWikiWord'><a href=\"/wiki1/new/tan}+
+        %{\">tan</a></span>}))
+    assert_match create_pattern, r.body
+  end
+
   def test_search_null_in_query
     r = process 'search', 'web' => 'wiki1', 'query' => "non-existant\x00"
-    
+
     assert_response(:success)
     assert_match /No pages contain \"non-existant\"/, r.body
   end
 
   def test_search_FFFF_in_query
     r = process 'search', 'web' => 'wiki1', 'query' => "\xEF\xBF\xBF"
-    
+
     assert_response(:success)
     assert_match /9 page\(s\) containing search string in the page name:/, r.body
 
