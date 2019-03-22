@@ -78,7 +78,7 @@ elephant_first_revision:
   updated_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
   revised_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
   page_id: 8
-  content: "All about elephants.\ncategory: animals"
+  content: "All about elephants.\nHere is an ant.\ncategory: animals"
   author: Guest
   ip: 127.0.0.2
 
