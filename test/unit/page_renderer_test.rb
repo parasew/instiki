@@ -305,8 +305,8 @@ END_THM
     assert_markup_parsed_as(
       %{<p>equation <math class='maruku-mathml' display='i} +
       %{nline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics><mrow>} +
-      %{<msub><mo lspace='thinmathspace' rspace='thinmaths} +
-      %{pace'>\342\250\205</mo> <mi>i</mi></msub><msub><mi} +
+      %{<msub><mo lspace='0.16667em' rspace='0.16667em} +
+      %{'>\342\250\205</mo> <mi>i</mi></msub><msub><mi} +
       %{>A</mi> <mi>i</mi></msub></mrow><annotation encodi} +
       %{ng='application/x-tex'>\\bigsqcap_i A_i</annotatio} +
       %{n></semantics></math></p>},
@@ -370,7 +370,7 @@ END_THM
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
         %{MathML'><semantics><mrow><mi>A</mi><mpadded lspace='-100%width'} +
-        %{ width='0'><mi>B</mi></mpadded></mrow><annotation encoding='application/x-tex'>A \\mathllap{B}</annotation></semantics></math></p>},
+        %{ width='0px'><mi>B</mi></mpadded></mrow><annotation encoding='application/x-tex'>A \\mathllap{B}</annotation></semantics></math></p>},
         "equation $A \\mathllap{B}$")
 
       assert_markup_parsed_as(
@@ -431,9 +431,8 @@ END_THM
           %{a\\\\ b\\\\ c\\end{matrix}\\right\\rrbracket \\left\\lVert\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}} +
           %{\\right\\rvert</annotation></semantics></math></p>},
           %{Foo $\\left\\llbracket\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}\\right\\rrbracket \\left\\lVert\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}\\right\\rvert$})
-
   end
-  
+
   def test_blahtex
     if Kernel::system('blahtex --help > /dev/null 2>&1')
       set_web_property :markup, :markdownPNG
