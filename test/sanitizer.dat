@@ -60,7 +60,7 @@
     "name": "double_open_angle_brackets_2",
     "input": "<script src=http://ha.ckers.org/scriptlet.html <",
     "output": "&lt;script src=\"http://ha.ckers.org/scriptlet.html\" &lt;=\"\"&gt;",
-    "xhtml": "&lt;script src='http:'/&gt;&lt;",
+    "xhtml": "&lt;script src='http:'&gt;&lt;",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -118,7 +118,7 @@
     "name": "no_closing_script_tags",
     "input": "<script src=http://ha.ckers.org/xss.js?<b>",
     "output": "&lt;script src=\"http://ha.ckers.org/xss.js?&amp;lt;b\"&gt;",
-    "xhtml": "&lt;script src='http:'/&gt;<b>",
+    "xhtml": "&lt;script src='http:'&gt;<b>",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -126,7 +126,7 @@
     "name": "non_alpha_non_digit",
     "input": "<script/XSS src=\"http://ha.ckers.org/xss.js\"></script>",
     "output": "&lt;script XSS=\"\" src=\"http://ha.ckers.org/xss.js\"&gt;&lt;/script&gt;",
-    "xhtml": "&lt;script/&gt;&lt;/script&gt;",
+    "xhtml": "&lt;script&gt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -169,7 +169,7 @@
     "name": "protocol_resolution_in_script_tag",
     "input": "<script src=//ha.ckers.org/.j></script>",
     "output": "&lt;script src=\"//ha.ckers.org/.j\"&gt;&lt;/script&gt;",
-    "xhtml": "&lt;script src/&gt;&lt;/script&gt;",
+    "xhtml": "&lt;script src&gt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -352,7 +352,7 @@
     "name": "should_sanitize_invalid_script_tag",
     "input": "<script/XSS SRC=\"http://ha.ckers.org/xss.js\"></script>",
     "output": "&lt;script XSS=\"\" SRC=\"http://ha.ckers.org/xss.js\"&gt;&lt;/script&gt;",
-    "xhtml": "&lt;script/&gt;&lt;/script&gt;",
+    "xhtml": "&lt;script&gt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -368,7 +368,7 @@
     "name": "should_sanitize_script_tag_with_multiple_open_brackets_2",
     "input": "<iframe src=http://ha.ckers.org/scriptlet.html\n<",
     "output": "&lt;iframe src=\"http://ha.ckers.org/scriptlet.html\" &lt;=\"\"&gt;",
-    "xhtml": "&lt;iframe src='http:'/&gt;&lt;",
+    "xhtml": "&lt;iframe src='http:'&gt;&lt;",
     "rexml": "Ill-formed XHTML!"
   },
 
@@ -384,7 +384,7 @@
     "name": "should_sanitize_unclosed_script",
     "input": "<script src=http://ha.ckers.org/xss.js?<b>",
     "output": "&lt;script src=\"http://ha.ckers.org/xss.js?&amp;lt;b\"&gt;",
-    "xhtml": "&lt;script src='http:'/&gt;<b>",
+    "xhtml": "&lt;script src='http:'&gt;<b>",
     "rexml": "Ill-formed XHTML!"
   },
 

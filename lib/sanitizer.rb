@@ -19,18 +19,18 @@ module Sanitizer
       ol optgroup option output p pre progress q rp rt ruby s samp section select small
       source span strike strong sub summary sup table tbody td textarea tfoot
       th thead time tr track tt u ul var video wbr]
-      
+
   mathml_elements = Set.new %w[annotation annotation-xml maction math menclose merror
       mfrac mfenced mi mmultiscripts mn mo mover mpadded mphantom mprescripts mroot
       mrow mspace msqrt mstyle msub msubsup msup mtable mtd mtext mtr munder
       munderover none semantics]
-      
+
   svg_elements = Set.new %w[a animate animateColor animateMotion animateTransform
       circle clipPath defs desc ellipse feGaussianBlur filter font-face
       font-face-name font-face-src foreignObject g glyph hkern linearGradient
       line marker mask metadata missing-glyph mpath path pattern polygon
       polyline radialGradient rect set stop svg switch symbol text textPath title tspan use]
-      
+
   acceptable_attributes = Set.new %w[abbr accept accept-charset accesskey action
       align alt autocomplete axis bgcolor border cellpadding cellspacing char charoff
       checked cite class clear cols colspan color compact contenteditable contextmenu
@@ -77,16 +77,16 @@ module Sanitizer
        visibility width widths x x-height x1 x2 xlink:actuate
        xlink:arcrole xlink:href xlink:role xlink:show xlink:title xlink:type
        xml:base xml:lang xml:space xmlns xmlns:xlink xmlns:se y y1 y2 zoomAndPan]
-       
+
   attr_val_is_uri = Set.new %w[href src cite action formaction longdesc poster xlink:href xml:base]
-  
+
   svg_attr_val_allows_ref = Set.new %w[clip-path color-profile cursor fill
       filter marker marker-start marker-mid marker-end mask stroke]
 
   svg_allow_local_href = Set.new %w[altGlyph animate animateColor animateMotion
       animateTransform cursor feImage filter linearGradient pattern
       radialGradient textpath tref set use]
-    
+
   acceptable_css_properties = Set.new %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
       border-right-color border-top-color clear color cursor direction
@@ -105,10 +105,10 @@ module Sanitizer
 
   acceptable_svg_properties = Set.new %w[fill fill-opacity fill-rule stroke
       stroke-width stroke-linecap stroke-linejoin stroke-opacity]
-      
+
   acceptable_protocols = Set.new %w[ed2k ftp http https irc mailto news gopher nntp
       telnet webcal xmpp callto feed urn aim rsync tag ssh sftp rtsp afs]
-      
+
       SHORTHAND_CSS_PROPERTIES = Set.new %w[background border margin padding]
       VOID_ELEMENTS = Set.new %w[img br hr link meta area base basefont 
                     col frame input isindex param]
@@ -131,8 +131,8 @@ module Sanitizer
       # Certain SVG attributes (SVG_ATTR_VAL_ALLOWS_REF) may take a url as a value. These are restricted to
       # fragment-id's (in-document references). Certain SVG elements (SVG_ALLOW_LOCAL_HREF) allow href attributes
       # which, again, are restricted to be fragment-id's.
-      # 
-      # You can adjust what gets sanitized, by defining these constant arrays before this Module is loaded. 
+      #
+      # You can adjust what gets sanitized, by defining these constant arrays before this Module is loaded.
       #
       #   xhtml_sanitize('<script> do_nasty_stuff() </script>')
       #    => &lt;script> do_nasty_stuff() &lt;/script>
@@ -182,8 +182,8 @@ module Sanitizer
           val_unescaped = val.unescapeHTML.as_bytes.gsub(/`|[\000-\040\177\s]+|\302[\200-\240]/n,'').downcase
           if val_unescaped =~ /^[a-z0-9][-+.a-z0-9]*:/ && !ALLOWED_PROTOCOLS.include?(val_unescaped.split(':')[0]) 
             node.attributes.delete attr; next
-          end                        
-        end                     
+          end
+        end
         val = val.to_s.gsub(/url\s*\(\s*[^#\s][^)]+?\)/mi, ' ') if SVG_ATTR_VAL_ALLOWS_REF.include?(attr)
         val = sanitize_css(val) if attr == 'style'
         node.attributes[attr] = val
@@ -214,7 +214,7 @@ module Sanitizer
 
       clean.join(' ')
     end
-    
+
 # Sanitize a string, parsed using XHTML parsing rules. Reparse the result to
 #    ensure well-formedness. 
 #
@@ -231,6 +231,6 @@ module Sanitizer
     sanitized = doc.root.children.to_xml(:indent => (options[:indent] || 2), :save_with => 2 )
     rescue Nokogiri::XML::SyntaxError
       sanitized = sanitized.escapeHTML
-  end 
+  end
 
 end
