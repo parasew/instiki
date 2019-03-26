@@ -1,6 +1,6 @@
-source "http://rubygems.org"
+source "https://rubygems.org"
 gem "sqlite3", "~>1.3.13", :require => "sqlite3"
-gem "itextomml", ">=1.5.5"
+gem "itextomml", ">=1.6.0"
 gem "rack", "1.4.5"
 gem "thin"
 gem "rubyzip", '~> 0.9.9'
