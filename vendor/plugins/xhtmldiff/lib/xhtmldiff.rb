@@ -73,8 +73,8 @@ class XHTMLDiff
 				o
 			elsif REXML::Text === a and REXML::Text === b
 				o = REXML::Element.new('span')
-				aa = a.value.split(/\s/)
-				ba = b.value.split(/\s/)
+				aa = a.value.split(/([\n\r\t])/).each_slice(2).map{|l| l.join.split(/ /)}.flatten
+				ba = b.value.split(/([\n\r\t])/).each_slice(2).map{|l| l.join.split(/ /)}.flatten
 				hd = XHTMLTextDiff.new(o, styles)
 				Diff::LCS.traverse_balanced(aa, ba, hd)
 				o

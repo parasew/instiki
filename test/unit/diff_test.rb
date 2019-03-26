@@ -85,7 +85,7 @@ class DiffTest < Test::Unit::TestCase
     b = "<div>foo</div>"
     assert_equal "<ins class='diffins'><div>foo</div></ins>", diff(a, b)
   end
-  
+
   def test_diff_for_tag_change
     a = "<a>x</a>"
     b = "<b>x</b>"
@@ -105,12 +105,11 @@ class DiffTest < Test::Unit::TestCase
     assert_equal("<del class='diffmod'><a xlink:href='#foo'>foo</a></del><ins class='diffmod'><b>foo</b></ins>", diff(a,b))
   end
 
-  # FIXME this test fails (ticket #67, http://dev.instiki.org/ticket/67)
   def test_html_diff_preserves_endlines_in_pre
     a = "<pre>a\nb\nc\n</pre>"
     b = "<pre>a\n</pre>"
     assert_equal(
-        "<pre><span> a\n<del class='diffdel'>b\nc\n</del></span></pre>",
+        "<pre><span> a\n<del class='diffdel'> b\n</del><del class='diffdel'> c\n</del></span></pre>",
         diff(a, b))
   end
 
