@@ -181,6 +181,10 @@ font-family: Roboto Mono, monospace;
 font-weight: 500;
 }
 
+pre code {
+font-weight: 400;
+}
+
 ol.setup {
 font-family:georgia, verdana, sans-serif;
 font-size:110%;
@@ -576,4 +580,3 @@ mtext {font-family: STIX Two Text;}
        url('../fonts/roboto-mono-v6-latin-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
        url('../fonts/roboto-mono-v6-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
-
