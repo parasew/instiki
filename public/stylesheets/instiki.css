@@ -176,6 +176,11 @@ overflow:auto;
 padding:1em;
 }
 
+code {
+font-family: Roboto Mono, monospace;
+font-weight: 500;
+}
+
 ol.setup {
 font-family:georgia, verdana, sans-serif;
 font-size:110%;
@@ -553,3 +558,22 @@ mtext {font-family: STIX Two Text;}
     src: local('STIX Two Math'), local('STIX2Math'),
          url('../fonts/STIX2Math.woff2'), url('../fonts/STIX2Math.woff');
 }
+/* roboto-mono-regular - latin */
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto Mono'), local('RobotoMono-Regular'),
+       url('../fonts/roboto-mono-v6-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../fonts/roboto-mono-v6-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* roboto-mono-500 - latin */
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Roboto Mono Medium'), local('RobotoMono-Medium'),
+       url('../fonts/roboto-mono-v6-latin-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../fonts/roboto-mono-v6-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
