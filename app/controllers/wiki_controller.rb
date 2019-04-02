@@ -4,6 +4,7 @@ require 'maruku/ext/math'
 require 'zip/zip'
 require 'itex_stringsupport'
 require 'resolv'
+require 'digest'
 
 class WikiController < ApplicationController
 
@@ -443,7 +444,16 @@ EOL
 
   def tex
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
-      @tex_content = Maruku.new(@page.content).to_latex
+      tikzpictures = Hash.new
+      s = @page.content
+      masked = s.gsub(/(\\begin\{(tikzpicture|tikzcd)\}.*?\\end\{(tikzpicture|tikzcd)\})/m) do |match|
+        i = Digest::SHA2.hexdigest(rand(1000000).to_s)
+        tikzpictures.update(i => match)
+        i
+      end
+      s = Maruku.new(masked).to_latex
+      tikzpictures.each {|key,val| s.sub!(key, val)}
+      @tex_content = s
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
     end

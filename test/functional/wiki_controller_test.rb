@@ -1503,6 +1503,56 @@ Page2 contents $\mathbb{01234}$.
 !, r.body
   end
 
+  def test_tex_tikz
+    @wiki.write_page('wiki1', 'Page2',
+        "Page2 contents
+\\begin{tikzpicture}
+\\usetikzlibrary{decorations.markings}
+\\path (-1.5, -2.5) -- (-1.5, 1.5) -- (2.5, 1.5) -- (2.5, -2.5) -- (-1.5, -2.5);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (0,-1) -- (1,-1) -- (1,1) -- (-1,1) -- (-1,-1) -- (0,-1);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (1,0) -- (0,0) -- (0,-2) -- (2,-2) -- (2,0) -- (1,0);
+\\end{tikzpicture}
+More stuff
+\\begin{tikzpicture}
+\\filldraw[black] (0,1) circle (2pt);
+\\filldraw[black] (2,-1) circle (2pt);
+\\node[anchor=east] at (-1,-0.5) {$a$};
+\\node[anchor=north] at (1,-2) {$b$};
+\\path[decoration = { markings, mark=at position 0.5 with {\\arrow[scale=2]{>}}}, postaction = {decorate}] (-1,-1) -- (-1,1);
+\\path[decoration = { markings, mark=at position 0.65 with {\\arrow[scale=2]{<}}}, postaction = {decorate}] (0,-1) -- (1,-1);
+\\path[decoration = { markings, mark=at position 0.5 with {\\arrow[scale=2]{<}}}, postaction = {decorate}] (0,-2) -- (0,-1);
+\\path[decoration = { markings, mark=at position 0.55 with {\\arrow[scale=2]{>}}}, postaction = {decorate}] (2,0) -- (1,0);
+\\end{tikzpicture}
+",
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
+    assert_response(:success)
+
+    assert_equal @tex_header1 + @tex_header2 + %q!\section*{Page2}
+
+Page2 contents \\begin{tikzpicture}
+\\usetikzlibrary{decorations.markings}
+\\path (-1.5, -2.5) -- (-1.5, 1.5) -- (2.5, 1.5) -- (2.5, -2.5) -- (-1.5, -2.5);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (0,-1) -- (1,-1) -- (1,1) -- (-1,1) -- (-1,-1) -- (0,-1);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (1,0) -- (0,0) -- (0,-2) -- (2,-2) -- (2,0) -- (1,0);
+\\end{tikzpicture} More stuff \\begin{tikzpicture}
+\\filldraw[black] (0,1) circle (2pt);
+\\filldraw[black] (2,-1) circle (2pt);
+\\node[anchor=east] at (-1,-0.5) {$a$};
+\\node[anchor=north] at (1,-2) {$b$};
+\\path[decoration = { markings, mark=at position 0.5 with {\\arrow[scale=2]{>}}}, postaction = {decorate}] (-1,-1) -- (-1,1);
+\\path[decoration = { markings, mark=at position 0.65 with {\\arrow[scale=2]{<}}}, postaction = {decorate}] (0,-1) -- (1,-1);
+\\path[decoration = { markings, mark=at position 0.5 with {\\arrow[scale=2]{<}}}, postaction = {decorate}] (0,-2) -- (0,-1);
+\\path[decoration = { markings, mark=at position 0.55 with {\\arrow[scale=2]{>}}}, postaction = {decorate}] (2,0) -- (1,0);
+\\end{tikzpicture}
+
+
+
+\end{document}
+!, r.body
+
+  end
+
   def test_tex_list
     @wiki.write_page('wiki1', "Ch\303\242timent & Page",
         "Page2 contents $\\mathbb{01234}$.\n",
