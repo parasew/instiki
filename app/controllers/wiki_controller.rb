@@ -596,8 +596,7 @@ EOL
 
   def convert_to_tex(string)
     tikzpictures = Hash.new
-    s = string
-    s.gsub!(/\\begin\{(tikzpicture|tikzcd)\}.*?\\end\{(tikzpicture|tikzcd)\}/m) do |match|
+    s = string.gsub(/\\begin\{(tikzpicture|tikzcd)\}.*?\\end\{(tikzpicture|tikzcd)\}/m) do |match|
       i = Digest::SHA2.hexdigest(rand(1000000).to_s)
       tikzpictures.update(i => match)
       i
