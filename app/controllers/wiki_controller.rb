@@ -204,7 +204,7 @@ EOL
       ordered_params.each do |name, p|
         if p == 'tex' && @web.has_page?(name)
           @tex_content << "\\section*\{#{Maruku.new(name).to_latex.strip}\}\n\n"
-          @tex_content << Maruku.new(@web.page(name).content).to_latex
+          @tex_content << convert_to_tex(@web.page(name).content)
         end
       end
     else
@@ -444,16 +444,7 @@ EOL
 
   def tex
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
-      tikzpictures = Hash.new
-      s = @page.content
-      masked = s.gsub(/(\\begin\{(tikzpicture|tikzcd)\}.*?\\end\{(tikzpicture|tikzcd)\})/m) do |match|
-        i = Digest::SHA2.hexdigest(rand(1000000).to_s)
-        tikzpictures.update(i => match)
-        i
-      end
-      s = Maruku.new(masked).to_latex
-      tikzpictures.each {|key,val| s.sub!(key, val)}
-      @tex_content = s
+      @tex_content = convert_to_tex(@page.content)
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
     end
@@ -502,7 +493,7 @@ EOL
 
   def export_page_to_tex(file_path)
     if @web.markup == :markdownMML || @web.markup == :markdownPNG
-      @tex_content = Maruku.new(@page.content).to_latex
+      @tex_content = convert_to_tex(@page.content)
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
     end
@@ -595,12 +586,25 @@ EOL
   def render_tex_web
     @web.select.by_name.inject({}) do |tex_web, page|
       if  @web.markup == :markdownMML || @web.markup == :markdownPNG
-        tex_web[page.name] = Maruku.new(page.content).to_latex
+        tex_web[page.name] = convert_to_tex(page.content)
       else
         tex_web[page.name] = 'TeX export only supported with the Markdown text filters.'
       end
       tex_web
     end
+  end
+
+  def convert_to_tex(string)
+    tikzpictures = Hash.new
+    s = string
+    s.gsub!(/\\begin\{(tikzpicture|tikzcd)\}.*?\\end\{(tikzpicture|tikzcd)\}/m) do |match|
+      i = Digest::SHA2.hexdigest(rand(1000000).to_s)
+      tikzpictures.update(i => match)
+      i
+    end
+    s = Maruku.new(s).to_latex
+    tikzpictures.each {|key,val| s.sub!(key, val)}
+    s
   end
 
   def rss_with_content_allowed?
