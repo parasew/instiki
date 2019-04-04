@@ -61,6 +61,7 @@ module ActiveSupport
               setup
               __send__(@method_name)
               mocha_verify(assertion_counter) if using_mocha
+              result.add_pass
             rescue Mocha::ExpectationError => e
               add_failure(e.message, e.backtrace)
             rescue Test::Unit::AssertionFailedError => e
