@@ -47,14 +47,13 @@ class WikiController < ApplicationController
     @webs = wiki.webs.values.sort_by { |web| web.name }
   end
 
-
   # Within a single web ---------------------------------------------------------
 
   def authors
     @page_names_by_author = @web.page_names_by_author
     @authors = @page_names_by_author.keys.sort
   end
-  
+
   def file_list
     sort_order = params['sort_order'] || 'file_name'
     case sort_order
@@ -67,29 +66,30 @@ class WikiController < ApplicationController
     end
     @file_list = @web.file_list(sort_order)
   end
-  
+
   def export_html
     export_pages_as_zip(html_ext) do |page| 
       renderer = PageRenderer.new(page.current_revision)
       rendered_page = <<-EOL
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg-flat.dtd" >
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>#{page.plain_name} in #{@web.name}</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  
-  <script src="public/javascripts/page_helper.js" type="text/javascript"></script> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <script src="public/javascripts/page_helper.js" type="text/javascript"></script>
   <link href="public/stylesheets/instiki.css" media="all" rel="stylesheet" type="text/css" />
   <link href="public/stylesheets/syntax.css" media="all" rel="stylesheet" type="text/css" />
   <style type="text/css">
-    h1#pageName, div.info, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, [actiontype="toggle"]:hover, #TextileHelp h3 { 
-      color: ##{@web ? @web.color : "393"}; 
+    h1#pageName, div.info, .newWikiWord a, a.existingWikiWord, .newWikiWord a:hover, [actiontype="toggle"]:hover, #TextileHelp h3 {
+      color: ##{@web ? @web.color : "393"};
     }
     a:visited.existingWikiWord {
       color: ##{darken(@web ? @web.color : "393")};
-    }   
+    }
   </style>
-  
+
   <style type="text/css"><!--/*--><![CDATA[/*><!--*/    
     #{@web ? @web.additional_style : ''}
   /*]]>*/--></style>
@@ -99,8 +99,50 @@ class WikiController < ApplicationController
   <script src="public/javascripts/controls.js" type="text/javascript"></script>
   <script src="public/javascripts/application.js" type="text/javascript"></script>
 
+  <script type="text/x-mathjax-config">
+  <!--//--><![CDATA[//><!--
+    MathJax.Ajax.config.path["Contrib"] = "public/MathJax";
+    MathJax.Hub.Config({
+      MathML: { useMathMLspacing: true },
+      "HTML-CSS": { scale: 90,
+                    noReflows: false,
+                    extensions: ["handle-floats.js"]
+       }
+    });
+    MathJax.Hub.Queue( function () {
+       var fos = document.getElementsByTagName('foreignObject');
+       for (var i = 0; i < fos.length; i++) {
+         MathJax.Hub.Typeset(fos[i]);
+       }
+    });
+  //--><!]]>
+  </script>
+
+    <script type="text/javascript">
+      <!--//--><![CDATA[//><!--
+      window.addEventListener("DOMContentLoaded", function () {
+        var div = document.createElement('div');
+        var math = document.createElementNS('http://www.w3.org/1998/Math/MathML', 'math');
+        document.body.appendChild(div);
+        div.appendChild(math);
+      // Test for MathML support comparable to WebKit version https://trac.webkit.org/changeset/203640 or higher.
+        div.setAttribute('style', 'font-style: italic');
+        var mathml_unsupported = !(window.getComputedStyle(div.firstChild).getPropertyValue('font-style') === 'normal');
+        div.parentNode.removeChild(div);
+        if (mathml_unsupported) {
+          // MathML does not seem to be supported...
+          var s = document.createElement('script');
+          s.src = "public/MathJax/MathJax.js?config=MML_HTMLorMML";
+          document.querySelector('head').appendChild(s);
+        } else {
+          document.head.insertAdjacentHTML("beforeend", '<style>svg[viewBox] {max-width: 100%}</style>');
+        }
+      });
+      //--><!]]>
+    </script>
+
 </head>
-<body>
+<body xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
  <div id="Container">
   <div id="Content">
   <h1 id="pageName">
@@ -136,22 +178,6 @@ EOL
     export_pages_as_zip(@web.markup) { |page| page.content }
   end
 
-#  def export_pdf
-#    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
-#    file_path = File.join(@wiki.storage_path, file_name)
-#
-#    export_web_to_tex "#{file_path}.tex"  unless FileTest.exists? "#{file_path}.tex"
-#    convert_tex_to_pdf "#{file_path}.tex"
-#    send_file "#{file_path}.pdf"
-#  end
-
-#  def export_tex
-#    file_name = "#{@web.address}-tex-#{@web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}.tex"
-#    file_path = File.join(@wiki.storage_path, file_name)
-#    export_web_to_tex(file_path) unless FileTest.exists?(file_path)
-#    send_file file_path
-#  end
-
   def feeds
     @rss_with_content_allowed = rss_with_content_allowed?
     # show the template
@@ -162,7 +188,7 @@ EOL
     @page_names_that_are_wanted = @pages_in_category.wanted_pages
     @pages_that_are_orphaned = @pages_in_category.orphaned_pages
   end
-  
+
   def recently_revised
     parse_category
     @pages_by_revision = @pages_in_category.by_revision.first(50)
@@ -185,7 +211,7 @@ EOL
   def atom_with_headlines
     render_atom(hide_description = true)
   end
-  
+
   def atom_with_changes(limit = 15)
     if rss_with_content_allowed?
       render_atom_changes(hide_description = false)
@@ -200,6 +226,7 @@ EOL
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       @tex_content = ''
       # Ruby 1.9.x has ordered hashes; 1.8.x doesn't. So let's just parse the query ourselves.
+      # In Ruby 1.9 and later, ActiveSupport::OrderedHash is just a Hash.
       ordered_params = ActiveSupport::OrderedHash[*request.raw_post.split('&').collect {|k_v| k_v.split('=').collect {|x| CGI::unescape(x)}}.flatten]
       ordered_params.each do |name, p|
         if p == 'tex' && @web.has_page?(name)
@@ -219,7 +246,6 @@ EOL
     render(:layout => 'tex')
   end
 
-
   def search
     @query = params['query'] ? params['query'].purify : ''
     @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
@@ -231,7 +257,7 @@ EOL
   end
 
   # Within a single page --------------------------------------------------------
-  
+
   def cancel_edit
     @page.unlock
     redirect_to_page(@page_name)
@@ -246,27 +272,15 @@ EOL
       @page.lock(Time.now, @author)
     end
   end
-  
+
   def locked
     # to template
   end
-  
+
   def new
     redirect_to :web => @web_name, :action => 'edit', :id => @page_name unless @page.nil?
     # to template
   end
-
-#  def pdf
-#    page = wiki.read_page(@web_name, @page_name)
-#    safe_page_name = @page.name.gsub(/\W/, '')
-#    file_name = "#{safe_page_name}-#{@web.address}-#{@page.revised_at.strftime('%Y-%m-%d-%H-%M-%S')}"
-#    file_path = File.join(@wiki.storage_path, file_name)
-#
-#    export_page_to_tex("#{file_path}.tex") unless FileTest.exists?("#{file_path}.tex")
-#    # NB: this is _very_ slow
-#    convert_tex_to_pdf("#{file_path}.tex")
-#    send_file "#{file_path}.pdf"
-#  end
 
   def print
     if @page.nil?
@@ -308,9 +322,9 @@ EOL
       end
      end
   end
-  
+
   def revision
-    if @page.nil?    
+    if @page.nil?
       redirect_home
     else
       get_page_and_revision
@@ -333,7 +347,7 @@ EOL
     return unless is_post
     author_name = params['author'].strip.purify
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
-    
+
     begin
       the_content = params['content'].purify
       prev_content = ''
@@ -471,25 +485,13 @@ EOL
   def do_caching?
     flash.empty?
   end
-  
+
   def load_page
     @page_name = params['id'] ? params['id'].purify : nil
     @page = @wiki.read_page(@web_name, @page_name) if @page_name
   end
 
   private
-
-#  def convert_tex_to_pdf(tex_path)
-#    # TODO remove earlier PDF files with the same prefix
-#    # TODO handle gracefully situation where pdflatex is not available
-#    begin
-#      wd = Dir.getwd
-#      Dir.chdir(File.dirname(tex_path))
-#      logger.info `pdflatex --interaction=nonstopmode #{File.basename(tex_path)}`
-#    ensure
-#      Dir.chdir(wd)
-#    end
-#  end
 
   def export_page_to_tex(file_path)
     if @web.markup == :markdownMML || @web.markup == :markdownPNG
@@ -501,7 +503,6 @@ EOL
   end
 
   def export_pages_as_zip(file_type, &block)
-    
     file_prefix = "#{@web.address}-#{file_type}-"
     timestamp = @web.revised_at.strftime('%Y-%m-%d-%H-%M-%S')
     file_path = @wiki.storage_path.join(file_prefix + timestamp + '.zip')
@@ -534,16 +535,6 @@ EOL
     send_file file_path
   end
 
-#  def export_web_to_tex(file_path)
-#    if @web.markup == :markdownMML
-#      @tex_content = Maruku.new(@page.content).to_latex
-#    else
-#      @tex_content = 'TeX export only supported with the Markdown text filters.'
-#    end
-#    @tex_content = table_of_contents(@web.page('HomePage').content, render_tex_web)
-#    File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex_web', :layout => tex)) }
-#  end
-
   def get_page_and_revision
     rev = params['rev'].to_i if params['rev']
     prs = @page.rev_ids.size
@@ -574,24 +565,13 @@ EOL
     @hide_description = hide_description
     @link_action = @web.password ? 'published' : 'show'
     render :action => 'atom'
-  end 
+  end
 
   def render_atom_changes(hide_description = false, limit = 15)
     @revisions = @web.revisions_by_date.last(limit).reverse
     @hide_description = hide_description
     @link_action = @web.password ? 'published' : 'show'
     render :action => 'atom_changes'
-  end
-
-  def render_tex_web
-    @web.select.by_name.inject({}) do |tex_web, page|
-      if  @web.markup == :markdownMML || @web.markup == :markdownPNG
-        tex_web[page.name] = convert_to_tex(page.content)
-      else
-        tex_web[page.name] = 'TeX export only supported with the Markdown text filters.'
-      end
-      tex_web
-    end
   end
 
   def convert_to_tex(string)
@@ -620,7 +600,7 @@ EOL
   def load_spam_patterns
     spam_patterns_file = Rails.root.join('config', 'spam_patterns.txt')
     if File.exists?(spam_patterns_file)
-      spam_patterns_file.readlines.inject([]) { |patterns, line| patterns << Regexp.new(line.chomp, Regexp::IGNORECASE) } 
+      spam_patterns_file.readlines.inject([]) { |patterns, line| patterns << Regexp.new(line.chomp, Regexp::IGNORECASE) }
     else
       []
     end
