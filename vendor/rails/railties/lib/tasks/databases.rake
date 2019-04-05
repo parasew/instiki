@@ -287,7 +287,7 @@ namespace :db do
         raise "Error dumping database" if $?.exitstatus == 1
       when "sqlite", "sqlite3"
         dbfile = abcs[RAILS_ENV]["database"] || abcs[RAILS_ENV]["dbfile"]
-        `#{abcs[RAILS_ENV]["adapter"]} #{dbfile} .schema > db/#{RAILS_ENV}_structure.sql`
+        `#{abcs[RAILS_ENV]["adapter"]} #{dbfile} .schema |grep -v 'sqlite_sequence' > db/#{RAILS_ENV}_structure.sql`
       when "sqlserver"
         `scptxfr /s #{abcs[RAILS_ENV]["host"]} /d #{abcs[RAILS_ENV]["database"]} /I /f db\\#{RAILS_ENV}_structure.sql /q /A /r`
         `scptxfr /s #{abcs[RAILS_ENV]["host"]} /d #{abcs[RAILS_ENV]["database"]} /I /F db\ /q /A /r`
