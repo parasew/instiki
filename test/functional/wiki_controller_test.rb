@@ -17,7 +17,7 @@ class WikiController; def rescue_action(e) logger.error(e); raise e end; end
 
 class WikiControllerTest < ActionController::TestCase
   fixtures :webs, :pages, :revisions, :system, :wiki_references
-  
+
   def setup
     @controller = WikiController.new
     @controller.extend ApplicationHelper
@@ -83,7 +83,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_cancel_edit
     @oak.lock(Time.now, 'Locky')
     assert @oak.locked?(Time.now)
-  
+
     r = process('cancel_edit', 'web' => 'wiki1', 'id' => 'Oak')
     
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'Oak'
@@ -115,12 +115,12 @@ class WikiControllerTest < ActionController::TestCase
     assert_redirected_to :controller => 'wiki', :action => 'show', :web => 'wiki1', 
         :id => 'HomePage'
   end
-  
+
   def test_edit_page_with_special_symbols
     @wiki.write_page('wiki1', 'With : Special /> symbols', 
          'This page has special symbols in the name', Time.now, Author.new('Special', '127.0.0.3'), 
          x_test_renderer)
-    
+
     r = process 'edit', 'web' => 'wiki1', 'id' => 'With : Special /> symbols'
     assert_response(:success)
     xml = REXML::Document.new(r.body.to_str)
@@ -133,13 +133,13 @@ class WikiControllerTest < ActionController::TestCase
     # rollback homepage to a version that is easier to match
     @home.rollback(0, Time.now, 'Rick', x_test_renderer)
     r = process 'export_html', 'web' => 'wiki1'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-xhtml-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
-    
+
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
     # some wacky bug in Ruby 1.9.2p0's Tempfile is fixed by
@@ -148,11 +148,11 @@ class WikiControllerTest < ActionController::TestCase
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
         assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml index.xhtml liquor.xhtml), zip.dir.entries('.').sort
-        assert_match /.*<html .*All about elephants.*<\/html>/, 
+        assert_match /.*<html .*All about elephants.*<\/html>/,
             zip.file.read('Elephant.xhtml').gsub(/\s+/, ' ')
-        assert_match /.*<html .*All about oak.*<\/html>/, 
+        assert_match /.*<html .*All about oak.*<\/html>/,
             zip.file.read('Oak.xhtml').gsub(/\s+/, ' ')
-        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
+        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/,
             zip.file.read('HomePage.xhtml').gsub(/\s+/, ' ')
         assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.xhtml" /></head></html> ', zip.file.read('index.xhtml').gsub(/\s+/, ' ')
       end
@@ -166,13 +166,13 @@ class WikiControllerTest < ActionController::TestCase
     # rollback homepage to a version that is easier to match
     @home.rollback(0, Time.now, 'Rick', x_test_renderer)
     r = process 'export_html', 'web' => 'wiki1'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
     assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
-    
+
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
     begin 
@@ -191,7 +191,7 @@ class WikiControllerTest < ActionController::TestCase
       File.delete(@tempfile_path) if File.exist?(@tempfile_path)
     end
   end
-  
+
   def test_export_html_no_layout    
     r = process 'export_html', 'web' => 'wiki1', 'layout' => 'no'
     
@@ -211,35 +211,6 @@ class WikiControllerTest < ActionController::TestCase
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end
-
-
-  if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
-
-#    def test_export_pdf
-#      r = process 'export_pdf', 'web' => 'wiki1'
-#      assert_response(:success, bypass_body_parsing = true)
-#      assert_equal 'application/pdf', r.headers['Content-Type']
-#      assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
-#          r.headers['Content-Disposition']
-#      assert_equal '%PDF', r.body[0..3]
-#      assert_equal "EOF\n", r.body[-4..-1]
-#    end
-
-  else
-#    puts 'Warning: tests involving pdflatex are very slow, therefore they are disabled by default.'
-#    puts '         Set environment variable INSTIKI_TEST_PDFLATEX or global Ruby variable'
-#    puts '         $INSTIKI_TEST_PDFLATEX to enable them.'
-  end
-  
-#  def test_export_tex    
-#    r = process 'export_tex', 'web' => 'wiki1'
-#
-#    assert_response(:success, bypass_body_parsing = true)
-#    assert_equal 'application/octet-stream', r.headers['Content-Type']
-#    assert_match /attachment; filename="wiki1-tex-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.tex"/, 
-#        r.headers['Content-Disposition']
-#    assert_equal '\documentclass', r.body[0..13], 'Content is not a TeX file'
-#  end
 
   def test_feeds
     process('feeds', 'web' => 'wiki1')
@@ -270,7 +241,6 @@ class WikiControllerTest < ActionController::TestCase
     assert_redirected_to :controller => 'admin', :action => 'create_system'
   end
 
-
   def test_list
     r = process('list', 'web' => 'wiki1')
 
@@ -281,7 +251,6 @@ class WikiControllerTest < ActionController::TestCase
                  r.template_objects['pages_in_category']
   end
 
-
   def test_locked
     @home.lock(Time.now, 'Locky')
     r = process('locked', 'web' => 'wiki1', 'id' => 'HomePage')
@@ -289,13 +258,11 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal @home, r.template_objects['page']
   end
 
-
   def test_login
     r = process 'login', 'web' => 'wiki1'
     assert_response(:success)
     # this action goes straight to the templates
   end
-
 
   def test_new
     r = process('new', 'id' => 'NewPage', 'web' => 'wiki1')
@@ -304,31 +271,12 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'NewPage', r.template_objects['page_name']
   end
 
-  if ENV['INSTIKI_TEST_LATEX'] or defined? $INSTIKI_TEST_PDFLATEX
-
-#    def test_pdf
-#      assert RedClothForTex.available?, 'Cannot do test_pdf when pdflatex is not available'
-#      r = process('pdf', 'web' => 'wiki1', 'id' => 'HomePage')
-#      assert_response(:success, bypass_body_parsing = true)
-#
-#      assert_equal '%PDF', r.body[0..3]
-#      assert_equal "EOF\n", r.body[-4..-1]
-#
-#      assert_equal 'application/pdf', r.headers['Content-Type']
-#      assert_match /attachment; filename="HomePage-wiki1-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.pdf"/, 
-#          r.headers['Content-Disposition']
-#    end
-
-  end
-
-
   def test_print
     r = process('print', 'web' => 'wiki1', 'id' => 'HomePage')
 
     assert_response(:success)
     assert_equal :show, r.template_objects['link_mode']
   end
-
 
   def test_source
     r = process('source', 'web' => 'wiki1', 'id' => 'HomePage')
@@ -349,15 +297,15 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_published
     set_web_property :published, true
-    
+
     r = process('published', 'web' => 'wiki1', 'id' => 'HomePage')
-    
+
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
     assert_match /<a class='existingWikiWord' href='\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body.as_bytes
 
     r = process('show', 'web' => 'wiki1', 'id' => 'HomePage')
-    
+
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
     assert_match /<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body.as_bytes
@@ -409,10 +357,9 @@ class WikiControllerTest < ActionController::TestCase
     assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body
   end
 
-
   def test_published_web_not_published
     set_web_property :published, false
-    
+
     r = process('published', 'web' => 'wiki1', 'id' => 'HomePage')
 
     assert_response :missing
@@ -420,24 +367,23 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_published_should_render_homepage_if_no_page_specified
     set_web_property :published, true
-    
+
     r = process('published', 'web' => 'wiki1')
-    
+
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
   end
 
-
   def test_recently_revised
     r = process('recently_revised', 'web' => 'wiki1')
     assert_response(:success)
-    
+
     assert_equal %w(animals trees), r.template_objects['categories']
     assert_nil r.template_objects['category']
     all_pages = @elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), 
                 @oak, pages(:smart_engine), pages(:that_way), @liquor
     assert_equal all_pages, r.template_objects['pages_in_category']
-    
+
     pages_by_day = r.template_objects['pages_by_day']
     assert_not_nil pages_by_day
     pages_by_day_size = pages_by_day.keys.inject(0) { |sum, day| sum + pages_by_day[day].size }
@@ -446,19 +392,19 @@ class WikiControllerTest < ActionController::TestCase
       day = Date.new(page.revised_at.year, page.revised_at.month, page.revised_at.day)
       assert pages_by_day[day].include?(page)
     end
-    
+
     assert_equal 'the web', r.template_objects['set_name']
   end
-  
+
   def test_recently_revised_with_categorized_page
     page2 = @wiki.write_page('wiki1', "Pagé",
         "Page2 contents.\n" +
         "category: categorizé", 
         Time.now, Author.new("André Auteur", '127.0.0.2'), x_test_renderer)
-      
+
     r = process('recently_revised', 'web' => 'wiki1')
     assert_response(:success)
-    
+
     c = ''.respond_to?(:force_encoding) ? "categoriz\u00E9" : "categoriz\303\251"
     assert_equal ['animals',  c,  'trees'], r.template_objects['categories']
     # no category is specified in params
@@ -485,14 +431,13 @@ class WikiControllerTest < ActionController::TestCase
   def test_recently_revised_with_specified_category
     r = process('recently_revised', 'web' => 'wiki1', 'category' => 'animals')
     assert_response(:success)
-    
+
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     # no category is specified in params
     assert_equal 'animals', r.template_objects['category']
     assert_equal [@elephant], r.template_objects['pages_in_category']
     assert_equal "category 'animals'", r.template_objects['set_name']
   end
-
 
   def test_revision
     r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '1'
@@ -501,7 +446,6 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal @home, r.template_objects['page']
     assert_equal @home.revisions[0], r.template_objects['revision'] 
   end
-  
 
   def test_rollback
     # rollback shows a form where a revision can be edited.
@@ -531,27 +475,26 @@ class WikiControllerTest < ActionController::TestCase
   def test_atom_with_content_when_blocked
     @web.update_attributes(:password => 'aaa', :published => false)
     @web = Web.find(@web.id)
-    
+
     r = process 'atom_with_content', 'web' => 'wiki1'
-    
+
     assert_equal 403, r.response_code
   end
-  
 
   def test_atom_with_headlines
     @title_with_spaces = @wiki.write_page('wiki1', 'Title With Spaces', 
       'About spaces', 1.hour.ago, Author.new('TreeHugger', '127.0.0.2'), x_test_renderer)
-    
+
     @request.host = 'localhost'
     @request.port = 8080
-  
+
     r = process 'atom_with_headlines', 'web' => 'wiki1'
 
     assert_response(:success)
     pages = r.template_objects['pages_by_revision']
     assert_equal [@elephant, @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home].sort{|x,y| x.name <=> y.name}, pages.sort{|x,y| x.name <=> y.name}, "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
-    
+
     xml = REXML::Document.new(r.body)
 
     expected_page_links =
@@ -671,7 +614,7 @@ class WikiControllerTest < ActionController::TestCase
     assert r.body.include?('<title type="html">Title&amp;amp;With&amp;amp;Ampersands</title>')
   end
 
-  def test_atom_timestamp    
+  def test_atom_timestamp
     new_page = @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime', 
       'Created on 1 Jan 1970 at 0:00:00 Z', Time.at(0), Author.new('NitPicker', '127.0.0.3'),
       x_test_renderer)
@@ -681,7 +624,7 @@ class WikiControllerTest < ActionController::TestCase
                :parent => {:tag => 'entry'},
                :content => Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%SZ")
   end
-  
+
   def test_atom_with_changes
     r = process 'atom_with_changes', 'web' => 'wiki1'
 
@@ -724,7 +667,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_save_astral_plane_characters
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Double-struck A: \360\235\224\270", 
       'author' => "\xF0\x9D\x94\xB8\xC3\xBCthorOfNewPage"
-    
+
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
     assert_match @eternity, r.headers["Set-Cookie"][0]
     new_page = @wiki.read_page('wiki1', 'NewPage')
@@ -744,6 +687,18 @@ class WikiControllerTest < ActionController::TestCase
     assert_match @eternity, r.headers["Set-Cookie"][0]
     new_page = @wiki.read_page('wiki1', 'NewPage')
     assert_equal "Contents of a new page\r\n", new_page.content
+    assert_equal 'AuthorOfNewPage', new_page.author
+  end
+
+  def test_save_not_utf8_pagename
+    r = process 'save', 'web' => 'wiki1', 'id' => "New\000Page", 'content' => "Body of a new page\r\n", 
+      'author' => 'AuthorOfNewPage'
+    
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
+    assert_equal 'AuthorOfNewPage', r.cookies['author']
+    assert_match @eternity, r.headers["Set-Cookie"][0]
+    new_page = @wiki.read_page('wiki1', 'NewPage')
+    assert_equal "Body of a new page\r\n", new_page.content
     assert_equal 'AuthorOfNewPage', new_page.author
   end
 
@@ -836,7 +791,7 @@ class WikiControllerTest < ActionController::TestCase
     resp = [ %{<p>Access denied. Your IP address, 127.0.0.2, was found on one or more DNSBL blocking list(s).</p>\n},
              %{<p>See <a href='http://www.spamcop.net/w3m?action=checkblock&amp;ip=127.0.0.2'>here</a> for more information.</p>\n},
              %{<p>See <a href='http://www.spamhaus.org/query/bl?ip=127.0.0.2'>here</a> for more information.</p>\n}]
-    0.upto(2) {|i| assert_match Regexp.new(Regexp.escape(resp[i])), r.body}
+    resp.each {|re| assert_match Regexp.new(Regexp.escape(re)), r.body}
     assert !File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
   end
 
@@ -1502,6 +1457,7 @@ Page2 contents $\mathbb{01234}$.
 !, r.body
   end
 
+if ENV['tikz_server']
   def test_tex_tikz
     @wiki.write_page('wiki1', 'Page2',
         "Page2 contents
@@ -1551,6 +1507,9 @@ Page2 contents \\begin{tikzpicture}
 !, r.body
 
   end
+else
+  puts 'Tikz tests disabled.'
+end
 
   def test_tex_list
     @wiki.write_page('wiki1', "Ch\303\242timent & Page",
