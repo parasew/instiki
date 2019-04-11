@@ -1,10 +1,6 @@
 #!/usr/bin/env ruby
 #coding: utf-8
 
-# Uncomment the line below to enable pdflatex tests; don't forget to comment them again 
-# commiting to SVN
-# $INSTIKI_TEST_PDFLATEX = true
-
 require Rails.root.join('test', 'test_helper')
 require 'wiki_controller'
 require 'rexml/document'
@@ -112,13 +108,13 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_edit_unknown_page
     process 'edit', 'web' => 'wiki1', 'id' => 'UnknownPage', 'break_lock' => 'y'
-    assert_redirected_to :controller => 'wiki', :action => 'show', :web => 'wiki1', 
+    assert_redirected_to :controller => 'wiki', :action => 'show', :web => 'wiki1',
         :id => 'HomePage'
   end
 
   def test_edit_page_with_special_symbols
-    @wiki.write_page('wiki1', 'With : Special /> symbols', 
-         'This page has special symbols in the name', Time.now, Author.new('Special', '127.0.0.3'), 
+    @wiki.write_page('wiki1', 'With : Special /> symbols',
+         'This page has special symbols in the name', Time.now, Author.new('Special', '127.0.0.3'),
          x_test_renderer)
 
     r = process 'edit', 'web' => 'wiki1', 'id' => 'With : Special /> symbols'
@@ -136,7 +132,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-xhtml-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
+    assert_match /attachment; filename="wiki1-xhtml-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
 
@@ -144,7 +140,7 @@ class WikiControllerTest < ActionController::TestCase
     Tempfile.open('instiki_export_file') { |f| @tempfile_path = f.path }
     # some wacky bug in Ruby 1.9.2p0's Tempfile is fixed by
     @tempfile_path.to_s
-    begin 
+    begin
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
         assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml index.xhtml liquor.xhtml), zip.dir.entries('.').sort
@@ -169,7 +165,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
+    assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
 
@@ -179,11 +175,11 @@ class WikiControllerTest < ActionController::TestCase
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
         assert_equal %w(Elephant.html FirstPage.html HomePage.html MyWay.html NoWikiWord.html Oak.html SmartEngine.html ThatWay.html index.html liquor.html), zip.dir.entries('.').sort
-        assert_match /.*<html .*All about elephants.*<\/html>/, 
+        assert_match /.*<html .*All about elephants.*<\/html>/,
             zip.file.read('Elephant.html').gsub(/\s+/, ' ')
-        assert_match /.*<html .*All about oak.*<\/html>/, 
+        assert_match /.*<html .*All about oak.*<\/html>/,
             zip.file.read('Oak.html').gsub(/\s+/, ' ')
-        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
+        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/,
             zip.file.read('HomePage.html').gsub(/\s+/, ' ')
         assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.html" /></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
       end
@@ -207,7 +203,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-markdownMML-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
+    assert_match /attachment; filename="wiki1-markdownMML-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
         r.headers['Content-Disposition']
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end
@@ -246,8 +242,8 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     assert_nil r.template_objects['category']
-    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), 
-                  @oak, pages(:smart_engine), pages(:that_way), @liquor], 
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
+                  @oak, pages(:smart_engine), pages(:that_way), @liquor],
                  r.template_objects['pages_in_category']
   end
 
@@ -310,7 +306,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal @home, r.template_objects['page']
     assert_match /<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body.as_bytes
 
-    r = process 'save', 'web' => 'instiki', 'id' => 'HomePage', 'content' => 'Contents of a new page', 
+    r = process 'save', 'web' => 'instiki', 'id' => 'HomePage', 'content' => 'Contents of a new page',
       'author' => 'AuthorOfNewPage'
     assert_equal Web.find_by_address('instiki').has_page?('HomePage'), true
 
@@ -380,7 +376,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_equal %w(animals trees), r.template_objects['categories']
     assert_nil r.template_objects['category']
-    all_pages = @elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), 
+    all_pages = @elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
                 @oak, pages(:smart_engine), pages(:that_way), @liquor
     assert_equal all_pages, r.template_objects['pages_in_category']
 
@@ -388,7 +384,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_not_nil pages_by_day
     pages_by_day_size = pages_by_day.keys.inject(0) { |sum, day| sum + pages_by_day[day].size }
     assert_equal all_pages.size, pages_by_day_size
-    all_pages.each do |page| 
+    all_pages.each do |page|
       day = Date.new(page.revised_at.year, page.revised_at.month, page.revised_at.day)
       assert pages_by_day[day].include?(page)
     end
@@ -482,7 +478,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_atom_with_headlines
-    @title_with_spaces = @wiki.write_page('wiki1', 'Title With Spaces', 
+    @title_with_spaces = @wiki.write_page('wiki1', 'Title With Spaces',
       'About spaces', 1.hour.ago, Author.new('TreeHugger', '127.0.0.2'), x_test_renderer)
 
     @request.host = 'localhost'
@@ -492,7 +488,9 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     pages = r.template_objects['pages_by_revision']
-    assert_equal [@elephant, @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine), pages(:my_way), pages(:first_page), @home].sort{|x,y| x.name <=> y.name}, pages.sort{|x,y| x.name <=> y.name}, "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
+    assert_equal [@elephant, @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine),
+       pages(:my_way), pages(:first_page), @home].sort{|x,y| x.name <=> y.name}, pages.sort{|x,y| x.name <=> y.name},
+       "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
 
     xml = REXML::Document.new(r.body)
@@ -615,7 +613,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_atom_timestamp
-    new_page = @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime', 
+    new_page = @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime',
       'Created on 1 Jan 1970 at 0:00:00 Z', Time.at(0), Author.new('NitPicker', '127.0.0.3'),
       x_test_renderer)
 
@@ -665,7 +663,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_astral_plane_characters
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Double-struck A: \360\235\224\270", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Double-struck A: \360\235\224\270",
       'author' => "\xF0\x9D\x94\xB8\xC3\xBCthorOfNewPage"
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
@@ -679,7 +677,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_not_utf8
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Cont\000ents of a new page\r\n\000", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Cont\000ents of a new page\r\n\000",
       'author' => 'AuthorOfNewPage'
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
@@ -703,7 +701,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_not_utf8_ncr
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#xfffe;", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#xfffe;",
       'author' => 'AuthorOfNewPage'
     
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
@@ -715,7 +713,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_not_utf8_dec_ncr
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#65535;", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => "Contents of a new page\r\n&#65535;",
       'author' => 'AuthorOfNewPage'
     
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'NewPage'
@@ -730,7 +728,7 @@ class WikiControllerTest < ActionController::TestCase
     @home.lock(Time.now, 'Batman')
     current_revisions = @home.revisions.size
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Revised HomePage', 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Revised HomePage',
       'author' => 'Batman'
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
@@ -748,7 +746,7 @@ class WikiControllerTest < ActionController::TestCase
     @home.lock(Time.now, 'Batman')
     current_revisions = @home.revisions.size
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Revised HomePage', 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Revised HomePage',
       'author' => '  Batman  '
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
@@ -766,7 +764,7 @@ class WikiControllerTest < ActionController::TestCase
     @home.lock(Time.now, 'Batman')
     current_revisions = @home.revisions.size
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => "Newly rev\000ised HomePage", 
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => "Newly rev\000ised HomePage",
       'author' => 'Batman'
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
@@ -944,7 +942,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_response(:success)
     assert_equal [], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
-    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"}+
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"} +
         %{<span class='newWikiWord'><a href=\"/wiki1/new/non-existant+%3C+t}+
         %{ext\">non-existant &lt; text</a></span>}))
     assert_match create_pattern, r.body
@@ -957,7 +955,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'ant', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
     assert_equal [@elephant], r.template_objects['title_results']
-    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"}+
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"} +
         %{<span class='newWikiWord'><a href=\"/wiki1/new/ant}+
         %{\">ant</a></span>}))
     assert_match create_pattern, r.body
@@ -970,7 +968,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal ' ant', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
-    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"}+
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"} +
         %{<span class='newWikiWord'><a href=\"/wiki1/new/ant}+
         %{\">ant</a></span>}))
     assert_match create_pattern, r.body
