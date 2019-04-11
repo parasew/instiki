@@ -103,8 +103,11 @@ module Sanitizer
       purple red right solid silver teal top transparent underline white
       yellow]
 
-  acceptable_svg_properties = Set.new %w[fill fill-opacity fill-rule stroke
-      stroke-width stroke-linecap stroke-linejoin stroke-opacity stroke-dasharray]
+  acceptable_svg_properties = Set.new %w[alignment-baseline baseline-shift color-interpolation
+      color-rendering dominant-baseline fill fill-opacity fill-rule glyph-orientation-vertical
+      image-rendering opacity paint-order shape-rendering stop-color stop-opacity stroke
+      stroke-dasharray stroke-dashoffset stroke-linecap stroke-linejoin stroke-miterlimit stroke-opacity
+      stroke-width text-anchor text-decoration text-rendering vector-effect writing-mode]
 
   acceptable_protocols = Set.new %w[ed2k ftp http https irc mailto news gopher nntp
       telnet webcal xmpp callto feed urn aim rsync tag ssh sftp rtsp afs]
