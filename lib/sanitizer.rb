@@ -104,7 +104,7 @@ module Sanitizer
       yellow]
 
   acceptable_svg_properties = Set.new %w[fill fill-opacity fill-rule stroke
-      stroke-width stroke-linecap stroke-linejoin stroke-opacity]
+      stroke-width stroke-linecap stroke-linejoin stroke-opacity stroke-dasharray]
 
   acceptable_protocols = Set.new %w[ed2k ftp http https irc mailto news gopher nntp
       telnet webcal xmpp callto feed urn aim rsync tag ssh sftp rtsp afs]
