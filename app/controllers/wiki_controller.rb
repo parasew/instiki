@@ -5,6 +5,7 @@ require 'zip/zip'
 require 'itex_stringsupport'
 require 'resolv'
 require 'digest'
+require 'strscan'
 
 class WikiController < ApplicationController
 
@@ -227,15 +228,19 @@ EOL
     return unless is_post
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       @tex_content = ''
+      tikz_libs = []
       # Ruby 1.9.x has ordered hashes; 1.8.x doesn't. So let's just parse the query ourselves.
       # In Ruby 1.9 and later, ActiveSupport::OrderedHash is just a Hash.
       ordered_params = ActiveSupport::OrderedHash[*request.raw_post.split('&').collect {|k_v| k_v.split('=').collect {|x| CGI::unescape(x)}}.flatten]
       ordered_params.each do |name, p|
         if p == 'tex' && @web.has_page?(name)
           @tex_content << "\\section*\{#{Maruku.new(name).to_latex.strip}\}\n\n"
-          @tex_content << convert_to_tex(@web.page(name).content)
+          s = convert_to_tex(@web.page(name).content)
+          @tex_content << s[0]
+          tikz_libs.concat s[1]
         end
       end
+      @tikz_libraries = tikz_libs.uniq
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
     end
@@ -459,10 +464,14 @@ EOL
   end
 
   def tex
+    @tikz_libraries = []
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
-      @tex_content = convert_to_tex(@page.content)
+      s = convert_to_tex(@page.content)
+      @tex_content = s[0]
+      @tikz_libraries = s[1]
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
+      @tikz_libraries = []
     end
     render(:layout => 'tex')
   end
@@ -497,9 +506,12 @@ EOL
 
   def export_page_to_tex(file_path)
     if @web.markup == :markdownMML || @web.markup == :markdownPNG
-      @tex_content = convert_to_tex(@page.content)
+      s = convert_to_tex(@page.content)
+      @tex_content = s[0]
+      @tikz_libraries = s[1]
     else
       @tex_content = 'TeX export only supported with the Markdown text filters.'
+      @tikz_libraries = []
     end
     File.open(file_path, 'w') { |f| f.write(render_to_string(:template => 'wiki/tex', :layout => 'tex')) }
   end
@@ -578,14 +590,34 @@ EOL
 
   def convert_to_tex(string)
     tikzpictures = Hash.new
+    tikz_libs = []
     s = string.gsub(/\\begin\{(tikzpicture|tikzcd)\}.*?\\end\{(tikzpicture|tikzcd)\}/m) do |match|
       i = Digest::SHA2.hexdigest(rand(1000000).to_s)
-      tikzpictures.update(i => match)
+      text, libs = extract_libraries(match)
+      tikzpictures.update(i => text)
+      tikz_libs << libs
       i
     end
     s = Maruku.new(s).to_latex
     tikzpictures.each {|key,val| s.sub!(key, val)}
-    s
+    return [s, tikz_libs.uniq]
+  end
+
+  def extract_libraries(s)
+    buffer = StringScanner.new(s)
+    libraries = []
+    out = ''
+    while ! buffer.eos?
+      if buffer.scan(/(.*?)\\usetikzlibrary\{/m)
+        out << buffer[1]
+      else
+        out << buffer.rest
+        return [out, libraries]
+      end
+      buffer.scan(/(.*?)\}/)
+      libraries << buffer[1].split(/\s*,\s*/)
+    end
+    return [out, libraries]
   end
 
   def rss_with_content_allowed?

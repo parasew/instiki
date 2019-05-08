@@ -54,8 +54,8 @@ class Page < ActiveRecord::Base
   end
 
   def previous_revision(revision)
-    revision_index = rev_ids.each_with_index do |rev, index| 
-      if rev.id == revision.id 
+    revision_index = rev_ids.each_with_index do |rev, index|
+      if rev.id == revision.id
         break index 
       else
         nil
