@@ -14,6 +14,7 @@
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{xparse}
+\usepackage{tikz}
 \usepackage{hyperref}
 
 %----Macros----------
@@ -286,7 +287,7 @@
 \newtheorem{note}{Note}
 \newtheorem*{uremark}{Remark}
 \newtheorem*{unote}{Note}
-
+<%= "\\usetikzlibrary\{#{@tikz_libraries.join(',')}\}" unless @tikz_libraries.empty? %>
 %-------------------------------------------------------------------
 
 \begin{document}

@@ -1125,6 +1125,7 @@ class WikiControllerTest < ActionController::TestCase
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{xparse}
+\usepackage{tikz}
 \usepackage{hyperref}
 
 %----Macros----------
@@ -1397,7 +1398,8 @@ class WikiControllerTest < ActionController::TestCase
 \newtheorem{note}{Note}
 \newtheorem*{uremark}{Remark}
 \newtheorem*{unote}{Note}
-
+!
+    @tex_header3 = %q!
 %-------------------------------------------------------------------
 
 \begin{document}
@@ -1411,7 +1413,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
     assert_response(:success)
     
-    assert_equal @tex_header1 + @tex_header2 + %q!\section*{HomePage}
+    assert_equal @tex_header1 + @tex_header2 + @tex_header3 + %q!\section*{HomePage}
 
 HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay $\backslash$OverThere -- see SmartEngine in that SmartEngineGUI
 
@@ -1428,7 +1430,7 @@ HisWay would be MyWay $\sin(x) \includegraphics[width=3em]{foo}$ in kinda ThatWa
     r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
     assert_response(:success)
     
-    assert_equal @tex_header1 + @tex_header2 + %q!\section*{Page2}
+    assert_equal @tex_header1 + @tex_header2 + @tex_header3 + %q!\section*{Page2}
 
 Page2 contents \{ \& {\tt \symbol{94}} {\tt \symbol{60}}.
 
@@ -1445,7 +1447,7 @@ Page2 contents \{ \& {\tt \symbol{94}} {\tt \symbol{60}}.
     r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
     assert_response(:success)
     
-    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + %q!\section*{Page2}
+    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + @tex_header3 + %q!\section*{Page2}
 
 Page2 contents $\mathbb{01234}$.
 
@@ -1467,6 +1469,7 @@ if ENV['tikz_server']
 \\end{tikzpicture}
 More stuff
 \\begin{tikzpicture}
+\\usetikzlibrary{decorations.markings}
 \\filldraw[black] (0,1) circle (2pt);
 \\filldraw[black] (2,-1) circle (2pt);
 \\node[anchor=east] at (-1,-0.5) {$a$};
@@ -1481,14 +1484,15 @@ More stuff
     r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
     assert_response(:success)
 
-    assert_equal @tex_header1 + @tex_header2 + %q!\section*{Page2}
+    assert_equal @tex_header1 + @tex_header2 + "\\usetikzlibrary{decorations.markings}" + @tex_header3 + %q!\section*{Page2}
 
 Page2 contents \\begin{tikzpicture}
-\\usetikzlibrary{decorations.markings}
+
 \\path (-1.5, -2.5) -- (-1.5, 1.5) -- (2.5, 1.5) -- (2.5, -2.5) -- (-1.5, -2.5);
 \\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (0,-1) -- (1,-1) -- (1,1) -- (-1,1) -- (-1,-1) -- (0,-1);
 \\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (1,0) -- (0,0) -- (0,-2) -- (2,-2) -- (2,0) -- (1,0);
 \\end{tikzpicture} More stuff \\begin{tikzpicture}
+
 \\filldraw[black] (0,1) circle (2pt);
 \\filldraw[black] (2,-1) circle (2pt);
 \\node[anchor=east] at (-1,-0.5) {$a$};
@@ -1516,7 +1520,7 @@ end
     @request.env['RAW_POST_DATA'] = "_form_key=353106ff8c8466727ee5338baaa0640c87c9b0d6&Ch%C3%A2timent+%26+Page=tex&BogusPage=tex&HomePage=tex&commit=Export"
     r = process('tex_list', 'web' => 'wiki1', 'Page2' => 'tex', 'BogusPage'=> 'tex', 'HomePage' => 'tex')
     assert_response(:success)
-    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + %q!\section*{Châtiment \\& Page}
+    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + @tex_header3 + %q!\section*{Châtiment \\& Page}
 
 Page2 contents $\mathbb{01234}$.
 
