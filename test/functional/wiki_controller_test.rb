@@ -1509,6 +1509,43 @@ Page2 contents \\begin{tikzpicture}
 !, r.body
 
   end
+
+  def test_tex_tikzcd
+    @wiki.write_page('wiki1', 'Page2',
+        "Page2 contents
+\\begin{tikzpicture}
+\\usetikzlibrary{decorations.markings}
+\\path (-1.5, -2.5) -- (-1.5, 1.5) -- (2.5, 1.5) -- (2.5, -2.5) -- (-1.5, -2.5);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (0,-1) -- (1,-1) -- (1,1) -- (-1,1) -- (-1,-1) -- (0,-1);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (1,0) -- (0,0) -- (0,-2) -- (2,-2) -- (2,0) -- (1,0);
+\\end{tikzpicture}
+More stuff
+\\begin{tikzcd}
+\\widehat{C}^{op} \\arrow[r, \"\\Gamma^{op}\"] & \\mathrm{Set}^{op} \\arrow[r, \"2^-\"] & \\mathrm{Set}
+\\end{tikzcd}
+",
+        Time.now, Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
+    assert_response(:success)
+
+    assert_equal @tex_header1 + @tex_header2 + "\\usetikzlibrary{decorations.markings,cd}" + @tex_header3 + %q!\section*{Page2}
+
+Page2 contents \\begin{tikzpicture}
+
+\\path (-1.5, -2.5) -- (-1.5, 1.5) -- (2.5, 1.5) -- (2.5, -2.5) -- (-1.5, -2.5);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (0,-1) -- (1,-1) -- (1,1) -- (-1,1) -- (-1,-1) -- (0,-1);
+\\draw[semithick, shorten <= 0.5em, shorten >= 0.5em] (1,0) -- (0,0) -- (0,-2) -- (2,-2) -- (2,0) -- (1,0);
+\\end{tikzpicture} More stuff \\begin{tikzcd}
+\\widehat{C}^{op} \\arrow[r, "\Gamma^{op}"] & \\mathrm{Set}^{op} \\arrow[r, "2^-"] & \\mathrm{Set}
+\\end{tikzcd}
+
+
+
+\end{document}
+!, r.body
+
+  end
+
 else
   puts 'Tikz tests disabled.'
 end
