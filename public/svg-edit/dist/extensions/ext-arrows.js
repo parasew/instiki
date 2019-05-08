@@ -273,7 +273,7 @@ var svgEditorExtension_arrows = (function () {
                 /**
                 * @param {Window} win
                 * @param {!(string|Integer)} n
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 svgCanvas.bind('setnonce', setArrowNonce);
@@ -349,7 +349,7 @@ var svgEditorExtension_arrows = (function () {
                               return _context.stop();
                           }
                         }
-                      }, _callee, this);
+                      }, _callee);
                     }));
 
                     function addLangData(_x2) {

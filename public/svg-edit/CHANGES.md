@@ -1,6 +1,78 @@
 # SVG-Edit CHANGES
 
-# 4.2.0
+## ?
+
+- Refactoring: Use `static` keyword for classes
+
+## 5.0.0
+
+- Breaking change: Switch from deprecated `@babel/polyfill` to
+    `core-js-bundle` and `regenerator-runtime` replacements
+- Build: Require Node 8.5
+- Fix: Ensure PHP files are present in `dist/extensions` alongside
+    JavaScript extension files using them
+- Fix: Bug in obtaining `extPath` in `ext-server_opensave.js`
+- Fix: Fully redirect extension entrances for lacking browser support
+- Enhancement: Add config `avoidClientSide` to avoid using
+    client-side support by default (and always require server)
+- Enhancement: Return a Promise for Editor's `setCustomHandlers`,
+    `loadFromString`, `loadFromDataURI` so known when ready and set
+- Refactoring: Destructuring, templates, label Unicode code point
+- Linting (JSDoc): Update per newly enforced `require-returns`; avoid
+  Closure syntax; reenable `jsdoc/valid-jsdoc` as fixed; notes
+  re: valid-jsdoc replacement; use same namepath
+- Linting: Update per ash-nazg/plugin-node update
+- Docs: Simplify comments in HTML files re: script purposes
+- Docs: Update release instructions
+- Docs (Refactoring): Formally specify `Promise` resolve type;
+    add `typedef` for dialog result object; add an
+    `ArbitraryCallbackResult` type; prefer `void`
+- npm: Rename (`build-doc` to `build-docs`, `types-doc` to
+    `types-docs`); add `open-docs` script
+- npm: Update devDeps
+- npm: Remove unused devDeps; update insecure devDeps
+
+## 4.3.0
+
+- Fix: Droplets for gradient pickers can now be double-clicked in
+    other browsers in addition to Firefox such as Chrome
+    to allow change of color (fixes #181) (@ajinkyas);
+    may be different between the browsers as a result of
+    <https://github.com/w3c/uievents/issues/141>
+- Fix: Delay icon setting until locales available (fixes #323)
+- Fix: Extension with no `placement` to be added to end;
+    for #326 (@sjernigan)
+- Fix: Error on dragging control point of arc; fixes #268 (@cuixiping)
+- Fix: With locales loading before extensions, ensure extensions'
+    `langReady` runs properly; fixes #334 (@cuixiping)
+- Optimization fix: Properly run code conditionally on browser check;
+    fixes #312 (@ianli-sc)
+- Enhancement: Add CAD Placemark extension (@NeiroNx)
+- Enhancement (svgIcons): Fix JSDoc param def; add `alt` options
+- Accessibility: Begin work, add aria-label to some buttons and
+    form controls; add `role=main`; `<img alt>`; `<iframe title>`
+- i18n: Add `lang` attribute
+- Refactoring: lbs, simplify i18nized element retrieval call
+- Refactoring: Make dialog OK button retrievable locale-independently
+    via a `data-ok` attribute (using for testing)
+- Linting (ESLint): Update polyfills to new compat rules of
+    eslint-config-ash-nazg and adhere to new rules (prefer `for-of`
+    (or array methods) to `for`, catch preferred `includes` to `indexOf`);
+    avoid `no-zero-fractions` rule for now
+- Testing (UI Refactoring): Abstract out to helper file functions
+- Testing (UI Refactoring): Avoid testing being locale-dependent;
+    approve storage (and set locale to English) before each test
+- Testing: Avoid reporting meta-viewport (have own zooming
+    controls and difficult to fix)
+- Testing: Skip js errors in Testcafe; we're getting some uncaught
+    error despite not replicating manually; should file a Testcafe issue
+- Docs: Some JSDoc descriptions, JSDoc spacing, fix svgIcons
+    param def
+- Docs (Accessibility): Refer to known issues
+- npm: Update devDeps; update nested deps for security audit; remove
+    one unneeded)
+
+## 4.2.0
 
 - Fix: Problem with retaining lines with grid mode (@NeiroNx)
 - l10n: Add Chinese (simplified) extension locales (@enlove)
