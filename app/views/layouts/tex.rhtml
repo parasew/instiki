@@ -287,7 +287,7 @@
 \newtheorem{note}{Note}
 \newtheorem*{uremark}{Remark}
 \newtheorem*{unote}{Note}
-<%= "\\usetikzlibrary\{#{@tikz_libraries.join(',')}\}" unless @tikz_libraries.empty? %>
+<%= "\\usetikzlibrary\{#{@tikz_libraries.join(',').chomp(',')}\}" unless @tikz_libraries.empty? %>
 %-------------------------------------------------------------------
 
 \begin{document}

@@ -464,7 +464,6 @@ EOL
   end
 
   def tex
-    @tikz_libraries = []
     if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
       s = convert_to_tex(@page.content)
       @tex_content = s[0]
@@ -593,6 +592,7 @@ EOL
     tikz_libs = []
     s = string.gsub(/\\begin\{(tikzpicture|tikzcd)\}.*?\\end\{(tikzpicture|tikzcd)\}/m) do |match|
       i = Digest::SHA2.hexdigest(rand(1000000).to_s)
+      tikz_libs.push 'cd' if $1 == 'tikzcd'
       text, libs = extract_libraries(match)
       tikzpictures.update(i => text)
       tikz_libs << libs
