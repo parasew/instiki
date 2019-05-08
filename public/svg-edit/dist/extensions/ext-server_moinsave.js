@@ -521,43 +521,48 @@ var svgEditorExtension_server_moinsave = (function () {
 
         return '#' + r + g + b;
       }
+      /**
+      * Offers a bulleted list of help.
+      * @returns {HTMLUListElement}
+      */
+
+    }], [{
+      key: "getHelpXML",
+      value: function getHelpXML() {
+        var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
+          var example = _ref2.example;
+          return example;
+        })), _toConsumableArray(Object.keys(simpleColors)));
+        var xml = document.createElement('ul');
+        xml.setAttribute('id', 'rgbcolor-examples');
+        xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+          try {
+            var listItem = document.createElement('li');
+            var listColor = new RGBColor(example);
+            var exampleDiv = document.createElement('div');
+            exampleDiv.style.cssText = "\n  margin: 3px;\n  border: 1px solid black;\n  background: ".concat(listColor.toHex(), ";\n  color: ").concat(listColor.toHex(), ";");
+            exampleDiv.append('test');
+            var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+            listItem.append(exampleDiv, listItemValue);
+            return listItem;
+          } catch (e) {
+            return '';
+          }
+        })));
+        return xml;
+      }
     }]);
 
     return RGBColor;
   }();
 
-  RGBColor.getHelpXML = function () {
-    var examples = _toConsumableArray(colorDefs.flatMap(function (_ref2) {
-      var example = _ref2.example;
-      return example;
-    })).concat(_toConsumableArray(Object.keys(simpleColors)));
-
-    var xml = document.createElement('ul');
-    xml.setAttribute('id', 'rgbcolor-examples');
-    xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
-      try {
-        var listItem = document.createElement('li');
-        var listColor = new RGBColor(example);
-        var exampleDiv = document.createElement('div');
-        exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
-        exampleDiv.append('test');
-        var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
-        listItem.append(exampleDiv, listItemValue);
-        return listItem;
-      } catch (e) {
-        return '';
-      }
-    })));
-    return xml;
-  };
-
   function _typeof$1(obj) {
     if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
-      _typeof$1 = function _typeof$$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return _typeof(obj);
       };
     } else {
-      _typeof$1 = function _typeof$$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
       };
     }
@@ -3225,7 +3230,7 @@ var svgEditorExtension_server_moinsave = (function () {
         _classCallCheck(this, _class22);
 
         _this12 = _possibleConstructorReturn(this, _getPrototypeOf(_class22).call(this, node));
-        svg.Animations.push(_assertThisInitialized(_assertThisInitialized(_this12)));
+        svg.Animations.push(_assertThisInitialized(_this12));
         _this12.duration = 0.0;
         _this12.begin = _this12.attribute('begin').toMilliseconds();
         _this12.maxDuration = _this12.begin + _this12.attribute('dur').toMilliseconds();
@@ -3443,7 +3448,7 @@ var svgEditorExtension_server_moinsave = (function () {
             _this13.fontFace = child;
 
             if (child.style('font-family').hasValue()) {
-              svg.Definitions[child.style('font-family').value] = _assertThisInitialized(_assertThisInitialized(_this13));
+              svg.Definitions[child.style('font-family').value] = _assertThisInitialized(_this13);
             }
           } else if (child.type === 'missing-glyph') {
             _this13.missingGlyph = child;
@@ -3886,7 +3891,7 @@ var svgEditorExtension_server_moinsave = (function () {
         }
 
         _this20._isSvg = href.match(/\.svg$/);
-        svg.Images.push(_assertThisInitialized(_assertThisInitialized(_this20)));
+        svg.Images.push(_assertThisInitialized(_this20));
         _this20.loaded = false;
 
         if (!_this20._isSvg) {
@@ -3911,7 +3916,7 @@ var svgEditorExtension_server_moinsave = (function () {
             // eslint-disable-line promise/prefer-await-to-then, promise/always-return
             _this20.img = img;
             _this20.loaded = true;
-          }).catch(function (err) {
+          })["catch"](function (err) {
             // eslint-disable-line promise/prefer-await-to-callbacks
             _this20.erred = true;
             console.error('Ajax error for canvg', err); // eslint-disable-line no-console
@@ -4020,12 +4025,13 @@ var svgEditorExtension_server_moinsave = (function () {
         _toConsumableArray(node.childNodes).forEach(function (_ref11) {
           var nodeValue = _ref11.nodeValue;
           css += nodeValue;
-        });
+        }); // remove comments
 
-        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
 
-        css = svg.compressSpaces(css); // replace whitespace
+        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+        // replace whitespace
 
+        css = svg.compressSpaces(css);
         var cssDefs = css.split('}');
         cssDefs.forEach(function (cssDef) {
           if (svg.trim(cssDef) !== '') {
@@ -4358,7 +4364,7 @@ var svgEditorExtension_server_moinsave = (function () {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {undefined}
+    * @returns {void}
     */
 
 
@@ -4373,7 +4379,7 @@ var svgEditorExtension_server_moinsave = (function () {
     * @param {Float} height
     * @param {Integer} rgba
     * @param {Float} val
-    * @returns {undefined}
+    * @returns {void}
     */
 
 
@@ -4579,7 +4585,7 @@ var svgEditorExtension_server_moinsave = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee);
       }));
 
       return function (_x2, _x3) {
@@ -4887,20 +4893,21 @@ var svgEditorExtension_server_moinsave = (function () {
 
                 /* const target = */
 
-                $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
+                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function () {
                     var _save = _asyncToGenerator(
                     /*#__PURE__*/
                     regeneratorRuntime.mark(function _callee(win, data) {
-                      var svg, qstr, name, svgData, c, datauri, pngData;
+                      var svg, qstr, _qstr$substr$split, _qstr$substr$split2, name, svgData, c, datauri, pngData;
+
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
                           switch (_context.prev = _context.next) {
                             case 0:
                               svg = '<?xml version="1.0"?>\n' + data;
                               qstr = $.param.querystring();
-                              name = qstr.substr(9).split('/+get/')[1];
+                              _qstr$substr$split = qstr.substr(9).split('/+get/'), _qstr$substr$split2 = _slicedToArray(_qstr$substr$split, 2), name = _qstr$substr$split2[1];
                               svgData = encode64(svg);
 
                               if (!$('#export_canvas').length) {
@@ -4926,7 +4933,7 @@ var svgEditorExtension_server_moinsave = (function () {
                                 method: 'post',
                                 action: saveSvgAction + '/' + name,
                                 target: 'output_frame'
-                              }).append('<input type="hidden" name="png_data" value="' + pngData + '">').append('<input type="hidden" name="filepath" value="' + svgData + '">').append('<input type="hidden" name="filename" value="' + 'drawing.svg">').append('<input type="hidden" name="contenttype" value="application/x-svgdraw">').appendTo('body').submit().remove();
+                              }).append("\n          <input type=\"hidden\" name=\"png_data\" value=\"".concat(pngData, "\">\n          <input type=\"hidden\" name=\"filepath\" value=\"").concat(svgData, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"drawing.svg\">\n          <input type=\"hidden\" name=\"contenttype\" value=\"application/x-svgdraw\">\n        ")).appendTo('body').submit().remove();
                               $.alert(strings.saved);
                               top.window.location = '/' + name;
 
@@ -4935,7 +4942,7 @@ var svgEditorExtension_server_moinsave = (function () {
                               return _context.stop();
                           }
                         }
-                      }, _callee, this);
+                      }, _callee);
                     }));
 
                     function save(_x2, _x3) {

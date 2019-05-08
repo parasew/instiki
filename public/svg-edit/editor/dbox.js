@@ -24,12 +24,18 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
     dialogContent = $('#dialog_content');
 
   /**
+  * @typedef {PlainObject} module:jQueryPluginDBox.PromiseResultObject
+  * @property {string|true} response
+  * @property {boolean} checked
+  */
+
+  /**
   * Resolves to `false` (if cancelled), for prompts and selects
   * without checkboxes, it resolves to the value of the form control. For other
   * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
   * to an object with the `response` key containing the same value as the previous
   * mentioned (string or `true`) and a `checked` (boolean) property.
-  * @typedef {Promise} module:jQueryPluginDBox.PromiseResult
+  * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.PromiseResult
   */
   /**
   * @typedef {PlainObject} module:jQueryPluginDBox.SelectOption
@@ -46,23 +52,27 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
   /**
    * Triggered upon a change of value for the select pull-down.
    * @callback module:jQueryPluginDBox.SelectChangeListener
-   * @returns {undefined}
+   * @returns {void}
    */
   /**
-  * @param {"alert"|"prompt"|"select"|"process"} type
-  * @param {string} msg
-  * @param {string} [defaultVal]
-  * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
-  * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
-  * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
-  * @returns {jQueryPluginDBox.PromiseResult}
+   * Creates a dialog of the specified type with a given message
+   *  and any defaults and type-specific metadata. Returns a `Promise`
+   *  which resolves differently depending on whether the dialog
+   *  was cancelled or okayed (with the response and any checked state).
+   * @param {"alert"|"prompt"|"select"|"process"} type
+   * @param {string} msg
+   * @param {string} [defaultVal]
+   * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
+   * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
+   * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
+   * @returns {jQueryPluginDBox.PromiseResult}
   */
   function dbox (type, msg, defaultVal, opts, changeListener, checkbox) {
     dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>')
       .toggleClass('prompt', (type === 'prompt'));
     btnHolder.empty();
 
-    const ok = $('<input type="button" value="' + strings.ok + '">').appendTo(btnHolder);
+    const ok = $('<input type="button" data-ok="" value="' + strings.ok + '">').appendTo(btnHolder);
 
     return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
       if (type !== 'alert') {
@@ -81,7 +91,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
         ctrl.bind('keydown', 'return', function () { ok.click(); });
       } else if (type === 'select') {
         const div = $('<div style="text-align:center;">');
-        ctrl = $('<select>').appendTo(div);
+        ctrl = $(`<select aria-label="${msg}">`).appendTo(div);
         if (checkbox) {
           const label = $('<label>').text(checkbox.label);
           chkbx = $('<input type="checkbox">').appendTo(label);

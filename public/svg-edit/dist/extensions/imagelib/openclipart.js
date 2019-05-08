@@ -250,11 +250,11 @@
 
   function _typeof$1(obj) {
     if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
-      _typeof$1 = function _typeof$$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return _typeof(obj);
       };
     } else {
-      _typeof$1 = function _typeof$$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
       };
     }
@@ -268,7 +268,7 @@
     }
   }
 
-  function _defineProperties$1(target, props) {
+  function _defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
       var descriptor = props[i];
       descriptor.enumerable = descriptor.enumerable || false;
@@ -278,9 +278,9 @@
     }
   }
 
-  function _createClass$1(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties$1(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties$1(Constructor, staticProps);
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
     return Constructor;
   }
 
@@ -300,14 +300,14 @@
   }
 
   function _getPrototypeOf$1(o) {
-    _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf$$1(o) {
+    _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
       return o.__proto__ || Object.getPrototypeOf(o);
     };
     return _getPrototypeOf$1(o);
   }
 
   function _setPrototypeOf$1(o, p) {
-    _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf$$1(o, p) {
+    _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
       o.__proto__ = p;
       return o;
     };
@@ -332,7 +332,7 @@
     if (isNativeReflectConstruct$1()) {
       _construct$1 = Reflect.construct;
     } else {
-      _construct$1 = function _construct$$1(Parent, args, Class) {
+      _construct$1 = function _construct(Parent, args, Class) {
         var a = [null];
         a.push.apply(a, args);
         var Constructor = Function.bind.apply(Parent, a);
@@ -352,7 +352,7 @@
   function _wrapNativeSuper$1(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
 
-    _wrapNativeSuper$1 = function _wrapNativeSuper$$1(Class) {
+    _wrapNativeSuper$1 = function _wrapNativeSuper(Class) {
       if (Class === null || !_isNativeFunction$1(Class)) return Class;
 
       if (typeof Class !== "function") {
@@ -399,7 +399,7 @@
     return _assertThisInitialized$1(self);
   }
 
-  function _superPropBase$1(object, property) {
+  function _superPropBase(object, property) {
     while (!Object.prototype.hasOwnProperty.call(object, property)) {
       object = _getPrototypeOf$1(object);
       if (object === null) break;
@@ -408,12 +408,12 @@
     return object;
   }
 
-  function _get$1(target, property, receiver) {
+  function _get(target, property, receiver) {
     if (typeof Reflect !== "undefined" && Reflect.get) {
-      _get$1 = Reflect.get;
+      _get = Reflect.get;
     } else {
-      _get$1 = function _get$$1(target, property, receiver) {
-        var base = _superPropBase$1(target, property);
+      _get = function _get(target, property, receiver) {
+        var base = _superPropBase(target, property);
 
         if (!base) return;
         var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -426,7 +426,7 @@
       };
     }
 
-    return _get$1(target, property, receiver || target);
+    return _get(target, property, receiver || target);
   }
 
   function _slicedToArray$1(arr, i) {
@@ -962,7 +962,7 @@
                 }
 
                 var getConstructor = function getConstructor(cb) {
-                  var baseClass = options && options.extends ? doc.createElement(options.extends).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
+                  var baseClass = options && options["extends"] ? doc.createElement(options["extends"]).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
                   return cb ?
                   /*#__PURE__*/
                   function (_baseClass) {
@@ -1007,7 +1007,7 @@
 
                     if (typeof options === 'string') {
                       options = {
-                        extends: options
+                        "extends": options
                       };
                     } else if (!options.hasOwnProperty('extends')) {
                       prototype = options;
@@ -1026,7 +1026,7 @@
 
                     if (typeof options === 'string') {
                       options = {
-                        extends: options
+                        "extends": options
                       };
                     }
                   }
@@ -1043,7 +1043,7 @@
 
                 if (!options && customizedBuiltIn) {
                   options = {
-                    extends: localName
+                    "extends": localName
                   };
                 }
 
@@ -1068,7 +1068,7 @@
                 var funcBound = func.bind(elem);
 
                 if (typeof symbol === 'string') {
-                  elem[Symbol.for(symbol)] = funcBound;
+                  elem[Symbol["for"](symbol)] = funcBound;
                 } else {
                   elem[symbol] = funcBound;
                 }
@@ -1077,7 +1077,7 @@
                 obj.elem = elem;
 
                 if (typeof symbol === 'string') {
-                  elem[Symbol.for(symbol)] = obj;
+                  elem[Symbol["for"](symbol)] = obj;
                 } else {
                   elem[symbol] = obj;
                 }
@@ -2112,17 +2112,17 @@
       return _possibleConstructorReturn$1(this, _getPrototypeOf$1(JamilihMap).apply(this, arguments));
     }
 
-    _createClass$1(JamilihMap, [{
+    _createClass(JamilihMap, [{
       key: "get",
       value: function get$$1(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get$1(_getPrototypeOf$1(JamilihMap.prototype), "get", this).call(this, elem);
+        return _get(_getPrototypeOf$1(JamilihMap.prototype), "get", this).call(this, elem);
       }
     }, {
       key: "set",
       value: function set(elem, value) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get$1(_getPrototypeOf$1(JamilihMap.prototype), "set", this).call(this, elem, value);
+        return _get(_getPrototypeOf$1(JamilihMap.prototype), "set", this).call(this, elem, value);
       }
     }, {
       key: "invoke",
@@ -2153,17 +2153,17 @@
       return _possibleConstructorReturn$1(this, _getPrototypeOf$1(JamilihWeakMap).apply(this, arguments));
     }
 
-    _createClass$1(JamilihWeakMap, [{
+    _createClass(JamilihWeakMap, [{
       key: "get",
       value: function get$$1(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get$1(_getPrototypeOf$1(JamilihWeakMap.prototype), "get", this).call(this, elem);
+        return _get(_getPrototypeOf$1(JamilihWeakMap.prototype), "get", this).call(this, elem);
       }
     }, {
       key: "set",
       value: function set(elem, value) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get$1(_getPrototypeOf$1(JamilihWeakMap.prototype), "set", this).call(this, elem, value);
+        return _get(_getPrototypeOf$1(JamilihWeakMap.prototype), "set", this).call(this, elem, value);
       }
     }, {
       key: "invoke",
@@ -2212,9 +2212,9 @@
     return [map, elem];
   };
 
-  jml.symbol = jml.sym = jml.for = function (elem, sym) {
+  jml.symbol = jml.sym = jml["for"] = function (elem, sym) {
     elem = typeof elem === 'string' ? $(elem) : elem;
-    return elem[_typeof$1(sym) === 'symbol' ? sym : Symbol.for(sym)];
+    return elem[_typeof$1(sym) === 'symbol' ? sym : Symbol["for"](sym)];
   };
 
   jml.command = function (elem, symOrMap, methodName) {
@@ -2456,11 +2456,11 @@
 
   function _typeof$2(obj) {
     if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
-      _typeof$2 = function _typeof$$1(obj) {
+      _typeof$2 = function _typeof$1(obj) {
         return _typeof(obj);
       };
     } else {
-      _typeof$2 = function _typeof$$1(obj) {
+      _typeof$2 = function _typeof$1(obj) {
         return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
       };
     }
@@ -3009,7 +3009,7 @@
   /**
    * Shows results after query submission.
    * @param {string} url
-   * @returns {undefined}
+   * @returns {void}
    */
 
   function processResults(_x) {
@@ -3220,7 +3220,7 @@
               return _context3.stop();
           }
         }
-      }, _callee3, this);
+      }, _callee3);
     }));
     return _processResults.apply(this, arguments);
   }
@@ -3253,7 +3253,7 @@
                   return _context.stop();
               }
             }
-          }, _callee, this);
+          }, _callee);
         }));
 
         function $submit() {
@@ -3271,7 +3271,7 @@
     }
   }, [// Todo: i18nize
   ['fieldset', [['legend', ['Search terms']], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Query (Title, description, uploader, or tag): ', ['input', {
     id: 'query',
     name: 'query',
@@ -3288,7 +3288,7 @@
       }
     }
   }]]]]], ['br'], ' OR ', ['br'], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['IDs (single or comma-separated): ', ['input', {
     id: 'byids',
     name: 'ids',
@@ -3305,21 +3305,21 @@
       }
     }
   }]]]]]]], ['fieldset', [['legend', ['Configuring results']], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Sort by: ', ['select', {
     id: 'sort'
   }, [// Todo: i18nize first values
   ['Date', 'date'], ['Downloads', 'downloads'], ['Favorited', 'favorites']].map(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
-        text$$1 = _ref2[0],
+        text = _ref2[0],
         _ref2$ = _ref2[1],
-        value = _ref2$ === void 0 ? text$$1 : _ref2$;
+        value = _ref2$ === void 0 ? text : _ref2$;
 
     return ['option', {
       value: value
-    }, [text$$1]];
+    }, [text]];
   })]]]]], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Results per page: ', ['input', {
     id: 'amount',
     name: 'amount',
@@ -3330,7 +3330,7 @@
     step: 1,
     pattern: '\\d+'
   }]]]]], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Page number: ', ['input', {
     // max: 1, // We'll change this based on available results
     id: 'page',
@@ -3342,7 +3342,7 @@
     step: 1,
     pattern: '\\d+'
   }]]]]]]], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['input', {
     type: 'submit'
   }]]]]], ['div', {

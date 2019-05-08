@@ -2364,8 +2364,10 @@ function build (opts) {
       [...node.childNodes].forEach(({nodeValue}) => {
         css += nodeValue;
       });
-      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
-      css = svg.compressSpaces(css); // replace whitespace
+      // remove comments
+      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+      // replace whitespace
+      css = svg.compressSpaces(css);
       const cssDefs = css.split('}');
       cssDefs.forEach((cssDef) => {
         if (svg.trim(cssDef) !== '') {
@@ -2597,7 +2599,7 @@ function build (opts) {
   * @param {Float} width
   * @param {Float} height
   * @param {Integer} rgba
-  * @returns {undefined}
+  * @returns {void}
   */
   function imGet (img, x, y, width, height, rgba) {
     return img[y * width * 4 + x * 4 + rgba];
@@ -2611,7 +2613,7 @@ function build (opts) {
   * @param {Float} height
   * @param {Integer} rgba
   * @param {Float} val
-  * @returns {undefined}
+  * @returns {void}
   */
   function imSet (img, x, y, width, height, rgba, val) {
     img[y * width * 4 + x * 4 + rgba] = val;

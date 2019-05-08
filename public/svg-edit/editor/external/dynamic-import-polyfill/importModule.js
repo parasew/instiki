@@ -20,7 +20,7 @@ function toAbsoluteURL (url) {
  * Add any of the whitelisted attributes to the script tag.
  * @param {HTMLScriptElement} script
  * @param {PlainObject.<string, string>} atts
- * @returns {undefined}
+ * @returns {void}
  */
 function addScriptAtts (script, atts) {
   ['id', 'class', 'type'].forEach((prop) => {
@@ -40,7 +40,7 @@ function addScriptAtts (script, atts) {
 * @function module:importModule.importSetGlobalDefault
 * @param {string|string[]} url
 * @param {module:importModule.ImportConfig} config
-* @returns {Promise} The value to which it resolves depends on the export of the targeted module.
+* @returns {Promise<*>} The value to which it resolves depends on the export of the targeted module.
 */
 export function importSetGlobalDefault (url, config) {
   return importSetGlobal(url, {...config, returnDefault: true});
@@ -49,7 +49,7 @@ export function importSetGlobalDefault (url, config) {
 * @function module:importModule.importSetGlobal
 * @param {string|string[]} url
 * @param {module:importModule.ImportConfig} config
-* @returns {Promise} The promise resolves to either an `ArbitraryModule` or
+* @returns {Promise<ArbitraryModule>} The promise resolves to either an `ArbitraryModule` or
 *   any other value depends on the export of the targeted module.
 */
 export async function importSetGlobal (url, {global: glob, returnDefault}) {
@@ -68,7 +68,7 @@ export async function importSetGlobal (url, {global: glob, returnDefault}) {
  * @author Brett Zamir (other items are from `dynamic-import-polyfill`)
  * @param {string|string[]} url
  * @param {PlainObject} [atts={}]
- * @returns {Promise} Resolves to `undefined` or rejects with an `Error` upon a
+ * @returns {Promise<void|Error>} Resolves to `undefined` or rejects with an `Error` upon a
  *   script loading error
  */
 export function importScript (url, atts = {}) {
@@ -81,7 +81,7 @@ export function importScript (url, atts = {}) {
     const script = document.createElement('script');
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnError () {
       reject(new Error(`Failed to import: ${url}`));
@@ -89,7 +89,7 @@ export function importScript (url, atts = {}) {
     }
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnLoad () {
       resolve();
@@ -112,14 +112,14 @@ export function importScript (url, atts = {}) {
 }
 
 /**
- *
- * @param {string|string[]} url
- * @param {PlainObject} [atts={}]
- * @param {PlainObject} opts
- * @param {boolean} [opts.returnDefault=false} = {}]
- * @returns {Promise} Resolves to value of loading module or rejects with
- *   `Error` upon a script loading error.
- */
+*
+* @param {string|string[]} url
+* @param {PlainObject} [atts={}]
+* @param {PlainObject} opts
+* @param {boolean} [opts.returnDefault=false} = {}]
+* @returns {Promise<*>} Resolves to value of loading module or rejects with
+*   `Error` upon a script loading error.
+*/
 export function importModule (url, atts = {}, {returnDefault = false} = {}) {
   if (Array.isArray(url)) {
     return Promise.all(url.map((u) => {
@@ -131,7 +131,7 @@ export function importModule (url, atts = {}, {returnDefault = false} = {}) {
     const script = document.createElement('script');
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnError () {
       reject(new Error(`Failed to import: ${url}`));
@@ -139,7 +139,7 @@ export function importModule (url, atts = {}, {returnDefault = false} = {}) {
     }
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnLoad () {
       resolve(window[vector]);

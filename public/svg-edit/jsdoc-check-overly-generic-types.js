@@ -61,10 +61,11 @@ console.log(`${output}\nTotal failures found: ${total}.\n`); // eslint-disable-l
  * Eliminates known false matches against overly generic types.
  * @param {string} file
  * @param {external:FindInFilesResult} res
- * @returns {undefined}
+ * @returns {void}
  */
 function reduceFalseMatches (file, res) {
   switch (file) {
+  case 'editor/external/core-js-bundle/minified.js':
   case 'editor/external/jamilih/jml-es.js':
   case 'editor/xdomain-svgedit-config-iife.js': // Ignore
     res.line = [];
@@ -76,16 +77,24 @@ function reduceFalseMatches (file, res) {
       ].includes(line);
     });
     break;
+  case 'editor/external/dynamic-import-polyfill/importModule.js':
+    res.line = res.line.filter((line) => {
+      return ![
+        '* @returns {Promise<*>} The value to which it resolves depends on the export of the targeted module.',
+        '* @returns {Promise<*>} Resolves to value of loading module or rejects with'
+      ].includes(line);
+    });
+    break;
   case 'editor/typedefs.js':
     res.line = res.line.filter((line) => {
       return ![
         '* @typedef {number} Float',
+        '* @typedef {*} ArbitraryCallbackResult',
         '* @typedef {Object} ArbitraryObject',
         '* @typedef {Object} ArbitraryModule',
         '* @typedef {Array} GenericArray',
         '* @typedef {*} Any',
-        '* @param {...*} args Signature dependent on the function',
-        '* @returns {*} Return dependent on the function'
+        '* @param {...*} args Signature dependent on the function'
       ].includes(line);
     });
     break;
