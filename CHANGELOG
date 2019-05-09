@@ -6,6 +6,28 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.30.1
+
+New Features:
+
+* Recently Revised now lists only the last 50 modified pages (instead
+  of all of them)
+* Use Roboto Mono web fonts for code blocks
+* Improve Markdown Help
+* Improve Search page
+* Improve Tikz output
+* Implement proper Tikz support for TeX output
+* SVG-Edit 5.0.0
+* Bundler 2.0.1
+* itextomml 1.6.0
+
+Bugs Fixed:
+
+* Fix Heroku deployment
+* Additions to Sanitizer
+* Improvements to the test framework
+
+------------------------------------------------------------------------------
 * 0.30.0
 
 New Features:
