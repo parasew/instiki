@@ -353,8 +353,7 @@ function tableAlignShim() {
 }
 
 function minMathWidth() {
-// https://bugs.webkit.org/show_bug.cgi?id=160547
-  var maths = document.querySelectorAll('math[display=block]');
+  var maths = document.querySelectorAll('math[display=block], table');
   if (maths && maths.length > 0) {
     for (var i = 0; i < maths.length; i++) {
       var m = maths[i];
