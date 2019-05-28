@@ -942,7 +942,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_response(:success)
     assert_equal [], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
-    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"} +
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> “} +
         %{<span class='newWikiWord'><a href=\"/wiki1/new/non-existant+%3C+t}+
         %{ext\">non-existant &lt; text</a></span>}))
     assert_match create_pattern, r.body
@@ -955,7 +955,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'ant', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
     assert_equal [@elephant], r.template_objects['title_results']
-    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"} +
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> “} +
         %{<span class='newWikiWord'><a href=\"/wiki1/new/ant}+
         %{\">ant</a></span>}))
     assert_match create_pattern, r.body
@@ -968,7 +968,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal ' ant', r.template_objects['query']
     assert_equal [@elephant, @oak], r.template_objects['results']
     assert_equal [], r.template_objects['title_results']
-    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> \"} +
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> “} +
         %{<span class='newWikiWord'><a href=\"/wiki1/new/ant}+
         %{\">ant</a></span>}))
     assert_match create_pattern, r.body
