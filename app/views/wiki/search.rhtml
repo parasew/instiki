@@ -38,6 +38,6 @@
 <%- end -%>
   <p>
 <%- q = @query.strip; if !(@title_results.map{|page| page.plain_name}.include? q) -%>
-    <b>Create a new page, named:</b> “<span class='newWikiWord'><%= link_to h(q).html_safe, :web => @web.address, :action => 'new', :id => q %></span>”
+    <b>Create a new page, named:</b> <%= "\u201c<span class='newWikiWord'>#{link_to h(q), :web => @web.address, :action => 'new', :id => q}</span>\u201d".html_safe %>
   </p>
 <%- end -%>
