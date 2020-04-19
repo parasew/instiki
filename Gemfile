@@ -18,4 +18,4 @@ gem "maruku", :git => 'https://github.com/distler/maruku.git', :branch => 'nokog
 gem 'iconv'
 gem 'httparty'
 gem 'rdoc-data', :platforms => :ruby_18
-gem 'test-unit', '~> 2.5.5'
+gem 'test-unit'
