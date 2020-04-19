@@ -57,6 +57,7 @@ end
 # Instiki-specific configuration below
 require_dependency 'instiki_errors'
 
+require 'erubis/helpers/rails_helper'
 #require 'jcode'
 
 # Miscellaneous monkey patches (here be dragons ...)

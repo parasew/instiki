@@ -116,7 +116,7 @@ module ActionView #:nodoc:
     def initialize(template_path, load_path = nil)
       @template_path, @load_path = template_path.dup, load_path
       @base_path, @name, @locale, @format, @extension = split(template_path)
-      @base_path.to_s.gsub!(/\/$/, '') # Push to split method
+      @base_path = @base_path.to_s.dup.gsub!(/\/$/, '') # Push to split method
 
       # Extend with partial super powers
       extend RenderablePartial if @name =~ /^_/
