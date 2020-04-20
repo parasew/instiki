@@ -31,7 +31,7 @@ class UriEncoder # :nodoc:
     self.escape(segment, SEGMENT)
   end
 
-  def unescape_uri(uri)
+  def self.unescape(uri)
     encoding = uri.encoding == US_ASCII ? UTF_8 : uri.encoding
     uri.gsub(ESCAPED) { |match| [match[1, 2].hex].pack("C") }.force_encoding(encoding)
   end
