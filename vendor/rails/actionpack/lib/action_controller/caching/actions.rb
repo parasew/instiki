@@ -1,4 +1,5 @@
 require 'set'
+require 'uriencoder'
 
 module ActionController #:nodoc:
   module Caching
@@ -154,7 +155,7 @@ module ActionController #:nodoc:
           path = controller.url_for(options).split('://').last
           normalize!(path)
           add_extension!(path, @extension)
-          @path = URI.unescape(path)
+          @path = UriEncoder.unescape(path)
         end
 
         private
