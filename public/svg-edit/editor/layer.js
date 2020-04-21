@@ -17,9 +17,9 @@ const $ = jQuery;
  * an existing group element or, with three parameters, will create a new layer group element.
  *
  * @example
- * new Layer('name', group);          // Use the existing group for this layer.
- * new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
- * new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+ * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+ * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
+ * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
  * @memberof module:layer
  */
 class Layer {
@@ -141,8 +141,8 @@ class Layer {
    * @returns {void}
    */
   appendChildren (children) {
-    for (let i = 0; i < children.length; ++i) {
-      this.group_.append(children[i]);
+    for (const child of children) {
+      this.group_.append(child);
     }
   }
 

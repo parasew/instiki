@@ -123,6 +123,7 @@ let listMap_ = {};
 export class SVGTransformList { // eslint-disable-line no-shadow
   /**
   * @param {Element} elem
+  * @returns {SVGTransformList}
   */
   constructor (elem) {
     this._elem = elem || null;
@@ -145,6 +146,7 @@ export class SVGTransformList { // eslint-disable-line no-shadow
 
       // TODO: Add skew support in future
       const re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+      // const re = /\s*(?<xform>(?:scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
       let m = true;
       while (m) {
         m = str.match(re);
@@ -157,6 +159,17 @@ export class SVGTransformList { // eslint-disable-line no-shadow
           valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
           const valArr = valBits[1].split(/[, ]+/);
           const letters = 'abcdef'.split('');
+          /*
+        if (m && m.groups.xform) {
+          const x = m.groups.xform;
+          const [name, bits] = x.split(/\s*\(/);
+          const valBits = bits.match(/\s*(?<nonWhitespace>.*?)\s*\)/);
+          valBits.groups.nonWhitespace = valBits.groups.nonWhitespace.replace(
+            /(?<digit>\d)-/g, '$<digit> -'
+          );
+          const valArr = valBits.groups.nonWhitespace.split(/[, ]+/);
+          const letters = [...'abcdef'];
+          */
           const mtx = svgroot.createSVGMatrix();
           Object.values(valArr).forEach(function (item, i) {
             valArr[i] = parseFloat(item);
@@ -208,7 +221,7 @@ export class SVGTransformList { // eslint-disable-line no-shadow
 
   /**
   * @param {SVGTransform} newItem
-  * @returns {SVGTransform}
+  * @returns {void}
   */
   initialize (newItem) {
     this.numberOfItems = 1;

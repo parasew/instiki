@@ -15,42 +15,6 @@ var canvg = (function (exports) {
     return _typeof(obj);
   }
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -205,6 +169,10 @@ var canvg = (function (exports) {
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -393,6 +361,7 @@ var canvg = (function (exports) {
 
   var colorDefs = [{
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+    // re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process: function process(_) {
       for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -405,6 +374,7 @@ var canvg = (function (exports) {
     }
   }, {
     re: /^(\w{2})(\w{2})(\w{2})$/,
+    // re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
     example: ['#00ff00', '336699'],
     process: function process(_) {
       for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
@@ -417,6 +387,7 @@ var canvg = (function (exports) {
     }
   }, {
     re: /^(\w{1})(\w{1})(\w{1})$/,
+    // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
     process: function process(_) {
       for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
@@ -479,7 +450,7 @@ var canvg = (function (exports) {
           });
           _this.ok = true;
         }
-      }, this); // validate/cleanup values
+      }); // validate/cleanup values
 
       this.r = this.r < 0 || isNaN(this.r) ? 0 : this.r > 255 ? 255 : this.r;
       this.g = this.g < 0 || isNaN(this.g) ? 0 : this.g > 255 ? 255 : this.g;
@@ -890,7 +861,7 @@ var canvg = (function (exports) {
 
   /**
    * Whether a value is `null` or `undefined`.
-   * @param {Any} val
+   * @param {any} val
    * @returns {boolean}
    */
 
@@ -924,7 +895,7 @@ var canvg = (function (exports) {
   * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
   * @param {string|XMLDocument} s - svg string, url to svg file, or xml document
   * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
-  * @returns {Promise} All the function after the first render is completed with dom
+  * @returns {Promise<XMLDocument|XMLDocument[]>} All the function after the first render is completed with dom
   */
 
 
@@ -971,13 +942,16 @@ var canvg = (function (exports) {
 
     return svg.load(ctx, s);
   };
+  /* eslint-disable jsdoc/check-types */
+
   /**
   * @param {module:canvg.CanvgOptions} opts
-  * @returns {Object}
+  * @returns {object}
   * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
   */
 
   function build(opts) {
+    /* eslint-enable jsdoc/check-types */
     var svg = {
       opts: opts
     };
@@ -4364,7 +4338,7 @@ var canvg = (function (exports) {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {void}
+    * @returns {Integer}
     */
 
 
@@ -4562,36 +4536,26 @@ var canvg = (function (exports) {
     }; // load from url
 
 
-    svg.load =
-    /*#__PURE__*/
-    function () {
-      var _ref12 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(ctx, url) {
-        var dom;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.next = 2;
-                return svg.ajax(url, true);
+    svg.load = function _callee(ctx, url) {
+      var dom;
+      return regeneratorRuntime.async(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return regeneratorRuntime.awrap(svg.ajax(url, true));
 
-              case 2:
-                dom = _context.sent;
-                return _context.abrupt("return", svg.loadXml(ctx, dom));
+            case 2:
+              dom = _context.sent;
+              return _context.abrupt("return", svg.loadXml(ctx, dom));
 
-              case 4:
-              case "end":
-                return _context.stop();
-            }
+            case 4:
+            case "end":
+              return _context.stop();
           }
-        }, _callee);
-      }));
-
-      return function (_x2, _x3) {
-        return _ref12.apply(this, arguments);
-      };
-    }(); // load from xml
+        }
+      });
+    }; // load from xml
 
 
     svg.loadXml = function (ctx, xml) {
@@ -4812,9 +4776,9 @@ var canvg = (function (exports) {
       checkPath: function checkPath(element, ctx) {
         var _this26 = this;
 
-        this.events.forEach(function (_ref13, i) {
-          var x = _ref13.x,
-              y = _ref13.y;
+        this.events.forEach(function (_ref12, i) {
+          var x = _ref12.x,
+              y = _ref12.y;
 
           if (ctx.isPointInPath && ctx.isPointInPath(x, y)) {
             _this26.eventElements[i] = element;
@@ -4824,9 +4788,9 @@ var canvg = (function (exports) {
       checkBoundingBox: function checkBoundingBox(element, bb) {
         var _this27 = this;
 
-        this.events.forEach(function (_ref14, i) {
-          var x = _ref14.x,
-              y = _ref14.y;
+        this.events.forEach(function (_ref13, i) {
+          var x = _ref13.x,
+              y = _ref13.y;
 
           if (bb.isPointInBox(x, y)) {
             _this27.eventElements[i] = element;

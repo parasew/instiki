@@ -56,6 +56,11 @@ export default {
       val = val ? 'storagePrompt=' + val : '';
       const loc = top.location; // Allow this to work with the embedded editor as well
       if (loc.href.includes('storagePrompt=')) {
+        /*
+        loc.href = loc.href.replace(/(?<sep>[&?])storagePrompt=[^&]*(?<amp>&?)/, function (n0, sep, amp) {
+          return (val ? sep : '') + val + (!val && amp ? sep : (amp || ''));
+        });
+        */
         loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
           return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''));
         });
@@ -242,6 +247,7 @@ export default {
             // doesn't even want to remember their not wanting
             // storage, so we don't set the cookie or continue on with
             //  setting storage on beforeunload
+            // eslint-disable-next-line require-atomic-updates
             document.cookie = 'svgeditstore=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
             // If the URL was configured to always insist on a prompt, if
             //    the user does indicate a wish to store their info, we

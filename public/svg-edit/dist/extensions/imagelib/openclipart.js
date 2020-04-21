@@ -15,42 +15,6 @@
     return _typeof(obj);
   }
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -215,6 +179,10 @@
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -282,6 +250,55 @@
     if (protoProps) _defineProperties(Constructor.prototype, protoProps);
     if (staticProps) _defineProperties(Constructor, staticProps);
     return Constructor;
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(source, true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(source).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
   }
 
   function _inherits$1(subClass, superClass) {
@@ -456,6 +473,10 @@
   }
 
   function _iterableToArrayLimit$1(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -523,20 +544,22 @@
   var doc = typeof document !== 'undefined' && document;
   var XmlSerializer = typeof XMLSerializer !== 'undefined' && XMLSerializer; // STATIC PROPERTIES
 
-  var possibleOptions = ['$plugins', '$map' // Add any other options here
+  var possibleOptions = ['$plugins', // '$mode', // Todo (SVG/XML)
+  // 'state', // Used internally
+  '$map' // Add any other options here
   ];
   var NS_HTML = 'http://www.w3.org/1999/xhtml',
-      hyphenForCamelCase = /-([a-z])/g;
+      hyphenForCamelCase = /\x2D([a-z])/g;
   var ATTR_MAP = {
-    'readonly': 'readOnly'
+    readonly: 'readOnly'
   }; // We define separately from ATTR_DOM for clarity (and parity with JsonML) but no current need
   // We don't set attribute esp. for boolean atts as we want to allow setting of `undefined`
   //   (e.g., from an empty variable) on templates to have no effect
 
   var BOOL_ATTS = ['checked', 'defaultChecked', 'defaultSelected', 'disabled', 'indeterminate', 'open', // Dialog elements
-  'readOnly', 'selected'];
-  var ATTR_DOM = BOOL_ATTS.concat([// From JsonML
-  'accessKey', // HTMLElement
+  'readOnly', 'selected']; // From JsonML
+
+  var ATTR_DOM = BOOL_ATTS.concat(['accessKey', // HTMLElement
   'async', 'autocapitalize', // HTMLElement
   'autofocus', 'contentEditable', // HTMLElement through ElementContentEditable
   'defaultValue', 'defer', 'draggable', // HTMLElement
@@ -557,10 +580,10 @@
     return doc.querySelector(sel);
   };
   /**
-  * Retrieve the (lower-cased) HTML name of a node
+  * Retrieve the (lower-cased) HTML name of a node.
   * @static
   * @param {Node} node The HTML node
-  * @returns {String} The lower-cased node name
+  * @returns {string} The lower-cased node name
   */
 
 
@@ -568,9 +591,10 @@
     return node.nodeName && node.nodeName.toLowerCase();
   }
   /**
-  * Apply styles if this is a style tag
+  * Apply styles if this is a style tag.
   * @static
   * @param {Node} node The element to check whether it is a style tag
+  * @returns {void}
   */
 
 
@@ -587,11 +611,12 @@
     }
   }
   /**
-   * Need this function for IE since options weren't otherwise getting added
+   * Need this function for IE since options weren't otherwise getting added.
    * @private
    * @static
-   * @param {DOMElement} parent The parent to which to append the element
-   * @param {DOMNode} child The element or other node to append to the parent
+   * @param {Element} parent The parent to which to append the element
+   * @param {Node} child The element or other node to append to the parent
+   * @returns {void}
    */
 
 
@@ -614,12 +639,12 @@
     }
 
     if (parentName === 'template') {
-      parent.content.appendChild(child);
+      parent.content.append(child);
       return;
     }
 
     try {
-      parent.appendChild(child); // IE9 is now ok with this
+      parent.append(child); // IE9 is now ok with this
     } catch (e) {
       if (parentName === 'select' && childName === 'option') {
         try {
@@ -637,31 +662,32 @@
     }
   }
   /**
-   * Attach event in a cross-browser fashion
+   * Attach event in a cross-browser fashion.
    * @static
-   * @param {DOMElement} el DOM element to which to attach the event
-   * @param {String} type The DOM event (without 'on') to attach to the element
-   * @param {Function} handler The event handler to attach to the element
-   * @param {Boolean} [capturing] Whether or not the event should be
-   *                                                              capturing (W3C-browsers only); default is false; NOT IN USE
+   * @param {Element} el DOM element to which to attach the event
+   * @param {string} type The DOM event (without 'on') to attach to the element
+   * @param {EventListener} handler The event handler to attach to the element
+   * @param {boolean} [capturing] Whether or not the event should be
+   *   capturing (W3C-browsers only); default is false; NOT IN USE
+   * @returns {void}
    */
 
 
   function _addEvent(el, type, handler, capturing) {
-    el.addEventListener(type, handler, !!capturing);
+    el.addEventListener(type, handler, Boolean(capturing));
   }
   /**
-  * Creates a text node of the result of resolving an entity or character reference
+  * Creates a text node of the result of resolving an entity or character reference.
   * @param {'entity'|'decimal'|'hexadecimal'} type Type of reference
-  * @param {String} prefix Text to prefix immediately after the "&"
-  * @param {String} arg The body of the reference
+  * @param {string} prefix Text to prefix immediately after the "&"
+  * @param {string} arg The body of the reference
   * @returns {Text} The text node of the resolved reference
   */
 
 
   function _createSafeReference(type, prefix, arg) {
     // For security reasons related to innerHTML, we ensure this string only contains potential entity characters
-    if (!arg.match(/^\w+$/)) {
+    if (!arg.match(/^[0-9A-Z_a-z]+$/)) {
       throw new TypeError('Bad ' + type);
     }
 
@@ -671,18 +697,31 @@
     return doc.createTextNode(elContainer.innerHTML);
   }
   /**
-  * @param {String} n0 Whole expression match (including "-")
-  * @param {String} n1 Lower-case letter match
-  * @returns {String} Uppercased letter
+  * @param {string} n0 Whole expression match (including "-")
+  * @param {string} n1 Lower-case letter match
+  * @returns {string} Uppercased letter
   */
 
 
   function _upperCase(n0, n1) {
     return n1.toUpperCase();
-  }
+  } // Todo: Make as public utility
+
+  /**
+   * @param {any} o
+   * @returns {boolean}
+   */
+
+
+  function _isNullish(o) {
+    return o === null || o === undefined;
+  } // Todo: Make as public utility, but also return types for undefined, boolean, number, document, etc.
+
   /**
   * @private
   * @static
+  * @param {string|JamilihAttributes|JamilihArray|Element|DocumentFragment} item
+  * @returns {"string"|"null"|"array"|"element"|"fragment"|"object"}
   */
 
 
@@ -718,16 +757,21 @@
   /**
   * @private
   * @static
+  * @param {DocumentFragment} frag
+  * @param {Node} node
+  * @returns {DocumentFragment}
   */
 
 
   function _fragReducer(frag, node) {
-    frag.appendChild(node);
+    frag.append(node);
     return frag;
   }
   /**
   * @private
   * @static
+  * @param {Object<{string:string}>} xmlnsObj
+  * @returns {string}
   */
 
 
@@ -736,7 +780,7 @@
       var retStr = xmlnsObj[''] ? ' xmlns="' + xmlnsObj[''] + '"' : n0 || ''; // Preserve XHTML
 
       for (var ns in xmlnsObj) {
-        if (xmlnsObj.hasOwnProperty(ns)) {
+        if ({}.hasOwnProperty.call(xmlnsObj, ns)) {
           if (ns !== '') {
             retStr += ' xmlns:' + ns + '="' + xmlnsObj[ns] + '"';
           }
@@ -746,6 +790,12 @@
       return retStr;
     };
   }
+  /**
+   *
+   * @param {JamilihArray} args
+   * @returns {Element}
+   */
+
 
   function _optsOrUndefinedJML() {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -757,6 +807,8 @@
   /**
   * @private
   * @static
+  * @param {string} arg
+  * @returns {Element}
   */
 
 
@@ -764,8 +816,17 @@
     return jml(arg);
   }
   /**
+  * @typedef {JamilihAttributes} AttributeArray
+  * @property {string} 0 The key
+  * @property {string} 1 The value
+  */
+
+  /**
   * @private
   * @static
+  * @todo Deprecate as now there is predictable iteration order?
+  * @param {AttributeArray} attArr
+  * @returns {PlainObject}
   */
 
 
@@ -777,8 +838,16 @@
     return obj;
   }
   /**
+  * @callback ChildrenToJMLCallback
+  * @param {JamilihArray|Jamilih} childNodeJML
+  * @param {Integer} i
+  */
+
+  /**
   * @private
   * @static
+  * @param {Node} node
+  * @returns {ChildrenToJMLCallback}
   */
 
 
@@ -790,28 +859,44 @@
     };
   }
   /**
+  * @callback JamilihAppender
+  * @param {JamilihArray} childJML
+  * @returns {void}
+  */
+
+  /**
   * @private
   * @static
+  * @param {Node} node
+  * @returns {JamilihAppender}
   */
 
 
   function _appendJML(node) {
     return function (childJML) {
-      node.appendChild(jml.apply(void 0, _toConsumableArray$1(childJML)));
+      node.append(jml.apply(void 0, _toConsumableArray$1(childJML)));
     };
   }
   /**
+  * @callback appender
+  * @param {string|JamilihArray} childJML
+  * @returns {void}
+  */
+
+  /**
   * @private
   * @static
+  * @param {Node} node
+  * @returns {appender}
   */
 
 
   function _appendJMLOrText(node) {
     return function (childJML) {
       if (typeof childJML === 'string') {
-        node.appendChild(doc.createTextNode(childJML));
+        node.append(childJML);
       } else {
-        node.appendChild(jml.apply(void 0, _toConsumableArray$1(childJML)));
+        node.append(jml.apply(void 0, _toConsumableArray$1(childJML)));
       }
     };
   }
@@ -819,30 +904,44 @@
   * @private
   * @static
   function _DOMfromJMLOrString (childNodeJML) {
-      if (typeof childNodeJML === 'string') {
-          return doc.createTextNode(childNodeJML);
-      }
-      return jml(...childNodeJML);
+    if (typeof childNodeJML === 'string') {
+      return doc.createTextNode(childNodeJML);
+    }
+    return jml(...childNodeJML);
   }
   */
 
   /**
-   * Creates an XHTML or HTML element (XHTML is preferred, but only in browsers that support);
-   * Any element after element can be omitted, and any subsequent type or types added afterwards
-   * @requires polyfill: Array.isArray
-   * @requires polyfill: Array.prototype.reduce For returning a document fragment
-   * @requires polyfill: Element.prototype.dataset For dataset functionality (Will not work in IE <= 7)
-   * @param {String} el The element to create (by lower-case name)
-   * @param {Object} [atts] Attributes to add with the key as the attribute name and value as the
-   *                                               attribute value; important for IE where the input element's type cannot
-   *                                               be added later after already added to the page
-   * @param {DOMElement[]} [children] The optional children of this element (but raw DOM elements
-   *                                                                      required to be specified within arrays since
-   *                                                                      could not otherwise be distinguished from siblings being added)
-   * @param {DOMElement} [parent] The optional parent to which to attach the element (always the last
-   *                                                                  unless followed by null, in which case it is the second-to-last)
-   * @param {null} [returning] Can use null to indicate an array of elements should be returned
-   * @returns {DOMElement} The newly created (and possibly already appended) element or array of elements
+  * @typedef {Element|DocumentFragment} JamilihReturn
+  */
+
+  /**
+  * @typedef {PlainObject} JamilihAttributes
+  */
+
+  /**
+  * @typedef {GenericArray} JamilihArray
+  * @property {string} 0 The element to create (by lower-case name)
+  * @property {JamilihAttributes} [1] Attributes to add with the key as the
+  *   attribute name and value as the attribute value; important for IE where
+  *   the input element's type cannot be added later after already added to the page
+  * @param {Element[]} [children] The optional children of this element
+  *   (but raw DOM elements required to be specified within arrays since
+  *   could not otherwise be distinguished from siblings being added)
+  * @param {Element} [parent] The optional parent to which to attach the element
+  *   (always the last unless followed by null, in which case it is the
+  *   second-to-last)
+  * @param {null} [returning] Can use null to indicate an array of elements
+  *   should be returned
+  */
+
+  /**
+   * Creates an XHTML or HTML element (XHTML is preferred, but only in browsers
+   * that support); any element after element can be omitted, and any subsequent
+   * type or types added afterwards.
+   * @param {JamilihArray} args
+   * @returns {JamilihReturn} The newly created (and possibly already appended)
+   *   element or array of elements
    */
 
 
@@ -852,12 +951,17 @@
     }
 
     var elem = doc.createDocumentFragment();
+    /**
+     *
+     * @param {Object<{string: string}>} atts
+     * @returns {void}
+     */
 
     function _checkAtts(atts) {
       var att;
 
       for (att in atts) {
-        if (!atts.hasOwnProperty(att)) {
+        if (!{}.hasOwnProperty.call(atts, att)) {
           continue;
         }
 
@@ -865,7 +969,7 @@
         att = att in ATTR_MAP ? ATTR_MAP[att] : att;
 
         if (NULLABLES.includes(att)) {
-          if (attVal != null) {
+          if (!_isNullish(attVal)) {
             elem[att] = attVal;
           }
 
@@ -882,9 +986,9 @@
            0. {$xmlDocument: []} // doc.implementation.createDocument
            0. Accept array for any attribute with first item as prefix and second as value?
           0. {$: ['xhtml', 'div']} for prefixed elements
-              case '$': // Element with prefix?
-                  nodes[nodes.length] = elem = doc.createElementNS(attVal[0], attVal[1]);
-                  break;
+            case '$': // Element with prefix?
+              nodes[nodes.length] = elem = doc.createElementNS(attVal[0], attVal[1]);
+              break;
           */
           case '#':
             {
@@ -961,9 +1065,9 @@
                   return "break";
                 }
 
-                var getConstructor = function getConstructor(cb) {
+                var getConstructor = function getConstructor(cnstrct) {
                   var baseClass = options && options["extends"] ? doc.createElement(options["extends"]).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
-                  return cb ?
+                  return cnstrct ?
                   /*#__PURE__*/
                   function (_baseClass) {
                     _inherits$1(_class, _baseClass);
@@ -974,7 +1078,7 @@
                       _classCallCheck$1(this, _class);
 
                       _this = _possibleConstructorReturn$1(this, _getPrototypeOf$1(_class).call(this));
-                      cb.call(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
+                      cnstrct.call(_assertThisInitialized$1(_this));
                       return _this;
                     }
 
@@ -994,7 +1098,7 @@
                   }(baseClass);
                 };
 
-                var constructor = void 0,
+                var cnstrctr = void 0,
                     options = void 0,
                     prototype = void 0;
 
@@ -1002,25 +1106,25 @@
                   if (attVal.length <= 2) {
                     var _attVal = _slicedToArray$1(attVal, 2);
 
-                    constructor = _attVal[0];
+                    cnstrctr = _attVal[0];
                     options = _attVal[1];
 
                     if (typeof options === 'string') {
                       options = {
                         "extends": options
                       };
-                    } else if (!options.hasOwnProperty('extends')) {
+                    } else if (!{}.hasOwnProperty.call(options, 'extends')) {
                       prototype = options;
                     }
 
-                    if (_typeof$1(constructor) === 'object') {
-                      prototype = constructor;
-                      constructor = getConstructor();
+                    if (_typeof$1(cnstrctr) === 'object') {
+                      prototype = cnstrctr;
+                      cnstrctr = getConstructor();
                     }
                   } else {
                     var _attVal2 = _slicedToArray$1(attVal, 3);
 
-                    constructor = _attVal2[0];
+                    cnstrctr = _attVal2[0];
                     prototype = _attVal2[1];
                     options = _attVal2[2];
 
@@ -1031,14 +1135,14 @@
                     }
                   }
                 } else if (typeof attVal === 'function') {
-                  constructor = attVal;
+                  cnstrctr = attVal;
                 } else {
                   prototype = attVal;
-                  constructor = getConstructor();
+                  cnstrctr = getConstructor();
                 }
 
-                if (!constructor.toString().startsWith('class')) {
-                  constructor = getConstructor(constructor);
+                if (!cnstrctr.toString().startsWith('class')) {
+                  cnstrctr = getConstructor(cnstrctr);
                 }
 
                 if (!options && customizedBuiltIn) {
@@ -1048,10 +1152,10 @@
                 }
 
                 if (prototype) {
-                  Object.assign(constructor.prototype, prototype);
+                  Object.assign(cnstrctr.prototype, prototype);
                 }
 
-                customElements.define(def, constructor, customizedBuiltIn ? options : undefined);
+                customElements.define(def, cnstrctr, customizedBuiltIn ? options : undefined);
                 return "break";
               }();
 
@@ -1116,13 +1220,14 @@
               var _node2 = doc.implementation.createHTMLDocument();
 
               if (attVal.childNodes) {
+                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                 attVal.childNodes.forEach(_childrenToJML(_node2)); // Remove any extra nodes created by createHTMLDocument().
 
                 var j = attVal.childNodes.length;
 
                 while (_node2.childNodes[j]) {
                   var cn = _node2.childNodes[j];
-                  cn.parentNode.removeChild(cn);
+                  cn.remove();
                   j++;
                 }
               } else {
@@ -1142,7 +1247,7 @@
                 if (attVal.title || attVal.head) {
                   var meta = doc.createElement('meta');
                   meta.setAttribute('charset', 'utf-8');
-                  head.appendChild(meta);
+                  head.append(meta);
                 }
 
                 if (attVal.title) {
@@ -1150,10 +1255,12 @@
                 }
 
                 if (attVal.head) {
+                  // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                   attVal.head.forEach(_appendJML(head));
                 }
 
                 if (attVal.body) {
+                  // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                   attVal.body.forEach(_appendJMLOrText(_body));
                 }
               }
@@ -1167,7 +1274,7 @@
               /*
               // Todo:
               if (attVal.internalSubset) {
-                  node = {};
+                node = {};
               }
               else
               */
@@ -1179,7 +1286,9 @@
                   nodeName: attVal.name,
                   nodeValue: null,
                   nodeType: 10,
+                  // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                   entities: attVal.entities.map(_jmlSingleArg),
+                  // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                   notations: attVal.notations.map(_jmlSingleArg),
                   publicId: attVal.publicId,
                   systemId: attVal.systemId // internalSubset: // Todo
@@ -1198,13 +1307,13 @@
               /*
               // Todo: Should we auto-copy another node's properties/methods (like DocumentType) excluding or changing its non-entity node values?
               const node = {
-                  nodeName: attVal.name,
-                  nodeValue: null,
-                  publicId: attVal.publicId,
-                  systemId: attVal.systemId,
-                  notationName: attVal.notationName,
-                  nodeType: 6,
-                  childNodes: attVal.childNodes.map(_DOMfromJMLOrString)
+                nodeName: attVal.name,
+                nodeValue: null,
+                publicId: attVal.publicId,
+                systemId: attVal.systemId,
+                notationName: attVal.notationName,
+                nodeType: 6,
+                childNodes: attVal.childNodes.map(_DOMfromJMLOrString)
               };
               */
               break;
@@ -1228,7 +1337,7 @@
             {
               // Events
               for (var p2 in attVal) {
-                if (attVal.hasOwnProperty(p2)) {
+                if ({}.hasOwnProperty.call(attVal, p2)) {
                   var val = attVal[p2];
 
                   if (typeof val === 'function') {
@@ -1247,7 +1356,7 @@
 
           case 'className':
           case 'class':
-            if (attVal != null) {
+            if (!_isNullish(attVal)) {
               elem.className = attVal;
             }
 
@@ -1257,11 +1366,11 @@
             {
               var _ret2 = function () {
                 // Map can be keyed with hyphenated or camel-cased properties
-                var recurse = function recurse(attVal, startProp) {
+                var recurse = function recurse(atVal, startProp) {
                   var prop = '';
                   var pastInitialProp = startProp !== '';
-                  Object.keys(attVal).forEach(function (key) {
-                    var value = attVal[key];
+                  Object.keys(atVal).forEach(function (key) {
+                    var value = atVal[key];
 
                     if (pastInitialProp) {
                       prop = startProp + key.replace(hyphenForCamelCase, _upperCase).replace(/^([a-z])/, _upperCase);
@@ -1270,7 +1379,7 @@
                     }
 
                     if (value === null || _typeof$1(value) !== 'object') {
-                      if (value != null) {
+                      if (!_isNullish(value)) {
                         elem.dataset[prop] = value;
                       }
 
@@ -1286,13 +1395,13 @@
                 return "break"; // Todo: Disable this by default unless configuration explicitly allows (for security)
               }();
 
-              break;
+              if (_ret2 === "break") break;
             }
           // #if IS_REMOVE
           // Don't remove this `if` block (for sake of no-innerHTML build)
 
           case 'innerHTML':
-            if (attVal != null) {
+            if (!_isNullish(attVal)) {
               elem.innerHTML = attVal;
             }
 
@@ -1302,7 +1411,7 @@
           case 'htmlFor':
           case 'for':
             if (elStr === 'label') {
-              if (attVal != null) {
+              if (!_isNullish(attVal)) {
                 elem.htmlFor = attVal;
               }
 
@@ -1317,64 +1426,66 @@
             break;
 
           default:
-            if (att.match(/^on/)) {
-              elem[att] = attVal; // _addEvent(elem, att.slice(2), attVal, false); // This worked, but perhaps the user wishes only one event
+            {
+              if (att.startsWith('on')) {
+                elem[att] = attVal; // _addEvent(elem, att.slice(2), attVal, false); // This worked, but perhaps the user wishes only one event
 
-              break;
-            }
-
-            if (att === 'style') {
-              if (attVal == null) {
                 break;
               }
 
-              if (_typeof$1(attVal) === 'object') {
-                for (var _p in attVal) {
-                  if (attVal.hasOwnProperty(_p) && attVal[_p] != null) {
-                    // Todo: Handle aggregate properties like "border"
-                    if (_p === 'float') {
-                      elem.style.cssFloat = attVal[_p];
-                      elem.style.styleFloat = attVal[_p]; // Harmless though we could make conditional on older IE instead
-                    } else {
-                      elem.style[_p.replace(hyphenForCamelCase, _upperCase)] = attVal[_p];
+              if (att === 'style') {
+                if (_isNullish(attVal)) {
+                  break;
+                }
+
+                if (_typeof$1(attVal) === 'object') {
+                  for (var _p in attVal) {
+                    if ({}.hasOwnProperty.call(attVal, _p) && !_isNullish(attVal[_p])) {
+                      // Todo: Handle aggregate properties like "border"
+                      if (_p === 'float') {
+                        elem.style.cssFloat = attVal[_p];
+                        elem.style.styleFloat = attVal[_p]; // Harmless though we could make conditional on older IE instead
+                      } else {
+                        elem.style[_p.replace(hyphenForCamelCase, _upperCase)] = attVal[_p];
+                      }
                     }
                   }
+
+                  break;
+                } // setAttribute unfortunately erases any existing styles
+
+
+                elem.setAttribute(att, attVal);
+                /*
+                // The following reorders which is troublesome for serialization, e.g., as used in our testing
+                if (elem.style.cssText !== undefined) {
+                  elem.style.cssText += attVal;
+                } else { // Opera
+                  elem.style += attVal;
                 }
+                */
 
                 break;
-              } // setAttribute unfortunately erases any existing styles
+              }
 
+              var matchingPlugin = opts && opts.$plugins && opts.$plugins.find(function (p) {
+                return p.name === att;
+              });
+
+              if (matchingPlugin) {
+                matchingPlugin.set({
+                  element: elem,
+                  attribute: {
+                    name: att,
+                    value: attVal
+                  }
+                });
+                break;
+              }
 
               elem.setAttribute(att, attVal);
-              /*
-              // The following reorders which is troublesome for serialization, e.g., as used in our testing
-              if (elem.style.cssText !== undefined) {
-                  elem.style.cssText += attVal;
-              } else { // Opera
-                  elem.style += attVal;
-              }
-              */
-
               break;
             }
-
-            var matchingPlugin = opts && opts.$plugins && opts.$plugins.find(function (p) {
-              return p.name === att;
-            });
-
-            if (matchingPlugin) {
-              matchingPlugin.set({
-                element: elem,
-                attribute: {
-                  name: att,
-                  value: attVal
-                }
-              });
-              break;
-            }
-
-            elem.setAttribute(att, attVal);
-            break;
         }
       }
     }
@@ -1402,7 +1513,7 @@
 
       if ('$plugins' in opts) {
         if (!Array.isArray(opts.$plugins)) {
-          throw new Error('$plugins must be an array');
+          throw new TypeError('$plugins must be an array');
         }
 
         opts.$plugins.forEach(function (pluginObj) {
@@ -1460,6 +1571,10 @@
       var arg = args[i];
 
       switch (_getType(arg)) {
+        default:
+          // Todo: Throw here instead?
+          break;
+
         case 'null':
           // null always indicates a place-holder (only needed for last argument if want array returned)
           if (i === argc - 1) {
@@ -1467,7 +1582,8 @@
             // Todo: Fix to allow application of stylesheets of style tags within fragments?
 
 
-            return nodes.length <= 1 ? nodes[0] : nodes.reduce(_fragReducer, doc.createDocumentFragment()); // nodes;
+            return nodes.length <= 1 ? nodes[0] // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+            : nodes.reduce(_fragReducer, doc.createDocumentFragment()); // nodes;
           }
 
           break;
@@ -1480,38 +1596,39 @@
               break;
 
             case '?':
-              arg = args[++i];
-              var procValue = args[++i];
-              var val = procValue;
+              {
+                arg = args[++i];
+                var procValue = args[++i];
+                var val = procValue;
 
-              if (_typeof$1(val) === 'object') {
-                procValue = [];
+                if (_typeof$1(val) === 'object') {
+                  procValue = [];
 
-                for (var p in val) {
-                  if (val.hasOwnProperty(p)) {
-                    procValue.push(p + '=' + '"' + // https://www.w3.org/TR/xml-stylesheet/#NT-PseudoAttValue
-                    val[p].replace(/"/g, '&quot;') + '"');
+                  for (var p in val) {
+                    if ({}.hasOwnProperty.call(val, p)) {
+                      procValue.push(p + '=' + '"' + // https://www.w3.org/TR/xml-stylesheet/#NT-PseudoAttValue
+                      val[p].replace(/"/g, '&quot;') + '"');
+                    }
                   }
+
+                  procValue = procValue.join(' ');
+                } // Firefox allows instructions with ">" in this method, but not if placed directly!
+
+
+                try {
+                  nodes[nodes.length] = doc.createProcessingInstruction(arg, procValue);
+                } catch (e) {
+                  // Getting NotSupportedError in IE, so we try to imitate a processing instruction with a comment
+                  // innerHTML didn't work
+                  // var elContainer = doc.createElement('div');
+                  // elContainer.innerHTML = '<?' + doc.createTextNode(arg + ' ' + procValue).nodeValue + '?>';
+                  // nodes[nodes.length] = elContainer.innerHTML;
+                  // Todo: any other way to resolve? Just use XML?
+                  nodes[nodes.length] = doc.createComment('?' + arg + ' ' + procValue + '?');
                 }
 
-                procValue = procValue.join(' ');
-              } // Firefox allows instructions with ">" in this method, but not if placed directly!
-
-
-              try {
-                nodes[nodes.length] = doc.createProcessingInstruction(arg, procValue);
-              } catch (e) {
-                // Getting NotSupportedError in IE, so we try to imitate a processing instruction with a comment
-                // innerHTML didn't work
-                // var elContainer = doc.createElement('div');
-                // elContainer.innerHTML = '<?' + doc.createTextNode(arg + ' ' + procValue).nodeValue + '?>';
-                // nodes[nodes.length] = elContainer.innerHTML;
-                // Todo: any other way to resolve? Just use XML?
-                nodes[nodes.length] = doc.createComment('?' + arg + ' ' + procValue + '?');
+                break; // Browsers don't support doc.createEntityReference, so we just use this as a convenience
               }
-
-              break;
-            // Browsers don't support doc.createEntityReference, so we just use this as a convenience
 
             case '&':
               nodes[nodes.length] = _createSafeReference('entity', '', args[++i]);
@@ -1547,10 +1664,10 @@
               {
                 // An element
                 elStr = arg;
-                var _atts = args[i + 1]; // Todo: Fix this to depend on XML/config, not availability of methods
+                var atts = args[i + 1]; // Todo: Fix this to depend on XML/config, not availability of methods
 
-                if (_getType(_atts) === 'object' && _atts.is) {
-                  var is = _atts.is;
+                if (_getType(atts) === 'object' && atts.is) {
+                  var is = atts.is;
 
                   if (doc.createElementNS) {
                     elem = doc.createElementNS(NS_HTML, elStr, {
@@ -1561,12 +1678,10 @@
                       is: is
                     });
                   }
+                } else if (doc.createElementNS) {
+                  elem = doc.createElementNS(NS_HTML, elStr);
                 } else {
-                  if (doc.createElementNS) {
-                    elem = doc.createElementNS(NS_HTML, elStr);
-                  } else {
-                    elem = doc.createElement(elStr);
-                  }
+                  elem = doc.createElement(elStr);
                 }
 
                 nodes[nodes.length] = elem; // Add to parent
@@ -1578,31 +1693,35 @@
           break;
 
         case 'object':
-          // Non-DOM-element objects indicate attribute-value pairs
-          var atts = arg;
+          {
+            // Non-DOM-element objects indicate attribute-value pairs
+            var _atts = arg;
 
-          if (atts.xmlns !== undefined) {
-            // We handle this here, as otherwise may lose events, etc.
-            // As namespace of element already set as XHTML, we need to change the namespace
-            // elem.setAttribute('xmlns', atts.xmlns); // Doesn't work
-            // Can't set namespaceURI dynamically, renameNode() is not supported, and setAttribute() doesn't work to change the namespace, so we resort to this hack
-            var replacer = void 0;
+            if (_atts.xmlns !== undefined) {
+              // We handle this here, as otherwise may lose events, etc.
+              // As namespace of element already set as XHTML, we need to change the namespace
+              // elem.setAttribute('xmlns', atts.xmlns); // Doesn't work
+              // Can't set namespaceURI dynamically, renameNode() is not supported, and setAttribute() doesn't work to change the namespace, so we resort to this hack
+              var replacer = void 0;
 
-            if (_typeof$1(atts.xmlns) === 'object') {
-              replacer = _replaceDefiner(atts.xmlns);
-            } else {
-              replacer = ' xmlns="' + atts.xmlns + '"';
-            } // try {
-            // Also fix DOMParser to work with text/html
+              if (_typeof$1(_atts.xmlns) === 'object') {
+                replacer = _replaceDefiner(_atts.xmlns);
+              } else {
+                replacer = ' xmlns="' + _atts.xmlns + '"';
+              } // try {
+              // Also fix DOMParser to work with text/html
 
 
-            elem = nodes[nodes.length - 1] = new DOMParser().parseFromString(new XmlSerializer().serializeToString(elem) // Mozilla adds XHTML namespace
-            .replace(' xmlns="' + NS_HTML + '"', replacer), 'application/xml').documentElement; // }catch(e) {alert(elem.outerHTML);throw e;}
+              elem = nodes[nodes.length - 1] = new DOMParser().parseFromString(new XmlSerializer().serializeToString(elem) // Mozilla adds XHTML namespace
+              .replace(' xmlns="' + NS_HTML + '"', replacer), 'application/xml').documentElement; // }catch(e) {alert(elem.outerHTML);throw e;}
+            } // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+
+
+            var orderedArr = _atts.$a ? _atts.$a.map(_copyOrderedAtts) : [_atts]; // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+
+            orderedArr.forEach(_checkAtts);
+            break;
           }
-
-          var orderedArr = atts.$a ? atts.$a.map(_copyOrderedAtts) : [atts];
-          orderedArr.forEach(_checkAtts);
-          break;
 
         case 'fragment':
         case 'element':
@@ -1633,46 +1752,48 @@
           break;
 
         case 'array':
-          // Arrays or arrays of arrays indicate child nodes
-          var child = arg;
-          var cl = child.length;
+          {
+            // Arrays or arrays of arrays indicate child nodes
+            var child = arg;
+            var cl = child.length;
 
-          for (var j = 0; j < cl; j++) {
-            // Go through children array container to handle elements
-            var childContent = child[j];
+            for (var j = 0; j < cl; j++) {
+              // Go through children array container to handle elements
+              var childContent = child[j];
 
-            var childContentType = _typeof$1(childContent);
+              var childContentType = _typeof$1(childContent);
 
-            if (childContent === undefined) {
-              throw String('Parent array:' + JSON.stringify(args) + '; child: ' + child + '; index:' + j);
+              if (childContent === undefined) {
+                throw String('Parent array:' + JSON.stringify(args) + '; child: ' + child + '; index:' + j);
+              }
+
+              switch (childContentType) {
+                // Todo: determine whether null or function should have special handling or be converted to text
+                case 'string':
+                case 'number':
+                case 'boolean':
+                  _appendNode(elem, doc.createTextNode(childContent));
+
+                  break;
+
+                default:
+                  if (Array.isArray(childContent)) {
+                    // Arrays representing child elements
+                    _appendNode(elem, _optsOrUndefinedJML.apply(void 0, [opts].concat(_toConsumableArray$1(childContent))));
+                  } else if (childContent['#']) {
+                    // Fragment
+                    _appendNode(elem, _optsOrUndefinedJML(opts, childContent['#']));
+                  } else {
+                    // Single DOM element children
+                    _appendNode(elem, childContent);
+                  }
+
+                  break;
+              }
             }
 
-            switch (childContentType) {
-              // Todo: determine whether null or function should have special handling or be converted to text
-              case 'string':
-              case 'number':
-              case 'boolean':
-                _appendNode(elem, doc.createTextNode(childContent));
-
-                break;
-
-              default:
-                if (Array.isArray(childContent)) {
-                  // Arrays representing child elements
-                  _appendNode(elem, _optsOrUndefinedJML.apply(void 0, [opts].concat(_toConsumableArray$1(childContent))));
-                } else if (childContent['#']) {
-                  // Fragment
-                  _appendNode(elem, _optsOrUndefinedJML(opts, childContent['#']));
-                } else {
-                  // Single DOM element children
-                  _appendNode(elem, childContent);
-                }
-
-                break;
-            }
+            break;
           }
-
-          break;
       }
     }
 
@@ -1685,13 +1806,13 @@
     return ret;
   };
   /**
-  * Converts a DOM object or a string of HTML into a Jamilih object (or string)
+  * Converts a DOM object or a string of HTML into a Jamilih object (or string).
   * @param {string|HTMLElement} [dom=document.documentElement] Defaults to converting the current document.
-  * @param {object} [config={stringOutput:false}] Configuration object
+  * @param {PlainObject} [config] Configuration object
   * @param {boolean} [config.stringOutput=false] Whether to output the Jamilih object as a string.
-  * @returns {array|string} Array containing the elements which represent a Jamilih object, or,
-                              if `stringOutput` is true, it will be the stringified version of
-                              such an object
+  * @returns {JamilihArray|string} Array containing the elements which represent
+  * a Jamilih object, or, if `stringOutput` is true, it will be the stringified
+  * version of such an object
   */
 
 
@@ -1707,12 +1828,18 @@
     var ret = [];
     var parent = ret;
     var parentIdx = 0;
+    /**
+     *
+     * @throws {DOMException}
+     * @returns {void}
+     */
 
     function invalidStateError() {
       // These are probably only necessary if working with text/html
-      function DOMException() {
-        return this;
-      }
+      // eslint-disable-next-line no-shadow
+      var DOMException = function DOMException() {
+        _classCallCheck$1(this, DOMException);
+      };
 
       {
         // INVALID_STATE_ERR per section 9.3 XHTML 5: http://www.w3.org/TR/html5/the-xhtml-syntax.html
@@ -1722,14 +1849,21 @@
         throw e;
       }
     }
+    /**
+     *
+     * @param {DocumentType|Entity|Notation} obj
+     * @param {Node} node
+     * @returns {void}
+     */
+
 
     function addExternalID(obj, node) {
       if (node.systemId.includes('"') && node.systemId.includes("'")) {
         invalidStateError();
       }
 
-      var publicId = node.publicId;
-      var systemId = node.systemId;
+      var publicId = node.publicId,
+          systemId = node.systemId;
 
       if (systemId) {
         obj.systemId = systemId;
@@ -1739,17 +1873,34 @@
         obj.publicId = publicId;
       }
     }
+    /**
+     *
+     * @param {any} val
+     * @returns {void}
+     */
+
 
     function set(val) {
       parent[parentIdx] = val;
       parentIdx++;
     }
+    /**
+     * @returns {void}
+     */
+
 
     function setChildren() {
       set([]);
       parent = parent[parentIdx - 1];
       parentIdx = 0;
     }
+    /**
+     *
+     * @param {string} prop1
+     * @param {string} prop2
+     * @returns {void}
+     */
+
 
     function setObj(prop1, prop2) {
       parent = parent[parentIdx - 1][prop1];
@@ -1759,29 +1910,43 @@
         parent = parent[prop2];
       }
     }
+    /**
+     *
+     * @param {Node} node
+     * @param {object<{string: string}>} namespaces
+     * @returns {void}
+     */
+
 
     function parseDOM(node, namespaces) {
       // namespaces = clone(namespaces) || {}; // Ensure we're working with a copy, so different levels in the hierarchy can treat it differently
 
       /*
       if ((node.prefix && node.prefix.includes(':')) || (node.localName && node.localName.includes(':'))) {
-          invalidStateError();
+        invalidStateError();
       }
       */
       var type = 'nodeType' in node ? node.nodeType : null;
-      namespaces = Object.assign({}, namespaces);
-      var xmlChars = /([\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]|[\uD800-\uDBFF][\uDC00-\uDFFF])*$/; // eslint-disable-line no-control-regex
+      namespaces = _objectSpread2({}, namespaces);
+      var xmlChars = /([\t\n\r -\uD7FF\uE000-\uFFFD]|(?:[\uD800-\uDBFF](?![\uDC00-\uDFFF]))(?:(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))*$/; // eslint-disable-line no-control-regex
 
       if ([2, 3, 4, 7, 8].includes(type) && !xmlChars.test(node.nodeValue)) {
         invalidStateError();
       }
 
       var children, start, tmpParent, tmpParentIdx;
+      /**
+       * @returns {void}
+       */
 
       function setTemp() {
         tmpParent = parent;
         tmpParentIdx = parentIdx;
       }
+      /**
+       * @returns {void}
+       */
+
 
       function resetTemp() {
         parent = tmpParent;
@@ -1791,52 +1956,54 @@
 
       switch (type) {
         case 1:
-          // ELEMENT
-          setTemp();
-          var nodeName = node.nodeName.toLowerCase(); // Todo: for XML, should not lower-case
+          {
+            // ELEMENT
+            setTemp();
+            var nodeName = node.nodeName.toLowerCase(); // Todo: for XML, should not lower-case
 
-          setChildren(); // Build child array since elements are, except at the top level, encapsulated in arrays
+            setChildren(); // Build child array since elements are, except at the top level, encapsulated in arrays
 
-          set(nodeName);
-          start = {};
-          var hasNamespaceDeclaration = false;
+            set(nodeName);
+            start = {};
+            var hasNamespaceDeclaration = false;
 
-          if (namespaces[node.prefix || ''] !== node.namespaceURI) {
-            namespaces[node.prefix || ''] = node.namespaceURI;
+            if (namespaces[node.prefix || ''] !== node.namespaceURI) {
+              namespaces[node.prefix || ''] = node.namespaceURI;
 
-            if (node.prefix) {
-              start['xmlns:' + node.prefix] = node.namespaceURI;
-            } else if (node.namespaceURI) {
-              start.xmlns = node.namespaceURI;
+              if (node.prefix) {
+                start['xmlns:' + node.prefix] = node.namespaceURI;
+              } else if (node.namespaceURI) {
+                start.xmlns = node.namespaceURI;
+              }
+
+              hasNamespaceDeclaration = true;
             }
 
-            hasNamespaceDeclaration = true;
+            if (node.attributes.length) {
+              set(_toConsumableArray$1(node.attributes).reduce(function (obj, att) {
+                obj[att.name] = att.value; // Attr.nodeName and Attr.nodeValue are deprecated as of DOM4 as Attr no longer inherits from Node, so we can safely use name and value
+
+                return obj;
+              }, start));
+            } else if (hasNamespaceDeclaration) {
+              set(start);
+            }
+
+            children = node.childNodes;
+
+            if (children.length) {
+              setChildren(); // Element children array container
+
+              _toConsumableArray$1(children).forEach(function (childNode) {
+                parseDOM(childNode, namespaces);
+              });
+            }
+
+            resetTemp();
+            break;
           }
 
-          if (node.attributes.length) {
-            set(Array.from(node.attributes).reduce(function (obj, att) {
-              obj[att.name] = att.value; // Attr.nodeName and Attr.nodeValue are deprecated as of DOM4 as Attr no longer inherits from Node, so we can safely use name and value
-
-              return obj;
-            }, start));
-          } else if (hasNamespaceDeclaration) {
-            set(start);
-          }
-
-          children = node.childNodes;
-
-          if (children.length) {
-            setChildren(); // Element children array container
-
-            Array.from(children).forEach(function (childNode) {
-              parseDOM(childNode, namespaces);
-            });
-          }
-
-          resetTemp();
-          break;
-
-        case undefined: // Treat as attribute node until this is fixed: https://github.com/tmpvar/jsdom/issues/1641 / https://github.com/tmpvar/jsdom/pull/1822
+        case undefined: // Treat as attribute node until this is fixed: https://github.com/jsdom/jsdom/issues/1641 / https://github.com/jsdom/jsdom/pull/1822
 
         case 2:
           // ATTRIBUTE (should only get here if passing in an attribute node)
@@ -1847,7 +2014,7 @@
 
         case 3:
           // TEXT
-          if (config.stripWhitespace && /^\s+$/.test(node.nodeValue)) {
+          if (config.stripWhitespace && /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+$/.test(node.nodeValue)) {
             return;
           }
 
@@ -1902,7 +2069,8 @@
             start.$ENTITY.childNodes = []; // Set position to $ENTITY's childNodes array children
 
             setObj('$ENTITY', 'childNodes');
-            Array.from(children).forEach(function (childNode) {
+
+            _toConsumableArray$1(children).forEach(function (childNode) {
               parseDOM(childNode, namespaces);
             });
           }
@@ -1942,90 +2110,98 @@
           break;
 
         case 9:
-          // DOCUMENT
-          setTemp();
-          var docObj = {
-            $document: {
-              childNodes: []
-            }
-          };
-
-          if (config.xmlDeclaration) {
-            docObj.$document.xmlDeclaration = {
-              version: doc.xmlVersion,
-              encoding: doc.xmlEncoding,
-              standAlone: doc.xmlStandalone
+          {
+            // DOCUMENT
+            setTemp();
+            var docObj = {
+              $document: {
+                childNodes: []
+              }
             };
+
+            if (config.xmlDeclaration) {
+              docObj.$document.xmlDeclaration = {
+                version: doc.xmlVersion,
+                encoding: doc.xmlEncoding,
+                standAlone: doc.xmlStandalone
+              };
+            }
+
+            set(docObj); // doc.implementation.createHTMLDocument
+            // Set position to fragment's array children
+
+            setObj('$document', 'childNodes');
+            children = node.childNodes;
+
+            if (!children.length) {
+              invalidStateError();
+            } // set({$xmlDocument: []}); // doc.implementation.createDocument // Todo: use this conditionally
+
+
+            _toConsumableArray$1(children).forEach(function (childNode) {
+              // Can't just do documentElement as there may be doctype, comments, etc.
+              // No need for setChildren, as we have already built the container array
+              parseDOM(childNode, namespaces);
+            });
+
+            resetTemp();
+            break;
           }
-
-          set(docObj); // doc.implementation.createHTMLDocument
-          // Set position to fragment's array children
-
-          setObj('$document', 'childNodes');
-          children = node.childNodes;
-
-          if (!children.length) {
-            invalidStateError();
-          } // set({$xmlDocument: []}); // doc.implementation.createDocument // Todo: use this conditionally
-
-
-          Array.from(children).forEach(function (childNode) {
-            // Can't just do documentElement as there may be doctype, comments, etc.
-            // No need for setChildren, as we have already built the container array
-            parseDOM(childNode, namespaces);
-          });
-          resetTemp();
-          break;
 
         case 10:
-          // DOCUMENT TYPE
-          setTemp(); // Can create directly by doc.implementation.createDocumentType
+          {
+            // DOCUMENT TYPE
+            setTemp(); // Can create directly by doc.implementation.createDocumentType
 
-          start = {
-            $DOCTYPE: {
-              name: node.name
+            start = {
+              $DOCTYPE: {
+                name: node.name
+              }
+            };
+
+            if (node.internalSubset) {
+              start.internalSubset = node.internalSubset;
             }
-          };
 
-          if (node.internalSubset) {
-            start.internalSubset = node.internalSubset;
+            var pubIdChar = /^( |\r|\n|[0-9A-Za-z]|[!#-%'-\/:;=\?@_])*$/; // eslint-disable-line no-control-regex
+
+            if (!pubIdChar.test(node.publicId)) {
+              invalidStateError();
+            }
+
+            addExternalID(start.$DOCTYPE, node); // Fit in internal subset along with entities?: probably don't need as these would only differ if from DTD, and we're not rebuilding the DTD
+
+            set(start); // Auto-generate the internalSubset instead? Avoid entities/notations in favor of array to preserve order?
+
+            var entities = node.entities; // Currently deprecated
+
+            if (entities && entities.length) {
+              start.$DOCTYPE.entities = [];
+              setObj('$DOCTYPE', 'entities');
+
+              _toConsumableArray$1(entities).forEach(function (entity) {
+                parseDOM(entity, namespaces);
+              }); // Reset for notations
+
+
+              parent = tmpParent;
+              parentIdx = tmpParentIdx + 1;
+            }
+
+            var notations = node.notations; // Currently deprecated
+
+            if (notations && notations.length) {
+              start.$DOCTYPE.notations = [];
+              setObj('$DOCTYPE', 'notations');
+
+              _toConsumableArray$1(notations).forEach(function (notation) {
+                parseDOM(notation, namespaces);
+              });
+            }
+
+            resetTemp();
+            break;
           }
-
-          var pubIdChar = /^(\u0020|\u000D|\u000A|[a-zA-Z0-9]|[-'()+,./:=?;!*#@$_%])*$/; // eslint-disable-line no-control-regex
-
-          if (!pubIdChar.test(node.publicId)) {
-            invalidStateError();
-          }
-
-          addExternalID(start.$DOCTYPE, node); // Fit in internal subset along with entities?: probably don't need as these would only differ if from DTD, and we're not rebuilding the DTD
-
-          set(start); // Auto-generate the internalSubset instead? Avoid entities/notations in favor of array to preserve order?
-
-          var entities = node.entities; // Currently deprecated
-
-          if (entities && entities.length) {
-            start.$DOCTYPE.entities = [];
-            setObj('$DOCTYPE', 'entities');
-            Array.from(entities).forEach(function (entity) {
-              parseDOM(entity, namespaces);
-            }); // Reset for notations
-
-            parent = tmpParent;
-            parentIdx = tmpParentIdx + 1;
-          }
-
-          var notations = node.notations; // Currently deprecated
-
-          if (notations && notations.length) {
-            start.$DOCTYPE.notations = [];
-            setObj('$DOCTYPE', 'notations');
-            Array.from(notations).forEach(function (notation) {
-              parseDOM(notation, namespaces);
-            });
-          }
-
-          resetTemp();
-          break;
 
         case 11:
           // DOCUMENT FRAGMENT
@@ -2036,10 +2212,12 @@
 
           setObj('#');
           children = node.childNodes;
-          Array.from(children).forEach(function (childNode) {
+
+          _toConsumableArray$1(children).forEach(function (childNode) {
             // No need for setChildren, as we have already built the container array
             parseDOM(childNode, namespaces);
           });
+
           resetTemp();
           break;
 
@@ -2073,11 +2251,23 @@
       stringOutput: true
     }));
   };
+  /**
+   *
+   * @param {JamilihArray} args
+   * @returns {JamilihReturn}
+   */
+
 
   jml.toDOM = function () {
     // Alias for jml()
     return jml.apply(void 0, arguments);
   };
+  /**
+   *
+   * @param {JamilihArray} args
+   * @returns {string}
+   */
+
 
   jml.toHTML = function () {
     // Todo: Replace this with version of jml() that directly builds a string
@@ -2085,16 +2275,34 @@
 
     return ret.outerHTML;
   };
+  /**
+   *
+   * @param {JamilihArray} args
+   * @returns {string}
+   */
+
 
   jml.toDOMString = function () {
     // Alias for jml.toHTML for parity with jml.toJMLString
     return jml.toHTML.apply(jml, arguments);
   };
+  /**
+   *
+   * @param {JamilihArray} args
+   * @returns {string}
+   */
+
 
   jml.toXML = function () {
     var ret = jml.apply(void 0, arguments);
     return new XmlSerializer().serializeToString(ret);
   };
+  /**
+   *
+   * @param {JamilihArray} args
+   * @returns {string}
+   */
+
 
   jml.toXMLDOMString = function () {
     // Alias for jml.toXML for parity with jml.toJMLString
@@ -2114,7 +2322,7 @@
 
     _createClass(JamilihMap, [{
       key: "get",
-      value: function get$$1(elem) {
+      value: function get(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
         return _get(_getPrototypeOf$1(JamilihMap.prototype), "get", this).call(this, elem);
       }
@@ -2155,7 +2363,7 @@
 
     _createClass(JamilihWeakMap, [{
       key: "get",
-      value: function get$$1(elem) {
+      value: function get(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
         return _get(_getPrototypeOf$1(JamilihWeakMap.prototype), "get", this).call(this, elem);
       }
@@ -2218,6 +2426,8 @@
   };
 
   jml.command = function (elem, symOrMap, methodName) {
+    var _func3;
+
     elem = typeof elem === 'string' ? $(elem) : elem;
     var func;
 
@@ -2235,20 +2445,17 @@
       }
 
       return (_func = func)[methodName].apply(_func, args);
-    } else {
-      var _func3;
+    }
 
-      func = symOrMap.get(elem);
+    func = symOrMap.get(elem);
 
-      if (typeof func === 'function') {
-        var _func2;
+    if (typeof func === 'function') {
+      var _func2;
 
-        return (_func2 = func).call.apply(_func2, [elem, methodName].concat(args));
-      }
+      return (_func2 = func).call.apply(_func2, [elem, methodName].concat(args));
+    }
 
-      return (_func3 = func)[methodName].apply(_func3, [elem].concat(args));
-    } // return func[methodName].call(elem, ...args);
-
+    return (_func3 = func)[methodName].apply(_func3, [elem].concat(args)); // return func[methodName].call(elem, ...args);
   };
 
   jml.setWindow = function (wind) {
@@ -2279,7 +2486,8 @@
     return XmlSerializer;
   };
 
-  var body = doc && doc.body;
+  var body = doc && doc.body; // eslint-disable-line import/no-mutable-exports
+
   var nbsp = "\xA0"; // Very commonly needed in templates
 
   /**
@@ -3009,259 +3217,230 @@
   /**
    * Shows results after query submission.
    * @param {string} url
-   * @returns {void}
+   * @returns {Promise<void>}
    */
 
-  function processResults(_x) {
-    return _processResults.apply(this, arguments);
-  }
+  function processResults(url) {
+    var queryLink, r, json, payload, _json$info, numResults, pages, currentPage, semiColonSep;
 
-  function _processResults() {
-    _processResults = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee3(url) {
-      var queryLink, r, json, payload, _json$info, numResults, pages, currentPage, semiColonSep;
-
-      return regeneratorRuntime.wrap(function _callee3$(_context3) {
-        while (1) {
-          switch (_context3.prev = _context3.next) {
-            case 0:
-              queryLink = function _ref4(query) {
-                return ['a', {
-                  href: jsVoid,
-                  dataset: {
-                    value: query
-                  },
-                  $on: {
-                    click: function click(e) {
-                      e.preventDefault();
-                      var value = this.dataset.value;
-                      $$1('#query')[0].$set(value);
-                      $$1('#openclipart')[0].$submit();
-                    }
+    return regeneratorRuntime.async(function processResults$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            queryLink = function _ref2(query) {
+              return ['a', {
+                href: jsVoid,
+                dataset: {
+                  value: query
+                },
+                $on: {
+                  click: function click(e) {
+                    e.preventDefault();
+                    var value = this.dataset.value;
+                    $$1('#query')[0].$set(value);
+                    $$1('#openclipart')[0].$submit();
                   }
-                }, [query]];
-              };
+                }
+              }, [query]];
+            };
 
-              _context3.next = 3;
-              return fetch(url);
+            _context2.next = 3;
+            return regeneratorRuntime.awrap(fetch(url));
 
-            case 3:
-              r = _context3.sent;
-              _context3.next = 6;
-              return r.json();
+          case 3:
+            r = _context2.sent;
+            _context2.next = 6;
+            return regeneratorRuntime.awrap(r.json());
 
-            case 6:
-              json = _context3.sent;
+          case 6:
+            json = _context2.sent;
 
-              if (!(!json || json.msg !== 'success')) {
-                _context3.next = 10;
-                break;
-              }
+            if (!(!json || json.msg !== 'success')) {
+              _context2.next = 10;
+              break;
+            }
 
-              // Todo: This could use a generic alert library instead
-              alert('There was a problem downloading the results'); // eslint-disable-line no-alert
+            // Todo: This could use a generic alert library instead
+            alert('There was a problem downloading the results'); // eslint-disable-line no-alert
 
-              return _context3.abrupt("return");
+            return _context2.abrupt("return");
 
-            case 10:
-              payload = json.payload, _json$info = json.info, numResults = _json$info.results, pages = _json$info.pages, currentPage = _json$info.current_page; // $('#page')[0].value = currentPage;
-              // $('#page')[0].max = pages;
-              // Unused properties:
-              // - `svg_filesize` always 0?
-              // - `dimensions: {
-              //      png_thumb: {width, height},
-              //      png_full_lossy: {width, height}
-              //    }` object of relevance?
-              // - No need for `tags` with `tags_array`
-              // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
+          case 10:
+            payload = json.payload, _json$info = json.info, numResults = _json$info.results, pages = _json$info.pages, currentPage = _json$info.current_page; // $('#page')[0].value = currentPage;
+            // $('#page')[0].max = pages;
+            // Unused properties:
+            // - `svg_filesize` always 0?
+            // - `dimensions: {
+            //      png_thumb: {width, height},
+            //      png_full_lossy: {width, height}
+            //    }` object of relevance?
+            // - No need for `tags` with `tags_array`
+            // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
 
-              semiColonSep = '; ' + nbsp;
-              $$1('#results').jml('div', [['span', ['Number of results: ', numResults]], semiColonSep, ['span', ['page ', currentPage, ' out of ', pages]]].concat(_toConsumableArray(payload.map(function (_ref3) {
-                var title = _ref3.title,
-                    description = _ref3.description,
-                    id = _ref3.id,
-                    uploader = _ref3.uploader,
-                    created = _ref3.created,
-                    svgURL = _ref3.svg.url,
-                    detailLink = _ref3.detail_link,
-                    tagsArray = _ref3.tags_array,
-                    downloadedBy = _ref3.downloaded_by,
-                    totalFavorites = _ref3.total_favorites;
-                var imgHW = '100px';
-                var colonSep = ': ' + nbsp;
-                return ['div', [['button', {
-                  style: 'margin-right: 8px; border: 2px solid black;',
-                  dataset: {
-                    id: id,
-                    value: svgURL
-                  },
-                  $on: {
-                    click: function () {
-                      var _click = _asyncToGenerator(
-                      /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee2(e) {
-                        var svgurl, post, result, svg;
-                        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                          while (1) {
-                            switch (_context2.prev = _context2.next) {
-                              case 0:
-                                e.preventDefault();
-                                svgurl = this.dataset.value; // console.log('this', id, svgurl);
+            semiColonSep = '; ' + nbsp;
+            $$1('#results').jml('div', [['span', ['Number of results: ', numResults]], semiColonSep, ['span', ['page ', currentPage, ' out of ', pages]]].concat(_toConsumableArray(payload.map(function (_ref) {
+              var title = _ref.title,
+                  description = _ref.description,
+                  id = _ref.id,
+                  uploader = _ref.uploader,
+                  created = _ref.created,
+                  svgURL = _ref.svg.url,
+                  detailLink = _ref.detail_link,
+                  tagsArray = _ref.tags_array,
+                  downloadedBy = _ref.downloaded_by,
+                  totalFavorites = _ref.total_favorites;
+              var imgHW = '100px';
+              var colonSep = ': ' + nbsp;
+              return ['div', [['button', {
+                style: 'margin-right: 8px; border: 2px solid black;',
+                dataset: {
+                  id: id,
+                  value: svgURL
+                },
+                $on: {
+                  click: function click(e) {
+                    var svgurl, post, result, svg;
+                    return regeneratorRuntime.async(function click$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            e.preventDefault();
+                            svgurl = this.dataset.value; // console.log('this', id, svgurl);
 
-                                post = function post(message) {
-                                  // Todo: Make origin customizable as set by opening window
-                                  // Todo: If dropping IE9, avoid stringifying
-                                  window.parent.postMessage(JSON.stringify(_extends({
-                                    namespace: 'imagelib'
-                                  }, message)), '*');
-                                }; // Send metadata (also indicates file is about to be sent)
+                            post = function post(message) {
+                              // Todo: Make origin customizable as set by opening window
+                              // Todo: If dropping IE9, avoid stringifying
+                              window.parent.postMessage(JSON.stringify(_extends({
+                                namespace: 'imagelib'
+                              }, message)), '*');
+                            }; // Send metadata (also indicates file is about to be sent)
 
 
-                                post({
-                                  name: title,
-                                  id: svgurl
-                                });
-                                _context2.next = 6;
-                                return fetch(svgurl);
+                            post({
+                              name: title,
+                              id: svgurl
+                            });
+                            _context.next = 6;
+                            return regeneratorRuntime.awrap(fetch(svgurl));
 
-                              case 6:
-                                result = _context2.sent;
-                                _context2.next = 9;
-                                return result.text();
+                          case 6:
+                            result = _context.sent;
+                            _context.next = 9;
+                            return regeneratorRuntime.awrap(result.text());
 
-                              case 9:
-                                svg = _context2.sent;
-                                // console.log('url and svg', svgurl, svg);
-                                post({
-                                  href: svgurl,
-                                  data: svg
-                                });
+                          case 9:
+                            svg = _context.sent;
+                            // console.log('url and svg', svgurl, svg);
+                            post({
+                              href: svgurl,
+                              data: svg
+                            });
 
-                              case 11:
-                              case "end":
-                                return _context2.stop();
-                            }
-                          }
-                        }, _callee2, this);
-                      }));
-
-                      function click(_x2) {
-                        return _click.apply(this, arguments);
+                          case 11:
+                          case "end":
+                            return _context.stop();
+                        }
                       }
+                    }, null, this);
+                  }
+                }
+              }, [// If we wanted interactive versions despite security risk:
+              // ['object', {data: svgURL, type: 'image/svg+xml'}]
+              ['img', {
+                src: svgURL,
+                style: "width: ".concat(imgHW, "; height: ").concat(imgHW, ";")
+              }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
+                href: jsVoid,
+                dataset: {
+                  value: id
+                },
+                $on: {
+                  click: function click(e) {
+                    e.preventDefault();
+                    var value = this.dataset.value;
+                    $$1('#byids')[0].$set(value);
+                    $$1('#openclipart')[0].$submit();
+                  }
+                }
+              }, [id]], ')']], ' ', ['i', [['a', {
+                href: detailLink,
+                target: '_blank'
+              }, ['Details']]]], ['br'], ['span', [['u', ['Uploaded by']], colonSep, queryLink(uploader), semiColonSep]], ['span', [['u', ['Download count']], colonSep, downloadedBy, semiColonSep]], ['span', [['u', ['Times used as favorite']], colonSep, totalFavorites, semiColonSep]], ['span', [['u', ['Created date']], colonSep, created]], ['br'], ['u', ['Tags']], colonSep].concat(_toConsumableArray(tagsArray.map(function (tag) {
+                return ['span', [' ', queryLink(tag)]];
+              })))];
+            })), [['br'], ['br'], currentPage === 1 || pages <= 2 ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = 1;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['First']], ' ']], currentPage === 1 ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = currentPage - 1;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['Prev']], ' ']], currentPage === pages ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = currentPage + 1;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['Next']], ' ']], currentPage === pages || pages <= 2 ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = pages;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['Last']], ' ']]]));
 
-                      return click;
-                    }()
-                  }
-                }, [// If we wanted interactive versions despite security risk:
-                // ['object', {data: svgURL, type: 'image/svg+xml'}]
-                ['img', {
-                  src: svgURL,
-                  style: "width: ".concat(imgHW, "; height: ").concat(imgHW, ";")
-                }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
-                  href: jsVoid,
-                  dataset: {
-                    value: id
-                  },
-                  $on: {
-                    click: function click(e) {
-                      e.preventDefault();
-                      var value = this.dataset.value;
-                      $$1('#byids')[0].$set(value);
-                      $$1('#openclipart')[0].$submit();
-                    }
-                  }
-                }, [id]], ')']], ' ', ['i', [['a', {
-                  href: detailLink,
-                  target: '_blank'
-                }, ['Details']]]], ['br'], ['span', [['u', ['Uploaded by']], colonSep, queryLink(uploader), semiColonSep]], ['span', [['u', ['Download count']], colonSep, downloadedBy, semiColonSep]], ['span', [['u', ['Times used as favorite']], colonSep, totalFavorites, semiColonSep]], ['span', [['u', ['Created date']], colonSep, created]], ['br'], ['u', ['Tags']], colonSep].concat(_toConsumableArray(tagsArray.map(function (tag) {
-                  return ['span', [' ', queryLink(tag)]];
-                })))];
-              })), [['br'], ['br'], currentPage === 1 || pages <= 2 ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = 1;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['First']], ' ']], currentPage === 1 ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = currentPage - 1;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['Prev']], ' ']], currentPage === pages ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = currentPage + 1;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['Next']], ' ']], currentPage === pages || pages <= 2 ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = pages;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['Last']], ' ']]]));
-
-            case 13:
-            case "end":
-              return _context3.stop();
-          }
+          case 13:
+          case "end":
+            return _context2.stop();
         }
-      }, _callee3);
-    }));
-    return _processResults.apply(this, arguments);
+      }
+    });
   }
 
   jml('div', [['style', [".control {\n      padding-top: 10px;\n    }"]], ['form', {
     id: 'openclipart',
     $custom: {
-      $submit: function () {
-        var _$submit = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee() {
-          var url;
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  url = new URL(baseAPIURL);
-                  ['query', 'sort', 'amount', 'page', 'byids'].forEach(function (prop) {
-                    var value = $$1('#' + prop)[0].value;
+      $submit: function $submit() {
+        var url;
+        return regeneratorRuntime.async(function $submit$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                url = new URL(baseAPIURL);
+                ['query', 'sort', 'amount', 'page', 'byids'].forEach(function (prop) {
+                  var value = $$1('#' + prop)[0].value;
 
-                    if (value) {
-                      url.searchParams.set(prop, value);
-                    }
-                  });
-                  _context.next = 4;
-                  return processResults(url);
+                  if (value) {
+                    url.searchParams.set(prop, value);
+                  }
+                });
+                _context3.next = 4;
+                return regeneratorRuntime.awrap(processResults(url));
 
-                case 4:
-                case "end":
-                  return _context.stop();
-              }
+              case 4:
+              case "end":
+                return _context3.stop();
             }
-          }, _callee);
-        }));
-
-        function $submit() {
-          return _$submit.apply(this, arguments);
-        }
-
-        return $submit;
-      }()
+          }
+        });
+      }
     },
     $on: {
       submit: function submit(e) {
@@ -3309,11 +3488,11 @@
   }, [['label', ['Sort by: ', ['select', {
     id: 'sort'
   }, [// Todo: i18nize first values
-  ['Date', 'date'], ['Downloads', 'downloads'], ['Favorited', 'favorites']].map(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-        text = _ref2[0],
-        _ref2$ = _ref2[1],
-        value = _ref2$ === void 0 ? text : _ref2$;
+  ['Date', 'date'], ['Downloads', 'downloads'], ['Favorited', 'favorites']].map(function (_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+        text = _ref4[0],
+        _ref4$ = _ref4[1],
+        value = _ref4$ === void 0 ? text : _ref4$;
 
     return ['option', {
       value: value

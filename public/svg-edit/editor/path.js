@@ -42,7 +42,7 @@ const segData = {
 /**
  * @tutorial LocaleDocs
  * @typedef {module:locale.LocaleStrings|PlainObject} module:path.uiStrings
- * @property {PlainObject.<string, string>} ui
+ * @property {PlainObject<string, string>} ui
 */
 
 const uiStrings = {};
@@ -89,7 +89,7 @@ let editorContext_ = null;
 * Object with the following keys/values
 * @typedef {PlainObject} module:path.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
-* @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+* @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
 * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
 * @property {module:path.SVGElementJSON[]} [children] - Data objects to be added recursively as children
 * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -135,7 +135,7 @@ let editorContext_ = null;
 /**
  * @function module:path.EditorContext#remapElement
  * @param {Element} selected - DOM element to be changed
- * @param {PlainObject.<string, string>} changes - Object with changes to be remapped
+ * @param {PlainObject<string, string>} changes - Object with changes to be remapped
  * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
  * @returns {void}
  */
@@ -484,7 +484,7 @@ export const getPointGrip = function (seg, update) {
 /**
 * @function module:path.getControlPoints
 * @param {Segment} seg
-* @returns {PlainObject.<string, SVGLineElement|SVGCircleElement>}
+* @returns {PlainObject<string, SVGLineElement|SVGCircleElement>}
 */
 export const getControlPoints = function (seg) {
   const {item, index} = seg;
@@ -1109,7 +1109,7 @@ export class Path {
 
   /**
   * @param {Integer} y
-  * @returns {void}
+  * @returns {Path}
   */
   show (y) {
     // Shows this path's segment grips
@@ -1484,12 +1484,12 @@ export const reorientGrads = function (elem, m) {
         const pt2 = transformPoint(x2, y2, m);
 
         // Convert back to BB points
-        const gCoords = {};
-
-        gCoords.x1 = (pt1.x - bb.x) / bb.width;
-        gCoords.y1 = (pt1.y - bb.y) / bb.height;
-        gCoords.x2 = (pt2.x - bb.x) / bb.width;
-        gCoords.y2 = (pt2.y - bb.y) / bb.height;
+        const gCoords = {
+          x1: (pt1.x - bb.x) / bb.width,
+          y1: (pt1.y - bb.y) / bb.height,
+          x2: (pt2.x - bb.x) / bb.width,
+          y2: (pt2.y - bb.y) / bb.height
+        };
 
         const newgrad = grad.cloneNode(true);
         $(newgrad).attr(gCoords);
@@ -1632,6 +1632,7 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
+    // eslint-disable-next-line sonarjs/no-duplicated-branches
     case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;

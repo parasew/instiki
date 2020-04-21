@@ -1,11 +1,16 @@
 # ![alt text](https://svg-edit.github.io/svgedit/images/logo48x48.svg "svg-edit logo of a pencil") SVG-edit
 
+[![npm](http://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
 [![devDependencies](https://img.shields.io/david/dev/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit?type=dev)
-[![npm](http://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
-[![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT)
-[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
+
+[![Known Vulnerabilities](https://snyk.io/test/github/SVG-Edit/svgedit/badge.svg)](https://snyk.io/test/github/SVG-Edit/svgedit)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/alerts)
+[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
+
+[![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT)
+
+[![issuehunt-to-marktext](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/r/SVG-Edit/svgedit)
 
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser.
@@ -66,14 +71,16 @@ And for still older browsers (e.g., IE 8), you will at minimum need a
 ### Integrating SVG-edit into your own npm package
 
 These steps are only needed if you wish to set up your own npm package
-incorporating SVGEdit.
+incorporating SVGEdit. You will need to have Node.js/npm installed.
 
+1. Create and enter an empty folder somewhere on your desktop.
 1. Create your npm package: `npm init` (complete the fields).
 1. Install SVG-edit into your package:
-  `npm i svgedit`.
+  `npm i --save svgedit`.
 1. Look within `node_modules/svgedit/`, e.g., `node_modules/svgedit/editor/svg-editor.html`
-  for the files your package needs and use accordingly.
-1. `npm publish`
+  for the files your package needs and use accordingly (from outside of
+  `node_modules`).
+1. If you want to publish your own work, you can use `npm publish`.
 
 ## Programmatic customization
 
@@ -100,24 +107,29 @@ incorporating SVGEdit.
   references JavaScript rolled up into a single file), you can follow these
   steps after any config changes you make, so that your changes can also be
   automatically made available to both versions.
-  1. JavaScript:
-    1. Run `npm install` within the `node_modules/svgedit` directory to
-      install the build tools for SVG-edit.
-    1. Run `npm run build-config` within the `node_modules/svgedit` directory.
-      1. This will rebuild `svgedit-config-iife.js` (applying Babel to allow
-        it to work on older browsers and applying Rollup to build all
-        JavaScript into one file). The file will then contain non-ES6 module
-        JavaScript that can work in older browsers. Note that it bundles all
-        of SVGEdit, so it is to be expected that this file will be much
-        larger in size than the original ES6 config file.
-  1. HTML:
-    1. If you wish to make changes to both HTML files, it is recommended that
-        you work and test on `svg-editor-es.html` and then run
-        `npm run build-html` to have the changes properly copied to
-        `svg-editor.html`.
+    1. JavaScript:
+        1. Run `npm install` within the svgedit directory
+          (`node_modules/svgedit` if you installed via npm) and the root
+          repository directory if you cloned the Git repository instead.
+          This will install the build tools for SVG-edit.
+        1. Run `npm run build-by-config` within the svgedit directory mentioned
+          in the step above.
+            1. This will rebuild `svgedit-config-iife.js` (applying Babel to
+              allow it to work on older browsers and applying Rollup to build
+              all JavaScript into one file). The file will then contain
+              non-ES6 module JavaScript that can work in older browsers.
+              Note that it bundles all of SVGEdit, so it is to be expected
+              that this file will be much larger in size than the original
+              ES6 config file.
+    1. HTML:
+        1. If you wish to make changes to both HTML files, it is recommended that
+            you work and test on `svg-editor-es.html` and then run
+            `npm run build-html` to have the changes properly copied to
+            `svg-editor.html`.
 
 ## Recent news
 
+- 2019-11-16 Published 5.1.0 Misc. fixes and refactoring
 - 2019-05-07 Published 5.0.0 Change from `@babel/polyfill`
 - 2019-04-03 Published 4.3.0 Fix for double click on gradient
     picker droplets affecting some browsers and dragging control

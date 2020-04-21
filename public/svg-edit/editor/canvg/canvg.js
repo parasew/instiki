@@ -13,7 +13,7 @@ import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 const isNullish = (val) => {
@@ -47,7 +47,7 @@ const isNullish = (val) => {
 * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
 * @param {string|XMLDocument} s - svg string, url to svg file, or xml document
 * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
-* @returns {Promise} All the function after the first render is completed with dom
+* @returns {Promise<XMLDocument|XMLDocument[]>} All the function after the first render is completed with dom
 */
 export const canvg = function (target, s, opts) {
   // no parameters
@@ -90,12 +90,14 @@ export const canvg = function (target, s, opts) {
   return svg.load(ctx, s);
 };
 
+/* eslint-disable jsdoc/check-types */
 /**
 * @param {module:canvg.CanvgOptions} opts
-* @returns {Object}
+* @returns {object}
 * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
 */
 function build (opts) {
+  /* eslint-enable jsdoc/check-types */
   const svg = {opts};
 
   svg.FRAMERATE = 30;
@@ -2599,7 +2601,7 @@ function build (opts) {
   * @param {Float} width
   * @param {Float} height
   * @param {Integer} rgba
-  * @returns {void}
+  * @returns {Integer}
   */
   function imGet (img, x, y, width, height, rgba) {
     return img[y * width * 4 + x * 4 + rgba];
