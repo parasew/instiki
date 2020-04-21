@@ -19,7 +19,7 @@ function toAbsoluteURL (url) {
 /**
  * Add any of the whitelisted attributes to the script tag.
  * @param {HTMLScriptElement} script
- * @param {PlainObject.<string, string>} atts
+ * @param {PlainObject<string, string>} atts
  * @returns {void}
  */
 function addScriptAtts (script, atts) {
@@ -36,11 +36,12 @@ function addScriptAtts (script, atts) {
 * @property {string} global The variable name to set on `window` (when not using the modular version)
 * @property {boolean} [returnDefault=false]
 */
+
 /**
 * @function module:importModule.importSetGlobalDefault
-* @param {string|string[]} url
+* @param {string|GenericArray<any>} url
 * @param {module:importModule.ImportConfig} config
-* @returns {Promise<*>} The value to which it resolves depends on the export of the targeted module.
+* @returns {Promise<any>} The value to which it resolves depends on the export of the targeted module.
 */
 export function importSetGlobalDefault (url, config) {
   return importSetGlobal(url, {...config, returnDefault: true});
@@ -117,7 +118,7 @@ export function importScript (url, atts = {}) {
 * @param {PlainObject} [atts={}]
 * @param {PlainObject} opts
 * @param {boolean} [opts.returnDefault=false} = {}]
-* @returns {Promise<*>} Resolves to value of loading module or rejects with
+* @returns {Promise<any>} Resolves to value of loading module or rejects with
 *   `Error` upon a script loading error.
 */
 export function importModule (url, atts = {}, {returnDefault = false} = {}) {

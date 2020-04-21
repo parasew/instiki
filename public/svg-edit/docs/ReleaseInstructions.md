@@ -8,14 +8,6 @@
 1. `npm run build-docs` - Ensure JSDoc can build and is available for site
     build (though not added to `master`, will be copied over in `gh-pages`
     steps and used in `npm publish` step).
-1. `npm run types-docs` - For JSDoc, we ensure that a minimum of generic types
-    have been added (e.g., "number" should instead be "Float" or "Array",
-    and "object", "function", or "array" should be replaced by more specific
-    `@interface`s, `@typdef`s, or `@callback`. Deriving types can use
-    `PlainObject` or `GenericArray` to indicate the simple base type was
-    intentional. `*` should also be checked. The script reports all failing
-    matches within `editor`. There should be none (there is currently one
-    due to our needing to move the file to its own module).
 1. `npm pack --dry-run` to preview which files will be included once
     published and taking into account `.npmignore`.
 
@@ -28,7 +20,7 @@
 1. Add new release info to `Recent news` section in README
 1. Commit these changes
 <!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y.Z"`-->.
-1. Tag the version, prefixed by "v", e.g., `v5.0.1`.
+1. Tag the version, prefixed by "v", e.g., `v5.1.0`.
 
 The above steps can be done on a fork and committed via a pull request.
 

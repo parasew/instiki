@@ -41,7 +41,7 @@ let svgroot_ = null;
 * Object with the following keys/values
 * @typedef {PlainObject} module:utilities.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
-* @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+* @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
 * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
 * @property {module:utilities.SVGElementJSON[]} [children] - Data objects to be added recursively as children
 * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -111,6 +111,7 @@ export const init = function (editorContext) {
  */
 export const dropXMLInteralSubset = (str) => {
   return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2');
+  // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
 };
 
 /**
@@ -268,6 +269,11 @@ export const dataURLToObjectURL = function (dataurl) {
   const arr = dataurl.split(','),
     mime = arr[0].match(/:(.*?);/)[1],
     bstr = atob(arr[1]);
+  /*
+  const [prefix, suffix] = dataurl.split(','),
+    {groups: {mime}} = prefix.match(/:(?<mime>.*?);/),
+    bstr = atob(suffix);
+  */
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
   while (n--) {
@@ -394,7 +400,7 @@ export const walkTree = function (elem, cbFn) {
 /**
 * Walks the tree and executes the callback on each element in a depth-first fashion.
 * @function module:utilities.walkTreePost
-* @todo FIXME: Shouldn't this be calling walkTreePost?
+* @todo Shouldn't this be calling walkTreePost?
 * @param {Element} elem - DOM element to traverse
 * @param {module:utilities.TreeWalker} cbFn - Callback function to run on each element
 * @returns {void}
@@ -651,11 +657,13 @@ export const getBBox = function (elem) {
       // have a featured detection for correct 'use' behavior?
       // ——————————
       if (!isWebkit()) {
-        const bb = {};
-        bb.width = ret.width;
-        bb.height = ret.height;
-        bb.x = ret.x + parseFloat(selected.getAttribute('x') || 0);
-        bb.y = ret.y + parseFloat(selected.getAttribute('y') || 0);
+        const {x, y, width, height} = ret;
+        const bb = {
+          width,
+          height,
+          x: x + parseFloat(selected.getAttribute('x') || 0),
+          y: y + parseFloat(selected.getAttribute('y') || 0)
+        };
         ret = bb;
       }
     } else if (visElemsArr.includes(elname)) {
@@ -808,7 +816,7 @@ export const getPathDFromElement = function (elem) {
 * Get a set of attributes from an element that is useful for convertToPath.
 * @function module:utilities.getExtraAttributesForConvertToPath
 * @param {Element} elem - The element to be probed
-* @returns {PlainObject.<"marker-start"|"marker-end"|"marker-mid"|"filter"|"clip-path", string>} An object with attributes.
+* @returns {PlainObject<"marker-start"|"marker-end"|"marker-mid"|"filter"|"clip-path", string>} An object with attributes.
 */
 export const getExtraAttributesForConvertToPath = function (elem) {
   const attrs = {};
@@ -1219,7 +1227,7 @@ export const getElem = (supportsSelectors())
 * Assigns multiple attributes to an element.
 * @function module:utilities.assignAttributes
 * @param {Element} elem - DOM element to apply new attribute values to
-* @param {PlainObject.<string, string>} attrs - Object with attribute keys/values
+* @param {PlainObject<string, string>} attrs - Object with attribute keys/values
 * @param {Integer} [suspendLength] - Milliseconds to suspend redraw
 * @param {boolean} [unitCheck=false] - Boolean to indicate the need to use units.setUnitAttr
 * @returns {void}
@@ -1297,8 +1305,8 @@ export const snapToGrid = function (value) {
 * @returns {string}
 */
 export const regexEscape = function (str) {
-  // From: http://phpjs.org/functions
-  return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]', 'g'), '\\$&');
+  // Originally from: http://phpjs.org/functions
+  return String(str).replace(/[.\\+*?[^\]$(){}=!<>|:-]/g, '\\$&');
 };
 
 /**
@@ -1369,7 +1377,7 @@ export const copyElem = function (el, getNextId) {
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 export const isNullish = (val) => {

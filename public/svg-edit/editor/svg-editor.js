@@ -181,7 +181,9 @@ const callbacks = [],
   * @property {boolean} [noStorageOnLoad=false] Some interaction with `ext-storage.js`; prevent even the loading of previously saved local storage.
   * @property {boolean} [forceStorage=false] Some interaction with `ext-storage.js`; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not (and may be required by law in some regions)
   * @property {boolean} [emptyStorageOnDecline=false] Used by `ext-storage.js`; empty any prior storage if the user declines to store
-  * @property {boolean} [avoidClientSide=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always save to server and not only as fallback when client support is lacking
+  * @property {boolean} [avoidClientSide=false] DEPRECATED (use `avoidClientSideDownload` instead); Used by `ext-server_opensave.js`; set to `true` if you wish to always save to server and not only as fallback when client support is lacking
+  * @property {boolean} [avoidClientSideDownload=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always save to server and not only as fallback when client support is lacking
+  * @property {boolean} [avoidClientSideOpen=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always open from the server and not only as fallback when FileReader client support is lacking
   * @property {string[]} [extensions=module:SVGEditor~defaultExtensions] Extensions to load on startup. Use an array in `setConfig` and comma separated file names in the URL. Extension names must begin with "ext-". Note that as of version 2.7, paths containing "/", "\", or ":", are disallowed for security reasons. Although previous versions of this list would entirely override the default list, as of version 2.7, the defaults will always be added to this explicit list unless the configuration `noDefaultExtensions` is included.
   * @property {module:SVGEditor.Stylesheet[]} [stylesheets=["@default"]] An array of required stylesheets to load in parallel; include the value `"@default"` within this array to ensure all default stylesheets are loaded.
   * @property {string[]} [allowedOrigins=[]] Used by `ext-xdomain-messaging.js` to indicate which origins are permitted for cross-domain messaging (e.g., between the embedded editor and main editor code). Besides explicit domains, one might add '*' to allow all domains (not recommended for privacy/data integrity of your user's content!), `window.location.origin` for allowing the same origin (should be safe if you trust all apps on your domain), 'null' to allow `file:///` URL usage
@@ -275,8 +277,10 @@ const callbacks = [],
     noStorageOnLoad: false, // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
     forceStorage: false, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
     emptyStorageOnDecline: false, // Used by ext-storage.js; empty any prior storage if the user declines to store
-    // EXTENSION (CLIENT VS. SERVER SAVING)
-    avoidClientSide: false
+    // EXTENSION (CLIENT VS. SERVER SAVING/OPENING)
+    avoidClientSide: false, // Deprecated in favor of `avoidClientSideDownload`
+    avoidClientSideDownload: false,
+    avoidClientSideOpen: false
   },
   /**
   * LOCALE
@@ -491,7 +495,7 @@ editor.setConfig = function (opts, cfgCfg) {
    *
    * @param {module:SVGEditor.Config|module:SVGEditor.Prefs} cfgObj
    * @param {string} key
-   * @param {Any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
+   * @param {any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
    * @returns {void}
    */
   function extendOrAdd (cfgObj, key, val) {
@@ -640,7 +644,7 @@ editor.setCustomHandlers = function (opts) {
 * @returns {void}
 */
 editor.randomizeIds = function (arg) {
-  return svgCanvas.randomizeIds(arg);
+  svgCanvas.randomizeIds(arg);
 };
 
 /**
@@ -754,6 +758,7 @@ editor.init = function () {
         if (!src) { // urldata.source may have been null if it ended with '='
           if (qstr.includes('source=data:')) {
             src = qstr.match(/source=(data:[^&]*)/)[1];
+            // ({src} = qstr.match(/source=(?<src>data:[^&]*)/).groups);
           }
         }
         if (src) {
@@ -817,6 +822,7 @@ editor.init = function () {
       await Promise.all(
         curConfig.extensions.map(async (extname) => {
           const extName = extname.match(/^ext-(.+)\.js/);
+          // const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
           if (!extName) { // Ensure URL cannot specify some other unintended file in the extPath
             return undefined;
           }
@@ -835,8 +841,10 @@ editor.init = function () {
              */
             const imported = await importSetGlobalDefault(url, {
               global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
+              // global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
             });
             const {name = extName[1], init} = imported;
+            // const {name = extName, init} = imported;
             const importLocale = getImportLocale({defaultLang: langParam, defaultName: name});
             return editor.addExtension(name, (init && init.bind(editor)), {$, importLocale});
           } catch (err) {
@@ -905,7 +913,7 @@ editor.init = function () {
   * @type {string}
   */
   const uaPrefix = (function () {
-    const regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
+    const regex = /^(?:Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
     const someScript = document.getElementsByTagName('script')[0];
     for (const prop in someScript.style) {
       if (regex.test(prop)) {
@@ -1170,7 +1178,7 @@ editor.init = function () {
   };
 
   /**
-   * Setup SVG icons
+   * Setup SVG icons.
    * @returns {void}
    */
   function setIcons () {
@@ -1547,7 +1555,7 @@ editor.init = function () {
 
   /**
    * This function highlights the layer passed in (by fading out the other layers).
-   * If no layer is passed in, this function restores the other layers
+   * If no layer is passed in, this function restores the other layers.
    * @param {string} [layerNameToHighlight]
    * @returns {void}
   */
@@ -1622,7 +1630,7 @@ editor.init = function () {
     // if there were too few rows, let's add a few to make it not so lonely
     let num = 5 - $('#layerlist tr.layer').size();
     while (num-- > 0) {
-      // FIXME: there must a better way to do this
+      // TODO: there must a better way to do this
       layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
     }
   };
@@ -1700,7 +1708,7 @@ editor.init = function () {
     const a = document.createElement('a');
     a.href = 'data:image/svg+xml;base64,' + Utils.encode64(svg);
     a.download = 'icon.svg';
-    a.style = 'display: none;';
+    a.style.display = 'none';
     document.body.append(a); // Need to append for Firefox
 
     a.click();
@@ -2731,7 +2739,7 @@ editor.init = function () {
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeZoom = function (ctl) {
     const zoomlevel = ctl.value / 100;
@@ -2826,7 +2834,7 @@ editor.init = function () {
 
   const allHolders = {};
   /**
-   * @param {PlainObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+   * @param {PlainObject<string, module:SVGEditor.ToolButton>} holders Key is a selector
    * @returns {void}
    */
   const setupFlyouts = function (holders) {
@@ -2857,7 +2865,7 @@ editor.init = function () {
           /**
            * Clicking the icon in flyout should set this set's icon.
            * @param {Event} ev
-           * @returns {void}
+           * @returns {boolean}
            */
           const flyoutAction = function (ev) {
             let options = opts;
@@ -2960,7 +2968,7 @@ editor.init = function () {
   /**
   * @param {string} id
   * @param {external:jQuery} child
-  * @returns {void}
+  * @returns {external:jQuery}
   */
   const makeFlyoutHolder = function (id, child) {
     const div = $('<div>', {
@@ -3103,10 +3111,10 @@ editor.init = function () {
     * @typedef {PlainObject} module:SVGEditor.ContextTool
     * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
     * @property {string} id The ID of the actual tool element. Required.
-    * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
+    * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
     * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
     * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
-    * @property {PlainObject.<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
+    * @property {PlainObject<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
     * @property {string} [container_id] The ID to be given to the tool's container element.
     * @property {string} [defval] Default value
     * @property {string|Integer} [colnum] Added as part of the option list class.
@@ -3224,7 +3232,7 @@ editor.init = function () {
       * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
       * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
       * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
-      * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
+      * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
       * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
       * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
       * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
@@ -3577,21 +3585,21 @@ editor.init = function () {
   $('#image_save_opts input').val([$.pref('img_save')]);
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeRectRadius = function (ctl) {
     svgCanvas.setRectRadius(ctl.value);
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeFontSize = function (ctl) {
     svgCanvas.setFontSize(ctl.value);
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeStrokeWidth = function (ctl) {
     let val = ctl.value;
@@ -3602,7 +3610,7 @@ editor.init = function () {
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeRotationAngle = function (ctl) {
     svgCanvas.setRotationAngle(ctl.value);
@@ -4820,7 +4828,7 @@ editor.init = function () {
   /**
   * Save user preferences based on current values in the UI.
   * @function module:SVGEditor.savePreferences
-  * @returns {void}
+  * @returns {Promise<void>}
   */
   const savePreferences = editor.savePreferences = async function () {
     // Set background
@@ -4837,14 +4845,17 @@ editor.init = function () {
     // set icon size
     setIconSize($('#iconsize').val());
 
+    /* eslint-disable require-atomic-updates */
     // set grid setting
     curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
     curConfig.snappingStep = $('#grid_snapping_step').val();
     curConfig.gridColor = $('#grid_color').val();
     curConfig.showRulers = $('#show_rulers')[0].checked;
+    /* eslint-enable require-atomic-updates */
 
     $('#rulers').toggle(curConfig.showRulers);
     if (curConfig.showRulers) { updateRulers(); }
+    // eslint-disable-next-line require-atomic-updates
     curConfig.baseUnit = $('#base_unit').val();
 
     svgCanvas.setConfig(curConfig);
@@ -5290,7 +5301,7 @@ editor.init = function () {
 
   /**
    *
-   * @returns {void}
+   * @returns {Promise<void>}
    */
   async function cloneLayer () {
     const name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
@@ -5449,8 +5460,7 @@ editor.init = function () {
   $(window).bind('load resize', centerCanvas);
 
   /**
-   * @implements {module:jQuerySpinButton.StepCallback}
-   * @returns {Float}
+   * @type {module:jQuerySpinButton.StepCallback}
    */
   function stepFontSize (elem, step) {
     const origVal = Number(elem.value);
@@ -5474,8 +5484,7 @@ editor.init = function () {
   }
 
   /**
-   * @implements {module:jQuerySpinButton.StepCallback}
-   * @returns {Float}
+   * @type {module:jQuerySpinButton.StepCallback}
    */
   function stepZoom (elem, step) {
     const origVal = Number(elem.value);
@@ -5678,7 +5687,8 @@ editor.init = function () {
       '5/Shift+5': '#tools_ellipse_show'
     };
 
-    return { /** @lends module:SVGEditor~Actions */
+    return {
+      /** @lends module:SVGEditor~Actions */
       /**
        * @returns {void}
        */
@@ -5957,7 +5967,7 @@ editor.init = function () {
   );
 
   /**
-  * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}
+  * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}.
   * @param {"dupe"|"delete"|"merge_down"|"merge_all"} action
   * @param {external:jQuery} el
   * @param {{x: Float, y: Float, docX: Float, docY: Float}} pos
@@ -6142,7 +6152,7 @@ editor.init = function () {
         reader = new FileReader();
         reader.onloadend = function ({target: {result}}) {
           /**
-          * Insert the new image until we know its dimensions
+          * Insert the new image until we know its dimensions.
           * @param {Float} width
           * @param {Float} height
           * @returns {void}
@@ -6187,15 +6197,15 @@ editor.init = function () {
     workarea[0].addEventListener('dragleave', onDragLeave);
     workarea[0].addEventListener('drop', importImage);
 
-    const open = $('<input type="file">').click(async function () {
+    const open = $('<input type="file">').change(async function (e) {
       const ok = await editor.openPrep();
       if (!ok) { return; }
       svgCanvas.clear();
       if (this.files.length === 1) {
         $.process_cancel(uiStrings.notification.loadingImage);
         const reader = new FileReader();
-        reader.onloadend = async function (e) {
-          await loadSvgString(e.target.result);
+        reader.onloadend = async function ({target}) {
+          await loadSvgString(target.result);
           updateCanvas();
         };
         reader.readAsText(this.files[0]);
@@ -6259,6 +6269,7 @@ editor.init = function () {
           importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
         });
       }));
+      // eslint-disable-next-line require-atomic-updates
       extsPreLang.length = 0;
     } else {
       loadedExtensionNames.forEach((loadedExtensionName) => {
@@ -6510,7 +6521,7 @@ let extensionsAdded = false;
 const messageQueue = [];
 /**
  * @param {PlainObject} info
- * @param {Any} info.data
+ * @param {any} info.data
  * @param {string} info.origin
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {void}

@@ -32,7 +32,7 @@ function toFixedNumeric (value, precision) {
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 const isNullish = (val) => {
@@ -406,7 +406,6 @@ const jPicker = function ($) {
    * @param {external:jQuery.jPicker.Color} color
    * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
    * @param {Float} alphaPrecision
-   * @constructor
    */
   class ColorValuePicker {
     constructor (picker, color, bindedHex, alphaPrecision) {
@@ -1931,7 +1930,7 @@ const jPicker = function ($) {
         else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
         const controlHtml = `<table class="jPicker" cellpadding="0" cellspacing="0">
           <tbody>
-            ${win.expandable ? `<tr><td class="Move" colspan="5">&nbsp;</td></tr>` : ''}
+            ${win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : ''}
             <tr>
               <td rowspan="9"><h2 class="Title">${win.title || localization.text.title}</h2><div class="Map"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><img src="${images.clientPath + images.colorMap.arrow.file}" class="Arrow"/></div></td>
               <td rowspan="9"><div class="Bar"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><span class="Map4">&nbsp;</span><span class="Map5">&nbsp;</span><span class="Map6">&nbsp;</span><img src="${images.clientPath + images.colorBar.arrow.file}" class="Arrow"/></div></td>

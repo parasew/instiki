@@ -9,13 +9,12 @@
  * @license Apache-2.0
  * @example
  * // The Paint object is described below.
- * $.jGraduate.Paint() // constructs a 'none' color
- * @example $.jGraduate.Paint({copy: o}) // creates a copy of the paint o
- * @example $.jGraduate.Paint({hex: '#rrggbb'}) // creates a solid color paint with hex = "#rrggbb"
- * @example $.jGraduate.Paint({linearGradient: o, a: 50}) // creates a linear gradient paint with opacity=0.5
- * @example $.jGraduate.Paint({radialGradient: o, a: 7}) // creates a radial gradient paint with opacity=0.07
- * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}) // throws an exception?
- *
+ * $.jGraduate.Paint(); // constructs a 'none' color
+ * @example $.jGraduate.Paint({copy: o}); // creates a copy of the paint o
+ * @example $.jGraduate.Paint({hex: '#rrggbb'}); // creates a solid color paint with hex = "#rrggbb"
+ * @example $.jGraduate.Paint({linearGradient: o, a: 50}); // creates a linear gradient paint with opacity=0.5
+ * @example $.jGraduate.Paint({radialGradient: o, a: 7}); // creates a radial gradient paint with opacity=0.07
+ * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
 
 /**
@@ -200,7 +199,7 @@ export default function jQueryPluginJGraduate ($) {
   const isGecko = navigator.userAgent.includes('Gecko/');
 
   /**
-  * @typedef {PlainObject.<string, string>} module:jGraduate.Attrs
+  * @typedef {PlainObject<string, string>} module:jGraduate.Attrs
   */
   /**
   * @param {SVGElement} elem
@@ -303,12 +302,17 @@ export default function jQueryPluginJGraduate ($) {
         $this.hide();
       };
 
-      $.extend(true, $this, { // public properties, methods, and callbacks
-        // make a copy of the incoming paint
-        paint: new $.jGraduate.Paint({copy: $settings.paint}),
-        okCallback: typeof okCallback === 'function' ? okCallback : null,
-        cancelCallback: typeof cancelCallback === 'function' ? cancelCallback : null
-      });
+      $.extend(
+        true,
+        $this,
+        // public properties, methods, and callbacks
+        {
+          // make a copy of the incoming paint
+          paint: new $.jGraduate.Paint({copy: $settings.paint}),
+          okCallback: typeof okCallback === 'function' ? okCallback : null,
+          cancelCallback: typeof cancelCallback === 'function' ? cancelCallback : null
+        }
+      );
 
       let // pos = $this.position(),
         color = null;
