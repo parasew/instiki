@@ -367,7 +367,7 @@ module ActiveRecord
       def initialize_schema_migrations_table
         sm_table = ActiveRecord::Migrator.schema_migrations_table_name
 
-        unless tables.detect { |t| t == sm_table }
+        unless table_exists?(sm_table)
           create_table(sm_table, :id => false) do |schema_migrations_table|
             schema_migrations_table.column :version, :string, :null => false
           end

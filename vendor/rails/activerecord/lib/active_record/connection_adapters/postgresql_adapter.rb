@@ -187,6 +187,7 @@ module ActiveRecord
     # * <tt>:allow_concurrency</tt> - If true, use async query methods so Ruby threads don't deadlock; otherwise, use blocking query methods.
     class PostgreSQLAdapter < AbstractAdapter
       ADAPTER_NAME = 'PostgreSQL'.freeze
+      MONEY_COLUMN_TYPE_OID = 790 #:nodoc:
 
       NATIVE_DATABASE_TYPES = {
         :primary_key => "serial primary key".freeze,
@@ -622,11 +623,10 @@ module ActiveRecord
 
       # Returns the list of all tables in the schema search path or a specified schema.
       def tables(name = nil)
-        schemas = schema_search_path.split(/,/).map { |p| quote(p) }.join(',')
-        query(<<-SQL, name).map { |row| row[0] }
+        query(<<-SQL, 'SCHEMA').map { |row| row[0] }
           SELECT tablename
-            FROM pg_tables
-           WHERE schemaname IN (#{schemas})
+          FROM pg_tables
+          WHERE schemaname = ANY (current_schemas(false))
         SQL
       end
 
@@ -714,7 +714,8 @@ module ActiveRecord
 
       # Set the client message level.
       def client_min_messages=(level)
-        execute("SET client_min_messages TO '#{level}'")
+        execute("SET client_min_messages TO '#{level.downcase}'") if level &&
+          ['debug5', 'debug4', 'debug3', 'debug2', 'debug1', 'log', 'notice', 'warning', 'error'].include?(level.downcase)
       end
 
       # Returns the sequence name for a table's primary key or some other specified key.
@@ -771,10 +772,10 @@ module ActiveRecord
           result = query(<<-end_sql, 'PK and custom sequence')[0]
             SELECT attr.attname,
               CASE
-                WHEN split_part(def.adsrc, '''', 2) ~ '.' THEN
-                  substr(split_part(def.adsrc, '''', 2),
-                         strpos(split_part(def.adsrc, '''', 2), '.')+1)
-                ELSE split_part(def.adsrc, '''', 2)
+                WHEN split_part(pg_get_expr(def.adbin, def.adrelid), '''', 2) ~ '.' THEN
+                  substr(split_part(pg_get_expr(def.adbin, def.adrelid), '''', 2),
+                         strpos(split_part(pg_get_expr(def.adbin, def.adrelid), '''', 2), '.')+1)
+                ELSE split_part(pg_get_expr(def.adbin, def.adrelid), '''', 2)
               END
             FROM pg_class       t
             JOIN pg_attribute   attr ON (t.oid = attrelid)
@@ -782,7 +783,7 @@ module ActiveRecord
             JOIN pg_constraint  cons ON (conrelid = adrelid AND adnum = conkey[1])
             WHERE t.oid = '#{quote_table_name(table)}'::regclass
               AND cons.contype = 'p'
-              AND def.adsrc ~* 'nextval'
+              AND pg_get_expr(def.adbin, def.adrelid) ~* 'nextval'
           end_sql
         end
 
@@ -869,13 +870,32 @@ module ActiveRecord
 
       # Maps logical Rails types to PostgreSQL-specific data types.
       def type_to_sql(type, limit = nil, precision = nil, scale = nil)
-        return super unless type.to_s == 'integer'
+        case type.to_s
+        when 'binary'
+          # PostgreSQL doesn't support limits on binary (bytea) columns.
+          # The hard limit is 1Gb, because of a 32-bit size field, and TOAST.
+          case limit
+          when nil, 0..0x3fffffff; super(type)
+          else raise(ActiveRecordError, "No binary type has byte size #{limit}.")
+          end
+        when 'text'
+          # PostgreSQL doesn't support limits on text columns.
+          # The hard limit is 1Gb, according to section 8.3 in the manual.
+          case limit
+          when nil, 0..0x3fffffff; super(type)
+          else raise(ActiveRecordError, "The limit on text can be at most 1GB - 1byte.")
+          end
+        when 'integer'
+          return 'integer' unless limit
 
-        case limit
-          when 1..2;      'smallint'
-          when 3..4, nil; 'integer'
-          when 5..8;      'bigint'
-          else raise(ActiveRecordError, "No integer type has byte size #{limit}. Use a numeric with precision 0 instead.")
+          case limit
+            when 1, 2; 'smallint'
+            when 3, 4; 'integer'
+            when 5..8; 'bigint'
+            else raise(ActiveRecordError, "No integer type has byte size #{limit}. Use a numeric with precision 0 instead.")
+          end
+        else
+          super
         end
       end
 
@@ -933,7 +953,6 @@ module ActiveRecord
 
       private
         # The internal PostgreSQL identifier of the money data type.
-        MONEY_COLUMN_TYPE_OID = 790 #:nodoc:
 
         # Connects to a PostgreSQL server and sets up the adapter depending on the
         # connected server's characteristics.
@@ -1054,7 +1073,7 @@ module ActiveRecord
         #  - ::regclass is a function that gives the id for a table name
         def column_definitions(table_name) #:nodoc:
           query <<-end_sql
-            SELECT a.attname, format_type(a.atttypid, a.atttypmod), d.adsrc, a.attnotnull
+            SELECT a.attname, format_type(a.atttypid, a.atttypmod), pg_get_expr(d.adbin, d.adrelid), a.attnotnull
               FROM pg_attribute a LEFT JOIN pg_attrdef d
                 ON a.attrelid = d.adrelid AND a.attnum = d.adnum
              WHERE a.attrelid = '#{quote_table_name(table_name)}'::regclass
@@ -1075,4 +1094,3 @@ module ActiveRecord
     end
   end
 end
-
