@@ -5,11 +5,13 @@ begin
 rescue LoadError => e
   begin
     require_library_or_gem 'postgres'
-    class PGresult
-      alias_method :nfields, :num_fields unless self.method_defined?(:nfields)
-      alias_method :ntuples, :num_tuples unless self.method_defined?(:ntuples)
-      alias_method :ftype, :type unless self.method_defined?(:ftype)
-      alias_method :cmd_tuples, :cmdtuples unless self.method_defined?(:cmd_tuples)
+    class PG
+      class Result
+        alias_method :nfields, :num_fields unless self.method_defined?(:nfields)
+        alias_method :ntuples, :num_tuples unless self.method_defined?(:ntuples)
+        alias_method :ftype, :type unless self.method_defined?(:ftype)
+        alias_method :cmd_tuples, :cmdtuples unless self.method_defined?(:cmd_tuples)
+      end
     end
   rescue LoadError
     raise e
@@ -221,14 +223,14 @@ module ActiveRecord
       # Is this connection alive and ready for queries?
       def active?
         if @connection.respond_to?(:status)
-          @connection.status == PGconn::CONNECTION_OK
+          @connection.status == PG::Connection::CONNECTION_OK
         else
           # We're asking the driver, not ActiveRecord, so use @connection.query instead of #query
           @connection.query 'SELECT 1'
           true
         end
       # postgres-pr raises a NoMethodError when querying if no connection is available.
-      rescue PGError, NoMethodError
+      rescue PG::Error, NoMethodError
         false
       end
 
@@ -298,10 +300,10 @@ module ActiveRecord
               @connection.escape_bytea(value) if value
             end
           end
-        elsif PGconn.respond_to?(:escape_bytea)
+        elsif PG::Connection.respond_to?(:escape_bytea)
           self.class.instance_eval do
             define_method(:escape_bytea) do |value|
-              PGconn.escape_bytea(value) if value
+              PG::Connection.escape_bytea(value) if value
             end
           end
         else
@@ -330,10 +332,10 @@ module ActiveRecord
               @connection.unescape_bytea(value) if value
             end
           end
-        elsif PGconn.respond_to?(:unescape_bytea)
+        elsif PG::Connection.respond_to?(:unescape_bytea)
           self.class.instance_eval do
             define_method(:unescape_bytea) do |value|
-              PGconn.unescape_bytea(value) if value
+              PG::Connection.unescape_bytea(value) if value
             end
           end
         else
@@ -371,10 +373,10 @@ module ActiveRecord
               @connection.escape(s)
             end
           end
-        elsif PGconn.respond_to?(:escape)
+        elsif PG::Connection.respond_to?(:escape)
           self.class.instance_eval do
             define_method(:quote_string) do |s|
-              PGconn.escape(s)
+              PG::Connection.escape(s)
             end
           end
         else
@@ -408,7 +410,7 @@ module ActiveRecord
 
       # Quotes column names for use in SQL queries.
       def quote_column_name(name) #:nodoc:
-        PGconn.quote_ident(name.to_s)
+        PG::Connection.quote_ident(name.to_s)
       end
 
       # Quote date/time values for use in SQL input. Includes microseconds
@@ -547,11 +549,11 @@ module ActiveRecord
         execute "ROLLBACK"
       end
 
-      if defined?(PGconn::PQTRANS_IDLE)
+      if defined?(PG::Connection::PQTRANS_IDLE)
         # The ruby-pg driver supports inspecting the transaction status,
         # while the ruby-postgres driver does not.
         def outside_transaction?
-          @connection.transaction_status == PGconn::PQTRANS_IDLE
+          @connection.transaction_status == PG::Connection::PQTRANS_IDLE
         end
       end
 
@@ -957,8 +959,8 @@ module ActiveRecord
         # Connects to a PostgreSQL server and sets up the adapter depending on the
         # connected server's characteristics.
         def connect
-          @connection = PGconn.connect(*@connection_parameters)
-          PGconn.translate_results = false if PGconn.respond_to?(:translate_results=)
+          @connection = PG::Connection.connect(*@connection_parameters)
+          PG::Connection.translate_results = false if PG::Connection.respond_to?(:translate_results=)
 
           # Ignore async_exec and async_query when using postgres-pr.
           @async = @config[:allow_concurrency] && @connection.respond_to?(:async_exec)
