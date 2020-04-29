@@ -2561,7 +2561,7 @@ module ActiveRecord #:nodoc:
 
       # Returns true if this object hasn't been saved yet -- that is, a record for the object doesn't exist yet; otherwise, returns false.
       def new_record?
-        @new_record || false
+        (@new_record if instance_variable_defined?("@new_record")) || false
       end
 
       # :call-seq:
@@ -2888,7 +2888,7 @@ module ActiveRecord #:nodoc:
 
       # Returns +true+ if the record has been destroyed.
       def destroyed?
-        @destroyed
+        instance_variable_defined?("@destroyed") && @destroyed
       end
 
       # Returns +true+ if the record is read only. Records loaded through joins with piggy-back

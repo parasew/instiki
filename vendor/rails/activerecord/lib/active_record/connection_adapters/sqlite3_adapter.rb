@@ -29,6 +29,23 @@ module ActiveRecord
           raise(ActiveRecord::StatementInvalid, "Could not find table '#{table_name}'") if structure.empty?
         end
       end
+
+      def native_database_types
+        {
+          primary_key:  "integer PRIMARY KEY AUTOINCREMENT NOT NULL",
+          string:       { name: "varchar" },
+          text:         { name: "text" },
+          integer:      { name: "integer" },
+          float:        { name: "float" },
+          decimal:      { name: "decimal" },
+          datetime:     { name: "datetime" },
+          time:         { name: "time" },
+          date:         { name: "date" },
+          binary:       { name: "blob" },
+          boolean:      { name: "boolean" },
+          json:         { name: "json" }
+        }
+      end
     end
   end
 end
