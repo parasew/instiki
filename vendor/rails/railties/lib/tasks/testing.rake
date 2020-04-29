@@ -92,6 +92,7 @@ namespace :test do
     t.libs << "test"
     t.pattern = 'test/unit/**/*_test.rb'
     t.verbose = true
+    t.warning = false
   end
   Rake::Task['test:units'].comment = "Run the unit tests in test/unit"
 
@@ -99,6 +100,7 @@ namespace :test do
     t.libs << "test"
     t.pattern = 'test/functional/**/*_test.rb'
     t.verbose = true
+    t.warning = false
   end
   Rake::Task['test:functionals'].comment = "Run the functional tests in test/functional"
 

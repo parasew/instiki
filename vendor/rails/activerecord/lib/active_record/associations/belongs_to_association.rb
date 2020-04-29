@@ -38,7 +38,7 @@ module ActiveRecord
       end
       
       def updated?
-        @updated
+        @updated if instance_variable_defined?("@updated")
       end
       
       private

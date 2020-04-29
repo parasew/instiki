@@ -188,7 +188,7 @@ module ActiveRecord
 
       def select_rows(sql, name = nil)
         execute(sql, name).map do |row|
-          (0...(row.size / 2)).map { |i| row[i] }
+          row.values
         end
       end
 

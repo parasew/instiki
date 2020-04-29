@@ -115,7 +115,7 @@ module ActiveRecord
       # checking whether the database is actually capable of responding, i.e. whether
       # the connection isn't stale.
       def active?
-        @active != false
+        instance_variable_defined?("@active") && @active != false
       end
 
       # Disconnects from the database if already connected, and establishes a
