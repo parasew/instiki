@@ -41,13 +41,11 @@ module ActionController # :nodoc:
     delegate :default_charset, :to => 'ActionController::Base'
 
     def initialize
-      @status = 200
-      @header = Rack::Utils::HeaderHash.new(DEFAULT_HEADERS)
+      super('', 200, DEFAULT_HEADERS)
 
       @writer = lambda { |x| @body << x }
       @block = nil
 
-      @body = "",
       @session = []
       @assigns = []
     end
