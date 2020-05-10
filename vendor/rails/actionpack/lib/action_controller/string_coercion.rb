@@ -2,7 +2,11 @@ module ActionController
   class StringCoercion
     class UglyBody < ActiveSupport::BasicObject
       def initialize(body)
-        @body = body
+        if body.respond_to?(:each)
+          @body = body
+        else
+          @body=[body]
+        end
       end
 
       def each

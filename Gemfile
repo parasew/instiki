@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 gem "sqlite3", "1.4.2"
 gem "itextomml", ">=1.6.0"
-gem "rack", "1.4.5"
+gem "rack", ">=2.0"
 gem "thin"
 gem "rubyzip", '~> 0.9.9'
 gem "RedCloth", ">=4.0.0"
