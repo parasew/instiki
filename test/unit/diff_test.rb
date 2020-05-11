@@ -113,4 +113,12 @@ class DiffTest < Test::Unit::TestCase
         diff(a, b))
   end
 
+  def test_html_diff_preserves_endlines_and_spaces_in_pre
+    a = "<pre> a\nb\n c\nd e</pre>"
+    b = "<pre> a\nb\nc\nd e</pre>"
+    assert_equal(
+        "<pre><span>  a\n b\n<del class='diffdel'> </del> c\n d e</span></pre>",
+        diff(a, b))
+  end
+
 end

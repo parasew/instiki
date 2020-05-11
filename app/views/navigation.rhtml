@@ -1,13 +1,3 @@
-<%
-def list_item(text, link_options, description, accesskey = nil)
-  link_options[:controller] = 'wiki'
-  link_options[:web] = @web.address
-  link_to_unless_current(text, link_options, :title => description, :accesskey => accesskey) {
-    content_tag('b', text, 'title' => description, 'class' => 'navOn') 
-  }
-end
-%>
-
 <div class="navigation">
     <span class="skipNav"><a href='#navEnd'>Skip the Navigation Links</a> | </span>
 <%- if params['action'] != 'published' then -%>

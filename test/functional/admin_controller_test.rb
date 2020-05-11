@@ -37,10 +37,10 @@ class AdminControllerTest < ActionController::TestCase
   def test_create_system_form_submitted
     use_blank_wiki
     assert !@wiki.setup?
-    
+
     process('create_system', 'password' => 'a_password', 'web_name' => 'My Wiki', 
         'web_address' => 'my_wiki')
-      
+
     assert_redirected_to :web => 'my_wiki', :controller => 'wiki', :action => 'new', 
         :id => 'HomePage'
     assert @wiki.setup?
@@ -76,9 +76,9 @@ class AdminControllerTest < ActionController::TestCase
 
   def test_create_web
     @wiki.system.update_attribute(:password, 'pswd')
-  
+
     process 'create_web', 'system_password' => 'pswd', 'name' => 'Wiki Two', 'address' => 'wiki2'
-    
+
     assert_redirected_to :web => 'wiki2', :controller => 'wiki', :action => 'new', :id => 'HomePage'
     wiki2 = @wiki.webs['wiki2']
     assert wiki2
@@ -88,17 +88,17 @@ class AdminControllerTest < ActionController::TestCase
 
   def test_create_web_default_password
     @wiki.system.update_attribute(:password, nil)
-  
+
     process 'create_web', 'system_password' => 'instiki', 'name' => 'Wiki Two', 'address' => 'wiki2'
-    
+
     assert_redirected_to :web => 'wiki2', :controller => 'wiki', :action => 'new', :id => 'HomePage'
   end
 
   def test_create_web_failed_authentication
     @wiki.system.update_attribute(:password, 'pswd')
-  
+
     process 'create_web', 'system_password' => 'wrong', 'name' => 'Wiki Two', 'address' => 'wiki2'
-    
+
     assert_redirected_to :controller => 'admin', :action => 'create_web'
     assert_nil @wiki.webs['wiki2']
   end
@@ -151,7 +151,7 @@ class AdminControllerTest < ActionController::TestCase
     process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
         'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
-        'safe_mode' => 'on', 'password' => 'new_password', 'password_check' => 'old_password', 'published' => 'on', 
+        'safe_mode' => 'on', 'password' => 'new_password', 'password_check' => 'old_password', 'published' => 'on',
         'brackets_only' => 'on', 'count_pages' => 'on', 'allow_uploads' => 'on',
         'max_upload_size' => '300')
 
@@ -165,10 +165,10 @@ class AdminControllerTest < ActionController::TestCase
   def test_edit_web_opposite_values
     @wiki.system.update_attribute(:password, 'pswd')
     @web.save
-  
+
     process('edit_web', 'system_password' => 'pswd',
         'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
-        'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
+        'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever',
         'password' => 'new_password', 'password_check' => 'new_password')
     # safe_mode, published, brackets_only, count_pages, allow_uploads not set 
     # and should become false
@@ -190,7 +190,7 @@ class AdminControllerTest < ActionController::TestCase
       'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
       'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
       'password' => 'new_password')
-      
+
     #returns to the same form
     assert_response :success
     assert @response.has_template_object?('error')
@@ -198,13 +198,13 @@ class AdminControllerTest < ActionController::TestCase
 
   def test_edit_web_rename_to_already_existing_web_name
     @wiki.system.update_attribute(:password, 'pswd')
-    
+
     @wiki.create_web('Another', 'another')
     process('edit_web', 'system_password' => 'pswd',
       'web' => 'wiki1', 'address' => 'another', 'name' => 'Renamed Wiki1',
       'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
       'password' => 'new_password', 'password_check' => 'new_password')
-      
+
     #returns to the same form
     assert_response :success
     assert @response.has_template_object?('error')
@@ -215,23 +215,22 @@ class AdminControllerTest < ActionController::TestCase
       'web' => 'wiki1', 'address' => 'renamed_wiki1', 'name' => 'Renamed Wiki1',
       'markup' => 'markdown', 'color' => 'blue', 'additional_style' => 'whatever', 
       'password' => 'new_password')
-      
+
     #returns to the same form
     assert_response :success
     assert @response.has_template_object?('error')
   end
 
-
   def test_remove_orphaned_pages
     @wiki.system.update_attribute(:password, 'pswd')
     page_order = [@home, pages(:my_way), @oak, pages(:smart_engine), pages(:that_way), @liquor]
     x_test_renderer(@web.page('liquor').revisions.last).display_content(true)
-    orphan_page_linking_to_oak_and_redirecting_to_liquor = @wiki.write_page('wiki1', 'Pine',
+    @wiki.write_page('wiki1', 'Pine',
         "Refers to [[Oak]] and to [[booze]].\n" +
         "category: trees", 
         Time.now, Author.new('TreeHugger', '127.0.0.2'), x_test_renderer)
-    
-    r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
+
+    process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
 
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
     @web.pages(true)
@@ -259,12 +258,12 @@ class AdminControllerTest < ActionController::TestCase
     @wiki.system.update_attribute(:password, 'pswd')
     page_order = [pages(:elephant), pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
        @oak, pages(:smart_engine), pages(:that_way), @liquor]
-    orphan_page_linking_to_oak = @wiki.write_page('wiki1', 'Pine',
+    @wiki.write_page('wiki1', 'Pine',
         "Refers to [[Oak]].\n" +
         "category: trees", 
         Time.now, Author.new('TreeHugger', '127.0.0.2'), x_test_renderer)
 
-    r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees','system_password_orphaned_in_category' => 'pswd')
+    process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees','system_password_orphaned_in_category' => 'pswd')
 
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
     @web.pages(true)

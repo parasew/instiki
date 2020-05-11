@@ -18,7 +18,7 @@ xml.feed('xmlns' => "http://www.w3.org/2005/Atom", "xml:lang" => 'en') do
       xml.link('rel' => 'alternate', 'type' => 'application/xhtml+xml', 'href' => url_for(:only_path => false, :web => @web_name, :action => 'revision', :mode => 'diff', :id => revision.page.name, :rev => revision.number.to_s))
       xml.updated(revision.revised_at.getgm.strftime("%Y-%m-%dT%H:%M:%SZ") )
       xml.published(revision.created_at.getgm.strftime("%Y-%m-%dT%H:%M:%SZ") )
-      xml.id('tag:' +url_for(:only_path => false, :web => @web_name).split('/')[2].split(':')[0]  + ',' + revision.created_at.getgm.strftime("%Y-%m-%d") + ':' + CGI.escape(@web.name) + '/revision/' + revision.id.to_s + '/' + CGI.escape(revision.page.name) + '/' + revision.number.to_s)
+      xml.id('tag:' + url_for(:only_path => false, :web => @web_name).split('/')[2].split(':')[0]  + ',' + revision.created_at.getgm.strftime("%Y-%m-%d") + ':' + CGI.escape(@web.name) + '/revision/' + revision.id.to_s + '/' + CGI.escape(revision.page.name) + '/' + revision.number.to_s)
       xml.author do
         xml.name(revision.author)
       end
