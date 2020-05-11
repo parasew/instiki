@@ -77,74 +77,74 @@ class HyperLinkHtml < SM::ToHtml
   # [link:] used to insert arbitrary <tt><a></tt> references
   # [anchor:] used to create an anchor
   def handle_special_HYPERLINK(special)
-      text = special.text.strip
-      return text[1..-1] if text[0,1] == '\\'
-      url = special.text.strip
-      if url =~ /([A-Za-z]+):(.*)/
-        type = $1
-        path = $2
-      else
-        type = "http"
-        path = url
-        url  = "http://#{url}"
-      end
+    text = special.text.strip
+    return text[1..-1] if text[0,1] == '\\'
+    url = special.text.strip
+    if url =~ /([A-Za-z]+):(.*)/
+      type = $1
+      path = $2
+    else
+      type = "http"
+      path = url
+      url  = "http://#{url}"
+    end
 
-      case type 
-      when "http"
-        if url =~ /\.(gif|png|jpg|jpeg|bmp)$/
-          "<img src=\"#{url}\"/>"
-        else
-          "<a href=\"#{url}\">#{url.sub(%r{^\w+:/*}, '')}</a>"
-        end
-      when "img"
-        "<img src=\"#{path}\"/>"
-      when "link"
-        "<a href=\"#{path}\">#{path}</a>"
-      when "anchor"
-        "<a name=\"#{path}\"></a>"
+    case type 
+    when "http"
+      if url =~ /\.(gif|png|jpg|jpeg|bmp)$/
+        "<img src=\"#{url}\"/>"
       else
         "<a href=\"#{url}\">#{url.sub(%r{^\w+:/*}, '')}</a>"
       end
+    when "img"
+      "<img src=\"#{path}\"/>"
+    when "link"
+      "<a href=\"#{path}\">#{path}</a>"
+    when "anchor"
+      "<a name=\"#{path}\"></a>"
+    else
+      "<a href=\"#{url}\">#{url.sub(%r{^\w+:/*}, '')}</a>"
     end
+  end
 
     # Here's a hyperlink where the label is different to the URL
     #  [[url label that may contain spaces]]
     #
 
-    def handle_special_TIDYLINK(special)
-      text = special.text.strip
-      return text[1..-1] if text[0,1] == '\\'
-      unless text =~ /\[\[(\S+?)\s+(.+?)\]\]/
-        return text
-      end
-      url   = $1
-      label = $2
-      label = RDocFormatter.new(label).to_html
-      label = label.split.select{|x| x =~ /\S/}.
-        map{|x| x.chomp}.join(' ')
-
-      case url
-      when /link:(\S+)/
-        return %{<a href="#{$1}">#{label}</a>}
-      when /img:(\S+)/
-        return %{<img src="http://#{$1}" alt="#{label}" />}
-      when /rubytalk:(\S+)/
-        return %{<a href="http://ruby-talk.org/blade/#{$1}">#{label}</a>}
-      when /rubygarden:(\S+)/
-        return %{<a href="http://www.rubygarden.org/ruby?#{$1}">#{label}</a>}
-      when /c2:(\S+)/
-        return %{<a href="http://c2.com/cgi/wiki?#{$1}">#{label}</a>}
-      when /isbn:(\S+)/
-        return %{<a href="http://search.barnesandnoble.com/bookSearch/} +
-          %{isbnInquiry.asp?isbn=#{$1}">#{label}</a>}
-      end
-
-      unless url =~ /\w+?:/
-        url = "http://#{url}"
-      end
-
-      "<a href=\"#{url}\">#{label}</a>"
+  def handle_special_TIDYLINK(special)
+    text = special.text.strip
+    return text[1..-1] if text[0,1] == '\\'
+    unless text =~ /\[\[(\S+?)\s+(.+?)\]\]/
+      return text
     end
+    url   = $1
+    label = $2
+    label = RDocFormatter.new(label).to_html
+    label = label.split.select{|x| x =~ /\S/}.
+      map{|x| x.chomp}.join(' ')
+
+    case url
+    when /link:(\S+)/
+      return %{<a href="#{$1}">#{label}</a>}
+    when /img:(\S+)/
+      return %{<img src="http://#{$1}" alt="#{label}" />}
+    when /rubytalk:(\S+)/
+      return %{<a href="http://ruby-talk.org/blade/#{$1}">#{label}</a>}
+    when /rubygarden:(\S+)/
+      return %{<a href="http://www.rubygarden.org/ruby?#{$1}">#{label}</a>}
+    when /c2:(\S+)/
+      return %{<a href="http://c2.com/cgi/wiki?#{$1}">#{label}</a>}
+    when /isbn:(\S+)/
+      return %{<a href="http://search.barnesandnoble.com/bookSearch/} +
+        %{isbnInquiry.asp?isbn=#{$1}">#{label}</a>}
+    end
+
+    unless url =~ /\w+?:/
+      url = "http://#{url}"
+    end
+
+    "<a href=\"#{url}\">#{label}</a>"
+  end
 end
 
 class RDocFormatter

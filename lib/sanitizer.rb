@@ -229,11 +229,13 @@ module Sanitizer
 # The string returned is utf-8 encoded. If you want, you can use iconv to convert it to some other encoding.
 # (REXML trees are always utf-8 encoded.)
   def safe_xhtml_sanitize(html, options = {})
-    sanitized = xhtml_sanitize(html.purify)
-    doc = Nokogiri::XML::Document.parse("<div xmlns='http://www.w3.org/1999/xhtml'>#{sanitized}</div>", nil, (options[:encoding] || 'UTF-8'), 0)
-    sanitized = doc.root.children.to_xml(:indent => (options[:indent] || 2), :save_with => 2 )
+    begin
+      sanitized = xhtml_sanitize(html.purify)
+      doc = Nokogiri::XML::Document.parse("<div xmlns='http://www.w3.org/1999/xhtml'>#{sanitized}</div>", nil, (options[:encoding] || 'UTF-8'), 0)
+      sanitized = doc.root.children.to_xml(:indent => (options[:indent] || 2), :save_with => 2 )
     rescue Nokogiri::XML::SyntaxError
       sanitized = sanitized.escapeHTML
+    end
   end
 
 end

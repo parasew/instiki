@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
+require Rails.root.join('test', 'test_helper')
 require 'fileutils'
 
 class WikiFileTest < ActiveSupport::TestCase

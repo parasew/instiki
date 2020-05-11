@@ -48,7 +48,7 @@ class WikiControllerTest < ActionController::TestCase
   def test_authenticate
     set_web_property :password, 'pswd'
 
-    r = process('authenticate', 'web' => 'wiki1', 'password' => 'pswd')
+    process('authenticate', 'web' => 'wiki1', 'password' => 'pswd')
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'HomePage'
     assert_equal 'pswd', @controller.send(:cookies).signed['wiki1']   
   end
@@ -80,7 +80,7 @@ class WikiControllerTest < ActionController::TestCase
     @oak.lock(Time.now, 'Locky')
     assert @oak.locked?(Time.now)
 
-    r = process('cancel_edit', 'web' => 'wiki1', 'id' => 'Oak')
+    process('cancel_edit', 'web' => 'wiki1', 'id' => 'Oak')
 
     assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'Oak'
     assert !Page.find(@oak.id).locked?(Time.now)
@@ -132,8 +132,8 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-xhtml-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
-        r.headers['Content-Disposition']
+    assert_match(/attachment; filename="wiki1-xhtml-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
+        r.headers['Content-Disposition'])
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
 
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
@@ -144,12 +144,12 @@ class WikiControllerTest < ActionController::TestCase
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
         assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml index.xhtml liquor.xhtml), zip.dir.entries('.').sort
-        assert_match /.*<html .*All about elephants.*<\/html>/,
-            zip.file.read('Elephant.xhtml').gsub(/\s+/, ' ')
-        assert_match /.*<html .*All about oak.*<\/html>/,
-            zip.file.read('Oak.xhtml').gsub(/\s+/, ' ')
-        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/,
-            zip.file.read('HomePage.xhtml').gsub(/\s+/, ' ')
+        assert_match(/.*<html .*All about elephants.*<\/html>/,
+            zip.file.read('Elephant.xhtml').gsub(/\s+/, ' '))
+        assert_match(/.*<html .*All about oak.*<\/html>/,
+            zip.file.read('Oak.xhtml').gsub(/\s+/, ' '))
+        assert_match(/.*<html .*First revision of the.*HomePage.*end.*<\/html>/,
+            zip.file.read('HomePage.xhtml').gsub(/\s+/, ' '))
         assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.xhtml" /></head></html> ', zip.file.read('index.xhtml').gsub(/\s+/, ' ')
       end
     ensure
@@ -165,8 +165,8 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
-        r.headers['Content-Disposition']
+    assert_match(/attachment; filename="wiki1-html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
+        r.headers['Content-Disposition'])
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
 
     # Tempfile doesn't know how to open files with binary flag, hence the two-step process
@@ -175,12 +175,12 @@ class WikiControllerTest < ActionController::TestCase
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
         assert_equal %w(Elephant.html FirstPage.html HomePage.html MyWay.html NoWikiWord.html Oak.html SmartEngine.html ThatWay.html index.html liquor.html), zip.dir.entries('.').sort
-        assert_match /.*<html .*All about elephants.*<\/html>/,
-            zip.file.read('Elephant.html').gsub(/\s+/, ' ')
-        assert_match /.*<html .*All about oak.*<\/html>/,
-            zip.file.read('Oak.html').gsub(/\s+/, ' ')
-        assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/,
-            zip.file.read('HomePage.html').gsub(/\s+/, ' ')
+        assert_match(/.*<html .*All about elephants.*<\/html>/,
+            zip.file.read('Elephant.html').gsub(/\s+/, ' '))
+        assert_match(/.*<html .*All about oak.*<\/html>/,
+            zip.file.read('Oak.html').gsub(/\s+/, ' '))
+        assert_match(/.*<html .*First revision of the.*HomePage.*end.*<\/html>/,
+            zip.file.read('HomePage.html').gsub(/\s+/, ' '))
         assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.html" /></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
       end
     ensure
@@ -193,8 +193,8 @@ class WikiControllerTest < ActionController::TestCase
     
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-x?html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/, 
-        r.headers['Content-Disposition']
+    assert_match(/attachment; filename="wiki1-x?html-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
+        r.headers['Content-Disposition'])
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end
 
@@ -203,8 +203,8 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'application/zip', r.headers['Content-Type']
-    assert_match /attachment; filename="wiki1-markdownMML-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
-        r.headers['Content-Disposition']
+    assert_match(/attachment; filename="wiki1-markdownMML-\d\d\d\d-\d\d-\d\d-\d\d-\d\d-\d\d.zip"/,
+        r.headers['Content-Disposition'])
     assert_equal 'PK', r.body[0..1], 'Content is not a zip file'
   end
 
@@ -255,7 +255,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_login
-    r = process 'login', 'web' => 'wiki1'
+    process 'login', 'web' => 'wiki1'
     assert_response(:success)
     # this action goes straight to the templates
   end
@@ -298,13 +298,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body.as_bytes
+    assert_match(/<a class='existingWikiWord' href='\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body.as_bytes)
 
     r = process('show', 'web' => 'wiki1', 'id' => 'HomePage')
 
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body.as_bytes
+    assert_match(/<a class='existingWikiWord' href='\/wiki1\/show\/ThatWay'>That Way<\/a>/, r.body.as_bytes)
 
     r = process 'save', 'web' => 'instiki', 'id' => 'HomePage', 'content' => 'Contents of a new page',
       'author' => 'AuthorOfNewPage'
@@ -314,13 +314,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body
+    assert_match(/<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body)
 
     r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body
+    assert_match(/<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body)
 
     Web.find_by_address('instiki').update_attribute(:published, true)
 
@@ -328,13 +328,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body
+    assert_match(/<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body)
 
     r = process('show', 'web' => 'wiki1', 'id' => 'liquor')
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body
+    assert_match(/<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body)
 
     set_web_property :published, false
 
@@ -342,7 +342,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body
+    assert_match(/<a class='existingWikiWord' href='\/instiki\/published\/HomePage' title='instiki'>go there<\/a>/, r.body)
 
     Web.find_by_address('instiki').update_attribute(:published, false)
 
@@ -350,13 +350,13 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
-    assert_match /<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body
+    assert_match(/<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body)
   end
 
   def test_published_web_not_published
     set_web_property :published, false
 
-    r = process('published', 'web' => 'wiki1', 'id' => 'HomePage')
+    process('published', 'web' => 'wiki1', 'id' => 'HomePage')
 
     assert_response :missing
   end
@@ -493,7 +493,7 @@ class WikiControllerTest < ActionController::TestCase
        "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
 
-    xml = REXML::Document.new(r.body)
+    REXML::Document.new(r.body)
 
     expected_page_links =
         ['http://localhost:8080/wiki1/show/Elephant',
@@ -528,7 +528,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'atom_with_headlines', 'web' => 'wiki1'
 
     assert_response(:success)
-    xml = REXML::Document.new(r.body)
+    REXML::Document.new(r.body)
 
     expected_page_links =
         ['http://foo.bar.info/wiki1/published/Elephant',
@@ -613,11 +613,11 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_atom_timestamp
-    new_page = @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime',
+    @wiki.write_page('wiki1', 'PageCreatedAtTheBeginningOfCtime',
       'Created on 1 Jan 1970 at 0:00:00 Z', Time.at(0), Author.new('NitPicker', '127.0.0.3'),
       x_test_renderer)
 
-    r = process 'atom_with_headlines', 'web' => 'wiki1'
+    process 'atom_with_headlines', 'web' => 'wiki1'
     assert_tag :tag =>'published',
                :parent => {:tag => 'entry'},
                :content => Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -797,13 +797,12 @@ class WikiControllerTest < ActionController::TestCase
     @request.remote_addr = "127.0.0.2"
     # Dunno why this is here. Detritus from another test?
     File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_Oak.cache"))
-    r = process 'show', 'id' => 'Oak', 'web' => 'wiki1'
+    process 'show', 'id' => 'Oak', 'web' => 'wiki1'
     assert_response :success
     assert_tag :content => /All about oak/
   end
 
   def test_spam_filters
-    revisions_before = @home.revisions.size
     @home.lock(Time.now, 'AnAuthor')
     r = process 'save', {'web' => 'wiki1', 'id' => 'HomePage',
         'content' => @home.revisions.last.content.dup + "\n Try viagra.\n",
@@ -836,7 +835,7 @@ class WikiControllerTest < ActionController::TestCase
     revisions_before = @liquor.revisions.size
     @liquor.lock(Time.now, 'AnAuthor')
 
-    r = process 'save', {'web' => 'wiki1', 'id' => 'liquor',
+    process 'save', {'web' => 'wiki1', 'id' => 'liquor',
         'content' => @liquor.revisions.last.content.dup, 'new_name' => 'booze',
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
 
@@ -852,7 +851,7 @@ class WikiControllerTest < ActionController::TestCase
     revisions_before = @liquor.revisions.size
     @liquor.lock(Time.now, 'AnAuthor')
   
-    r = process 'save', {'web' => 'wiki1', 'id' => 'liquor', 
+    process 'save', {'web' => 'wiki1', 'id' => 'liquor', 
         'content' => @liquor.revisions.last.content.dup, 'new_name' => ' booze ',
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
 
@@ -865,12 +864,12 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_blank_author
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
+    process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
       'author' => ''
     new_page = @wiki.read_page('wiki1', 'NewPage')
     assert_equal 'AnonymousCoward', new_page.author
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page',
+    process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page',
       'author' => '   '
 
     another_page = @wiki.read_page('wiki1', 'AnotherPage')
@@ -878,33 +877,33 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_save_revised_content_author_name_with_period
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Contents of a very new page',
+    process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Contents of a very new page',
           'author' => 'foo.bar'
     assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage'
     assert_equal 'foo.bar', @wiki.read_page('wiki1', 'HomePage').author
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'a'*10184,
+    process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'a'*10184,
           'author' => 'foo.bar'
     assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
     assert_equal 'foo.bar', @wiki.read_page('wiki1', 'NewPage').author
   end
 
   def test_save_invalid_author_name
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
+    process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
       'author' => "Fu\000Manchu"
 
     assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
     new_page = @wiki.read_page('wiki1', 'NewPage')
     assert_equal 'FuManchu', new_page.author
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page',
+    process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Contents of a new page',
       'author' => "\000"
 
     assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'AnotherPage'
     new_page = @wiki.read_page('wiki1', 'AnotherPage')
     assert_equal 'AnonymousCoward', new_page.author
 
-    r = process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Revised contents of a new page',
+    process 'save', 'web' => 'wiki1', 'id' => 'AnotherPage', 'content' => 'Revised contents of a new page',
       'author' => "G&#xfffe;eo&#2147483647;rge &#38; June"
 
     assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'AnotherPage'
@@ -913,7 +912,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_search
-    r = process 'search', 'web' => 'wiki1', 'query' => '\s[A-Z]ak'
+    process 'search', 'web' => 'wiki1', 'query' => '\s[A-Z]ak'
     
     assert_redirected_to :web => 'wiki1', :action => 'show', :controller => 'wiki', :id => 'Oak'
   end
@@ -978,14 +977,14 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'search', 'web' => 'wiki1', 'query' => "non-existant\x00"
 
     assert_response(:success)
-    assert_match /No pages contain \"non-existant\"/, r.body
+    assert_match(/No pages contain \"non-existant\"/, r.body)
   end
 
   def test_search_FFFF_in_query
     r = process 'search', 'web' => 'wiki1', 'query' => "\xEF\xBF\xBF"
 
     assert_response(:success)
-    assert_match /9 page\(s\) containing search string in the page name:/, r.body
+    assert_match(/9 page\(s\) containing search string in the page name:/, r.body)
 
     r = process 'search', 'web' => 'wiki1', 'query' => "Al\357\277\277l about"
 
@@ -1004,7 +1003,7 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_show_page
-    r = process 'show', 'id' => 'Oak', 'web' => 'wiki1'
+    process 'show', 'id' => 'Oak', 'web' => 'wiki1'
     assert_response :success
     assert_tag :content => /All about oak/
   end
@@ -1016,7 +1015,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /Second revision of the <a.*HomePage.*<\/a> end/, r.body
+    assert_match(/Second revision of the <a.*HomePage.*<\/a> end/, r.body)
   end
 
   def test_recursive_include
@@ -1026,7 +1025,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body.as_utf8
+    assert_match(/<em>Recursive include detected: HomePage \342\206\222 HomePage<\/em>/, r.body.as_utf8)
   end
 
   def test_recursive_include_II
@@ -1038,7 +1037,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body.as_utf8
+    assert_match(/<p>Recursive-include:<\/p>\n\n<p>extra fun <em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body.as_utf8)
   end
 
   def test_recursive_include_III
@@ -1052,7 +1051,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n+<p><em>Recursive include detected: Bar \342\206\222 Bar<\/em><\/p>/, r.body.as_utf8
+    assert_match(/<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n+<p><em>Recursive include detected: Bar \342\206\222 Bar<\/em><\/p>/, r.body.as_utf8)
   end
 
   def test_nonrecursive_include
@@ -1068,7 +1067,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
 
     assert_response :success
-    assert_match /<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body
+    assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body)
   end
 
   def test_divref
@@ -1103,10 +1102,10 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_show_no_page
-    r = process('show', 'id' => '', 'web' => 'wiki1')
+    process('show', 'id' => '', 'web' => 'wiki1')
     assert_response :missing
 
-    r = process('show', 'web' => 'wiki1')
+    process('show', 'web' => 'wiki1')
     assert_response :missing
   end
 

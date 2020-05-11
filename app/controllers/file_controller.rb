@@ -30,7 +30,7 @@ class FileController < ApplicationController
     else
       # no form supplied, this is a request to download the file
       file = @web.files_path.join(@file_name)
-      if File.exists?(file)
+      if File.exist?(file)
         send_file(file)
       else
         return unless check_allow_uploads

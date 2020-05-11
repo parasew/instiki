@@ -38,7 +38,7 @@ class FileControllerTest < ActionController::TestCase
         :content => "Contents of the file")
 
     r = get :file, :web => 'wiki1', :id => 'foo.txt'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
     assert_equal 'text/plain', r.headers['Content-Type']
@@ -50,7 +50,7 @@ class FileControllerTest < ActionController::TestCase
         :content => "Contents of the file")
 
     r = get :file, :web => 'wiki1', :id => 'foo.html'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
     assert_equal 'application/octet-stream', r.headers['Content-Type']
@@ -60,9 +60,9 @@ class FileControllerTest < ActionController::TestCase
   def test_file_download_pdf_file
     @web.wiki_files.create(:file_name => 'foo.pdf', :description => 'PDF file', 
         :content => "aaa\nbbb\n")
-  
+
     r = get :file, :web => 'wiki1', :id => 'foo.pdf'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "aaa\nbbb\n", r.body
     assert_equal 'application/pdf', r.headers['Content-Type']
@@ -71,9 +71,9 @@ class FileControllerTest < ActionController::TestCase
   def test_pic_download_gif
     pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
-    
+
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal pic.size, r.body.size
@@ -86,22 +86,22 @@ class FileControllerTest < ActionController::TestCase
     @web.update_attribute(:password, 'pswd')
     pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
-    
+
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal pic.size, r.body.size
     assert_equal pic, r.body
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end
-  
+
   def test_pic_download_gif_unpublished_web
     @web.update_attribute(:published, false)
     @web.update_attribute(:password, 'pswd')
     pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
-    r = get :file, :web => 'wiki1', :id => 'rails.gif'
+    get :file, :web => 'wiki1', :id => 'rails.gif'
 
     assert_response(:forbidden)
   end
@@ -112,14 +112,14 @@ class FileControllerTest < ActionController::TestCase
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
-    
+
     assert_response(:success, bypass_body_parsing = true)
 # It's no longer possible to use X-Sendfile in development; ergo no way to test
 #    assert_match  '/rails.gif', r.headers['X-Sendfile']
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
   end
-  
+
   def test_pic_x_sendfile_published_web
     @web.update_attribute(:published, true)
     @web.update_attribute(:password, 'pswd')
@@ -128,7 +128,7 @@ class FileControllerTest < ActionController::TestCase
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
-    
+
     assert_response(:success, bypass_body_parsing = true)
 # It's no longer possible to use X-Sendfile in development; ergo no way to test
 #    assert_match  '/rails.gif', r.headers['X-Sendfile']
@@ -143,8 +143,8 @@ class FileControllerTest < ActionController::TestCase
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
-    r = get :file, :web => 'wiki1', :id => 'rails.gif'
-    
+    get :file, :web => 'wiki1', :id => 'rails.gif'
+
     assert_response(:forbidden)
   end
 
@@ -153,7 +153,7 @@ class FileControllerTest < ActionController::TestCase
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
-    
+
     assert_response(:success, bypass_body_parsing = true)
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal pic.size, r.body.size
@@ -162,8 +162,8 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_unknown_pic
-    r = get :file, :web => 'wiki1', :id => 'non-existant.gif'
-    
+    get :file, :web => 'wiki1', :id => 'non-existant.gif'
+
     assert_response(:success)
     assert_template 'file/file'
   end
@@ -179,9 +179,9 @@ class FileControllerTest < ActionController::TestCase
         Time.now, 'AnonymousBrave', renderer)
     assert_equal "<p><span class='newWikiWord'>rails-e2e.gif</span></p>",
         renderer.display_published
-  
+
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
-    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
+    get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
     assert_response(:forbidden)
   end
 
@@ -196,9 +196,9 @@ class FileControllerTest < ActionController::TestCase
         Time.now, 'AnonymousBrave', renderer)
     assert_equal "<p><span class='newWikiWord'>rails-e2e.gif</span></p>",
         renderer.display_published
-  
+
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
-    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
+    get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
     assert_response(:forbidden)
   end
 
@@ -211,9 +211,9 @@ class FileControllerTest < ActionController::TestCase
     assert_equal "<p><span class='newWikiWord'>rails-e2e.gif<a href='../file/rails-e2e.gif'>" +
         "?</a></span></p>",
         renderer.display_content
-  
+
     # rails-e2e.gif is unknown to the system, so pic action goes to the file [upload] form
-    r = get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
+    get :file, :web => 'wiki1', :id => 'rails-e2e.gif'
     assert_response(:success)
     assert_template 'file/file'
 
@@ -244,7 +244,7 @@ class FileControllerTest < ActionController::TestCase
 
   def test_import
     # updated from post to get - post fails the spam protection (no javascript)
-    r = get :import, :web => 'wiki1', :file => uploaded_file("#{RAILS_ROOT}/test/fixtures/exported_markup.zip")
+    get :import, :web => 'wiki1', :file => uploaded_file("#{RAILS_ROOT}/test/fixtures/exported_markup.zip")
     assert_response(:redirect)
     assert @web.has_page?('ImportedPage')
   end

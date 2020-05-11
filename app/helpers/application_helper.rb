@@ -138,4 +138,12 @@ require 'itex_stringsupport'
     end
   end
 
+  def list_item(text, link_options, description, accesskey = nil)
+    link_options[:controller] = 'wiki'
+    link_options[:web] = @web.address
+    link_to_unless_current(text, link_options, :title => description, :accesskey => accesskey) {
+      content_tag('b', text, 'title' => description, 'class' => 'navOn')
+    }
+  end
+
 end
