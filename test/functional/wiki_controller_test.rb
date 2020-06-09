@@ -960,6 +960,19 @@ class WikiControllerTest < ActionController::TestCase
     assert_match create_pattern, r.body
   end
 
+  def test_search_exact_title_match
+    r = process 'search', 'web' => 'wiki1', 'query' => 'Elephant'
+
+    assert_response(302)
+    assert_equal 'Elephant', r.template_objects['query']
+    assert_equal [@elephant], r.template_objects['results']
+    assert_equal [@elephant], r.template_objects['title_results']
+    create_pattern = Regexp.new(Regexp.escape(%{<html><body>You } +
+        %{are being <a href=\"http://test.host/wiki1/show/Elepha} +
+        %{nt\">redirected</a>.</body></html>}))
+    assert_match create_pattern, r.body
+  end
+
   def test_search_partial_title_match_stripped
     r = process 'search', 'web' => 'wiki1', 'query' => ' ant'
 
