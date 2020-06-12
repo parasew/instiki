@@ -1067,6 +1067,18 @@ class WikiControllerTest < ActionController::TestCase
     assert_match(/<p>Recursive-include:<\/p>\n\n<p>extra fun<\/p>\n+<p><em>Recursive include detected: Bar \342\206\222 Bar<\/em><\/p>/, r.body.as_utf8)
   end
 
+  def test_recursive_include_IV
+    @wiki.write_page('instiki', 'Foo', "Recursive-include:\n\n[[!include wiki1:HomePage]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('wiki1', 'HomePage', "extra fun [[!include Instiki:Foo]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+
+    r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
+
+    assert_response :success
+    assert_match(/<p>extra fun Recursive-include:<\/p>\n\n<p><em>Recursive include detected: Foo \342\206\222 Foo<\/em><\/p>/, r.body.as_utf8)
+  end
+
   def test_nonrecursive_include
     @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[HomePage]]", Time.now,
         Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
@@ -1082,6 +1094,42 @@ class WikiControllerTest < ActionController::TestCase
     assert_response :success
     assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body)
   end
+
+  def test_nonrecursive_include_interweb
+    @wiki.write_page('instiki', 'Foo', "[[!include wiki1:Bar]]\n\n[[!include wiki1:Bar]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[HomePage]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('wiki1', 'HomePage', "Nonrecursive-include:\n\n[[!include Instiki:Foo]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+
+    # This shouldn't be here. Detritus from another test?
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
+    r = process('show', 'id' => 'HomePage', 'web' => 'wiki1')
+
+    assert_response :success
+    assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body)
+  end
+
+  def test_nonrecursive_include_interweb_forbidden
+    set_web_property :password, 'pswd'
+    @wiki.write_page('instiki', 'Bar', "extra fun\n\n[[HomePage]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('wiki1', 'Bar', "Lopsided", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('instiki', 'Foo', "[[!include wiki1:Bar]]\n\n[[!include Instiki:Bar]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('instiki', 'HomePage', "Nonrecursive-include:\n\n[[!include Instiki:Foo]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+
+    r = process('show', 'id' => 'HomePage', 'web' => 'instiki')
+
+    assert_response :success
+    assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>Access to wiki1:Bar forbidden.<\/p>\n\n<p>extra fun<\/p>/, r.body)
+    set_web_property :password, nil
+
+  end
+
 
   def test_divref
     @wiki.write_page('wiki1', 'Bar',  "+-- \{: .num_lemma #Leftcosetsdisjoint\}\n###### Lem" +

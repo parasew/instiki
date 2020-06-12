@@ -9,19 +9,30 @@ require 'chunks/wiki'
 
 class Include < WikiChunk::WikiReference
 
-  INCLUDE_PATTERN = /\[\[!include\s+([^\]\s][^\]]*?)\s*\]\]/i
+  INCLUDE_PATTERN = /\[\[!include\s+([^\]\s:][^\]]*?:)?([^\]\s][^\]]*?)\s*\]\]/i
   def self.pattern() INCLUDE_PATTERN end
 
   def initialize(match_data, content)
     super
-    @page_name = match_data[1].strip
+    @web_name = match_data[1] ? match_data[1].chop.strip : @content.web.name
+    @page_name = match_data[2].strip
     rendering_mode = content.options[:mode] || :show
     add_to_include_list
-    @unmask_text = get_unmask_text_avoiding_recursion_loops(rendering_mode)
+    @ref_web = Web.find_by_name(@web_name)
+    if @ref_web.password.nil? or @ref_web == @content.web
+      @unmask_text = get_unmask_text_avoiding_recursion_loops(rendering_mode)
+    else
+      @unmask_text = "Access to #{@web_name}:#{@page_name} forbidden."
+    end
   end
 
   private
-  
+
+  # the referenced page
+  def refpage
+    @ref_web.page(@page_name)
+  end
+
   def get_unmask_text_avoiding_recursion_loops(rendering_mode)
     if refpage
       return "<em>Recursive include detected: #{@content.page_name} " +
@@ -53,8 +64,8 @@ class Include < WikiChunk::WikiReference
   
   def add_to_include_list
     Thread.current[:chunk_included_by] ?
-      Thread.current[:chunk_included_by].push(@content.page_name) :
-      Thread.current[:chunk_included_by] = [@content.page_name]
+      Thread.current[:chunk_included_by].push([@content.web, @content.page_name]) :
+      Thread.current[:chunk_included_by] = [[@content.web, @content.page_name]]
   end
 
   def clear_include_list
@@ -62,7 +73,7 @@ class Include < WikiChunk::WikiReference
   end
     
   def self_inclusion(refpage)
-    if Thread.current[:chunk_included_by].include?(refpage.page.name)
+    if Thread.current[:chunk_included_by].include?([refpage.page.web, refpage.page.name])
       @content.delete_chunk(self)
       clear_include_list
     else
