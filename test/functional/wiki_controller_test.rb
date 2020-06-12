@@ -1127,9 +1127,25 @@ class WikiControllerTest < ActionController::TestCase
     assert_response :success
     assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>Access to wiki1:Bar forbidden.<\/p>\n\n<p>extra fun<\/p>/, r.body)
     set_web_property :password, nil
-
   end
 
+  def test_nonrecursive_include_password
+    set_web_property :password, 'pswd'
+    @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[HomePage]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('wiki1', 'Foo', "[[!include Bar]]\n\n[[!include Bar]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+    @wiki.write_page('wiki1', 'HomePage', "Nonrecursive-include:\n\n[[!include Foo]]", Time.now,
+        Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+
+    # Again, this shouldn't be here. Detritus from another test?
+    File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
+    r = process('show', 'id' => 'HomePage', 'web' => 'wiki1', 'password' => 'pswd')
+
+    assert_response :success
+    assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body)
+    set_web_property :password, nil
+  end
 
   def test_divref
     @wiki.write_page('wiki1', 'Bar',  "+-- \{: .num_lemma #Leftcosetsdisjoint\}\n###### Lem" +
