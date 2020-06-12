@@ -83,13 +83,29 @@ class WikiTest < Test::Unit::TestCase
     content = "This is a [[!include Sperberg-McQueen \t ]] link with trailing spaces to strip. " +
               "This is a [[!include \t Gross-Mende]] link with leading spaces to strip." +
               "This is a [[!include Milo Miles  ]] link with spaces around it to strip"
-    recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
-    assert_equal ['Sperberg-McQueen', 'Gross-Mende', 'Milo Miles'], recognized_includes
+    recognized_includes = content.scan(Include.pattern).collect { |m| [m[0], m[1]] }
+    assert_equal [[nil, 'Sperberg-McQueen'], [nil, 'Gross-Mende'], [nil, 'Milo Miles']], recognized_includes
+  end
+
+  def test_include_strip_spaces_with_a_web
+    content = "This is a [[!include Boof:Sperberg-McQueen \t ]] link with trailing spaces to strip. " +
+              "This is a [[!include \t Boof:Gross-Mende]] link with leading spaces to strip." +
+              "This is a [[!include Boof:Milo Miles  ]] link with spaces around it to strip"
+    recognized_includes = content.scan(Include.pattern).collect { |m| [m[0].chop.strip, m[1]] }
+    assert_equal [['Boof', 'Sperberg-McQueen'], ['Boof','Gross-Mende'], ['Boof', 'Milo Miles']], recognized_includes
+  end
+
+  def test_include_strip_spaces_with_a_web_with_spaces
+    content = "This is a [[!include Wild West:Sperberg-McQueen \t ]] link with trailing spaces to strip. " +
+              "This is a [[!include \t Wild West:Gross-Mende]] link with leading spaces to strip." +
+              "This is a [[!include Wild West:Milo Miles  ]] link with spaces around it to strip"
+    recognized_includes = content.scan(Include.pattern).collect { |m| [m[0].chop.strip, m[1]] }
+    assert_equal [['Wild West', 'Sperberg-McQueen'], ['Wild West','Gross-Mende'], ['Wild West', 'Milo Miles']], recognized_includes
   end
 
   def test_include_chunk_pattern
     content = 'This is a [[!include pagename]] and [[!include WikiWord]] and [[!include x]]but [[blah]]'
-    recognized_includes = content.scan(Include.pattern).collect { |m| m[0] }
+    recognized_includes = content.scan(Include.pattern).collect { |m| m[1] }
     assert_equal %w(pagename WikiWord x), recognized_includes
   end
 
