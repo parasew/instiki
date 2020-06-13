@@ -18,7 +18,7 @@ class Include < WikiChunk::WikiReference
     @page_name = match_data[2].strip
     rendering_mode = content.options[:mode] || :show
     add_to_include_list
-    @ref_web = Web.find_by_name(@web_name)
+    @ref_web = Web.find_by_name(@web_name) || Web.find_by_address(@web_name)
     if @ref_web.password.nil? or @ref_web == @content.web
       @unmask_text = get_unmask_text_avoiding_recursion_loops(rendering_mode)
     else
