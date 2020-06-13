@@ -14,15 +14,15 @@ class Include < WikiChunk::WikiReference
 
   def initialize(match_data, content)
     super
-    @web_name = match_data[1] ? match_data[1].chop.strip : @content.web.name
+    web_name = match_data[1] ? match_data[1].chop.strip : @content.web.name
     @page_name = match_data[2].strip
     rendering_mode = content.options[:mode] || :show
     add_to_include_list
-    @ref_web = Web.find_by_name(@web_name) || Web.find_by_address(@web_name)
+    @ref_web = Web.find_by_name(web_name) || Web.find_by_address(web_name)
     if @ref_web.password.nil? or @ref_web == @content.web
       @unmask_text = get_unmask_text_avoiding_recursion_loops(rendering_mode)
     else
-      @unmask_text = "Access to #{@web_name}:#{@page_name} forbidden."
+      @unmask_text = "Access to #{web_name}:#{@page_name} forbidden."
     end
   end
 
