@@ -1193,6 +1193,26 @@ class WikiControllerTest < ActionController::TestCase
     set_web_property :password, nil
   end
 
+def test_nonrecursive_include_published
+  set_web_property :password, 'pswd'
+  set_web_property :published, true
+  @wiki.write_page('wiki1', 'Bar', "extra fun\n\n[[HomePage]]", Time.now,
+      Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+  @wiki.write_page('wiki1', 'Foo', "[[!include Bar]]\n\n[[!include Bar]]", Time.now,
+      Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+  @wiki.write_page('wiki1', 'HomePage', "Nonrecursive-include:\n\n[[!include Foo]]", Time.now,
+      Author.new('AnotherAuthor', '127.0.0.2'), x_test_renderer)
+
+  # Again, this shouldn't be here. Detritus from another test?
+  File.delete(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
+  r = process('published', 'id' => 'HomePage', 'web' => 'wiki1')
+
+  assert_response :success
+  assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/published\/HomePage'>HomePage<\/a><\/p>/, r.body)
+  set_web_property :password, nil
+  set_web_property :published, nil
+end
+
   def test_divref
     @wiki.write_page('wiki1', 'Bar',  "+-- \{: .num_lemma #Leftcosetsdisjoint\}\n###### Lem" +
       "ma\nLet $H$ be a subgroup of a group $G$, and let $x$ and $y$ be elements\n of $G$" +
