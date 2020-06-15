@@ -293,6 +293,7 @@ class WikiControllerTest < ActionController::TestCase
 
   def test_published
     set_web_property :published, true
+    set_web_property :password, 'pswd'
 
     r = process('published', 'web' => 'wiki1', 'id' => 'HomePage')
 
@@ -300,7 +301,26 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal @home, r.template_objects['page']
     assert_match(/<a class='existingWikiWord' href='\/wiki1\/published\/ThatWay'>That Way<\/a>/, r.body.as_bytes)
 
+    r = process('tex', 'web' => 'wiki1', 'id' => 'HomePage')
+
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_match(/HisWay would be MyWay \$\\sin\(x\) \\includegraphics\[width=3em\]\{foo\}\$ in kinda ThatWay in HisWay though MyWay/, r.body.as_bytes)
+
+    r = process('source', 'web' => 'wiki1', 'id' => 'HomePage')
+
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_match(/HisWay would be MyWay \$\\sin\(x\)\\begin\{svg\}&lt;svg\/&gt;\\end\{svg\}\\includegraphics\[width=3em\]\{foo\}\$ in kinda ThatWay in HisWay though MyWay/, r.body.as_bytes)
+
     r = process('show', 'web' => 'wiki1', 'id' => 'HomePage')
+    assert_response(302)
+
+    r = process('save', 'web' => 'instiki', 'id' => 'HomePage', 'content' => 'Contents of a new page',
+      'author' => 'AuthorOfNewPage')
+    assert_response(302)
+
+    r = process('show', 'web' => 'wiki1', 'id' => 'HomePage', 'password' => 'pswd')
 
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
@@ -351,6 +371,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_response(:success)
     assert_equal @liquor, r.template_objects['page']
     assert_match(/<a class='existingWikiWord' href='\/instiki\/show\/HomePage' title='instiki'>go there<\/a>/, r.body)
+    set_web_property :password, nil
   end
 
   def test_published_web_not_published
