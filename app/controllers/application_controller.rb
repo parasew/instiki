@@ -254,7 +254,7 @@ class ApplicationController < ActionController::Base
     @web.password.nil? or
     cookies.signed[CGI.escape(@web_name)] == @web.password or
     password_check(params['password']) or
-    (@web.published? and action_name == 's5')
+    (@web.published? and %w(print tex source s5).include?(action_name))
 
     rescue ActiveSupport::MessageVerifier::InvalidSignature
       flash[:info] = 'Bad cookie. Please reauthenticate.'

@@ -211,15 +211,20 @@ EOL
   end
 
   def atom_with_headlines
-    p = params['limit'].to_i
-    (p != 0) ? render_atom(hide_description = true, p) : render_atom(hide_description = true)
+    if rss_with_content_allowed?
+      p = params['limit'].to_i
+      (p != 0) ? render_atom(hide_description = true, p) : render_atom(hide_description = true)
+    else
+      render :text => 'Atom feed for this web is blocked for security reasons. ' +
+        'The web is password-protected and not published', :status => 403, :layout => 'error'
+    end
   end
 
   def atom_with_changes(limit = 15)
     if rss_with_content_allowed?
       render_atom_changes(hide_description = false, limit)
     else
-      render :text => 'Atom feed with content for this web is blocked for security reasons. ' +
+      render :text => 'Atom feed with changes for this web is blocked for security reasons. ' +
         'The web is password-protected and not published', :status => 403, :layout => 'error'
     end
   end
