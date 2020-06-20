@@ -87,7 +87,8 @@ var svgEditorExtension_itex = (function () {
                     math.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
                     math.setAttribute('display', 'inline');
                     // make an AJAX request to the server, to get the MathML
-                    $.post(svgEditor.curConfig.itexEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
+                    var itexEndpoint = svgEditor.curConfig.itexEndpoint || '../../itex';
+                    $.post(itexEndpoint, {'tex': tex, 'display': 'inline'}, function(data){
                     var first = data.documentElement.firstElementChild;
                     // If itex2MML included the original tex source as an <annotation>,
                     // then we don't have to. Otherwise, let's do that ourselves.
