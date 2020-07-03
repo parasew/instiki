@@ -36,9 +36,10 @@ require 'itex_stringsupport'
 
   # Creates a hyperlink to a Wiki page, without checking if the page exists or not
   def link_to_existing_page(page, text = nil, html_options = {})
+    action = (params['action'] && params['action'] == 'published') ? 'published' : 'show'
     link_to(
         text || page.plain_name, 
-        {:web => @web.address, :action => 'show', :id => page.name, :only_path => true},
+        {:web => @web.address, :action => action, :id => page.name, :only_path => true},
         html_options).html_safe
   end
   

@@ -1126,6 +1126,11 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response :success
     assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/show\/HomePage'>HomePage<\/a><\/p>/, r.body)
+
+    r = process('show', 'id' => 'Bar', 'web' => 'wiki1')
+
+    assert_response :success
+    assert_match(/Included from: \n    <a href=\"\/wiki1\/show\/HomePage\">Home Page<\/a>, <a href=\"\/wiki1\/show\/Foo\">Foo<\/a>\n/, r.body)
   end
 
   def test_nonrecursive_include_interweb
@@ -1230,6 +1235,11 @@ def test_nonrecursive_include_published
 
   assert_response :success
   assert_match(/<p>Nonrecursive-include:<\/p>\n\n<p>extra fun<\/p>\n\n<p><a class='existingWikiWord' href='\/wiki1\/published\/HomePage'>HomePage<\/a><\/p>/, r.body)
+
+  r = process('published', 'id' => 'Bar', 'web' => 'wiki1')
+
+  assert_response :success
+  assert_match(/Included from: \n    <a href=\"\/wiki1\/published\/HomePage\">Home Page<\/a>, <a href=\"\/wiki1\/published\/Foo\">Foo<\/a>\n/, r.body)
   set_web_property :password, nil
   set_web_property :published, nil
 end
