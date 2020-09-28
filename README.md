@@ -53,7 +53,7 @@ On Snow Leopard (10.6) or later, you are all set.
 
 ### Any other System
 
-- get Ruby for your System, compile if nessesary: http://ruby-lang.org
+- get Ruby for your System, compile if necessary: http://ruby-lang.org
 - Depending on the version of Rubygems that came with your Ruby, you may need to
 
     sudo gem update --system
