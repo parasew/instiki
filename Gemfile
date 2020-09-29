@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-gem "sqlite3", "1.4.2"
+ruby "2.7.1"
 gem "itextomml", ">=1.6.0"
 gem "rack", ">=2.0"
 gem "thin"
@@ -16,6 +16,14 @@ gem "file_signature", "~> 1.2.0"
 gem "syntax", "~> 1.1.0"
 gem "maruku", :git => 'https://github.com/distler/maruku.git', :branch => 'nokogiri'
 gem 'iconv'
-gem 'httparty', '~>0.16.0'
+gem 'httparty'
 gem 'rdoc-data', :platforms => :ruby_18
-gem 'test-unit'
+gem 'test-unit', '~> 2.5.5'
+
+group :development, :test do
+  gem "sqlite3", "~>1.3.13", :require => "sqlite3"
+end
+
+group :production do
+  gem "pg", "~> 1.0.0"
+end
