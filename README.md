@@ -53,7 +53,7 @@ On Snow Leopard (10.6) or later, you are all set.
 
 ### Any other System
 
-- get Ruby for your System, compile if nessesary: http://ruby-lang.org
+- get Ruby for your System, compile if necessary: http://ruby-lang.org
 - Depending on the version of Rubygems that came with your Ruby, you may need to
 
     sudo gem update --system
@@ -77,7 +77,7 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 * Reference tracker: Which other pages are pointing to the current?
 * Five markup choices:
    Markdown-based choices [http://daringfireball.net/projects/markdown/syntax]:
-     Markdown+itex2MML (the default; requires itex2MML) 
+     Markdown+itex2MML (the default; uses itex2MML) 
      Markdown+BlahTeX/PNG (requires blahtex and a working TeX installation)
      Markdown
    Textile [http://www.textism.com/tools/textile]
