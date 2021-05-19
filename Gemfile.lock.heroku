@@ -28,7 +28,7 @@ GEM
     mime-types-data (3.2018.0812)
     mini_portile2 (2.3.0)
     multi_xml (0.6.0)
-    nokogiri (1.8.5)
+    nokogiri (1.11.4)
       mini_portile2 (~> 2.3.0)
     rack (2.2.3)
     rails_xss (0.4.0)
@@ -60,7 +60,7 @@ DEPENDENCIES
   itextomml (>= 1.6.0)
   json
   maruku!
-  nokogiri (~> 1.8.0)
+  nokogiri (>= 1.11.4)
   rack (>= 2.0)
   rails_xss (~> 0.4.0)
   rake (~> 12.3.2)
