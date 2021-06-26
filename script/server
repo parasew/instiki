@@ -116,7 +116,7 @@ trap(:INT) { exit }
 puts "=> Ctrl-C to shutdown server"
 
 begin
-  server.run(app, options.merge(:AccessLog => []))
+  server.run(app, **options.merge(:AccessLog => []))
 ensure
   puts 'Exiting'
 end

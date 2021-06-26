@@ -3,7 +3,10 @@ gem "sqlite3", "1.4.2"
 gem "itextomml", ">=1.6.0"
 gem "rack", ">=2.0"
 gem "thin"
-gem "rubyzip", '~> 0.9.9'
+gem "rubyzip", '~>2.3.0'
+gem "zip-zip"
+gem "rexml"
+gem "webrick"
 gem "RedCloth", ">=4.0.0"
 gem "erubis"
 gem "nokogiri", '>= 1.11.4'
