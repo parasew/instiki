@@ -75,7 +75,7 @@ DEPENDENCIES
   rdoc
   rdoc-data
   rexml
-  rubyzip  (~> 2.3.0)
+  rubyzip (~> 2.3.0)
   sqlite3 (= 1.4.2)
   syntax (~> 1.1.0)
   test-unit
