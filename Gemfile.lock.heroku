@@ -28,7 +28,7 @@ GEM
     mime-types-data (3.2018.0812)
     mini_portile2 (2.5.3)
     multi_xml (0.6.0)
-    nokogiri (1.11.7)
+    nokogiri (1.12.5)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
     power_assert (2.0.0)
