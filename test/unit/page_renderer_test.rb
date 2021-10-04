@@ -430,6 +430,12 @@ END_THM
       %{\\right\\rvert</annotation></semantics></math></p>},
       %{Foo $\\left\\llbracket\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}\\right\\rrbracket \\left\\lVert\\begin{matrix}a\\\\ b\\\\ c\\end{matrix}\\right\\rvert$})
 
+      assert_markup_parsed_as(
+        %{<p>Foo <math class='maruku-mathml' display='inline' xmlns='http://www.w3.org/1998/Math/MathML'><semantics>} +
+        %{<mrow><mo>⧄</mo><mo>⧅</mo><mo>⧆</mo><mo>⧇</mo><mo>⧈</mo></mrow><annotation encoding='application/x-tex'>} +
+        %{\\boxslash\\boxbslash\\boxast\\boxcircle\\boxbox</annotation></semantics></math></p>},
+        %{Foo $\\boxslash\\boxbslash\\boxast\\boxcircle\\boxbox$})
+
   end
 
   def test_blahtex
