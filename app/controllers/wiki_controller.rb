@@ -341,6 +341,10 @@ EOL
     else
       get_page_and_revision
       @show_diff = (params[:mode] == 'diff')
+      if @nonexistent_revision
+        flash[:error] = "Redirected from nonexistent revision #{params['rev']}.".html_safe
+        redirect_to :web => @web_name, :action => 'revision', :id => @page_name, :mode => params[:mode], :rev => @revision_number
+      end
       @renderer = PageRenderer.new(@revision)
     end
   end
@@ -559,6 +563,7 @@ EOL
     if rev && rev > 0 && rev <= prs
       @revision_number = rev
     else
+      @nonexistent_revision = true
       @revision_number = prs
     end
     @revision = @page.revisions[@revision_number - 1]
