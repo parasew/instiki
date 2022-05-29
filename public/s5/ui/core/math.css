@@ -78,3 +78,6 @@ span.theorem_label {font-style:normal; font-weight:bold;}
   font-weight: bold;
 }
 .maruku_toc ul { list-style: none; }
+.scaled50 {transform: scale(.5) translate(0%,-50%);}
+.scaled625 {transform: scale(.625) translate(0%,-35%);}
+.scaled75 {transform: scale(.75) translate(0%,-33%);}

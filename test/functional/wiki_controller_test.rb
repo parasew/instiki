@@ -464,6 +464,14 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal @home.revisions[0], r.template_objects['revision'] 
   end
 
+  def test_nonexistent_revision
+    r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '100'
+
+    assert_response(302)
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'revision', :id => 'HomePage', :rev => '2'
+    assert r.flash[:error].to_s =~ /Redirected from nonexistent revision 100/
+  end
+
   def test_rollback
     # rollback shows a form where a revision can be edited.
     # its assigns the same as or revision
@@ -808,8 +816,8 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_equal 403, r.response_code
     resp = [ %{<p>Access denied. Your IP address, 127.0.0.2, was found on one or more DNSBL blocking list(s).</p>\n},
-             %{<p>See <a href='http://www.spamcop.net/w3m?action=checkblock&amp;ip=127.0.0.2'>here</a> for more information.</p>\n},
-             %{<p>See <a href='http://www.spamhaus.org/query/bl?ip=127.0.0.2'>here</a> for more information.</p>\n}]
+             %{<p>See <a href='https://www.spamcop.net/w3m?action=checkblock&amp;ip=127.0.0.2'>here</a> for more information.</p>\n},
+             %{<p>See <a href='https://www.spamhaus.org/query/bl?ip=127.0.0.2'>here</a> for more information.</p>\n}]
     resp.each {|re| assert_match Regexp.new(Regexp.escape(re)), r.body}
     assert !File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
   end
