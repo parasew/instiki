@@ -155,7 +155,7 @@ module ActionController #:nodoc:
           path = controller.url_for(options).split('://').last
           normalize!(path)
           add_extension!(path, @extension)
-          @path = UriEncoder.unescape(path)
+          @path = UriEncoder.unescape(path).gsub(/\./, '%2E')
         end
 
         private

@@ -6,6 +6,32 @@ N.B.: You *must* run
 after installing the new software, to enjoy the benefits of this new version.
 
 ------------------------------------------------------------------------------
+* 0.30.3
+
+Security:
+
+* Cleverly-crafted pages could be cached outside the cache
+  directory (credit to Christian Sattler).
+
+New Features:
+
+* Ruby 3.0 compatibility
+* Update for itextomml 1.6.1
+* Heroku-related updates
+* Requires Rack 2.x (should make Passenger deployments a lot easier). You'll
+  definitely need to do a `ruby bundle update` for this one.
+* You can now [[!include Web name:Some page]], rather than being restricted
+  to including pages from the same web (which still works, of course [[!include Some page]]).
+* Backlinks work in Published webs, and more Views are available (by popular demand).
+
+Bugs Fixed:
+
+* Caching fixes
+* Well-formedness of the Search page
+* Latest SVG-Edit broke itex plugin
+* Browsers have tightened cookie policy
+ 
+------------------------------------------------------------------------------
 * 0.30.2
 
 New Features:
