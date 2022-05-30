@@ -3,6 +3,7 @@ gem "sqlite3", "1.4.2"
 gem "itextomml", ">=1.6.0"
 gem "rack", ">=2.0"
 gem "thin"
+gem "after_commit"
 gem "rubyzip", '~>2.3.0'
 gem "zip-zip"
 gem "rexml"

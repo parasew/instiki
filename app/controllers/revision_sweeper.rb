@@ -3,19 +3,22 @@ require_dependency 'cache_sweeping_helper'
 class RevisionSweeper < ActionController::Caching::Sweeper
 
   include CacheSweepingHelper
-  
+
   observe Revision, Page
-  
+
   def before_save(record)
-    if record.is_a?(Revision)
-      expire_cached_page(record.page.web, record.page.name) 
-      expire_cached_revisions(record.page)
+    if record.is_a?(Revision) and !@will_expire
+      @will_expire = record.page.name
     end
   end
-  
-  def after_save(record)
-    if record.is_a?(Revision)
+
+  def after_commit(record)
+    if record.is_a?(Revision) and @will_expire
+      expire_cached_page(record.page.web, @will_expire)
+      expire_cached_revisions(record.page)
       expire_caches(record.page)
+      end
+      @will_expire = nil
     end
   end
 
@@ -32,19 +35,24 @@ class RevisionSweeper < ActionController::Caching::Sweeper
       expire_caches(record)
     end
   end
-  
+
   def self.expire_page(web, page_name)
     new.expire_cached_page(web, page_name)
   end
 
   private
-  
+
   def expire_caches(page)
     expire_cached_summary_pages(page.web)
-    pages_to_expire = ([page.name] + 
+    pages_to_expire = ([@will_expire, page.name] + 
        WikiReference.pages_redirected_to(page.web, page.name) +
        WikiReference.pages_that_include(page.web, page.name)).uniq
     pages_to_expire.each { |page_name| expire_cached_page(page.web, page_name) }
+    unless (page.name == @will_expire)
+      (WikiReference.pages_that_reference(page.web, @will_expire) +
+       WikiReference.pages_that_link_to(page.web, page.name)).uniq.each do |page_name|
+        expire_cached_page(record.web, page_name)
+      end
   end
 
 end
