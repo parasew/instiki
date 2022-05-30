@@ -14,6 +14,7 @@ class InstikiUpgrade
   def self.migrate_db
     ActiveRecord::Base.establish_connection ENV['RAILS_ENV']
     Rake::Task["db:migrate"].invoke
+    Rake::Task["db:schema:dump"].invoke
   end
 
   def self.move_uploaded_files

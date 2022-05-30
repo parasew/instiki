@@ -26,6 +26,7 @@ class WikiControllerTest < ActionController::TestCase
     @request.session.dbman = FakeSessionDbMan
     @wiki = Wiki.new
     @web = webs(:test_wiki)
+    @web_name = @web.to_s
     @home = @page = pages(:home_page)
     @oak = pages(:oak)
     @liquor = pages(:liquor)
@@ -885,6 +886,22 @@ class WikiControllerTest < ActionController::TestCase
         'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
 
     assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'booze'
+
+    revisions_after = @liquor.revisions.size
+    assert_equal revisions_before + 1, revisions_after
+    @booze = Page.find(@liquor.id)
+    assert !@booze.locked?(Time.now), 'booze should be unlocked if an edit was unsuccessful'
+  end
+
+  def test_save_new_revision_identical_to_last_but_overlong_new_name
+    revisions_before = @liquor.revisions.size
+    @liquor.lock(Time.now, 'AnAuthor')
+  
+    process 'save', {'web' => 'wiki1', 'id' => 'liquor', 
+        'content' => @liquor.revisions.last.content.dup, 'new_name' => 'booze'*51,
+        'author' => 'SomeOtherAuthor'}, {:return_to => '/wiki1/show/booze'}
+
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'booze'*46 + 'booz...'
 
     revisions_after = @liquor.revisions.size
     assert_equal revisions_before + 1, revisions_after
