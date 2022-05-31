@@ -29,11 +29,9 @@ module CacheSweepingHelper
     page.rev_ids.count.times  do |i|
       revno = i+1
       expire_action :controller => 'wiki', :web => page.web.address,
-          :action => 'revision', :id => page.name, :rev => revno
+          :action => ['revision', 'source'], :id => page.name, :rev => revno
       expire_action :controller => 'wiki', :web => page.web.address,
           :action => 'revision', :id => page.name, :rev => revno, :mode => 'diff'
-      expire_action :controller => 'wiki', :web => page.web.address,
-          :action => 'source', :id => page.name, :rev => revno
     end
   end
 
