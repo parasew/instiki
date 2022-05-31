@@ -14,7 +14,6 @@ class RevisionSweeper < ActionController::Caching::Sweeper
 
   def after_commit(record)
     if record.is_a?(Revision) and @will_expire
-      expire_cached_page(record.page.web, @will_expire)
       expire_cached_revisions(record.page)
       expire_caches(record.page)
       @will_expire = nil
@@ -31,6 +30,7 @@ class RevisionSweeper < ActionController::Caching::Sweeper
 
   def after_delete(record)
     if record.is_a?(Page)
+      expire_cached_revisions(record)
       expire_caches(record)
     end
   end
@@ -43,16 +43,15 @@ class RevisionSweeper < ActionController::Caching::Sweeper
 
   def expire_caches(page)
     expire_cached_summary_pages(page.web)
-    pages_to_expire = ([@will_expire, page.name] +
+    pages_to_expire = [page.name] +
        WikiReference.pages_redirected_to(page.web, @will_expire) +
-       WikiReference.pages_that_include(page.web, @will_expire)).uniq
-    pages_to_expire.each { |page_name| expire_cached_page(page.web, page_name) }
+       WikiReference.pages_that_include(page.web, @will_expire)
     unless (page.name == @will_expire)
-      (WikiReference.pages_that_reference(page.web, @will_expire) +
-       WikiReference.pages_that_link_to(page.web, page.name)).uniq.each do |page_name|
-        expire_cached_page(record.web, page_name)
-      end
+      pages_to_expire.concat ([@will_expire] +
+        WikiReference.pages_that_link_to(page.web, @will_expire) +
+        WikiReference.pages_that_reference(page.web, page.name))
     end
+    pages_to_expire.uniq.each { |page_name| expire_cached_page(page.web, page_name) }
   end
 
 end

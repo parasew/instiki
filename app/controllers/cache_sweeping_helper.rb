@@ -26,12 +26,13 @@ module CacheSweepingHelper
   end
 
   def expire_cached_revisions(page)
+    page_name = @will_expire || page.name
     page.rev_ids.count.times  do |i|
       revno = i+1
       expire_action :controller => 'wiki', :web => page.web.address,
-          :action => ['revision', 'source'], :id => page.name, :rev => revno
+          :action => ['revision', 'source'], :id => page_name, :rev => revno
       expire_action :controller => 'wiki', :web => page.web.address,
-          :action => 'revision', :id => page.name, :rev => revno, :mode => 'diff'
+          :action => 'revision', :id => page_name, :rev => revno, :mode => 'diff'
     end
   end
 
