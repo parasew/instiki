@@ -10,7 +10,7 @@ gem "rexml"
 gem "webrick"
 gem "RedCloth", ">=4.0.0"
 gem "erubis"
-gem "nokogiri", '>= 1.11.4'
+gem "nokogiri", '>= 1.13.6'
 gem "rake", '~>12.3.2'
 gem "rdoc"
 gem "json"

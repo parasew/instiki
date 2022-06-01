@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.7.1"
+ruby "3.0.4"
 gem "itextomml", ">=1.6.0"
 gem "rack", ">=2.0"
 gem "thin"
@@ -7,9 +7,10 @@ gem "after_commit"
 gem "rubyzip", '~>2.3.0'
 gem "zip-zip"
 gem "rexml"
+gem "webrick"
 gem "RedCloth", ">=4.0.0"
 gem "erubis"
-gem "nokogiri", '>= 1.11.4'
+gem "nokogiri", '>= 1.13.6'
 gem "rake", '~>12.3.2'
 gem "rdoc"
 gem "json"
