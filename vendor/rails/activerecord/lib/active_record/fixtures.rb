@@ -741,7 +741,11 @@ class Fixtures < (RUBY_VERSION < '1.9' ? YAML::Omap : Hash)
     end
 
     def parse_yaml_string(fixture_content)
-      YAML::load(erb_render(fixture_content))
+      if RUBY_VERSION < '3.1'
+        YAML::load(erb_render(fixture_content))
+      else
+        Psych::load(erb_render(fixture_content), permitted_classes: [Date, Time])
+      end
     rescue => error
       raise Fixture::FormatError, "a YAML error occurred parsing #{yaml_file_path}. Please note that YAML must be consistently indented using spaces. Tabs are not allowed. Please have a look at http://www.yaml.org/faq.html\nThe exact error was:\n  #{error.class}: #{error}"
     end
