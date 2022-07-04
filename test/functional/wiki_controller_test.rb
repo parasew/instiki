@@ -1654,7 +1654,10 @@ Page2 contents \{ \& {\tt \symbol{94}} {\tt \symbol{60}}.
     r = process('tex', 'web' => 'wiki1', 'id' => 'Page2')
     assert_response(:success)
     
-    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + @tex_header3 + %q!\section*{Page2}
+    assert_equal @tex_header1 + "% mathbbol is incompatible with PDF/A\n% This kludge fixes the problem" +
+      "\n\\DeclareFontFamily{U}{bbold}{}\n\\DeclareFontShape{U}{bbold}{m}{n}\n{  <5> <6> bbold5\n   <7>" +
+      " <8> bbold7\n   <9> <10> <10.95> <12> <14.4> <17.28> <20.74> <24.88> bbold10\n}{}\n\\usepackage{" +
+      "mathbbol}\n" + @tex_header2 + @tex_header3 + %q!\section*{Page2}
 
 Page2 contents $\mathbb{01234}$.
 
@@ -1764,7 +1767,10 @@ end
     @request.env['RAW_POST_DATA'] = "_form_key=353106ff8c8466727ee5338baaa0640c87c9b0d6&Ch%C3%A2timent+%26+Page=tex&BogusPage=tex&HomePage=tex&commit=Export"
     r = process('tex_list', 'web' => 'wiki1', 'Page2' => 'tex', 'BogusPage'=> 'tex', 'HomePage' => 'tex')
     assert_response(:success)
-    assert_equal @tex_header1 + "\\usepackage{mathbbol}\n" + @tex_header2 + @tex_header3 + %q!\section*{Châtiment \\& Page}
+    assert_equal @tex_header1 + "% mathbbol is incompatible with PDF/A\n% This kludge fixes the problem" +
+      "\n\\DeclareFontFamily{U}{bbold}{}\n\\DeclareFontShape{U}{bbold}{m}{n}\n{  <5> <6> bbold5\n   <7>" +
+      " <8> bbold7\n   <9> <10> <10.95> <12> <14.4> <17.28> <20.74> <24.88> bbold10\n}{}\n\\usepackage{" +
+      "mathbbol}\n" + @tex_header2 + @tex_header3 + %q!\section*{Châtiment \\& Page}
 
 Page2 contents $\mathbb{01234}$.
 
