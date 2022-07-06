@@ -18,8 +18,13 @@ class SanitizerTest < Test::Unit::TestCase
     xhtml_sanitize(stream)
   end
 
+  def do_safe_sanitize_xhtml stream
+    safe_xhtml_sanitize(stream)
+  end
+
   def check_sanitization(input, htmloutput, xhtmloutput, rexmloutput)
-    assert_equal xhtmloutput.as_bytes, do_sanitize_xhtml(input).as_bytes
+    assert_equal xhtmloutput.as_bytes, do_safe_sanitize_xhtml(input).as_bytes
+    assert_equal htmloutput.as_bytes, do_sanitize_xhtml(input).as_bytes
   end
 
   def test_sanitize_named_entities
@@ -39,14 +44,14 @@ class SanitizerTest < Test::Unit::TestCase
   Sanitizer::ALLOWED_ELEMENTS.each do |tag_name|
     define_method "test_should_allow_#{tag_name}_tag" do
       input       = "<#{tag_name} title='1'>foo <bad>bar</bad> baz</#{tag_name}>"
-      htmloutput  = "<#{tag_name.downcase} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name.downcase}>"
-      xhtmloutput = "<#{tag_name} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>"
+      htmloutput  = "<#{tag_name} title='1'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>"
+      xhtmloutput = "<#{tag_name} title=\"1\">foo &lt;bad&gt;bar&lt;/bad&gt; baz</#{tag_name}>"
       rexmloutput = xhtmloutput
       
       if VOID_ELEMENTS.include?(tag_name)
         htmloutput = "<#{tag_name} title='1'/>foo &lt;bad&gt;bar&lt;/bad&gt; baz"
-        xhtmloutput = htmloutput
-        htmloutput += '<br/>' if tag_name == 'br'
+        xhtmloutput = "<#{tag_name} title=\"1\"/>foo &lt;bad&gt;bar&lt;/bad&gt; baz"
+        # htmloutput += '<br/>' if tag_name == 'br'
         rexmloutput =  "<#{tag_name} title='1' />"
       end
       check_sanitization(input, htmloutput, xhtmloutput, rexmloutput)
@@ -56,7 +61,7 @@ class SanitizerTest < Test::Unit::TestCase
   Sanitizer::ALLOWED_ELEMENTS.each do |tag_name|
     define_method "test_should_forbid_#{tag_name.upcase}_tag" do
       input = "<#{tag_name.upcase} title='1'>foo <bad>bar</bad> baz</#{tag_name.upcase}>"
-      output = "&lt;#{tag_name.upcase} title=\"1\"&gt;foo &lt;bad&gt;bar&lt;/bad&gt; baz&lt;/#{tag_name.upcase}&gt;"
+      output = "&lt;#{tag_name.upcase} title='1'&gt;foo &lt;bad&gt;bar&lt;/bad&gt; baz&lt;/#{tag_name.upcase}&gt;"
       xhtmloutput = "&lt;#{tag_name.upcase} title='1'&gt;foo &lt;bad&gt;bar&lt;/bad&gt; baz&lt;/#{tag_name.upcase}&gt;"
       check_sanitization(input, output, xhtmloutput, output)
     end
@@ -67,8 +72,9 @@ class SanitizerTest < Test::Unit::TestCase
     define_method "test_should_allow_#{attribute_name}_attribute" do
       input = "<p #{attribute_name}='foo'>foo <bad>bar</bad> baz</p>"
       output = "<p #{attribute_name}='foo'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
-      htmloutput = "<p #{attribute_name.downcase}='foo'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
-      check_sanitization(input, htmloutput, output, output)
+      htmloutput = "<p #{attribute_name}='foo'>foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
+      xhtmloutput = "<p #{attribute_name}=\"foo\">foo &lt;bad&gt;bar&lt;/bad&gt; baz</p>"
+      check_sanitization(input, htmloutput, xhtmloutput, output)
     end
   end
 
@@ -84,7 +90,8 @@ class SanitizerTest < Test::Unit::TestCase
     define_method "test_should_allow_#{protocol}_uris" do
       input = %(<a href="#{protocol}">foo</a>)
       output = "<a href='#{protocol}'>foo</a>"
-      check_sanitization(input, output, output, output)
+      xhtmloutput = "<a href=\"#{protocol}\">foo</a>"
+      check_sanitization(input, output, xhtmloutput, output)
     end
   end
 
@@ -92,7 +99,8 @@ class SanitizerTest < Test::Unit::TestCase
     define_method "test_should_allow_uppercase_#{protocol}_uris" do
       input = %(<a href="#{protocol.upcase}">foo</a>)
       output = "<a href='#{protocol.upcase}'>foo</a>"
-      check_sanitization(input, output, output, output)
+      xhtmloutput = "<a href=\"#{protocol.upcase}\">foo</a>"
+      check_sanitization(input, output, xhtmloutput, output)
     end
   end
 
@@ -100,28 +108,28 @@ class SanitizerTest < Test::Unit::TestCase
     next unless Sanitizer::ALLOWED_ELEMENTS.include?(tag_name)
     define_method "test_#{tag_name}_should_allow_local_href" do
       input = %(<#{tag_name} xlink:href="#foo"/>)
-      output = "<#{tag_name.downcase} xlink:href='#foo'/>"
-      xhtmloutput = "<#{tag_name} xlink:href='#foo'/>"
+      output = "<#{tag_name} xlink:href='#foo'/>"
+      xhtmloutput = "<#{tag_name} xlink:href=\"#foo\"/>"
       check_sanitization(input, output, xhtmloutput, xhtmloutput)
     end
 
     define_method "test_#{tag_name}_should_allow_local_href_with_newline" do
       input = %(<#{tag_name} xlink:href="\n#foo"/>)
-      output = "<#{tag_name.downcase} xlink:href='\n#foo'/>"
-      xhtmloutput = "<#{tag_name} xlink:href='\n#foo'/>"
+      output = "<#{tag_name} xlink:href='\n#foo'/>"
+      xhtmloutput = "<#{tag_name} xlink:href=\" #foo\"/>"
       check_sanitization(input, output, xhtmloutput, xhtmloutput)
     end
 
     define_method "test_#{tag_name}_should_forbid_nonlocal_href" do
       input = %(<#{tag_name} xlink:href="http://bad.com/foo"/>)
-      output = "<#{tag_name.downcase}/>"
+      output = "<#{tag_name}/>"
       xhtmloutput = "<#{tag_name}/>"
       check_sanitization(input, output, xhtmloutput, xhtmloutput)
     end
 
     define_method "test_#{tag_name}_should_forbid_nonlocal_href_with_newline" do
       input = %(<#{tag_name} xlink:href="\nhttp://bad.com/foo"/>)
-      output = "<#{tag_name.downcase}/>"
+      output = "<#{tag_name}/>"
       xhtmloutput = "<#{tag_name}/>"
       check_sanitization(input, output, xhtmloutput, xhtmloutput)
     end
@@ -140,7 +148,8 @@ class SanitizerTest < Test::Unit::TestCase
   def test_comments_in_attributes
     input = %(<a href='examp<!--" script=foo>-->le.com'>test</a> bar)
     output=%(<a href='examp&lt;!--&quot; script=foo&gt;--&gt;le.com'>test</a> bar)
-    check_sanitization(input, output, output, output)
+    xhtmloutput=%(<a href=\"examp&lt;!--&quot; script=foo&gt;--&gt;le.com\">test</a> bar)
+    check_sanitization(input, output, xhtmloutput, output)
   end
 
 # This affects only NS4. Is it worth fixing?

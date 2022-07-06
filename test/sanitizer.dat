@@ -2,36 +2,37 @@
   {
     "name": "IE_Comments",
     "input": "<!--[if gte IE 4]><script>alert('XSS');</script><![endif]-->a",
-    "output": "a",
-    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]--&gt;a"
+    "output": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]--&gt;a",
+    "xhtml": "&lt;!--[if gte IE 4]&gt;&lt;script&gt;alert('XSS');&lt;/script&gt;&lt;![endif]--&gt;a"
   },
 
   {
     "name": "IE_Comments_2",
     "input": "<![if !IE 5]><script>alert('XSS');</script><![endif]>",
-    "output": "&lt;script&gt;alert('XSS');&lt;/script&gt;",
-    "xhtml": "&lt;![if !IE 5]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]&gt;",
+    "output": "&lt;![if !IE 5]&gt;&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;&lt;![endif]&gt;",
+    "xhtml": "&lt;![if !IE 5]&gt;&lt;script&gt;alert('XSS');&lt;/script&gt;&lt;![endif]&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
   {
     "name": "allow_colons_in_path_component",
     "input": "<a href=\"./this:that\">foo</a>",
-    "output": "<a href='./this:that'>foo</a>"
+    "output": "<a href='./this:that'>foo</a>",
+    "xhtml": "<a href=\"./this:that\">foo</a>"
   },
 
   {
     "name": "background_attribute",
     "input": "<div background=\"javascript:alert('XSS')\"></div>",
-    "output": "<div/>",
-    "xhtml": "<div></div>",
+    "output": "<div></div>",
+    "xhtml": "<div/>",
     "rexml": "<div></div>"
   },
 
   {
     "name": "bgsound",
     "input": "<bgsound src=\"javascript:alert('XSS');\" />",
-    "output": "&lt;bgsound src=\"javascript:alert('XSS');\"/&gt;",
+    "output": "&lt;bgsound src='javascript:alert('XSS');'/&gt;",
     "xhtml": "&lt;bgsound src='javascript:alert('XSS');'/&gt;",
     "rexml": "&lt;bgsound src=\"javascript:alert('XSS');\"&gt;&lt;/bgsound&gt;"
   },
@@ -39,27 +40,29 @@
   {
     "name": "div_background_image_unicode_encoded",
     "input": "<div style=\"background-image:\u00a5\u00a2\u006C\u0028'\u006a\u0061\u00a6\u0061\u00a3\u0063\u00a2\u0069\u00a0\u00a4\u003a\u0061\u006c\u0065\u00a2\u00a4\u0028.1027\u0058.1053\u0053\u0027\u0029'\u0029\">foo</div>",
-    "output": "<div style=''>foo</div>"
+    "output": "<div style=''>foo</div>",
+    "xhtml": "<div style=\"\">foo</div>"
   },
 
   {
     "name": "div_expression",
     "input": "<div style=\"width: expression(alert('XSS'));\">foo</div>",
-    "output": "<div style=''>foo</div>"
+    "output": "<div style=''>foo</div>",
+    "xhtml": "<div style=\"\">foo</div>"
   },
 
   {
     "name": "double_open_angle_brackets",
     "input": "<img src=http://ha.ckers.org/scriptlet.html <",
-    "output": "<img src='http://ha.ckers.org/scriptlet.html'/>",
-    "xhtml": "<img src='http:'/>&lt;",
+    "output": "<img src='http:'/>&lt;",
+    "xhtml": "<img src=\"http:\"/>&lt;",
     "rexml": "Ill-formed XHTML!"
   },
 
   {
     "name": "double_open_angle_brackets_2",
     "input": "<script src=http://ha.ckers.org/scriptlet.html <",
-    "output": "&lt;script src=\"http://ha.ckers.org/scriptlet.html\" &lt;=\"\"&gt;",
+    "output": "&lt;script src='http:'&gt;&lt;",
     "xhtml": "&lt;script src='http:'&gt;&lt;",
     "rexml": "Ill-formed XHTML!"
   },
@@ -89,13 +92,14 @@
     "name": "input_image",
     "input": "<input type=\"image\" src=\"javascript:alert('XSS');\" />",
     "output": "<input type='image'/>",
+    "xhtml": "<input type=\"image\"/>",
     "rexml": "<input type='image' />"
   },
 
   {
     "name": "link_stylesheets",
     "input": "<link rel=\"stylesheet\" href=\"javascript:alert('XSS');\" />",
-    "output": "&lt;link rel=\"stylesheet\" href=\"javascript:alert('XSS');\"/&gt;",
+    "output": "&lt;link href='javascript:alert('XSS');' rel='stylesheet'/&gt;",
     "xhtml": "&lt;link href='javascript:alert('XSS');' rel='stylesheet'/&gt;",
     "rexml": "&lt;link href=\"javascript:alert('XSS');\" rel=\"stylesheet\"/&gt;"
   },
@@ -103,7 +107,7 @@
   {
     "name": "link_stylesheets_2",
     "input": "<link rel=\"stylesheet\" href=\"http://ha.ckers.org/xss.css\" />",
-    "output": "&lt;link rel=\"stylesheet\" href=\"http://ha.ckers.org/xss.css\"/&gt;",
+    "output": "&lt;link href='http://ha.ckers.org/xss.css' rel='stylesheet'/&gt;",
     "xhtml": "&lt;link href='http://ha.ckers.org/xss.css' rel='stylesheet'/&gt;",
     "rexml": "&lt;link href=\"http://ha.ckers.org/xss.css\" rel=\"stylesheet\"/&gt;"
   },
@@ -111,21 +115,22 @@
   {
     "name": "list_style_image",
     "input": "<li style=\"list-style-image: url(javascript:alert('XSS'))\">foo</li>",
-    "output": "<li style=''>foo</li>"
+    "output": "<li style=''>foo</li>",
+    "xhtml": "<li style=\"\">foo</li>"
   },
 
   {
     "name": "no_closing_script_tags",
     "input": "<script src=http://ha.ckers.org/xss.js?<b>",
-    "output": "&lt;script src=\"http://ha.ckers.org/xss.js?&amp;lt;b\"&gt;",
-    "xhtml": "&lt;script src='http:'&gt;<b>",
+    "output": "&lt;script src='http:'&gt;<b>",
+    "xhtml": "&amp;lt;script src=&#39;http:&#39;&amp;gt;&lt;b&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
   {
     "name": "non_alpha_non_digit",
     "input": "<script/XSS src=\"http://ha.ckers.org/xss.js\"></script>",
-    "output": "&lt;script XSS=\"\" src=\"http://ha.ckers.org/xss.js\"&gt;&lt;/script&gt;",
+    "output": "&lt;script&gt;&lt;/script&gt;",
     "xhtml": "&lt;script&gt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
@@ -140,7 +145,7 @@
   {
     "name": "non_alpha_non_digit_3",
     "input": "<img/src=\"http://ha.ckers.org/xss.js\"/>",
-    "output": "<img src='http://ha.ckers.org/xss.js'/>",
+    "output": "<img/>",
     "xhtml": "<img/>",
     "rexml": "Ill-formed XHTML!"
   },
@@ -162,13 +167,14 @@
   {
     "name": "platypus",
     "input": "<a href=\"http://www.ragingplatypus.com/\" style=\"display:block; position:absolute; left:0; top:0; width:100%; height:100%; z-index:1; background-color:black; background-image:url(http://www.ragingplatypus.com/i/cam-full.jpg); background-x:center; background-y:center; background-repeat:repeat;\">never trust your upstream platypus</a>",
-    "output": "<a href='http://www.ragingplatypus.com/' style='display: block; width: 100%; height: 100%; background-color: black; background-x: center; background-y: center;'>never trust your upstream platypus</a>"
+    "output": "<a href='http://www.ragingplatypus.com/' style='display: block; width: 100%; height: 100%; background-color: black; background-x: center; background-y: center;'>never trust your upstream platypus</a>",
+    "xhtml": "<a href=\"http://www.ragingplatypus.com/\" style=\"display: block; width: 100%; height: 100%; background-color: black; background-x: center; background-y: center;\">never trust your upstream platypus</a>"
   },
 
   {
     "name": "protocol_resolution_in_script_tag",
     "input": "<script src=//ha.ckers.org/.j></script>",
-    "output": "&lt;script src=\"//ha.ckers.org/.j\"&gt;&lt;/script&gt;",
+    "output": "&lt;script src&gt;&lt;/script&gt;",
     "xhtml": "&lt;script src&gt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
@@ -177,13 +183,14 @@
     "name": "should_allow_anchors",
     "input": "<a href='foo' onclick='bar'><script>baz</script></a>",
     "output": "<a href='foo'>&lt;script&gt;baz&lt;/script&gt;</a>",
-    "xhtml": "<a href='foo'>&lt;script&gt;baz&lt;/script&gt;</a>"
+    "xhtml": "<a href=\"foo\">&lt;script&gt;baz&lt;/script&gt;</a>"
   },
 
   {
     "name": "should_allow_image_alt_attribute",
     "input": "<img alt='foo' onclick='bar' />",
     "output": "<img alt='foo'/>",
+    "xhtml": "<img alt=\"foo\"/>",
     "rexml": "<img alt='foo' />"
   },
 
@@ -191,6 +198,7 @@
     "name": "should_allow_image_height_attribute",
     "input": "<img height='foo' onclick='bar' />",
     "output": "<img height='foo'/>",
+    "xhtml": "<img height=\"foo\"/>",
     "rexml": "<img height='foo' />"
   },
 
@@ -198,6 +206,7 @@
     "name": "should_allow_image_src_attribute",
     "input": "<img src='foo' onclick='bar' />",
     "output": "<img src='foo'/>",
+    "xhtml": "<img src=\"foo\"/>",
     "rexml": "<img src='foo' />"
   },
 
@@ -205,20 +214,21 @@
     "name": "should_allow_image_width_attribute",
     "input": "<img width='foo' onclick='bar' />",
     "output": "<img width='foo'/>",
+    "xhtml": "<img width=\"foo\"/>",
     "rexml": "<img width='foo' />"
   },
 
   {
     "name": "should_handle_blank_text",
     "input": "",
-    "output": "<div xmlns='http://www.w3.org/1999/xhtml'/>",
+    "output": "",
     "xhtml": ""
   },
 
   {
     "name": "should_handle_malformed_image_tags",
     "input": "<img \"\"\"><script>alert(\"XSS\")</script>\">",
-    "output": "<img/>&lt;script&gt;alert(\"XSS\")&lt;/script&gt;\"&gt;",
+    "output": "<img/>",
     "xhtml": "<img/>",
     "rexml": "Ill-formed XHTML!"
   },
@@ -351,7 +361,7 @@
   {
     "name": "should_sanitize_invalid_script_tag",
     "input": "<script/XSS SRC=\"http://ha.ckers.org/xss.js\"></script>",
-    "output": "&lt;script XSS=\"\" SRC=\"http://ha.ckers.org/xss.js\"&gt;&lt;/script&gt;",
+    "output": "&lt;script&gt;&lt;/script&gt;",
     "xhtml": "&lt;script&gt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
@@ -359,15 +369,15 @@
   {
     "name": "should_sanitize_script_tag_with_multiple_open_brackets",
     "input": "<<script>alert(\"XSS\");//<</script>",
-    "output": "&lt;&lt;script&gt;alert(\"XSS\");//&lt;&lt;/script&gt;",
-    "xhtml": "&lt;&lt;script&gt;alert(&quot;XSS&quot;);//&lt;&lt;/script&gt;",
+    "output": "&lt;&lt;script&gt;alert(&quot;XSS&quot;);//&lt;&lt;/script&gt;",
+    "xhtml": "&lt;&lt;script&gt;alert(\"XSS\");//&lt;&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
   {
     "name": "should_sanitize_script_tag_with_multiple_open_brackets_2",
     "input": "<iframe src=http://ha.ckers.org/scriptlet.html\n<",
-    "output": "&lt;iframe src=\"http://ha.ckers.org/scriptlet.html\" &lt;=\"\"&gt;",
+    "output": "&lt;iframe src='http:'&gt;&lt;",
     "xhtml": "&lt;iframe src='http:'&gt;&lt;",
     "rexml": "Ill-formed XHTML!"
   },
@@ -375,35 +385,38 @@
   {
     "name": "should_sanitize_tag_broken_up_by_null",
     "input": "<scr\u0000ipt>alert(\"XSS\")</scr\u0000ipt>",
-    "output": "&lt;scr\ufffdipt&gt;alert(\"XSS\")&lt;/scr\ufffdipt&gt;",
-    "xhtml": "&lt;scr&gt;alert(&quot;XSS&quot;)&lt;/scr&gt;",
+    "output": "&lt;scr&gt;alert(&quot;XSS&quot;)&lt;/scr&gt;",
+    "xhtml": "&lt;script&gt;alert(\"XSS\")&lt;/script&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
   {
     "name": "should_sanitize_unclosed_script",
     "input": "<script src=http://ha.ckers.org/xss.js?<b>",
-    "output": "&lt;script src=\"http://ha.ckers.org/xss.js?&amp;lt;b\"&gt;",
-    "xhtml": "&lt;script src='http:'&gt;<b>",
+    "output": "&lt;script src='http:'&gt;<b>",
+    "xhtml": "&amp;lt;script src=&#39;http:&#39;&amp;gt;&lt;b&gt;",
     "rexml": "Ill-formed XHTML!"
   },
 
   {
     "name": "should_strip_href_attribute_in_a_with_bad_protocols",
     "input": "<a href=\"javascript:XSS\" title=\"1\">boo</a>",
-    "output": "<a title='1'>boo</a>"
+    "output": "<a title='1'>boo</a>",
+    "xhtml": "<a title=\"1\">boo</a>"
   },
 
   {
     "name": "should_strip_href_attribute_in_a_with_bad_protocols_and_whitespace",
     "input": "<a href=\" javascript:XSS\" title=\"1\">boo</a>",
-    "output": "<a title='1'>boo</a>"
+    "output": "<a title='1'>boo</a>",
+    "xhtml": "<a title=\"1\">boo</a>"
   },
 
   {
     "name": "should_strip_src_attribute_in_img_with_bad_protocols",
     "input": "<img src=\"javascript:XSS\" title=\"1\">boo</img>",
     "output": "<img title='1'/>boo",
+    "xhtml": "<img title=\"1\"/>boo",
     "rexml": "<img title='1' />"
   },
 
@@ -411,6 +424,7 @@
     "name": "should_strip_src_attribute_in_img_with_escaped_bad_protocols",
     "input": "<img src=\"javascript&#x3a;alert('XSS');\" title=\"1\">boo</img>",
     "output": "<img title='1'/>boo",
+    "xhtml": "<img title=\"1\"/>boo",
     "rexml": "<img title='1' />"
   },
 
@@ -418,6 +432,7 @@
     "name": "should_strip_src_attribute_in_img_with_bad_protocols_and_whitespace",
     "input": "<img src=\" javascript:XSS\" title=\"1\">boo</img>",
     "output": "<img title='1'/>boo",
+    "xhtml": "<img title=\"1\"/>boo",
     "rexml": "<img title='1' />"
   },
 
@@ -430,13 +445,15 @@
   {
     "name": "xul",
     "input": "<p style=\"-moz-binding:url('http://ha.ckers.org/xssmoz.xml#xss')\">fubar</p>",
-    "output": "<p style=''>fubar</p>"
+    "output": "<p style=''>fubar</p>",
+    "xhtml": "<p style=\"\">fubar</p>"
   },
 
   {
     "name": "quotes_in_attributes",
     "input": "<img src='foo' title='\"foo\" bar' />",
     "rexml": "<img src='foo' title='\"foo\" bar' />",
+    "xhtml": "<img src=\"foo\" title=\"&quot;foo&quot; bar\"/>",
     "output": "<img src='foo' title='&quot;foo&quot; bar'/>"
   },
 
@@ -444,7 +461,7 @@
     "name": "uri_refs_in_svg_attributes",
     "input": "<rect fill='url(#foo)' />",
     "rexml": "<rect fill='url(#foo)'></rect>",
-    "xhtml": "<rect fill='url(#foo)'/>",
+    "xhtml": "<rect fill=\"url(#foo)\"/>",
     "output": "<rect fill='url(#foo)'/>"
   },
 
@@ -452,7 +469,7 @@
     "name": "absolute_uri_refs_in_svg_attributes",
     "input": "<rect fill='url(http://bad.com/) #fff' />",
     "rexml": "<rect fill='  #fff'></rect>",
-    "xhtml": "<rect fill='  #fff'/>",
+    "xhtml": "<rect fill=\"  #fff\"/>",
     "output": "<rect fill='  #fff'/>"
   },
 
@@ -460,7 +477,7 @@
     "name": "uri_ref_with_space_in svg_attribute",
     "input": "<rect fill='url(\n#foo)' />",
     "rexml": "<rect fill='url(\n#foo)'></rect>",
-    "xhtml": "<rect fill='url(\n#foo)'/>",
+    "xhtml": "<rect fill=\"url( #foo)\"/>",
     "output": "<rect fill='url(\n#foo)'/>"
   },
 
@@ -468,7 +485,7 @@
     "name": "absolute_uri_ref_with_space_in svg_attribute",
     "input": "<rect fill=\"url(\nhttp://bad.com/)\" />",
     "rexml": "<rect fill=' '></rect>",
-    "xhtml": "<rect fill=' '/>",
+    "xhtml": "<rect fill=\" \"/>",
     "output": "<rect fill=' '/>"
   },
 
@@ -477,13 +494,14 @@
     "input": "<image src='foo' />",
     "rexml": "&lt;image src=\"foo\"&gt;&lt;/image&gt;",
     "xhtml": "&lt;image src='foo'/&gt;",
-    "output": "&lt;image src=\"foo\"/&gt;"
+    "output": "&lt;image src='foo'/&gt;"
   },
 
   {
     "name": "style_attr_end_with_nothing",
     "input": "<div style=\"color: blue\" />",
     "output": "<div style='color: blue;'/>",
+    "xhtml": "<div style=\"color: blue;\"/>",
     "rexml": "<div style='color: blue;'></div>"
   },
 
@@ -491,6 +509,7 @@
     "name": "style_attr_end_with_space",
     "input": "<div style=\"color: blue \" />",
     "output": "<div style='color: blue ;'/>",
+    "xhtml": "<div style=\"color: blue ;\"/>",
     "rexml": "<div style='color: blue ;'></div>"
   },
 
@@ -498,6 +517,7 @@
     "name": "style_attr_end_with_semicolon",
     "input": "<div style=\"color: blue;\" />",
     "output": "<div style='color: blue;'/>",
+    "xhtml": "<div style=\"color: blue;\"/>",
     "rexml": "<div style='color: blue;'></div>"
   },
 
@@ -505,6 +525,7 @@
     "name": "style_attr_end_with_semicolon_space",
     "input": "<div style=\"color: blue; \" />",
     "output": "<div style='color: blue;'/>",
+    "xhtml": "<div style=\"color: blue;\"/>",
     "rexml": "<div style='color: blue;'></div>"
   },
   
@@ -512,14 +533,15 @@
     "name": "style_attr_end_with_newlines",
     "input": "<div style=\"\nwidth:\nexpression(alert('XSS'));\n\" />",
     "output": "<div style=''/>",
+    "xhtml": "<div style=\"\"/>",
     "rexml": "<div style=''></div>"
   },
 
   {
    "name": "attributes_with_embedded_quotes",
    "input": "<img src=doesntexist.jpg\"'onerror=\"alert(1) />",
-   "output": "<img src='doesntexist.jpg&quot;&apos;onerror=&quot;alert(1)'/>",
-   "xhtml": "<img src='doesntexist.jpg&quot;&#39;onerror=&quot;alert(1)'/>",
+   "output": "<img src='doesntexist.jpg&quot;&#39;onerror=&quot;alert(1)'/>",
+   "xhtml": "<img src=\"doesntexist.jpg&quot;'onerror=&quot;alert(1)\"/>",
    "rexml": "Ill-formed XHTML!"
   },
   
@@ -527,6 +549,83 @@
    "name": "attributes_with_embedded_quotes_II",
    "input": "<img src=notthere.jpg\"\"onerror=\"alert(2) />",
    "output": "<img src='notthere.jpg&quot;&quot;onerror=&quot;alert(2)'/>",
+   "xhtml": "<img src=\"notthere.jpg&quot;&quot;onerror=&quot;alert(2)\"/>",
    "rexml": "Ill-formed XHTML!"
+  },
+
+  {
+   "name": "CVE-2022-32209",
+   "input": "<select><style><script>alert(1)</script></style></select>",
+   "output": "<select>&lt;style&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;/style&gt;</select>"
+  },
+
+  {
+   "name": "CVE-2022-32209-II",
+   "input": "<select<style/>W<xmp<script>alert(1)</script>",
+   "output": "<select>&lt;style/&gt;W&lt;xmp&gt;&lt;script&gt;alert(1)&lt;/script&gt;",
+   "xhtml": "&lt;select&gt;&amp;lt;style/&amp;gt;W&amp;lt;xmp&amp;gt;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;"
+  },
+
+  {
+   "name": "mXSS1",
+   "input": "<svg><math><title><style><img src='x' onerror='alert(1)'></style></title></math></svg>",
+   "output": "<svg><math><title>&lt;style&gt;<img src='x'/>&lt;/style&gt;</title></math></svg>",
+   "xhtml": "<svg><math><title>&lt;style&gt;<img src=\"x\"/>&lt;/style&gt;</title></math></svg>"
+  },
+
+  {
+   "name": "mXSS2",
+   "input": "<svg><p><style><g title=\"</style><img src=x onerror=alert(1)>\">",
+   "output": "<svg><p>&lt;style&gt;<g title='&lt;/style&gt;&lt;img src=x onerror=alert(1)&gt;'>",
+   "xhtml": "&lt;svg&gt;&lt;p&gt;&amp;lt;style&amp;gt;&lt;g title=&#39;&amp;lt;/style&amp;gt;&amp;lt;img src=x onerror=alert(1)&amp;gt;&#39;&gt;"
+  },
+
+  {
+   "name": "mXSS3",
+   "input": "<math><annotation-xml encoding=\"text/html\"><p><style><p title=\"</style><iframe onload&#x3d;alert(1)<!--\"></style>",
+   "output": "<math><annotation-xml encoding='text/html'><p>&lt;style&gt;<p title='&lt;/style&gt;&lt;iframe onload=alert(1)&lt;!--'>&lt;/style&gt;",
+   "xhtml": "&lt;math&gt;&lt;annotation-xml encoding=&#39;text/html&#39;&gt;&lt;p&gt;&amp;lt;style&amp;gt;&lt;p title=&#39;&amp;lt;/style&amp;gt;&amp;lt;iframe onload=alert(1)&amp;lt;!--&#39;&gt;&amp;lt;/style&amp;gt;"
+  },
+
+  {
+   "name": "mXSS4",
+   "input": "<svg><foreignobject><p><style><p title=\"</style><iframe onload&#x3d;alert(1)<!--\"></style>",
+   "output": "<svg>&lt;foreignobject&gt;<p>&lt;style&gt;<p title='&lt;/style&gt;&lt;iframe onload=alert(1)&lt;!--'>&lt;/style&gt;",
+   "xhtml": "&lt;svg&gt;&amp;lt;foreignobject&amp;gt;&lt;p&gt;&amp;lt;style&amp;gt;&lt;p title=&#39;&amp;lt;/style&amp;gt;&amp;lt;iframe onload=alert(1)&amp;lt;!--&#39;&gt;&amp;lt;/style&amp;gt;"
+  },
+
+  {
+   "name": "mXSS5",
+   "input": "<xmp><svg><b><style><b title='</style><img>'>",
+   "output": "&lt;xmp&gt;<svg><b>&lt;style&gt;<b title='&lt;/style&gt;&lt;img&gt;'>",
+   "xhtml": "&amp;lt;xmp&amp;gt;&lt;svg&gt;&lt;b&gt;&amp;lt;style&amp;gt;&lt;b title=&#39;&amp;lt;/style&amp;gt;&amp;lt;img&amp;gt;&#39;&gt;"
+  },
+
+  {
+   "name": "mXSS6",
+   "input": "<noembed><svg><b><style><b title='</style><img>'>",
+   "output": "&lt;noembed&gt;<svg><b>&lt;style&gt;<b title='&lt;/style&gt;&lt;img&gt;'>",
+   "xhtml": "&amp;lt;noembed&amp;gt;&lt;svg&gt;&lt;b&gt;&amp;lt;style&amp;gt;&lt;b title=&#39;&amp;lt;/style&amp;gt;&amp;lt;img&amp;gt;&#39;&gt;"
+  },
+
+  {
+   "name": "mXSS7",
+   "input": "<form><math><mtext></form><form><mglyph><style><img src=x onerror=alert(1)>",
+   "output": "<form><math><mtext></form><form>&lt;mglyph&gt;&lt;style&gt;<img src='x'/>",
+   "xhtml": "&lt;form&gt;&lt;math&gt;&lt;mtext&gt;&lt;/form&gt;&lt;form&gt;&amp;lt;mglyph&amp;gt;&amp;lt;style&amp;gt;&lt;img src=&#39;x&#39;/&gt;"
+  },
+
+  {
+   "name": "mXSS8",
+   "input": "<math><mtext><table><mglyph><style><math href=javascript:alert(1)>CLICKME</math>",
+   "output": "<math><mtext><table>&lt;mglyph&gt;&lt;style&gt;<math>CLICKME</math>",
+   "xhtml": "&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&amp;lt;mglyph&amp;gt;&amp;lt;style&amp;gt;&lt;math&gt;CLICKME&lt;/math&gt;"
+  },
+
+  {
+   "name": "mXSS9",
+   "input": "<math><mtext><table><mglyph><style><!--</style><img title=\"--&gt;&lt;img src=1 onerror=alert(1)&gt;\">",
+   "output": "<math><mtext><table>&lt;mglyph&gt;&lt;style&gt;&lt;!--&lt;/style&gt;&lt;img title=&quot;--&gt;&lt;img src=1 onerror=alert(1)&gt;&quot;&gt;",
+   "xhtml": "&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&amp;lt;mglyph&amp;gt;&amp;lt;style&amp;gt;&amp;lt;!--&amp;lt;/style&amp;gt;&amp;lt;img title=&amp;quot;--&amp;gt;&amp;lt;img src=1 onerror=alert(1)&amp;gt;&amp;quot;&amp;gt;"
   }
 ]
