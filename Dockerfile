@@ -1,4 +1,4 @@
-FROM ruby:2.3
+FROM ruby:2.6
 
 RUN apt-get update -y && apt-get install -y \
     rake rubygems ruby-sqlite3 libxslt-dev libxml2-dev libsqlite3-dev swig flex bison \
