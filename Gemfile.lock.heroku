@@ -75,7 +75,7 @@ DEPENDENCIES
   json
   maruku!
   nokogiri (>= 1.13.6)
-  rack (>= 2.0)
+  rack (~> 2.0)
   rails_xss (~> 0.4.0)
   rake (~> 12.3.2)
   pg (~> 1.0.0)
