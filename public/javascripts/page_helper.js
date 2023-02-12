@@ -325,7 +325,7 @@ function columnAlignShim() {
       if (colAligns.length > 1) {
         var mtds = mtable.querySelectorAll(':scope > mtr > mtd');
         for (var j = 0; j < mtds.length; j++) {
-          mtds[j].style.textAlign = colAligns[j];
+          mtds[j].style.textAlign = '-webkit-' + colAligns[j];
         }
       }
     }
