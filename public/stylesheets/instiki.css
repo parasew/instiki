@@ -440,7 +440,7 @@ border: 1px solid blue;
 }
 
 merror {display:inline;font-size:1em;}
-math[display=block] {overflow:auto;}
+math[display=block] { overflow: auto; overflow-y: hidden;}
 math { white-space: nowrap }
 .maruku-eq-number {float:right}
 .maruku-equation {text-align:center}
@@ -486,6 +486,10 @@ span.theorem_label {font-style:normal; font-weight:bold;}
    content: " " counter(note); counter-increment: note;}
 .tombstone {text-align:right;}
 
+/* Hack for Chrome */
+annotation-xml[encoding="SVG1.1"]  {
+  display: inline-block;
+}
 /* Hack for Mozilla bug 449396 */
 [mathvariant="bold"] *  {
   font-style: normal;
