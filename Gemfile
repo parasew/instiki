@@ -20,6 +20,6 @@ gem "file_signature", "~> 1.2.0"
 gem "syntax", "~> 1.1.0"
 gem "maruku", :git => 'https://github.com/distler/maruku.git', :branch => 'nokogiri'
 gem 'iconv'
-gem 'httparty', '~>0.16.0'
+gem 'httparty', '~> 0.21.0'
 gem 'rdoc-data', :platforms => :ruby_18
 gem 'test-unit'
