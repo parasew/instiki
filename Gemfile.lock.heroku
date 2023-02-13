@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/distler/maruku.git
-  revision: 588716382cfa77806ccd79fff6d97a3d6caba454
+  revision: 97c0489d33eb0a3bc3abab1f6187291cc306a7ce
   branch: nokogiri
   specs:
     maruku (0.7.3.beta1)
@@ -22,23 +22,21 @@ GEM
     erubis (2.7.0)
     eventmachine (1.2.7)
     file_signature (1.2.0)
-    httparty (0.16.4)
-      mime-types (~> 3.0)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
     iconv (1.0.8)
     itextomml (1.6.1)
     json (2.6.2)
-    mime-types (3.4.1)
-      mime-types-data (~> 3.2015)
-    mime-types-data (3.2022.0105)
+    mini_mime (1.1.2)
     mini_portile2 (2.8.0)
     multi_xml (0.6.0)
-    nokogiri (1.13.6)
+    nokogiri (1.13.8)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     power_assert (2.0.1)
     racc (1.6.0)
-    rack (2.2.3.1)
+    rack (2.2.4)
     rails_xss (0.4.0)
     rake (12.3.3)
     rdoc (4.3.0)
@@ -69,7 +67,7 @@ DEPENDENCIES
   after_commit
   erubis
   file_signature (~> 1.2.0)
-  httparty (~> 0.16.0)
+  httparty (~> 0.21.0)
   iconv
   itextomml (>= 1.6.0)
   json
