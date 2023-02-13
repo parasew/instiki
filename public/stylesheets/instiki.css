@@ -399,6 +399,14 @@ a,li span {
 color:#000;
 }
 
+math a {
+color:#00F;
+}
+math a:hover *{
+color:#FFF;
+background-color:#000;
+}
+
 a:hover, a.nav:hover, a:hover math {
 background-color:#000;
 color:#FFF;

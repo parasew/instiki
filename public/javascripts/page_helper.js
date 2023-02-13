@@ -352,6 +352,31 @@ function tableAlignShim() {
   }
 }
 
+function hrefShim() {
+// Chrome doesn't support href or xlink:href on MathML elements
+  var mrows = document.querySelectorAll('mrow[href]');
+  if (mrows[0] && !mrows[0].querySelector(":link")) {
+    for (var i = 0; i < mrows.length; i++) {
+      var mrow = mrows[i];
+      replaceWithName(mrow, 'a');
+    }
+  }
+}
+
+function replaceWithName(node, name) {
+    newNode = document.createElement(name);
+    var children = node.childNodes;
+    for (var i = 0; i < children.length; i++){
+        var child = document.importNode(children[i], true);
+        newNode.appendChild(child);
+    }
+    var attrs = node.attributes;
+    for (var i = 0; i < attrs.length; i++){
+        newNode.setAttribute(attrs[i].name, attrs[i].value);
+    }
+    node.parentNode.replaceChild(newNode, node);
+}
+
 function minMathWidth() {
   var maths = document.querySelectorAll('math[display=block], table');
   if (maths && maths.length > 0) {
@@ -379,4 +404,5 @@ document.observe("dom:loaded", function (){
         columnAlignShim();
         tableAlignShim();
         minMathWidth();
+        hrefShim();
 });
