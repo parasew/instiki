@@ -537,6 +537,21 @@ annotation-xml[encoding="SVG1.1"]  {
 [actiontype="toggle"]:hover {text-shadow: #ccc 2px 2px 5px;}
 .maruku_toc ul { list-style: none; }
 
+.strikediag {
+  display: inline-block;
+  position: relative;
+}
+.strikediag:before {
+    position: absolute;
+    content: "";
+    left: 2.5px;
+	padding: 10px 15px 10px 5px;
+    top: 20%;
+    right: 0;
+    border-top: 1px solid;
+    border-color: inherit;
+    transform:rotate(-50deg);}
+
 /* The STIX Two fonts are licensed under the SIL Open Font License, Version 1.1, http://scripts.sil.org/OFL */
 math  {font-family: STIX Two Math;}
 mtext {font-family: STIX Two Text;}
