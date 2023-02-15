@@ -364,7 +364,7 @@ function hrefShim() {
 }
 
 function replaceWithName(node, name) {
-    newNode = document.createElement(name);
+    var newNode = document.createElement(name);
     var children = node.childNodes;
     for (var i = 0; i < children.length; i++){
         var child = document.importNode(children[i], true);
@@ -375,6 +375,34 @@ function replaceWithName(node, name) {
         newNode.setAttribute(attrs[i].name, attrs[i].value);
     }
     node.parentNode.replaceChild(newNode, node);
+}
+
+function mencloseShim() {
+    var div = document.createElement('div');
+    var menc = document.createElementNS('http://www.w3.org/1998/Math/MathML', 'menclose');
+    var mi = document.createElementNS('http://www.w3.org/1998/Math/MathML', 'mi');
+    menc.setAttribute('notation', 'box');
+    mi.textContent = '1';
+    menc.appendChild(mi);
+    div.appendChild(menc);
+    document.body.appendChild(div);
+    mencloseSupported = (div.getBoundingClientRect().height > mi.getBoundingClientRect().height);
+    document.body.removeChild(div);
+    if (!mencloseSupported) {
+        var boxes = document.querySelectorAll('menclose[notation=box]');
+        if (boxes[0]) {
+            for (var i = 0; i < boxes.length; i++){
+                boxes[i].style.border = '1px solid';
+                boxes[i].style.padding = '3px';
+            }
+        }
+        var slashed = document.querySelectorAll('menclose[notation=updiagonalstrike]');
+        if (slashed[0]) {
+            for (var i = 0; i < slashed.length; i++){
+              slashed[i].className = 'strikediag';
+            }
+        }
+    }
 }
 
 function minMathWidth() {
@@ -405,4 +433,5 @@ document.observe("dom:loaded", function (){
         tableAlignShim();
         minMathWidth();
         hrefShim();
+        mencloseShim();
 });
