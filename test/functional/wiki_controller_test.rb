@@ -993,6 +993,18 @@ class WikiControllerTest < ActionController::TestCase
     assert_match create_pattern, r.body
   end
 
+  def test_search_bad_regex
+    r = process 'search', 'web' => 'wiki1', 'query' => '*'
+
+    assert_response(:success)
+    assert_equal [], r.template_objects['results']
+    assert_equal [], r.template_objects['title_results']
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> “} +
+        %{<span class='newWikiWord'><a href=\"/wiki1/new/%2A}+
+        %{\">*</a></span>}))
+    assert_match create_pattern, r.body
+  end
+
   def test_search_partial_title_match
     r = process 'search', 'web' => 'wiki1', 'query' => 'ant'
 

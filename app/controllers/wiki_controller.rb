@@ -260,8 +260,14 @@ EOL
 
   def search
     @query = params['query'] ? params['query'].purify : ''
-    @title_results = @web.select { |page| page.name =~ /#{@query}/i }.sort
-    @results = @web.select { |page| page.content =~ /#{@query}/i }.sort
+    begin
+      r = Regexp.new(@query, Regexp::IGNORECASE)
+      @title_results = @web.select { |page| page.name =~ r }.sort
+      @results = @web.select { |page| page.content =~ r }.sort
+    rescue RegexpError => e
+      @title_results = []
+      @results = []
+    end
     all_pages_found = (@results + @title_results).uniq
     if all_pages_found.size == 1
       redirect_to_page(all_pages_found.first.name)
