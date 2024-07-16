@@ -61,6 +61,11 @@ require_dependency 'instiki_errors'
 require 'erubis/helpers/rails_helper'
 #require 'jcode'
 
+# Guard against evil regexps
+if RUBY_VERSION >= "3.2.0"
+  Regexp.timeout = 1
+end
+
 # Miscellaneous monkey patches (here be dragons ...)
 require 'caching_stuff'
 require 'logging_stuff'

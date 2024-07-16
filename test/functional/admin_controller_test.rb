@@ -257,7 +257,7 @@ class AdminControllerTest < ActionController::TestCase
   def test_remove_orphaned_pages_in_category
     @wiki.system.update_attribute(:password, 'pswd')
     page_order = [pages(:elephant), pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
-       @oak, pages(:smart_engine), pages(:that_way), @liquor]
+       @oak, pages(:smart_engine), pages(:that_way), pages(:evil), @liquor]
     @wiki.write_page('wiki1', 'Pine',
         "Refers to [[Oak]].\n" +
         "category: trees", 
