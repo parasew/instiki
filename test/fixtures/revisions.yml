@@ -101,3 +101,13 @@ instiki_home_page_first_revision:
   content: First revision of the HomePage end
   author: AnAuthor
   ip: 127.0.0.1
+
+evil_first_revision:
+  id: 12
+  created_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
+  updated_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
+  revised_at: <%= Time.local(2004, 4, 4, 15, 50).to_formatted_s(:db) %>
+  page_id: 11
+  content: ax
+  author: AnAuthor
+  ip: 127.0.0.1

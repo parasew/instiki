@@ -67,3 +67,10 @@ instiki_page:
   updated_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
   web_id: 2
   name: HomePage
+
+evil:
+  id: 11
+  created_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
+  updated_at: <%= Time.local(2004, 4, 4, 16, 50).to_formatted_s(:db) %>
+  web_id: 1
+  name: evil

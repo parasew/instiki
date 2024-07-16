@@ -144,7 +144,7 @@ class WikiControllerTest < ActionController::TestCase
     begin
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
-        assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml index.xhtml liquor.xhtml), zip.dir.entries('.').sort
+        assert_equal %w(Elephant.xhtml FirstPage.xhtml HomePage.xhtml MyWay.xhtml NoWikiWord.xhtml Oak.xhtml SmartEngine.xhtml ThatWay.xhtml evil.xhtml index.xhtml liquor.xhtml), zip.dir.entries('.').sort
         assert_match(/.*<html .*All about elephants.*<\/html>/,
             zip.file.read('Elephant.xhtml').gsub(/\s+/, ' '))
         assert_match(/.*<html .*All about oak.*<\/html>/,
@@ -175,7 +175,7 @@ class WikiControllerTest < ActionController::TestCase
     begin 
       File.open(@tempfile_path, 'wb') { |f| f.write(r.body); @exported_file = f.path }
       Zip::ZipFile.open(@exported_file) do |zip| 
-        assert_equal %w(Elephant.html FirstPage.html HomePage.html MyWay.html NoWikiWord.html Oak.html SmartEngine.html ThatWay.html index.html liquor.html), zip.dir.entries('.').sort
+        assert_equal %w(Elephant.html FirstPage.html HomePage.html MyWay.html NoWikiWord.html Oak.html SmartEngine.html ThatWay.html evil.html index.html liquor.html), zip.dir.entries('.').sort
         assert_match(/.*<html .*All about elephants.*<\/html>/,
             zip.file.read('Elephant.html').gsub(/\s+/, ' '))
         assert_match(/.*<html .*All about oak.*<\/html>/,
@@ -244,7 +244,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     assert_nil r.template_objects['category']
     assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
-                  @oak, pages(:smart_engine), pages(:that_way), @liquor],
+                  @oak, pages(:smart_engine), pages(:that_way), pages(:evil), @liquor],
                  r.template_objects['pages_in_category']
   end
 
@@ -399,7 +399,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal %w(animals trees), r.template_objects['categories']
     assert_nil r.template_objects['category']
     all_pages = @elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
-                @oak, pages(:smart_engine), pages(:that_way), @liquor
+                @oak, pages(:smart_engine), pages(:that_way), pages(:evil), @liquor
     assert_equal all_pages, r.template_objects['pages_in_category']
 
     pages_by_day = r.template_objects['pages_by_day']
@@ -427,7 +427,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal ['animals',  c,  'trees'], r.template_objects['categories']
     # no category is specified in params
     assert_nil r.template_objects['category']
-    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, page2, pages(:smart_engine), pages(:that_way), @liquor], r.template_objects['pages_in_category'],
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, page2, pages(:smart_engine), pages(:that_way), pages(:evil), @liquor], r.template_objects['pages_in_category'],
         "Pages are not as expected: " +
         r.template_objects['pages_in_category'].map {|p| p.name}.inspect
     assert_equal 'the web', r.template_objects['set_name']
@@ -440,7 +440,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal ['animals', 'trees'], r.template_objects['categories']
     # no category is specified in params
     assert_nil r.template_objects['category']
-    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way), @liquor], r.template_objects['pages_in_category'], 
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word), @oak, pages(:smart_engine), pages(:that_way), pages(:evil), @liquor], r.template_objects['pages_in_category'], 
         "Pages are not as expected: " +
         r.template_objects['pages_in_category'].map {|p| p.name}.inspect
     assert_equal 'the web', r.template_objects['set_name']
@@ -493,7 +493,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_response(:success)
     pages = r.template_objects['pages_by_revision']
     assert_equal [@elephant, @liquor, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine),
-          pages(:my_way), pages(:first_page), @home], pages,
+          pages(:my_way), pages(:first_page), @home, pages(:evil)], pages,
         "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert !r.template_objects['hide_description']
   end
@@ -518,7 +518,7 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_response(:success)
     pages = r.template_objects['pages_by_revision']
-    assert_equal [@elephant, @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine),
+    assert_equal [@elephant, pages(:evil), @liquor, @title_with_spaces, @oak, pages(:no_wiki_word), pages(:that_way), pages(:smart_engine),
        pages(:my_way), pages(:first_page), @home].sort{|x,y| x.name <=> y.name}, pages.sort{|x,y| x.name <=> y.name},
        "Pages are not as expected: #{pages.map {|p| p.name}.inspect}"
     assert r.template_objects['hide_description']
@@ -667,6 +667,7 @@ class WikiControllerTest < ActionController::TestCase
                    revisions(:my_way_first_revision),
                    revisions(:first_page_first_revision),
                    revisions(:home_page_second_revision),
+                   revisions(:evil_first_revision),
                    revisions(:home_page_first_revision) ], revisions,
                  "Revisions are not as expected: #{revisions.map {|r| r.id}.inspect}"
     assert !r.template_objects['hide_description']
@@ -1005,6 +1006,48 @@ class WikiControllerTest < ActionController::TestCase
     assert_match create_pattern, r.body
   end
 
+  def test_search_evil_regex
+    r = process 'search', 'web' => 'wiki1', 'query' => "a*b?a*()\\1$"
+
+    assert_response(:success)
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
+                  @oak, pages(:smart_engine), pages(:that_way), pages(:evil), @liquor], r.template_objects['results']
+    assert_equal [@elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),
+                  @oak, pages(:smart_engine), pages(:that_way), pages(:evil), @liquor], r.template_objects['title_results']
+    create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> “} +
+      %{<span class='newWikiWord'><a href=\"/wiki1/new/a%2Ab%3Fa%2A%28%29%5C1%24} +
+      %{\">a*b?a*()\\1$</a></span>}))
+    assert_match create_pattern, r.body
+
+    # Now we add a revision to test the evil regexp against.
+    pages(:evil).lock(Time.now, 'Batman')
+    current_revisions = pages(:evil).revisions.size
+    nrep = 50000
+    r = process 'save', 'web' => 'wiki1', 'id' => 'evil', 'content' => "#{'a' * nrep +'x'}",
+      'author' => 'Batman'
+    assert_redirected_to :web => 'wiki1', :controller => 'wiki', :action => 'show', :id => 'evil'
+    assert_equal 'Batman', r.cookies['author']
+    assert File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_evil.cache"))
+    evil = @wiki.read_page('wiki1', 'evil')
+    assert_equal current_revisions+1, evil.revisions.size
+    assert_equal "#{'a' * nrep +'x'}", evil.content
+    assert_equal evil.content.length, nrep + 1
+    assert_equal 'Batman', evil.author
+    assert !evil.locked?(Time.now)
+
+    if RUBY_VERSION >= "3.2.0"
+      r = process 'search', 'web' => 'wiki1', 'query' => "a*b?a*()\\1$"
+
+      assert_response(:success)
+      assert_equal [], r.template_objects['results']
+      assert_equal [], r.template_objects['title_results']
+      create_pattern = Regexp.new(Regexp.escape(%{<b>Create a new page, named:</b> “} +
+        %{<span class='newWikiWord'><a href=\"/wiki1/new/a%2Ab%3Fa%2A%28%29%5C1%24} +
+        %{\">a*b?a*()\\1$</a></span>}))
+      assert_match create_pattern, r.body
+    end
+  end
+
   def test_search_partial_title_match
     r = process 'search', 'web' => 'wiki1', 'query' => 'ant'
 
@@ -1055,7 +1098,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process 'search', 'web' => 'wiki1', 'query' => "\xEF\xBF\xBF"
 
     assert_response(:success)
-    assert_match(/9 page\(s\) containing search string in the page name:/, r.body)
+    assert_match(/10 page\(s\) containing search string in the page name:/, r.body)
 
     r = process 'search', 'web' => 'wiki1', 'query' => "Al\357\277\277l about"
 
