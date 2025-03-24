@@ -24,8 +24,8 @@ require 'resolv'
 
 module DNSBL_Check
   $dnsbl_passed ||= []
-  DNSBLS  = {'bl.spamcop.net' => 'http://www.spamcop.net/w3m?action=checkblock&amp;ip=',
-             'sbl-xbl.spamhaus.org' => 'http://www.spamhaus.org/query/bl?ip='}
+  DNSBLS  = {'bl.spamcop.net' => 'https://www.spamcop.net/w3m?action=checkblock&amp;ip=',
+             'dnsbl-1.uceprotect.net' => 'https://www.uceprotect.net/en/rblcheck.php'}
 
   private
   # Filter to check if the client is listed. This will be run before all requests.
