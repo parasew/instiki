@@ -818,8 +818,8 @@ class WikiControllerTest < ActionController::TestCase
 
     assert_equal 403, r.response_code
     resp = [ %{<p>Access denied. Your IP address, 127.0.0.2, was found on one or more DNSBL blocking list(s).</p>\n},
-             %{<p>See <a href='https://www.spamcop.net/w3m?action=checkblock&amp;ip=127.0.0.2'>here</a> for more information.</p>\n},
-             %{<p>See <a href='https://www.spamhaus.org/query/bl?ip=127.0.0.2'>here</a> for more information.</p>\n}]
+             %{<p>See <a href='https://www.uceprotect.net/en/rblcheck.php127.0.0.2'>here</a> for more information.</p>\n},
+             %{<p>See <a href='https://www.spamcop.net/w3m?action=checkblock&amp;ip=127.0.0.2'>here</a> for more information.</p>\n}]
     resp.each {|re| assert_match Regexp.new(Regexp.escape(re)), r.body}
     assert !File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache', "wiki1_HomePage.cache"))
   end
