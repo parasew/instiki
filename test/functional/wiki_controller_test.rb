@@ -1375,8 +1375,7 @@ end
 !
     @tex_header2 = %q!\usepackage{graphicx}
 \usepackage{color}
-\usepackage{ucs}
-\usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage{xparse}
 \usepackage{tikz}
 \usepackage{hyperref}
