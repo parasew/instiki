@@ -10,7 +10,7 @@ Instiki only requires a working Ruby installation (it includes all other depende
 
 ### 3 easy Steps to get the Instiki experience
 
-  Step 1. Get Instiki and run "ruby bundle install --path vendor/bundle"
+  Step 1. Get Instiki and run "bundle install --path vendor/bundle"
   Step 2. Run "instiki"
   Step 3. Chuckle... "There's no step three!" (TM)
  
@@ -36,7 +36,7 @@ You need at least Ruby Version 2.0 installed on your System. Instiki is known to
 
 - Get the *Ruby One-Click Installer - Windows* http://rubyforge.org/projects/rubyinstaller
 - Get Development Kit http://github.com/oneclick/rubyinstaller/wiki/development-kit
-- In the Instiki directory, execute "ruby bundle"
+- In the Instiki directory, execute "bundle"
 - double-click instiki.bat or instiki.cmd and there you go!
 
 ### If you are on Mac OSX
@@ -44,7 +44,7 @@ You need at least Ruby Version 2.0 installed on your System. Instiki is known to
 On Snow Leopard (10.6) or later, you are all set.
 
 - run "sudo gem update --system" via the command-line.
-- run "ruby bundle install --path vendor/bundle" in the instiki directory.
+- run "bundle install --path vendor/bundle" in the instiki directory.
 - run "ruby instiki" and there you go!
 
 
@@ -59,7 +59,7 @@ On Snow Leopard (10.6) or later, you are all set.
     sudo gem update --system
     
 - get SQLite or compile from http://sqlite.org (you can also use mysql or any other supported database system if you want)
-- run "ruby bundle install --path vendor/bundle"
+- run "bundle install --path vendor/bundle"
 - run instiki
 
 You're now running a perfectly suitable wiki on port 2500 that'll present you with one-step setup, followed by a textarea for the home page on http://localhost:2500
@@ -103,8 +103,8 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 ## Migrating from Instiki 0.11-0.19 to 0.20
 
 ~~~~~
-ruby bundle install --path vendor/bundle
-ruby bundle exec rake upgrade_instiki
+bundle install --path vendor/bundle
+bundle exec rake upgrade_instiki
 ~~~~~
 
 ## Download the latest release from:
