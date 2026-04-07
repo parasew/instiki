@@ -106,7 +106,7 @@
     "eslint-plugin-testcafe": "^0.2.1",
     "eslint-plugin-unicorn": "^13.0.0",
     "imageoptim-cli": "^3.0.2",
-    "jamilih": "^0.46.0",
+    "jamilih": "^0.54.0",
     "jsdoc": "^3.6.3",
     "load-stylesheets": "^0.9.0",
     "node-static": "^0.7.11",
