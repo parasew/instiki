@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 7.2.0"
+gem "rails", "~> 7.2.3.1"
 
 # Features extracted out of Rails core in 4.x:
 gem "actionpack-action_caching"
