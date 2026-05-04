@@ -12,19 +12,11 @@ class FileControllerTest < ActionController::TestCase
   fixtures :webs, :pages, :revisions, :system
 
   def setup
-    @controller = FileController.new
-    @request = ActionController::TestRequest.new
-    @response = ActionController::TestResponse.new
-    class << @request.session
-      attr_accessor :dbman
-    end
-    # simulate a cookie session store
-    @request.session.dbman = FakeSessionDbMan
     @web = webs(:test_wiki)
     @wiki = Wiki.new
     WikiFile.delete_all
     require 'fileutils'
-    FileUtils.rm_rf("#{RAILS_ROOT}/webs/wiki1")
+    FileUtils.rm_rf("#{Rails.root}/webs/wiki1")
   end
 
   def test_file_upload_form
@@ -42,7 +34,7 @@ class FileControllerTest < ActionController::TestCase
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
     assert_equal 'text/plain', r.headers['Content-Type']
-    assert_equal 'inline; filename="foo.txt"', r.headers['Content-Disposition']
+    assert_match Regexp.new(Regexp.escape('inline; filename="foo.txt"')), r.headers["Content-Disposition"]
   end
 
   def test_file_download_html_file
@@ -54,7 +46,7 @@ class FileControllerTest < ActionController::TestCase
     assert_response(:success, bypass_body_parsing = true)
     assert_equal "Contents of the file", r.body
     assert_equal 'application/octet-stream', r.headers['Content-Type']
-    assert_equal 'attachment; filename="foo.html"', r.headers['Content-Disposition']
+    assert_match Regexp.new(Regexp.escape('attachment; filename="foo.html"')), r.headers["Content-Disposition"]
   end
 
   def test_file_download_pdf_file
@@ -69,7 +61,7 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_download_gif
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
 
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
@@ -78,13 +70,13 @@ class FileControllerTest < ActionController::TestCase
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal pic.size, r.body.size
     assert_equal pic, r.body
-    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+    assert_match Regexp.new(Regexp.escape('inline; filename="rails.gif"')), r.headers["Content-Disposition"]
   end
 
   def test_pic_download_gif_published_web
     @web.update_attribute(:published, true)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
 
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
@@ -93,13 +85,13 @@ class FileControllerTest < ActionController::TestCase
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal pic.size, r.body.size
     assert_equal pic, r.body
-    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+    assert_match Regexp.new(Regexp.escape('inline; filename="rails.gif"')), r.headers["Content-Disposition"]
   end
 
   def test_pic_download_gif_unpublished_web
     @web.update_attribute(:published, false)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     get :file, :web => 'wiki1', :id => 'rails.gif'
 
@@ -107,7 +99,7 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_x_sendfile
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
@@ -117,13 +109,13 @@ class FileControllerTest < ActionController::TestCase
 # It's no longer possible to use X-Sendfile in development; ergo no way to test
 #    assert_match  '/rails.gif', r.headers['X-Sendfile']
     assert_equal 'image/gif', r.headers['Content-Type']
-    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+    assert_match Regexp.new(Regexp.escape('inline; filename="rails.gif"')), r.headers["Content-Disposition"]
   end
 
   def test_pic_x_sendfile_published_web
     @web.update_attribute(:published, true)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
@@ -133,13 +125,13 @@ class FileControllerTest < ActionController::TestCase
 # It's no longer possible to use X-Sendfile in development; ergo no way to test
 #    assert_match  '/rails.gif', r.headers['X-Sendfile']
     assert_equal 'image/gif', r.headers['Content-Type']
-    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+    assert_match Regexp.new(Regexp.escape('inline; filename="rails.gif"')), r.headers["Content-Disposition"]
   end
 
   def test_pic_x_sendfile_unpublished_web
     @web.update_attribute(:published, false)
     @web.update_attribute(:password, 'pswd')
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     @request.remote_addr = '127.0.0.1'
@@ -149,7 +141,7 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_pic_x_sendfile_type_nonlocal
-    pic = File.open("#{RAILS_ROOT}/test/fixtures/rails.gif", 'rb') { |f| f.read }
+    pic = File.open("#{Rails.root}/test/fixtures/rails.gif", 'rb') { |f| f.read }
     @web.wiki_files.create(:file_name => 'rails.gif', :description => 'An image', :content => pic)
     @request.env.update({ 'HTTP_X_SENDFILE_TYPE' => 'foo' })
     r = get :file, :web => 'wiki1', :id => 'rails.gif'
@@ -158,7 +150,7 @@ class FileControllerTest < ActionController::TestCase
     assert_equal 'image/gif', r.headers['Content-Type']
     assert_equal pic.size, r.body.size
     assert_equal pic, r.body
-    assert_equal 'inline; filename="rails.gif"', r.headers['Content-Disposition']
+    assert_match Regexp.new(Regexp.escape('inline; filename="rails.gif"')), r.headers["Content-Disposition"]
   end
 
   def test_pic_unknown_pic
@@ -218,21 +210,27 @@ class FileControllerTest < ActionController::TestCase
     assert_template 'file/file'
 
     # User uploads the picture
-    begin # Ruby 1.9
-      picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif", :encoding => 'ascii-8bit')
-    rescue #Ruby 1.8
-      picture = File.read("#{RAILS_ROOT}/test/fixtures/rails.gif")
-    end
-    # updated from post to get - post fails the spam protection (no javascript)
-    #   Moron! If substituting GET for POST actually works, you
-    #   have much, much bigger problems.
-    r = get :file, :web => 'wiki1', :referring_page => '/wiki1/show/Oak',
-            :file => {:file_name => 'rails-e2e.gif',
-                      :content => StringIO.new(picture),
-                      :description => 'Rails, end-to-end'}
+    picture = File.read("#{Rails.root}/test/fixtures/rails.gif", encoding: 'ascii-8bit')
+    # POST upload through the controller's `params['file']` form-submit branch.
+    # Wrap the gif in a Rack::Test::UploadedFile (what fixture_file_upload
+    # returns) so the controller-test framework preserves the binary content
+    # — a bare StringIO gets serialized via its inspect string in Rails 5+.
+    r = post :file, params: {
+              :web => 'wiki1', :id => 'rails-e2e.gif',
+              :referring_page => '/wiki1/show/Oak',
+              :file => {:file_name => 'rails-e2e.gif',
+                        :content => fixture_file_upload('rails.gif', 'image/gif'),
+                        :description => 'Rails, end-to-end'}}
     assert_redirected_to  '/wiki1/show/Oak'
     assert @web.has_file?('rails-e2e.gif')
     assert_equal(picture, WikiFile.find_by_file_name('rails-e2e.gif').content)
+    # And — the file should actually be written to webs/wiki1/files/ — the
+    # in-memory record + DB row aren't enough; the on-disk copy is what
+    # subsequent <img>-tag requests actually serve.
+    on_disk = File.join(Rails.root, "webs", "wiki1", "files", "rails-e2e.gif")
+    assert File.exist?(on_disk), "Expected uploaded file on disk at #{on_disk}"
+    assert_equal picture.size, File.size(on_disk)
+    assert_equal picture, File.binread(on_disk)
     PageRenderer.setup_url_generator(StubUrlGenerator.new)
     @wiki.revise_page('wiki1', 'Oak', 'Oak', 'Try [[rails-e2e.gif:pic]] again.',
         Time.now, 'AnonymousBrave', renderer)
@@ -243,8 +241,12 @@ class FileControllerTest < ActionController::TestCase
   end
 
   def test_import
-    # updated from post to get - post fails the spam protection (no javascript)
-    get :import, :web => 'wiki1', :file => uploaded_file("#{RAILS_ROOT}/test/fixtures/exported_markup.zip")
+    # POST is required for file uploads in Rails 5+; the original Rails-2 test
+    # used GET to bypass form-spam-protection but Rails 6 url-encodes params for
+    # GET, turning the uploaded file object into its inspect string.
+    post :import, params: {
+          :web => 'wiki1',
+          :file => fixture_file_upload('exported_markup.zip', 'application/zip')}
     assert_response(:redirect)
     assert @web.has_page?('ImportedPage')
   end

@@ -94,7 +94,7 @@ class PageTest < ActiveSupport::TestCase
       @page.revise(@page.current_revision.content, @page.name, Time.now, 'AlexeyVerkhovsky', x_test_renderer)
     }
     
-    assert_equal last_revision_before, @page.current_revision(true)
+    assert_equal last_revision_before, @page.current_revision
     assert_equal revisions_number_before, @page.revisions.size
   end
 
@@ -104,7 +104,7 @@ class PageTest < ActiveSupport::TestCase
     new_page.revise('Reference to WantedPage, and to WantedPage2', 'NewPage', Time.now, 'AlexeyVerkhovsky', 
         x_test_renderer)
     
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 2, references.size
     assert_equal 'WantedPage', references[0].referenced_name
     assert_equal WikiReference::WANTED_PAGE, references[0].link_type
@@ -116,7 +116,7 @@ class PageTest < ActiveSupport::TestCase
 
     # link type stored for NewPage -> WantedPage reference should change from WANTED to LINKED
     # reference NewPage -> WantedPage2 should remain the same
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 2, references.size
     assert_equal 'WantedPage', references[0].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
@@ -130,7 +130,7 @@ class PageTest < ActiveSupport::TestCase
     new_page.revise("Reference to H\xC3\xA1ppyPage, and to WantedPage2", 'NewPage', Time.local(2004, 4, 5, 17, 56), 'AlexeyVerkhovsky', 
         x_test_renderer)
     
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 2, references.size
     p = ''.respond_to?(:force_encoding) ? "H\u00E1ppyPage" : "H\303\241ppyPage"
     assert_equal p, references[0].referenced_name
@@ -142,7 +142,7 @@ class PageTest < ActiveSupport::TestCase
 
     my_page = Page.new(:web => web, :name => 'MyPage')
     my_page.revise("[[!redirects H\xC3\xA1ppyPage]]\nAnd here it is!", 'MyPage', Time.now, 'AlexeyVerkhovsky', x_test_renderer)
-    my_references = my_page.wiki_references(true)
+    my_references = my_page.wiki_references.reload
     assert_equal 1, my_references.size
     assert_equal p, my_references[0].referenced_name
     assert_equal WikiReference::REDIRECTED_PAGE, my_references[0].link_type
@@ -167,7 +167,7 @@ class PageTest < ActiveSupport::TestCase
     
     new_page.revise("Reference to H\xC3\xA1ppyPage and to WantedPage2.pdf and [[foo.pdf]]", 'NewPage', Time.now, 'AlexeyVerkhovsky', 
         x_test_renderer)
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     s = ''.respond_to?(:force_encoding) ? "<p>Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>H\u00E1ppy Page</a>" :
         "<p>Reference to <a class='existingWikiWord' href='\.\./show/MyPage'>H\303\241ppy Page</a>"
     assert_equal( s +
@@ -189,9 +189,9 @@ class PageTest < ActiveSupport::TestCase
   def test_rollback
     @page.revise("spot two", @page.name, Time.now, "David", x_test_renderer)
     @page.revise("spot three", @page.name, Time.now + 2000, "David", x_test_renderer)
-    assert_equal 3, @page.revisions(true).length, "Should have three revisions"
-    @page.current_revision(true)
+    assert_equal 3, @page.revisions.reload.length, "Should have three revisions"
+    @page.current_revision
     @page.rollback(0, Time.now, '127.0.0.1', x_test_renderer)
-    assert_equal "HisWay would be MyWay $\\sin(x)\\begin{svg}<svg/>\\end{svg}\\includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay \\\\OverThere -- see SmartEngine in that SmartEngineGUI", @page.current_revision(true).content
+    assert_equal "HisWay would be MyWay $\\sin(x)\\begin{svg}<svg/>\\end{svg}\\includegraphics[width=3em]{foo}$ in kinda ThatWay in HisWay though MyWay \\\\OverThere -- see SmartEngine in that SmartEngineGUI", @page.current_revision.content
   end
 end

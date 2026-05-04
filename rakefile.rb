@@ -1,17 +1,28 @@
-# Add your own tasks in files placed in lib/tasks ending in .rake,
-# for example lib/tasks/switchtower.rake, and they will automatically be available to Rake.
+require_relative "config/application"
 
-require File.join(File.dirname(__FILE__), 'config', 'boot')
+Rails.application.load_tasks
 
-require 'rake'
-class Rails::Application
-  include Rake::DSL if defined?(Rake::DSL)
+require "rake/testtask"
+
+namespace :test do
+  Rake::TestTask.new(:units) do |t|
+    t.libs << "lib" << "test"
+    t.test_files = FileList["test/unit/**/*_test.rb"]
+    t.warning = false
+  end
+
+  Rake::TestTask.new(:functionals) do |t|
+    t.libs << "lib" << "test"
+    t.test_files = FileList["test/functional/**/*_test.rb"]
+    t.warning = false
+  end
+
+  Rake::TestTask.new(:integration) do |t|
+    t.libs << "lib" << "test"
+    t.test_files = FileList["test/integration/**/*_test.rb"]
+    t.warning = false
+  end
 end
-require 'rake/testtask'
-begin
-  require 'rdoc/task'
-rescue LoadError
-  require 'rake/rdoctask'
-end
 
-require 'tasks/rails'
+desc "Run unit, functional, and integration tests"
+task test: ["test:units", "test:functionals", "test:integration"]

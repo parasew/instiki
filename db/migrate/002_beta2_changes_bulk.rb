@@ -1,4 +1,4 @@
-class Beta2ChangesBulk < ActiveRecord::Migration
+class Beta2ChangesBulk < ActiveRecord::Migration[7.0]
   def self.up
     add_index "revisions", "page_id"
     add_index "revisions", "created_at"

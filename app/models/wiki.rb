@@ -29,11 +29,11 @@ class Wiki
     end
     old_files_path = web.files_path
     
-    web.update_attributes(:address => new_address, :name => name, :markup => markup, :color => color, 
+    web.update(:address => new_address, :name => name, :markup => markup, :color => color, 
       :additional_style => additional_style, :safe_mode => safe_mode, :password => password, :published => published,
       :brackets_only => brackets_only, :count_pages => count_pages, :allow_uploads => allow_uploads, :max_upload_size => max_upload_size)
     @webs = nil
-    raise Instiki::ValidationError.new("There is already a web with address '#{new_address}'") unless web.errors.on(:address).nil?
+    raise Instiki::ValidationError.new("There is already a web with address '#{new_address}'") if web.errors[:address].any?
     web
     move_files(old_files_path, web.files_path)
   end
@@ -57,7 +57,7 @@ class Wiki
       ApplicationController.logger.debug "Web '#{web_address}' not found"
       return nil
     else
-      page = web.pages.first(:conditions => ['name = ?', page_name])
+      page = web.pages.where(['name = ?', page_name]).first
       ApplicationController.logger.debug "Page '#{page_name}' #{page.nil? ? 'not' : ''} found"
       return page
     end

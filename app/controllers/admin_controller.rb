@@ -2,7 +2,7 @@ class AdminController < ApplicationController
 
   layout 'default'
   cache_sweeper :web_sweeper
-  before_filter :dnsbl_check
+  before_action :dnsbl_check
 
   def create_system
     if @wiki.setup?
@@ -135,7 +135,7 @@ class AdminController < ApplicationController
     else
       flash[:error] = password_error(params['system_password'])
     end
-    redirect_to :back
+    redirect_back(fallback_location: "/")
   end
 
 end

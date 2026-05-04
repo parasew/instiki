@@ -46,12 +46,12 @@ require 'itex_stringsupport'
   # Creates a hyperlink to a Wiki page, or to a "new page" form if the page doesn't exist yet
   def link_to_page(page_name, web = @web, text = nil, options = {})
     raise 'Web not defined' if web.nil?
-    UrlGenerator.new(@controller).make_link(@web, page_name, nil, web, text, 
+    UrlGenerator.new(controller).make_link(@web, page_name, nil, web, text, 
         options.merge(:base_url => "#{base_url}/#{web.address}")).html_safe
   end
 
   def author_link(page, options = {})
-    UrlGenerator.new(@controller).make_link(@web, page.author.name, nil, page.web, nil, options).purify.html_safe
+    UrlGenerator.new(controller).make_link(@web, page.author.name, nil, page.web, nil, options).purify.html_safe
   end
 
   # Create a hyperlink to a particular revision of a Wiki page
@@ -110,14 +110,18 @@ require 'itex_stringsupport'
   end
 
   def cached_content(page)
-    cache = File.join(RAILS_ROOT, 'tmp', 'cache', "#{page.web.name}_#{CGI.escape(page.name)}.cache")
-    if File.exist?(cache)
+    cache = File.join(Rails.root, 'tmp', 'cache', "#{page.web.name}_#{CGI.escape(page.name)}.cache")
+    result = if File.exist?(cache)
       content = File.open(cache, 'r').readlines.join
       File.delete(cache)
       content.html_safe
     else
       @renderer.display_content
     end
+    # Rails 6 ERB output buffer checks is_a?(ActiveSupport::SafeBuffer), not
+    # html_safe?, so a WikiContent (String subclass with html_safe?=true)
+    # gets escaped despite our shim. Convert to a SafeBuffer for output.
+    result.is_a?(ActiveSupport::SafeBuffer) ? result : result.to_s.html_safe
   end
 
   def rendered_content(page)

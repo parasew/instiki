@@ -1,4 +1,4 @@
-class Beta1Schema < ActiveRecord::Migration
+class Beta1Schema < ActiveRecord::Migration[7.0]
   def self.up
     create_table "pages", :force => true do |t|
       t.column "created_at", :datetime, :null => false

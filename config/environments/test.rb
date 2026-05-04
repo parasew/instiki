@@ -1,27 +1,15 @@
-# The test environment is used exclusively to run your application's
-# test suite.  You never need to work with it otherwise.  Remember that
-# your test database is "scratch space" for the test suite and is wiped
-# and recreated between test runs.  Don't rely on the data there!
-config.cache_classes = true
+Rails.application.configure do
+  config.cache_classes = true
+  config.eager_load = false
+  config.consider_all_requests_local = true
+  config.action_controller.perform_caching = false
 
-# Log error messages when you accidentally call methods on nil.
-config.whiny_nils    = true
+  # Disable CSRF for controller tests; production / dev still get Rails'
+  # default protect_from_forgery via form_tag's authenticity_token field.
+  config.action_controller.allow_forgery_protection = false
 
-# Show full error reports and disable caching
-config.action_controller.consider_all_requests_local = true
-config.action_controller.perform_caching             = false
+  config.action_mailer.delivery_method = :test if config.respond_to?(:action_mailer)
 
-# Tell ActionMailer not to deliver emails to the real world.
-# The :test delivery method accumulates sent emails in the
-# ActionMailer::Base.deliveries array.
-config.action_mailer.delivery_method = :test
-
-# Overwrite the default settings for fixtures in tests. See Fixtures 
-# for more details about these settings.
-# config.transactional_fixtures = true
-# config.instantiated_fixtures = false
-# config.pre_loaded_fixtures = false
-
-# URL for Tikz server
-# Tikz conversion is disabled if you comment this out
-#ENV['tikz_server'] = 'http://localhost:9292/'
+  # URL for Tikz server (Tikz tests rely on this)
+  ENV['tikz_server'] = 'http://localhost:9292/'
+end

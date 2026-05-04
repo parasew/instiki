@@ -4,10 +4,141 @@ ENV['RAILS_ENV'] = 'test'
 # File.expand_path can be removed if Ruby 1.9 is in use.
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
 
-require 'test_help'
+require 'rails/test_help'
+require 'rails-controller-testing'
 require 'wiki_content'
 require 'url_generator'
 require 'digest/sha1'
+
+# rails-controller-testing isn't loaded by Rails 6 test helpers automatically;
+# install on ActionController::TestCase / ActionDispatch::IntegrationTest /
+# ActionDispatch::TestResponse so assert_template, assigns, and
+# template_objects come back.
+ActionController::TestCase.include Rails::Controller::Testing::TestProcess
+ActionController::TestCase.include Rails::Controller::Testing::TemplateAssertions
+ActionController::TestCase.include Rails::Controller::Testing::Integration
+
+# Rails-2 backward-compat shim for controller test helpers. Lets the existing
+# `get :show, :web => 'wiki1', :id => 'HomePage'` and `process 'edit_web',
+# 'web' => 'wiki1'` syntax work without converting every test to the modern
+# `get :show, params: { web: 'wiki1', id: 'HomePage' }` form.
+module Rails2TestSyntax
+  # Rails 5+ controller test helpers accept these kwargs natively.
+  MODERN_KWARGS = %i[params session flash format method body xhr as headers env].freeze
+
+  def process(action, *args, **kwargs)
+    Rails2TestSyntax.normalize!(args, kwargs)
+    action = action.to_sym if action.is_a?(String)
+    super(action, *args, **kwargs)
+  end
+
+  %i[get post put patch delete head].each do |verb|
+    define_method(verb) do |action, *args, **kwargs|
+      Rails2TestSyntax.normalize!(args, kwargs)
+      action = action.to_sym if action.is_a?(String)
+      super(action, *args, **kwargs)
+    end
+  end
+
+  # If the caller passed Rails-2-style positional or keyword args, repackage
+  # them into params: / session: / flash:. Rails 2's process(action, params,
+  # session, flash) became process(action, params:, session:, flash:).
+  def self.normalize!(args, kwargs)
+    # Old positional: process(action, params_hash, session_hash, flash_hash).
+    if args.first.is_a?(Hash) && !kwargs.key?(:params)
+      kwargs[:params] = args.shift
+      kwargs[:session] = args.shift if args.first.is_a?(Hash) && !kwargs.key?(:session)
+      kwargs[:flash]   = args.shift if args.first.is_a?(Hash) && !kwargs.key?(:flash)
+      return
+    end
+    legacy = kwargs.reject { |k, _| MODERN_KWARGS.include?(k) }
+    if legacy.any?
+      legacy.each_key { |k| kwargs.delete(k) }
+      kwargs[:params] = (kwargs[:params] || {}).merge(legacy)
+    end
+  end
+end
+
+ActionController::TestCase.prepend(Rails2TestSyntax)
+
+# More Rails-2 backward-compat — has_flash_object?, has_template_object?,
+# template_objects (Rails 5+ removed these from TestResponse).
+module Rails2ResponseShims
+  # Rails 2 exposed flash on the response; Rails 5+ moved it to the request.
+  def flash
+    request.flash rescue {}
+  end
+
+  def has_flash_object?(key)
+    f = flash
+    !f.nil? && !f[key].nil?
+  end
+
+  # Rails-2 has_template_object?(name) checked whether the controller assigned
+  # an @<name> instance variable visible to the view; .template_objects
+  # returned the hash. Modern Rails replaced this with controller.view_assigns
+  # (provided by rails-controller-testing as `assigns`). Stash assigns on the
+  # response from the test before the assertion runs.
+  attr_accessor :template_objects
+
+  def has_template_object?(name = nil)
+    objs = template_objects || {}
+    name.nil? ? objs.any? : objs.key?(name.to_s)
+  end
+end
+ActionDispatch::TestResponse.prepend(Rails2ResponseShims)
+
+# After every controller test action, capture controller.view_assigns onto
+# the response so .template_objects works.
+module Rails2TemplateObjectsCapture
+  %i[get post put patch delete head process].each do |verb|
+    define_method(verb) do |*args, **kwargs, &blk|
+      result = super(*args, **kwargs, &blk)
+      if @controller && @response
+        begin
+          @response.template_objects = @controller.view_assigns
+        rescue StandardError
+          @response.template_objects = {}
+        end
+      end
+      result
+    end
+  end
+end
+ActionController::TestCase.prepend(Rails2TemplateObjectsCapture)
+
+# Rails 2/4 assert_tag was removed in Rails 5. Provide a minimal shim that
+# handles the patterns Instiki actually uses: :tag, :attributes, :parent,
+# :content. Implemented via Nokogiri so we don't pull in another gem.
+module Rails2AssertTag
+  # Parse as XML (the bodies under test are well-formed — atom_changes.builder
+  # / atom.builder emit strict XML, and the page templates are XHTML), then
+  # remove_namespaces! so CSS selectors match plain tag names regardless of
+  # xmlns. Rails 2's assert_tag was namespace-unaware; the existing tests
+  # assume that semantics (e.g. matching `<link>` elements inside an Atom
+  # `<feed xmlns="http://www.w3.org/2005/Atom">` with bare `link[rel=...]`).
+  def assert_tag(opts)
+    require 'nokogiri'
+    if opts[:content].is_a?(Regexp)
+      assert_match opts[:content], @response.body
+      return
+    end
+    doc = Nokogiri::XML(@response.body)
+    doc.remove_namespaces!
+    selector = opts[:tag].to_s
+    (opts[:attributes] || {}).each do |attr, val|
+      if val.is_a?(Regexp)
+        assert_match val, @response.body
+        return
+      end
+      selector += "[#{attr}=\"#{val}\"]"
+    end
+    full = opts[:parent] ? "#{opts[:parent][:tag]} #{selector}" : selector
+    nodes = doc.css(full)
+    assert nodes.any?, "Expected at least one #{full} in:\n#{@response.body[0..500]}"
+  end
+end
+ActionController::TestCase.include(Rails2AssertTag)
 
 # simulates cookie session store
 class FakeSessionDbMan
@@ -16,19 +147,33 @@ class FakeSessionDbMan
   end
 end
 
-class  ActiveSupport::TestCase
+class ActiveSupport::TestCase
   self.pre_loaded_fixtures = false
-  self.use_transactional_fixtures = true
+  self.use_transactional_tests = true
   self.use_instantiated_fixtures = false
-  self.fixture_path = Rails.root.join('test', 'fixtures', '')
+  self.fixture_paths = [Rails.root.join('test', 'fixtures').to_s]
+  # fixture_file_upload defaults to file_fixture_path (test/fixtures/files)
+  # in Rails 7. Point it at our fixture root so existing
+  # fixture_file_upload('rails.gif') calls keep working.
+  self.file_fixture_path = Rails.root.join('test', 'fixtures').to_s
+
+  # Page#revise writes a cache file at tmp/cache/{web}_{page}.cache and
+  # cached_content reads it before falling back to the renderer. The
+  # transaction rolls back DB changes between tests but file-system caches
+  # persist, so a previous test's revised content leaks into the next test.
+  # Wipe the cache between tests.
+  setup do
+    cache_dir = Rails.root.join('tmp', 'cache')
+    Dir.glob(cache_dir.join('*.cache')).each { |f| File.delete(f) rescue nil }
+  end
 end
 
 # activate PageObserver
 PageObserver.instance
 
-class Test::Unit::TestCase
+class ActiveSupport::TestCase
   def create_fixtures(*table_names)
-    Fixtures.create_fixtures(Rails.root.join('test', 'fixtures'), table_names)
+    ActiveRecord::FixtureSet.create_fixtures(Rails.root.join('test', 'fixtures'), table_names)
   end
 
   # Add more helper methods to be used by all tests here...
@@ -39,7 +184,7 @@ class Test::Unit::TestCase
   end
 
   def setup_wiki_with_60_pages
-    ActiveRecord::Base.silence do
+    ActiveRecord::Base.logger.silence do
       (1..60).each do |i|
         @wiki.write_page('wiki1', "page#{i}", "Test page #{i}\ncategory: test", 
                          Time.local(1976, 10+i/31, i <= 30 ? i : i-30, 12, 00, 00), Author.new('Dema', '127.0.0.2'),

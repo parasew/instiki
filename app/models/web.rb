@@ -42,10 +42,7 @@ class Web < ActiveRecord::Base
   # @return [Array<String>] a collection of all the names of the authors that 
   #   have ever contributed to the pages for this Web
   def authors
-    revisions.all(
-      :select => "DISTINCT revisions.author",
-      :order  => "1"
-    ).collect(&:author)
+    revisions.unscope(:order).distinct.pluck("revisions.author").sort
   end
 
   def categories
@@ -88,7 +85,7 @@ class Web < ActiveRecord::Base
   end
 
   def file_list(sort_order="file_name")
-    wiki_files.all(:order => sort_order)
+    wiki_files.order(sort_order).to_a
   end
 
   def pages_that_link_to(page_name)
@@ -114,20 +111,21 @@ class Web < ActiveRecord::Base
   # @return [Hash] a Hash wherein the key is some author's name, and the 
   #   values are an array of page names for that author.
   def page_names_by_author
-    data = revisions.all(
-      :select => "DISTINCT revisions.author AS author, pages.name AS page_name",
-      :order  => "pages.name"
-    )
+    rows = revisions
+      .unscope(:order)
+      .distinct
+      .order("pages.name")
+      .pluck("revisions.author", "pages.name")
 
-    data.inject({}) do |result, revision|
-      result[revision.author] ||= []
-      result[revision.author] <<  revision.page_name
-      result
+    rows.each_with_object({}) do |(author, page_name), result|
+      (result[author] ||= []) << page_name
     end
   end
 
   def revisions_by_date
-    revisions.all(:order  => "revised_at")
+    # Page#revisions has_many declares -> { order('id') } which leaks through
+    # the through-association; unscope so revised_at is the only ORDER BY.
+    revisions.unscope(:order).order("revised_at").to_a
   end
 
   # OPTIMIZE Use the +delete_all+ with conditions for extra efficiency
@@ -169,11 +167,13 @@ class Web < ActiveRecord::Base
 
     begin
       dummy_file.content_path.parent.mkpath
-      dummy_file.save
+      saved = dummy_file.save
+      raise "validation failed: #{dummy_file.errors.full_messages.inspect}" unless saved
       dummy_file.destroy
     rescue => e
       logger.error "Failed create files directory for #{address}: #{e}"
       raise "Instiki could not create directory to store uploaded files. " +
+            "Reason: #{e.message}. " +
             "Please make sure that Instiki is allowed to create directory " +
             "#{dummy_file.content_path.expand_path} and add files to it."
     end
@@ -215,11 +215,11 @@ class Web < ActiveRecord::Base
     def validate_address
       if ['create_system', 'create_web', 'delete_web', 'delete_files', 'web_list', ''].include?(address)
          self.errors.add(:address, 'is not a valid address')
-        raise Instiki::ValidationError.new("\"#{address.purify.escapeHTML}\" #{errors.on(:address)}")     
+        raise Instiki::ValidationError.new("\"#{address.purify.escapeHTML}\" #{errors[:address].first}")
       end
       unless address == CGI.escape(address)
         self.errors.add(:address, 'should contain only valid URI characters')
-        raise Instiki::ValidationError.new("#{self.class.human_attribute_name('address')} #{errors.on(:address)}")
+        raise Instiki::ValidationError.new("#{self.class.human_attribute_name('address')} #{errors[:address].first}")
       end
     end
 

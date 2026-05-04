@@ -1,0 +1,41 @@
+<%-
+  @title = "Upload #{h @file_name}"
+  @hide_navigation = false
+  @referring_page ||= request.env["HTTP_REFERER"]
+-%>
+
+<% if flash[:error] %><div class="errorExplanation"><%= flash[:error] %></div><% end %>
+<% if @file && @file.errors.any? %>
+  <div class="errorExplanation">
+    <h2><%= pluralize(@file.errors.count, "error") %> prevented this file from being saved:</h2>
+    <ul>
+      <% @file.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_tag({ :controller => 'file', :web => @web_name, :action => 'file', :id => @file_name },
+        { :multipart => true, 'accept-charset' => 'utf-8' }) do %>
+  <div class="inputFieldWithPrompt">
+    <input type="hidden" name="referring_page" value="<%= h @referring_page %>" />
+    <%= hidden_field 'file', 'file_name' %>
+    <label for="file_content"><b>Content of <%= h @file_name %> to upload</b>:</label>
+    <br />
+    <input type="file" id="file_content" name="file[content]" size="40" />
+    <br />
+    <p>Please note that the file you are uploading will be named <%= h @file_name %> on the wiki -
+    regardless of how it is named on your computer. To change the wiki name of the file, please go
+    <%= link_to("back", @referring_page) %> and edit the wiki page that refers to the file.</p>
+  </div>
+  <div class="inputFieldWithPrompt">
+    <label for="file_description"><b>Description</b>:</label>
+    <br/>
+    <%= text_field "file", "description", "size" => 40 %>
+  </div>
+  <div>
+    <input type="submit" value="Upload" /> as
+    <%= text_field_tag :author, @author, 
+            :onfocus => "this.value == 'AnonymousCoward' ? this.value = '' : true;",
+            :onblur  => "this.value == '' ? this.value = 'AnonymousCoward' : true" %>
+  </div>
+<%- end -%>

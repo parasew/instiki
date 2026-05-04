@@ -1,6 +1,6 @@
 <%- @title = "Uploaded Files" -%>
 
-<% form_tag({ :controller => 'admin', :action => 'delete_files', :web => @web.address },
+<%= form_tag({ :controller => 'admin', :action => 'delete_files', :web => @web.address },
              {'method' => 'post', 'accept-charset' => 'utf-8' }) do
 %>
 <div id="allFiles">
@@ -17,7 +17,7 @@
   <%- for file in @file_list -%>
     <li>
       <input type="checkbox" name="<%= file.file_name %>" value="delete"/>
-      <a href="<%= url_for :web => @web.address, :action => 'files', 
+      <a href="<%= url_for :controller => 'file', :web => @web.address, :action => 'file',
             :id => file.file_name %>"><%= file.file_name%></a> (<%= file.created_at.asctime %>) <span class="linked"><%= "Linked to by: " unless
             @web.pages_that_link_to_file(file.file_name).empty? -%>
             <%= @web.pages_that_link_to_file(file.file_name).collect { |referring_page|  link_to_page(referring_page) }.join(", ").html_safe %></span>

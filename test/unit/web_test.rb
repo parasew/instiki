@@ -29,7 +29,7 @@ class WebTest < ActiveSupport::TestCase
     add_sample_pages
     assert_equal 3, @web.pages.length
     @web.remove_pages([ @web.page('EverBeenInLove') ])
-    assert_equal 2, @web.pages(true).length
+    assert_equal 2, @web.pages.reload.length
   end
   
   def test_initialize  
@@ -75,7 +75,7 @@ class WebTest < ActiveSupport::TestCase
     @web.add_page('AnotherPage', 'This is \AnotherPage', 
         Time.local(2004, 4, 4, 16, 51), 'Alexey Verkhovsky', x_test_renderer)
 
-    @web.pages(true)
+    @web.pages.reload
     assert_equal [home], @web.select.pages_that_link_to('AnotherPage')
   end
 
