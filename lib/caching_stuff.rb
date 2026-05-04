@@ -29,3 +29,32 @@ end
 ActionController::Caching::Actions::ActionCachePath.prepend(
   Instiki::ActionCachePathHostStripping
 )
+
+# Restore content negotiation after action_caching forces the Content-Type.
+#
+# ActionCacheFilter#around always finishes by setting
+#   controller.content_type = Mime[cache_path.extension || :html]
+# regardless of whether the request would otherwise have been served as
+# application/xhtml+xml (per ApplicationController#set_content_type_header).
+# In development this isn't visible because perform_caching=false leaves
+# the around-filter uninstalled, but in production xhtml-capable browsers
+# silently get text/html.
+#
+# Re-run set_content_type_header after the around-filter so the negotiated
+# type wins. The cached body is identical between xhtml-capable and
+# html-only clients (Markdown+itex2MML output is XHTML-compliant either
+# way); only the response header varies by request.
+module Instiki
+  module ActionCacheFilterContentNegotiation
+    def around(controller)
+      super
+      if controller.respond_to?(:set_content_type_header, true)
+        controller.send(:set_content_type_header)
+      end
+    end
+  end
+end
+
+ActionController::Caching::Actions::ActionCacheFilter.prepend(
+  Instiki::ActionCacheFilterContentNegotiation
+)
