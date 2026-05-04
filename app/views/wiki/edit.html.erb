@@ -70,7 +70,7 @@ function cleanAuthorName() {
 
 document.forms["editForm"].elements["content"].focus();
 <%- if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup) -%>
-setupSVGedit('<%= asset_path("svg-edit/editor/svg-editor.html").split(/\?/)[0] %>');
+setupSVGedit('<%= asset_path("svg-edit/editor/index.html").split(/\?/)[0] %>');
 <%- unless @page.categories.include?('S5-slideshow') -%>
 addS5button('<%= @page.name.escapeHTML %>');
 <%- end -%>
