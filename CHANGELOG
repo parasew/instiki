@@ -1,9 +1,31 @@
-N.B.: You *must* run
+* 0.40.0
 
-     ruby bundle
-     ruby bundle exec rake upgrade_instiki
+* Modernized to run on Rails 7.1.6.
+* Requires Ruby ≥ 3.2 (tested on Ruby 4.0.3).
+* The preferred MySQL adapter is trilogy.
 
-after installing the new software, to enjoy the benefits of this new version.
+     Add "`gem 'trilogy'`" to your Gemfile.
+
+* Because of the large number of changes, you
+  may prefer to start with a clean install, do a
+~~~~~
+     bundle install
+~~~~~
+  and then copy over the contents of your
+~~~~~
+     webs/
+     db/
+~~~~~
+  directories, as well as the files
+~~~~~
+     config/database.yml
+     secret
+~~~~~
+  (changing the database adapter from "mysql" to "trilogy", if you're using MySQL).
+
+  The only user-visible change is that Instiki's URLs now adhere to RFC 3986, so that spaces are encoded as "%20", rather than as "+". This should (hopefully) be only a minor inconvenience; you can always use the "`[[!redirects ...]]`" feature to fix any broken external links.
+
+Thanks to Claude Code, without which this would not have been feasible.
 
 ------------------------------------------------------------------------------
 * 0.30.3
