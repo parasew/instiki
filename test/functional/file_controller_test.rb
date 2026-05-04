@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require Rails.root.join('test', 'test_helper')
-require 'file_controller'
 require 'fileutils'
 require 'stringio'
 

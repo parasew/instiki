@@ -2,7 +2,6 @@
 #coding: utf-8
 
 require Rails.root.join('test', 'test_helper')
-require 'wiki_controller'
 require 'rexml/document'
 require 'tempfile'
 require 'zip/zipfilesystem'
