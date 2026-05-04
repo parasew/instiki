@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
-require 'admin_controller'
 
 # Raise errors beyond the default web-based presentation
 class AdminController; def rescue_action(e) logger.error(e); raise e end; end
