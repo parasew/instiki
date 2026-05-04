@@ -9,14 +9,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100101192755) do
+ActiveRecord::Schema.define(:version => 20220529142755) do
 
   create_table "pages", :force => true do |t|
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
-    t.integer  "web_id",                   :default => 0, :null => false
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
+    t.integer  "web_id",                    :default => 0, :null => false
     t.string   "locked_by",  :limit => 60
-    t.string   "name"
+    t.string   "name",       :limit => 255
     t.datetime "locked_at"
   end
 
@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(:version => 20100101192755) do
   add_index "revisions", ["page_id"], :name => "index_revisions_on_page_id"
 
   create_table "sessions", :force => true do |t|
-    t.string   "session_id"
+    t.string   "session_id", :limit => 255
     t.text     "data"
     t.datetime "updated_at"
   end
@@ -64,21 +64,22 @@ ActiveRecord::Schema.define(:version => 20100101192755) do
   end
 
   create_table "wiki_files", :force => true do |t|
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.integer  "web_id",      :null => false
-    t.string   "file_name",   :null => false
-    t.string   "description", :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+    t.integer  "web_id",                     :null => false
+    t.string   "file_name",   :limit => 255, :null => false
+    t.string   "description", :limit => 255, :null => false
   end
 
   create_table "wiki_references", :force => true do |t|
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
-    t.integer  "page_id",                      :default => 0,  :null => false
-    t.string   "referenced_name",              :default => "", :null => false
-    t.string   "link_type",       :limit => 1, :default => "", :null => false
+    t.datetime "created_at",                                     :null => false
+    t.datetime "updated_at",                                     :null => false
+    t.integer  "page_id",                        :default => 0,  :null => false
+    t.string   "referenced_name", :limit => 255, :default => "", :null => false
+    t.string   "link_type",       :limit => 1,   :default => "", :null => false
   end
 
+  add_index "wiki_references", ["link_type"], :name => "index_wiki_references_on_link_type"
   add_index "wiki_references", ["page_id"], :name => "index_wiki_references_on_page_id"
   add_index "wiki_references", ["referenced_name"], :name => "index_wiki_references_on_referenced_name"
 

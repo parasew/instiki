@@ -3,3 +3,14 @@ Migrating to Beta1Schema (1)
 Migrating to Beta2ChangesBulk (2)
 Migrating to Beta1Schema (1)
 Migrating to Beta2ChangesBulk (2)
+W, [2026-05-03T02:09:36.133876 #3050]  WARN -- : You are running SQLite in production, this is generally not recommended. You can disable this warning by setting "config.active_record.sqlite3_production_warning=false".
+D, [2026-05-03T02:09:36.159814 #3050] DEBUG -- :   [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+D, [2026-05-03T02:09:36.160013 #3050] DEBUG -- :   [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+D, [2026-05-03T02:09:36.160143 #3050] DEBUG -- :   [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'production', '2026-05-03 07:09:36.160041', '2026-05-03 07:09:36.160042') RETURNING "key"[0m
+D, [2026-05-03T02:09:36.160215 #3050] DEBUG -- :   [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+I, [2026-05-03T02:09:36.160242 #3050]  INFO -- : Migrating to AddWikireferenceTypeIndex (20220529142755)
+D, [2026-05-03T02:09:36.161609 #3050] DEBUG -- :   [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+D, [2026-05-03T02:09:36.161690 #3050] DEBUG -- :   [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_wiki_references_on_link_type" ON "wiki_references" ("link_type")[0m
+D, [2026-05-03T02:09:36.161797 #3050] DEBUG -- :   [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20220529142755') RETURNING "version"[0m
+D, [2026-05-03T02:09:36.161904 #3050] DEBUG -- :   [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+D, [2026-05-03T02:09:36.172594 #3050] DEBUG -- :   [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m

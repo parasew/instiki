@@ -30,7 +30,13 @@ module WikiHelper
   end
 
   def edit_web
-    link_to('Edit Web', {:web => @web.address, :action => 'edit_web'}, 
+    # :controller => 'admin' is needed in Rails 5+: url_for inherits the
+    # current request's params (here :id => @page.name from the wiki page),
+    # which would match the generic :web/:action/:id route to wiki#:action
+    # instead of the specific :web/edit_web route to admin#edit_web.
+    # :id => nil overrides the inherited :id so it doesn't get appended as a
+    # query string.
+    link_to('Edit Web', {:controller => 'admin', :action => 'edit_web', :web => @web.address, :id => nil},
         {:class => 'navlink', :accesskey => 'W', :id => 'edit_web', :rel => 'nofollow'})
   end
 

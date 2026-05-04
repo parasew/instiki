@@ -1,16 +1,21 @@
 class Page < ActiveRecord::Base
   belongs_to :web
-  has_many :revisions, :order => 'id', :dependent => :destroy
-  #In many cases, we don't need to instantiate the full revisions (with all that textual data)
-  has_many :rev_ids, :order => 'id', :class_name => 'Revision', :select => 'id, revised_at, page_id, author, ip'
-  has_many :wiki_references, :order => 'referenced_name'
-  has_one :current_revision, :class_name => 'Revision', :order => 'id DESC'
+  has_many :revisions, -> { order('id') }, dependent: :destroy
+  # In many cases, we don't need to instantiate the full revisions (with all that textual data)
+  has_many :rev_ids, -> { select('id, revised_at, page_id, author, ip').order('id') }, class_name: 'Revision'
+  has_many :wiki_references, -> { order('referenced_name') }
+  has_one :current_revision, -> { order(id: :desc) }, class_name: 'Revision'
 
   def name
     read_attribute(:name).as_utf8
   end
 
   def revise(content, name, time, author, renderer)
+    # Drop any cached current_revision/rev_ids so the unchanged-content check
+    # below sees the actual latest revision, not a stale has_one cache from a
+    # previous revise on the same Page instance.
+    association(:current_revision).reset unless new_record?
+    association(:rev_ids).reset unless new_record?
     revisions_size = new_record? ? 0 : rev_ids.size
     if (revisions_size > 0) and content == current_revision.content and name == self.name
       raise Instiki::ValidationError.new(
@@ -25,18 +30,23 @@ class Page < ActiveRecord::Base
        :page => self, :content => content, :author => author, :revised_at => time)
     c = renderer.display_content(update_references = true)
     # Let's not waste this effort: cache the rendered content for display later
-    File.open(File.join(RAILS_ROOT, 'tmp', 'cache', "#{self.web.name}_#{CGI.escape(name)}.cache"), 'w') {|f| f.write(c)}
+    File.open(File.join(Rails.root, 'tmp', 'cache', "#{self.web.name}_#{CGI.escape(name)}.cache"), 'w') {|f| f.write(c)}
 
     # A user may change a page, look at it and make some more changes - several times.
     # Not to record every such iteration as a new revision, if the previous revision was done 
     # by the same author, not more than 30 minutes ago, then update the last revision instead of
     # creating a new one
     if (revisions_size > 0) && continous_revision?(time, author)
-      current_revision.update_attributes(:content => content, :revised_at => time)
+      current_revision.update(:content => content, :revised_at => time)
     else
       revisions.build(:content => content, :author => author, :revised_at => time)
     end
     save
+    # Invalidate the has_one cache so the next .current_revision call sees
+    # the revision we just appended (Rails 6 doesn't auto-reset has_one on
+    # parent save).
+    association(:current_revision).reset
+    association(:rev_ids).reset
     self
   end
 
@@ -100,7 +110,7 @@ class Page < ActiveRecord::Base
   LOCKING_PERIOD = 30.minutes
 
   def lock(time, locked_by)
-    update_attributes(:locked_at => time, :locked_by => locked_by)
+    update(:locked_at => time, :locked_by => locked_by)
   end
   
   def lock_duration(time)
@@ -128,11 +138,15 @@ class Page < ActiveRecord::Base
     # Forward method calls to the current revision, so the page responds to all revision calls
     def method_missing(method_id, *args, &block)
       method_name = method_id.to_s
-      # Perform a hand-off to AR::Base#method_missing
-      if @attributes.include?(method_name) or md = /(=|\?|_before_type_cast)$/.match(method_name)
+      # Perform a hand-off to AR::Base#method_missing for known attribute methods.
+      if attribute_method?(method_name) or /(=|\?|_before_type_cast)$/.match?(method_name)
         super(method_id, *args, &block)
       else
         current_revision.send(method_id)
       end
+    end
+
+    def attribute_method?(name)
+      self.class.attribute_names.include?(name)
     end
 end

@@ -1,16 +1,24 @@
-begin
-  require "rdoc/markup/simple_markup"
-  require 'rdoc/markup/simple_markup/to_html'
-rescue LoadError
-  # Ruby 1.9
-  require "rdoc/markup"
-  require 'rdoc/markup/to_html'
-  module SM
-    class SimpleMarkup < RDoc::Markup
-    end
-    class ToHtml <RDoc::Markup::ToHtml
-    end
+require "rdoc/markup"
+require 'rdoc/markup/to_html'
+module SM
+  class SimpleMarkup < RDoc::Markup
   end
+  class ToHtml < RDoc::Markup::ToHtml
+  end
+end
+
+# RDoc 6+ renamed add_special / handle_special_X / RegexpHandling. Provide
+# shims so the legacy method names in this file keep working. add_html no
+# longer exists at the RDoc::Markup level (custom HTML tag registration moved
+# to the formatter); we no-op it since the only use here is registering
+# <center>, which is rarely-used Instiki RDoc syntax.
+class RDoc::Markup
+  alias_method :add_special, :add_regexp_handling unless method_defined?(:add_special)
+  def add_html(*args); end unless method_defined?(:add_html)
+end
+
+class RDoc::Markup::ToHtml
+  def add_tag(*args); end unless method_defined?(:add_tag)
 end
 
 module RDocSupport

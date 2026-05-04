@@ -11,13 +11,12 @@ Instiki only requires a working Ruby installation (it includes all other depende
 ### 3 easy Steps to get the Instiki experience
 
   Step 1. Get Instiki and run "bundle install --path vendor/bundle"
-  Step 2. Run "instiki"
+  Step 2. Run "./instiki"
   Step 3. Chuckle... "There's no step three!" (TM)
- 
 
 ## Details
 
-You need at least Ruby Version 2.0 installed on your System. Instiki is known to work well with Ruby 2.0-2.6. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
+You need at least Ruby Version 3.2 installed on your System. Instiki is known to work well with Ruby 3.2--4.03. The second dependency is a Database System, but don't worry, the default sqlite3 will be installed for you, if it's not already installed. You can also use any other database system (MySQL, PostgreSQL, ...) supported by Rails.
 
 ### Deploy to Heroku
 
@@ -41,12 +40,14 @@ You need at least Ruby Version 2.0 installed on your System. Instiki is known to
 
 ### If you are on Mac OSX
 
-On Snow Leopard (10.6) or later, you are all set.
+On Tahoe and earlier, the system version of ruby (2.6) is too old to run Instiki 0.40.0. If you
+want to use the system ruby, you'll have to stick with Instiki 0.3.30. The preferred way to install
+ruby is to get [rbenv](https://github.com/rbenv/rbenv#readme), preferably using the
+[rbenv installer](https://github.com/rbenv/rbenv-installer#rbenv-installer), and then install ruby 3.2 or later.
 
 - run "sudo gem update --system" via the command-line.
 - run "bundle install --path vendor/bundle" in the instiki directory.
 - run "ruby instiki" and there you go!
-
 
 ### If you are on Linux
 
@@ -63,7 +64,6 @@ On Snow Leopard (10.6) or later, you are all set.
 - run instiki
 
 You're now running a perfectly suitable wiki on port 2500 that'll present you with one-step setup, followed by a textarea for the home page on http://localhost:2500
-
 
 ## Features
 
@@ -84,7 +84,7 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
    RDoc [http://rdoc.sourceforge.net/doc]
 * Support for Math (using [itex syntax](https://golem.ph.utexas.edu/~distler/blog/itex2MMLcommands.html))
 * Support for WYSIWYG SVG editing -- embed SVG graphics right in your wiki page.
-* Embedded webserver: uses Mongrel (if installed), or the bundled WEBrick webserver (if not).
+* Embedded webserver: uses Thin, or the bundled WEBrick webserver (if, for some reason, Thin is not available).
 * Internationalization: Wiki words in any latin, greek, cyrillian, or armenian characters
 * Color diffs: Track changes through revisions
 * Runs on SQLite3 per default, can be configured to run on PostgreSQL, MySQL, DB2, Firebird, Openbase, Oracle, SQL Server or Sybase
@@ -99,13 +99,6 @@ You're now running a perfectly suitable wiki on port 2500 that'll present you wi
 ## History:
 
  * See CHANGELOG
-
-## Migrating from Instiki 0.11-0.19 to 0.20
-
-~~~~~
-bundle install --path vendor/bundle
-bundle exec rake upgrade_instiki
-~~~~~
 
 ## Download the latest release from:
 
@@ -123,7 +116,6 @@ bundle exec rake upgrade_instiki
 ## License:
 
 * same as Ruby's
-
 
 ---
 

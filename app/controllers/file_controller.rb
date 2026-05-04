@@ -7,15 +7,16 @@ class FileController < ApplicationController
 
   layout 'default'
 
-  before_filter :check_authorized
-  before_filter :check_allow_uploads, :dnsbl_check, :except => [:file, :blahtex_png]
+  before_action :check_authorized
+  before_action :check_allow_uploads, :dnsbl_check, :except => [:file, :blahtex_png]
 
   def file
     @file_name = params['id']
     if params['file']
       return unless is_post and check_allow_uploads
-      # form supplied
-      new_file = @web.wiki_files.create(params['file'])
+      # form supplied — Rails 5+ requires explicit param permission
+      file_params = params.require('file').permit(:file_name, :description, :content)
+      new_file = @web.wiki_files.create(file_params)
       if new_file.valid?
         flash[:info] = "File '#{@file_name}' successfully uploaded"
         WikiReference.pages_that_link_to_file(@web, @file_name).each do |page|
@@ -25,7 +26,7 @@ class FileController < ApplicationController
       else
         # pass the file with errors back into the form
         @file = new_file
-        render
+        render formats: [:html]
       end
     else
       # no form supplied, this is a request to download the file
@@ -35,7 +36,7 @@ class FileController < ApplicationController
       else
         return unless check_allow_uploads
         @file = WikiFile.new(:file_name => @file_name)
-        render
+        render formats: [:html]
       end
     end
   end
@@ -75,7 +76,9 @@ class FileController < ApplicationController
     if params['file']
       @problems = []
       import_file_name = "#{@web.address}-import-#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.zip"
-      import_from_archive(params['file'].path)
+      file = params['file']
+      file_path = file.respond_to?(:path) ? file.path : (file.respond_to?(:tempfile) ? file.tempfile.path : file.to_s)
+      import_from_archive(file_path)
       if @problems.empty?
         flash[:info] = 'Import successfully finished'
       else
@@ -93,7 +96,7 @@ class FileController < ApplicationController
   def check_authorized
     unless authorized? or @web.published?
       @hide_navigation  = true
-      render(:status => 403, :text => 'This web is private', :layout => true)
+      render(:status => 403, plain: 'This web is private', :layout => true)
     end
   end
 
@@ -103,11 +106,11 @@ class FileController < ApplicationController
         return true
       else
         @hide_navigation  = true
-        render(:status => 403, :text => 'File uploads are blocked by the webmaster', :layout => true)
+        render(:status => 403, plain: 'File uploads are blocked by the webmaster', :layout => true)
         return false
       end
     else
-      render(:status => 404, :text => "Web #{params['web'].inspect} not found", :layout => 'error')
+      render(:status => 404, plain: "Web #{params['web'].inspect} not found", :layout => 'error')
     end
   end
 

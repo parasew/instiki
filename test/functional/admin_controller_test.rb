@@ -10,22 +10,13 @@ class AdminControllerTest < ActionController::TestCase
   fixtures :webs, :pages, :revisions, :system, :wiki_references
 
   def setup
-    require 'action_controller/test_process'
-    @controller = AdminController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
-    class << @request.session
-      attr_accessor :dbman
-    end
-    # simulate a cookie session store
-    @request.session.dbman = FakeSessionDbMan
     @wiki = Wiki.new
     @oak = pages(:oak)
     @liquor = pages(:liquor)
     @elephant = pages(:elephant)
     @web = webs(:test_wiki)
     @home = @page = pages(:home_page)
-    FileUtils.rm_rf("#{RAILS_ROOT}/webs/renamed_wiki1")
+    FileUtils.rm_rf("#{Rails.root}/webs/renamed_wiki1")
   end
 
   def test_create_system_form_displayed
@@ -233,14 +224,14 @@ class AdminControllerTest < ActionController::TestCase
     process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
 
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
-    @web.pages(true)
+    @web.pages.reload
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
 
     # Oak is now orphan, second pass should remove it
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
-    @web.pages(true)
+    @web.pages.reload
     page_order.delete(@oak)
     page_order.delete(@liquor)
     assert_equal page_order, @web.select.sort,
@@ -249,7 +240,7 @@ class AdminControllerTest < ActionController::TestCase
     # third pass does not destroy HomePage
     r = process('remove_orphaned_pages', 'web' => 'wiki1', 'system_password_orphaned' => 'pswd')
     assert_redirected_to  :web => 'wiki1', :controller => 'wiki', :action => 'list'
-    @web.pages(true)
+    @web.pages.reload
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
   end
@@ -266,7 +257,7 @@ class AdminControllerTest < ActionController::TestCase
     process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees','system_password_orphaned_in_category' => 'pswd')
 
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
-    @web.pages(true)
+    @web.pages.reload
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
 
@@ -274,7 +265,7 @@ class AdminControllerTest < ActionController::TestCase
     # so the second pass should not remove it
     r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'animals', 'system_password_orphaned_in_category' => 'pswd')
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
-    @web.pages(true)
+    @web.pages.reload
     page_order.delete(pages(:elephant))
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
@@ -283,14 +274,14 @@ class AdminControllerTest < ActionController::TestCase
     # 'leaves' category.
     r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'leaves', 'system_password_orphaned_in_category' => 'pswd')
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
-    @web.pages(true)
+    @web.pages.reload
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"
 
     # fourth pass destroys Oak
     r = process('remove_orphaned_pages_in_category', 'web' => 'wiki1', 'category' => 'trees', 'system_password_orphaned_in_category' => 'pswd')
     assert_redirected_to :controller => 'wiki', :web => 'wiki1', :action => 'list'
-    @web.pages(true)
+    @web.pages.reload
     page_order.delete(@oak)
     assert_equal page_order, @web.select.sort,
         "Pages are not as expected: #{@web.select.sort.map {|p| p.name}.inspect}"

@@ -3,9 +3,16 @@
   @hide_navigation = true
 -%>
 
-<%= error_messages_for 'delete' %>
+<% if flash[:error] %><div class="errorExplanation"><%= flash[:error] %></div><% end %>
+<% if @file && @file.errors.any? %>
+  <div class="errorExplanation">
+    <ul>
+      <% @file.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+    </ul>
+  </div>
+<% end %>
 
-<% form_tag({ :controller => 'file', :web => @web_name, :action => 'delete' },
+<%= form_tag({ :controller => 'file', :web => @web_name, :action => 'delete' },
         {'accept-charset' => 'utf-8' }) do %>
   <div class="inputFieldWithPrompt">
     <%= hidden_field 'file', 'file_name' %>

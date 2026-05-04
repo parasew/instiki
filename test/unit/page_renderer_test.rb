@@ -814,7 +814,7 @@ END_THM
   def test_link_to_pic_and_file
     WikiFile.delete_all
     require 'fileutils'
-    FileUtils.rm_rf("#{RAILS_ROOT}/webs/wiki1/files/*")
+    FileUtils.rm_rf("#{Rails.root}/webs/wiki1/files/*")
     @web.wiki_files.create(:file_name => 'square.jpg', :description => 'Square', :content => 'never mind')
     assert_markup_parsed_as(
       "<p><img alt='Blue Square' src='../file/square.jpg'/></p>",
@@ -849,7 +849,7 @@ END_THM
   def test_link_to_pic_and_file_null_desc
     WikiFile.delete_all
     require 'fileutils'
-    FileUtils.rm_rf("#{RAILS_ROOT}/webs/wiki1/files/*")
+    FileUtils.rm_rf("#{Rails.root}/webs/wiki1/files/*")
     @web.wiki_files.create(:file_name => 'square.jpg', :description => '', :content => 'never mind')
     assert_markup_parsed_as(
       "<p><img alt='Blue Square' src='../file/square.jpg'/></p>",
@@ -946,7 +946,7 @@ END_THM
     new_page = @web.add_page('NewPage', 'HomePage NewPage', 
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 2, references.size
     assert_equal 'HomePage', references[0].referenced_name
     assert_equal WikiReference::LINKED_PAGE, references[0].link_type
@@ -958,7 +958,7 @@ END_THM
     new_page = @web.add_page('NewPage', '[[!include IncludedPage]]',
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
         
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 1, references.size
     assert_equal 'IncludedPage', references[0].referenced_name
     assert_equal WikiReference::INCLUDED_PAGE, references[0].link_type
@@ -968,7 +968,7 @@ END_THM
     new_page = @web.add_page('NewPage', '[[!redirects OtherPage]]',
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 1, references.size
     assert_equal 'OtherPage', references[0].referenced_name
     assert_equal WikiReference::REDIRECTED_PAGE, references[0].link_type
@@ -980,14 +980,14 @@ END_THM
     second_page = @web.add_page('SecondPage', '[[!include NewPage]]',
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 2, references.size
     assert_equal 'OtherPage', references[0].referenced_name
     assert_equal WikiReference::REDIRECTED_PAGE, references[0].link_type
     assert_equal 'plants', references[1].referenced_name
     assert_equal WikiReference::CATEGORY, references[1].link_type
 
-    references = second_page.wiki_references(true)
+    references = second_page.wiki_references.reload
     assert_equal 1, references.size
     assert_equal 'NewPage', references[0].referenced_name
     assert_equal WikiReference::INCLUDED_PAGE, references[0].link_type
@@ -997,7 +997,7 @@ END_THM
     new_page = @web.add_page('NewPage', "Foo\ncategory: NewPageCategory",
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 1, references.size
     assert_equal 'NewPageCategory', references[0].referenced_name
     assert_equal WikiReference::CATEGORY, references[0].link_type
@@ -1007,7 +1007,7 @@ END_THM
     new_page = @web.add_page('NewPage', "Foo\ncategory: <script>alert('XSS');</script>",
         Time.local(2004, 4, 4, 16, 50), 'AlexeyVerkhovsky', x_test_renderer)
 
-    references = new_page.wiki_references(true)
+    references = new_page.wiki_references.reload
     assert_equal 1, references.size
     assert_equal "&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;", references[0].referenced_name
     assert_equal WikiReference::CATEGORY, references[0].link_type

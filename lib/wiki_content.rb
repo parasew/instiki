@@ -117,10 +117,22 @@ class WikiContentStub < String
   end
 end
 
-class WikiContent < ActiveSupport::SafeBuffer
+class WikiContent < String
 
   include ChunkManager
   include Sanitizer
+
+  # render! has already passed the buffer through xhtml_sanitize — its
+  # content is HTML-safe by construction. Tell ERB and SafeBuffer to splice
+  # it in without further escaping, while remaining a plain String subclass
+  # so the chunk pipeline (and find_chunks) can attach @chunks metadata
+  # that survives gsub!/replace mutations. (Rails 2.3 + rails_xss had a
+  # looser SafeBuffer where replace didn't escape and html_safe returned
+  # self; Rails 3+ tightened both, breaking the original WikiContent <
+  # SafeBuffer design.)
+  def html_safe?
+    true
+  end
 
   DEFAULT_OPTS = {
     :active_chunks       => ACTIVE_CHUNKS,
@@ -224,7 +236,7 @@ class WikiContent < ActiveSupport::SafeBuffer
       end
     end
     self.replace xhtml_sanitize(text)
-    self.html_safe
+    self
   end
 
   def page_name

@@ -9,8 +9,8 @@ require 'strscan'
 
 class WikiController < ApplicationController
 
-  before_filter :load_page
-  before_filter :dnsbl_check, :only => [:edit, :new, :save, :export_html, :export_markup]
+  before_action :load_page
+  before_action :dnsbl_check, :only => [:edit, :new, :save, :export_html, :export_markup]
   caches_action :show, :published, :authors, :tex, :s5, :print, :recently_revised, :list, :file_list, :source,
         :history, :revision, :atom_with_content, :atom_with_headlines, :atom_with_changes, :if => Proc.new { |c| c.send(:do_caching?) }
   cache_sweeper :revision_sweeper
@@ -66,6 +66,11 @@ class WikiController < ApplicationController
         @alt_sort_name = 'filename'
     end
     @file_list = @web.file_list(sort_order)
+  end
+
+  def export
+    # renders app/views/wiki/export.html.erb (a chooser between
+    # export_html and export_markup)
   end
 
   def export_html
@@ -205,7 +210,7 @@ EOL
       p = params['limit'].to_i
       (p != 0) ? render_atom(hide_description = false, p) : render_atom(hide_description = false)
     else
-      render :text => 'Atom feed with content for this web is blocked for security reasons. ' +
+      render plain: 'Atom feed with content for this web is blocked for security reasons. ' +
         'The web is password-protected and not published', :status => 403, :layout => 'error'
     end
   end
@@ -215,7 +220,7 @@ EOL
       p = params['limit'].to_i
       (p != 0) ? render_atom(hide_description = true, p) : render_atom(hide_description = true)
     else
-      render :text => 'Atom feed for this web is blocked for security reasons. ' +
+      render plain: 'Atom feed for this web is blocked for security reasons. ' +
         'The web is password-protected and not published', :status => 403, :layout => 'error'
     end
   end
@@ -224,7 +229,7 @@ EOL
     if rss_with_content_allowed?
       render_atom_changes(hide_description = false, limit)
     else
-      render :text => 'Atom feed with changes for this web is blocked for security reasons. ' +
+      render plain: 'Atom feed with changes for this web is blocked for security reasons. ' +
         'The web is password-protected and not published', :status => 403, :layout => 'error'
     end
   end
@@ -251,7 +256,7 @@ EOL
     end
     if @tex_content == ''
       flash[:error] = "You didn't select any pages to export."
-      redirect_to :back
+      redirect_back(fallback_location: "/")
       return
     end
     expire_action :controller => 'wiki', :web => @web.address, :action => 'list', :category => params['category']
@@ -312,7 +317,7 @@ EOL
 
   def published
     if not @web.published?
-      render(:text => "Published version of web '#{@web_name}' is not available", :status => 404, :layout => 'error')
+      render(plain: "Published version of web '#{@web_name}' is not available", :status => 404, :layout => 'error')
       return 
     end
 
@@ -336,9 +341,15 @@ EOL
         end
           redirect_to :web => @web_name, :action => 'published', :id => real_page, :status => 301
       else
-        render(:text => "Page '#{@page_name}' not found", :status => 404, :layout => 'error')
+        render(plain: "Page '#{@page_name}' not found", :status => 404, :layout => 'error')
       end
      end
+  end
+
+  # Routed from /:web/revision/diff/:id/:rev — sets mode then delegates.
+  def revision_diff
+    params[:mode] = "diff"
+    revision
   end
 
   def revision
@@ -365,7 +376,7 @@ EOL
   end
 
   def save
-    render(:status => 404, :text => 'Undefined page name', :layout => 'error') and return if @page_name.nil?
+    render(:status => 404, plain: 'Undefined page name', :layout => 'error') and return if @page_name.nil?
     return unless is_post
     author_name = params['author'].strip.purify
     author_name = 'AnonymousCoward' if author_name =~ /^\s*$/
@@ -406,6 +417,12 @@ EOL
     end
   end
 
+  # Routed from /:web/show/diff/:id — sets mode then delegates.
+  def show_diff
+    params[:mode] = "diff"
+    show
+  end
+
   def show
     if @page
       begin
@@ -444,7 +461,7 @@ EOL
           redirect_to :web => @web_name, :action => 'new', :id => @page_name
         end
       else
-        render :text => 'Page name is not specified', :status => 404, :layout => 'error'
+        render plain: 'Page name is not specified', :status => 404, :layout => 'error'
       end
     end
   end
@@ -465,7 +482,7 @@ EOL
       if not @page_name.nil? and not @page_name.empty?
         redirect_to :web => @web_name, :action => 'new', :id => @page_name
       else
-        render :text => 'Page name is not specified', :status => 404, :layout => 'error'
+        render plain: 'Page name is not specified', :status => 404, :layout => 'error'
       end
     end
   end

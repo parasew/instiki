@@ -1,20 +1,31 @@
-# based on http://pastie.org/49840
-# override the fragment_cache_key method in actionpack/lib/action_controller/caching/fragments.rb
-# to remove hostname in fragment caching
-# so instead of caching different fragments for "example.com/posts/list" and 
-# "www.example.com/posts/list", instead it will just use "posts/list"
-module CachingStuff
-  module ActionController
-    module Caching
-      module Fragments
-        def fragment_cache_key(key)
-          ActiveSupport::Cache.expand_cache_key(key.is_a?(Hash) ? url_for(key.merge(:host=>"")).split(":///").last : key.split('/')[1..-1].join('/').gsub(/\?format=.*/,''), :views)
-        end
-      end
+# Strip the hostname from action-cache paths so requests at example.com,
+# www.example.com, and instiki.example.com share a single cache file
+# tree (instead of writing one cache file per hostname).
+#
+# actionpack-action_caching builds its path in ActionCachePath#initialize as
+#
+#   path = controller.url_for(options).split("://", 2).last
+#
+# which yields "host.example.com/wiki1/show/HomePage". Strip the leading
+# "host[:port]/" segment so we end up with "wiki1/show/HomePage". The same
+# transformation runs on the expire_action side (action_caching also goes
+# through ActionCachePath there), so writes and invalidations stay aligned.
+#
+# This replaces the Rails-2.3-era patch that overrode fragment_cache_key —
+# which hasn't been on action_caching's code path since the gem was
+# extracted from core in Rails 4.
+
+require "action_controller/caching/actions"
+
+module Instiki
+  module ActionCachePathHostStripping
+    def initialize(controller, options = {}, infer_extension = true)
+      super
+      @path = @path.sub(%r{\A[^/]+/}, "")
     end
   end
 end
 
-ActionController::Base.class_eval do
-  include CachingStuff::ActionController::Caching::Fragments
-end
+ActionController::Caching::Actions::ActionCachePath.prepend(
+  Instiki::ActionCachePathHostStripping
+)

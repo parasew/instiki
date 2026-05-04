@@ -143,14 +143,14 @@ class PageRenderer
   end
   
   def update_references(rendering_result)
-    WikiReference.delete_all ['page_id = ?', @revision.page_id]
+    WikiReference.where(page_id: @revision.page_id).delete_all
 
     references = @revision.page.wiki_references
 
     wiki_words = find_wiki_words(rendering_result)
     # TODO it may be desirable to save links to files and pictures as WikiReference objects
     # present version doesn't do it
-    
+
     wiki_words.each do |referenced_name|
       # Links to self are always considered linked
       if referenced_name == @revision.page.name

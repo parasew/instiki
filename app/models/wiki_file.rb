@@ -4,34 +4,36 @@ class WikiFile < ActiveRecord::Base
   before_save :write_content_to_file
   before_destroy :delete_content_file
 
-  validates_presence_of %w( web file_name )
-  validates_length_of :file_name, :within=>1..50
-  validates_length_of :description, :maximum=>255
+  validates_presence_of :web, :file_name
+  validates_length_of :file_name, within: 1..50
+  validates_length_of :description, maximum: 255
 
   def self.find_by_file_name(file_name)
-    first(:conditions => ['file_name = ?', file_name])
+    where(file_name: file_name).first
   end
 
-  def validate
-    if file_name 
+  validate :validate_wiki_file
+
+  def validate_wiki_file
+    if file_name
       if ! WikiFile.is_valid?(file_name)
         if ['.', '..'].include? file_name
-          errors.add("file_name", "cannot be '.' or '..'")
+          errors.add(:file_name, "cannot be '.' or '..'")
         else
-          errors.add("file_name", "is invalid. Only latin characters, digits, dots, underscores, " +
+          errors.add(:file_name, "is invalid. Only latin characters, digits, dots, underscores, " +
            "dashes and spaces are accepted")
-         end
+        end
       end
     end
 
-    if @web and @content
-      if (@content.size > @web.max_upload_size.kilobytes)
-        errors.add("content", "size (#{(@content.size / 1024.0).round} kilobytes) exceeds " +
+    if web && @content
+      if (@content.size > web.max_upload_size.kilobytes)
+        errors.add(:content, "size (#{(@content.size / 1024.0).round} kilobytes) exceeds " +
             "the maximum (#{web.max_upload_size} kilobytes) set for this wiki")
       end
     end
 
-    errors.add("content", "is empty") if @content.nil? or @content.empty?
+    errors.add(:content, "is empty") if @content.nil? or @content.empty?
   end
 
   def content=(content)

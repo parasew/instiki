@@ -31,11 +31,7 @@
   </h1>
 
 <div id="Error-Content">
-<%= if :raw
-      @content_for_layout
-    else
-      h @content_for_layout
-    end %>
+<%= yield %>
 
 </div> <!-- Error-Content -->
 

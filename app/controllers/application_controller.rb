@@ -2,9 +2,15 @@
 # Likewise will all the methods added be available for all controllers.
 class ApplicationController < ActionController::Base
 
-  protect_forms_from_spam :only => [:edit, :new, :rollback, :file, :delete, :save]
-  before_filter :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
-  after_filter :remember_location, :teardown_url_generator
+  # Rails 5+ has built-in CSRF protection (protect_from_forgery, on by
+  # default), which is strictly better than the legacy protect_forms_from_spam
+  # JS-injected _form_key scheme — that scheme silently redirected back when
+  # JS didn't run (or didn't load fast enough), breaking real file uploads.
+  # rails-controller-testing's process/get/post bypass forgery_protection in
+  # tests automatically, so we don't need skip_forgery_protection here.
+
+  before_action :connect_to_model, :check_authorization, :setup_url_generator, :set_content_type_header, :set_robots_metatag
+  after_action :remember_location, :teardown_url_generator
 
   # For injecting a different wiki model implementation. Intended for use in tests
   def self.wiki=(the_wiki)
@@ -59,7 +65,7 @@ class ApplicationController < ActionController::Base
     @author = cookies['author'] || 'AnonymousCoward'
     if @web_name
       @web = @wiki.webs[@web_name]
-      render(:status => 404, :text => "Unknown web '#{@web_name}'",
+      render(:status => 404, plain: "Unknown web '#{@web_name}'",
              :layout => 'error') if @web.nil?
     end
   end
@@ -119,7 +125,7 @@ class ApplicationController < ActionController::Base
     original_options[:disposition] ||= (DISPOSITION[original_options[:type]] or 'attachment')
     original_options[:stream] ||= false
     original_options[:x_sendfile] = true if request.env.include?('HTTP_X_SENDFILE_TYPE') &&
-            ( request.remote_addr == LOCALHOST || defined?(PhusionPassenger) )
+            ( request.remote_addr == "127.0.0.1" || defined?(PhusionPassenger) )
     original_options
   end
 
@@ -159,16 +165,16 @@ class ApplicationController < ActionController::Base
   end
 
   def remember_location
-    if request.method == :get and 
-        @status == '200' and not \
-        %w(locked save back file pic import).include?(action_name)
-      session[:return_to] = request.request_uri
+    if request.get? and
+        response.status == 200 and
+        !%w(locked save back file pic import).include?(action_name)
+      session[:return_to] = request.fullpath
       logger.debug "Session ##{session.object_id}: remembered URL '#{session[:return_to]}'"
     end
   end
 
   def rescue_action_in_public(exception)
-      render :status => 500, :text => <<-EOL
+      render :status => 500, plain: <<-EOL
         <html xmlns="http://www.w3.org/1999/xhtml"><body>
           <h2>Internal Error</h2>
           <p>An application error occurred while processing your request.</p>
@@ -208,8 +214,11 @@ class ApplicationController < ActionController::Base
            Mime::Type.parse(request.env["HTTP_ACCEPT"]).include?(Mime::XHTML)
         response.content_type = Mime::XHTML
       elsif request.user_agent =~ /MathPlayer/
-        response.charset = nil
+        # MathPlayer is sensitive to charset declarations. Set content_type
+        # first (Rails 5+ content_type= reapplies the default charset if no
+        # mime type was set previously), then suppress charset with false.
         response.content_type = Mime::XHTML
+        response.charset = false
         response.extend(MathPlayerHack)
       else
         response.content_type = Mime::HTML
@@ -267,7 +276,7 @@ class ApplicationController < ActionController::Base
       layout = 'error'
       layout = false if %w(tex tex_list).include?(action_name)
       headers['Allow'] = 'POST'
-      render(:status => 405, :text => 'You must use an HTTP POST', :layout => layout)
+      render(:status => 405, plain: 'You must use an HTTP POST', :layout => layout)
       return false
     end
     return true
@@ -275,17 +284,14 @@ class ApplicationController < ActionController::Base
 
 end
 
-module Mime
-  # Fix HTML
-  #HTML  = Type.new "text/html", :html, %w( application/xhtml+xml )
-  self.class.const_set("HTML", Type.new("text/html", :html) )
-
-  # Add XHTML
-  XHTML  = Type.new "application/xhtml+xml", :xhtml
-
-  # Fix xhtml and html lookups
-  LOOKUP["text/html"]             = HTML
-  LOOKUP["application/xhtml+xml"] = XHTML
+# Make the legacy Mime constants Instiki uses (Mime::HTML, Mime::XHTML,
+# Mime::ATOM, Mime::TEXT) available again. Rails 6 only registers them as
+# extensions accessible via Mime[:html], etc. The :xhtml type itself is
+# registered separately in config/initializers/mime_types.rb (Rails 6
+# treats it as a synonym of :html by default; Instiki needs them distinct).
+%i[html xhtml atom text].each do |sym|
+  const_name = sym.to_s.upcase
+  Mime.const_set(const_name, Mime[sym]) if Mime[sym] && !Mime.const_defined?(const_name, false)
 end
 
 module MathPlayerHack
@@ -297,8 +303,8 @@ end
 module Instiki
   module VERSION #:nodoc:
     MAJOR = 0
-    MINOR = 30
-    TINY  = 3
+    MINOR = 40
+    TINY  = 0
     SUFFIX = '(MML+)'
     PRERELEASE = false
     if PRERELEASE

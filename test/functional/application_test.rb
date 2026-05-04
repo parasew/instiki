@@ -7,14 +7,10 @@ require 'wiki_controller'
 class WikiController; def rescue_action(e) logger.error(e); raise e end; end
 
 class ApplicationTest < ActionController::TestCase
+  tests WikiController # ApplicationController is abstract; exercise it via WikiController.
   fixtures :webs, :pages, :revisions, :system
-  
-  Mime::LOOKUP["text/html"]             = HTML
 
   def setup
-    @controller = WikiController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
     @wiki = Wiki.new
   end
   
