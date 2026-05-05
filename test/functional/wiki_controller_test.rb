@@ -60,7 +60,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('authors', 'web' => 'wiki1')
 
     assert_response(:success)
-    assert_equal %w(AnAuthor BreakingTheOrder DavidHeinemeierHansson Guest Me TreeHugger), 
+    assert_equal ["AnAuthor", "BreakingTheOrder", "DavidHeinemeierHansson", "Dr. Fu & Chu", "Guest", "Me", "TreeHugger"],
         r.template_objects['authors']
     page_names_by_author = r.template_objects['page_names_by_author'] 
     assert_equal r.template_objects['authors'], page_names_by_author.keys.sort
@@ -386,6 +386,7 @@ class WikiControllerTest < ActionController::TestCase
     r = process('recently_revised', 'web' => 'wiki1')
     assert_response(:success)
 
+    assert_match Regexp.new('<span class="newWikiWord">Dr. Fu &amp; Chu<a href="/wiki1/new/Dr.%20Fu%20%26%20Chu">\?</a></span>'), r.body
     assert_equal %w(animals trees), r.template_objects['categories']
     assert_nil r.template_objects['category']
     all_pages = @elephant, pages(:first_page), @home, pages(:my_way), pages(:no_wiki_word),

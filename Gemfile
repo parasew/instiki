@@ -24,7 +24,7 @@ gem "file_signature", "~> 1.2.0"
 gem "syntax", "~> 1.1.0"
 gem "maruku", :git => 'https://github.com/distler/maruku.git', :branch => 'nokogiri'
 gem 'iconv'
-gem 'httparty', '~> 0.21.0'
+gem 'httparty', '~> 0.24.0'
 gem 'test-unit'
 # Restores assigns(), template_objects, assert_template (extracted in Rails 5+).
 gem 'rails-controller-testing'

@@ -102,7 +102,7 @@ class WebTest < ActiveSupport::TestCase
 
   def test_page_names_by_author
     page_names_by_author = webs(:test_wiki).page_names_by_author
-    assert_equal %w(AnAuthor DavidHeinemeierHansson Guest Me TreeHugger),
+    assert_equal ['AnAuthor', 'DavidHeinemeierHansson', 'Dr. Fu & Chu', 'Guest', 'Me', 'TreeHugger'],
         page_names_by_author.keys.sort
     assert_equal %w(FirstPage HomePage), page_names_by_author['DavidHeinemeierHansson']
     assert_equal %w(Oak), page_names_by_author['TreeHugger']
