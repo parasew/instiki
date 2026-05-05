@@ -1,5 +1,30 @@
 require 'itex_stringsupport'
 
+# Force ActionDispatch's path encoder to percent-encode '&'. RFC 3986 lists
+# '&' as a sub-delim allowed raw in path segments, so Rails' Journey
+# encoder leaves it alone — but raw '&' in URL paths is ambiguous in HTML
+# contexts (it's also the entity-reference start) and trips up several
+# HTTP clients/servers. Round-trip pages whose names contain '&'
+# (e.g. an author "Dr. Fu & Chu") need the URL to carry '%26' instead.
+module Instiki
+  module StrictUriEncoding
+    # Same regexes as ActionDispatch::Journey::Router::Utils::UriEncoder but
+    # with '&' moved out of the safe-set.
+    PATH    = /[^A-Za-z0-9\-._~!\$'\(\)\*\+,;=:@\/]/
+    SEGMENT = /[^A-Za-z0-9\-._~!\$'\(\)\*\+,;=:@]/
+
+    def escape_path(path)
+      escape(path, PATH)
+    end
+
+    def escape_segment(segment)
+      escape(segment, SEGMENT)
+    end
+  end
+end
+
+ActionDispatch::Journey::Router::Utils::UriEncoder.prepend(Instiki::StrictUriEncoding)
+
 class AbstractUrlGenerator
 
   def initialize(controller)

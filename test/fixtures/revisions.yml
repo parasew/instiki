@@ -79,7 +79,7 @@ elephant_first_revision:
   revised_at: <%= 10.minutes.ago.to_formatted_s(:db) %>
   page_id: 8
   content: "All about elephants.\nHere is an ant.\ncategory: animals"
-  author: Guest
+  author: Dr. Fu & Chu
   ip: 127.0.0.2
 
 liquor_first_revision:
