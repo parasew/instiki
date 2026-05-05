@@ -9,16 +9,23 @@
 # 2500 and supports the -P prefix mount, neither of which Rails' built-in
 # server command provides.
 
+# Bundler setup first. `bundler/setup` auto-switches to the locked Bundler
+# version via Kernel.exec when the running Bundler doesn't match the
+# Gemfile.lock — and exec uses the current ARGV. If we'd already done
+# OptionParser#parse! on ARGV by then, ARGV is empty and the re-exec'd
+# script sees no flags. Doing the auto-switch first means parse! runs
+# exactly once, on the original ARGV.
+require_relative "../config/boot"
 require "fileutils"
 require "optparse"
 
 options = {
-  Port: 2500,
-  Host: "0.0.0.0",
-  environment: ENV["RAILS_ENV"] || "production",
-  config: File.expand_path("../config.ru", __dir__),
-  daemonize: false,
-  path: nil,
+  :Port => 2500,
+  :Host =>  "0.0.0.0",
+  :environment => ENV["RAILS_ENV"] || "production",
+  :config => File.expand_path("../config.ru", __dir__),
+  :daemonize => false,
+  :path => nil,
 }
 
 OptionParser.new do |opts|
@@ -36,9 +43,6 @@ end.parse!(ARGV)
 ENV["RAILS_ENV"] = options[:environment]
 ENV["RAILS_RELATIVE_URL_ROOT"] = options[:path] if options[:path]
 
-# Bundler setup, then Rack/Rackup, then load the app from config.ru
-# (which requires config/environment internally and boots Rails).
-require_relative "../config/boot"
 require "rack"
 require "rackup"
 
