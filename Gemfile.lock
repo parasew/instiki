@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/distler/maruku.git
-  revision: d56b03f95609d2de64dae10c513e30d9ea0bf5df
+  revision: 33599bc40bf49da3f4d6c532229763f5cfc51ab9
   branch: nokogiri
   specs:
     maruku (0.7.3.beta1)
       itextomml (>= 1.5.0)
       nokogiri (~> 1.5, >= 1.5.6)
-      syntax (~> 1.1.0)
+      syntax (>= 1.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -121,7 +121,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     itextomml (1.6.1)
-    json (2.19.4)
+    json (2.19.5)
     logger (1.7.0)
     loofah (2.25.1)
       crass (~> 1.0.2)
@@ -134,9 +134,8 @@ GEM
       net-smtp
     marcel (1.1.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.9)
     minitest (5.27.0)
-    multi_xml (0.8.1)
+    multi_xml (0.9.1)
       bigdecimal (>= 3.1, < 5)
     net-imap (0.6.4)
       date
@@ -229,8 +228,6 @@ GEM
     rexml (3.4.4)
     rubyzip (2.3.2)
     securerandom (0.4.1)
-    sqlite3 (1.7.3)
-      mini_portile2 (~> 2.8.0)
     sqlite3 (1.7.3-aarch64-linux)
     sqlite3 (1.7.3-arm-linux)
     sqlite3 (1.7.3-arm64-darwin)
