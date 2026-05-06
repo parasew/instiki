@@ -78,7 +78,7 @@ module HTML #:nodoc:
       # Skips over quoted strings, so that less-than and greater-than characters
       # within the strings are ignored.
       def consume_quoted_regions
-        text = ""
+        text = String.new
         loop do
           match = @scanner.scan_until(/['"<>]/) or break
 
