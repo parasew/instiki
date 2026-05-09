@@ -1,3 +1,11 @@
+* 0.40.2
+
+* Various bug fixes
+
+* 0.40.1
+
+* Fixed Content-negotiation for cached pages
+
 * 0.40.0
 
 * Modernized to run on Rails 7.1.6.
