@@ -1,26 +1,35 @@
-# Strip the hostname from action-cache paths so requests at example.com,
-# www.example.com, and instiki.example.com share a single cache file
-# tree (instead of writing one cache file per hostname).
+# Two patches to actionpack-action_caching, both for Rails 7+ behavior:
 #
-# actionpack-action_caching builds its path in ActionCachePath#initialize as
+# 1. Strip the hostname from cache paths so requests at example.com,
+#    www.example.com, and instiki.example.com share a single cache file
+#    tree (instead of one per hostname). action_caching builds its path as
+#       path = controller.url_for(options).split("://", 2).last
+#    yielding "host.example.com/wiki1/show/HomePage"; we strip the leading
+#    "host[:port]/" segment.
 #
-#   path = controller.url_for(options).split("://", 2).last
+# 2. Preserve optional path parameters in the cache key. action_caching
+#    calls controller.url_for(options) with options effectively empty on
+#    the read/write side. In Rails 2.3, url_for({}) merged with the
+#    current request's params, so /list and /list/animals had distinct
+#    cache keys. In Rails 7, url_for({}) ignores path_parameters that
+#    aren't in options — so /wiki1/list/animals and /wiki1/list/trees
+#    collapse onto the same cache file as /wiki1/list, and the first
+#    response served wins for everyone. Merge path_parameters into
+#    options before super so url_for sees the full route data.
 #
-# which yields "host.example.com/wiki1/show/HomePage". Strip the leading
-# "host[:port]/" segment so we end up with "wiki1/show/HomePage". The same
-# transformation runs on the expire_action side (action_caching also goes
-# through ActionCachePath there), so writes and invalidations stay aligned.
-#
-# This replaces the Rails-2.3-era patch that overrode fragment_cache_key —
-# which hasn't been on action_caching's code path since the gem was
-# extracted from core in Rails 4.
+# The expire side (infer_extension=false) is invoked with explicit options
+# from sweepers and expire_action calls — those already include :category
+# etc. when needed — so we leave it alone.
 
 require "action_controller/caching/actions"
 
 module Instiki
   module ActionCachePathHostStripping
     def initialize(controller, options = {}, infer_extension = true)
-      super
+      if infer_extension && options.is_a?(Hash)
+        options = controller.request.path_parameters.merge(options)
+      end
+      super(controller, options, infer_extension)
       @path = @path.sub(%r{\A[^/]+/}, "")
     end
   end
