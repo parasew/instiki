@@ -17,8 +17,12 @@ class FileUploadTest < ActionDispatch::IntegrationTest
   def test_upload_via_form_post_writes_file_to_disk
     # Simulate the full browser flow: GET the upload form, then POST to its
     # action URL with multipart form-data.
-    get "/wiki1/files/rails-e2e.gif"
+    get "/wiki1/files/rails-e2e.gif", headers: {'HTTP_REFERER' => 'javascript:alert("foo")'}
     assert_response :success
+    assert_match(/<a>back<\/a>/, response.body)
+    get "/wiki1/files/rails-e2e.gif", headers: {'HTTP_REFERER' => 'http://example.com'}
+    assert_response :success
+    assert_match(/<a href='http:\/\/example.com'>back<\/a>/, response.body)
 
     # Parse the rendered form to find its action URL.
     require 'nokogiri'
