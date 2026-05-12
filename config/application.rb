@@ -13,7 +13,7 @@ Bundler.require(*Rails.groups)
 
 module Instiki
   class Application < Rails::Application
-    config.load_defaults 7.2
+    config.load_defaults 8.1
 
     # Restore Rails 2.3-style belongs_to: not required by default. Instiki's
     # page-revise flow builds Revision and WikiReference children on an

@@ -14,6 +14,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 # Pure monkey-patch (reopens Logger — no new constant defined)
 require "logging_stuff"
+require "frozen_string_compat"
 
 # Standalone utilities — no inter-lib dependencies at load time
 require "instiki_errors"
