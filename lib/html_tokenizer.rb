@@ -23,7 +23,7 @@ module HTML #:nodoc:
     
     # Create a new Tokenizer for the given text.
     def initialize(text)
-      @scanner = StringScanner.new(text)
+      @scanner = StringScanner.new(text.dup)
       @position = 0
       @line = 0
       @current_line = 1
@@ -95,6 +95,7 @@ module HTML #:nodoc:
           while match = @scanner.scan_until(/[\\#{delim}]/)
             text << match
             break if @scanner.matched == delim
+            break if @scanner.eos?
             text << @scanner.getch # skip the escaped character
           end
         end

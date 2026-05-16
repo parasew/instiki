@@ -289,7 +289,7 @@ DEPENDENCIES
   maruku!
   nokogiri (>= 1.18.5)
   pstore
-  rails (~> 8.1.0)
+  rails (~> 8.1.3)
   rails-controller-testing
   rails-observers
   rdoc
@@ -304,4 +304,4 @@ DEPENDENCIES
   zip-zip
 
 BUNDLED WITH
-   2.6.5
+  4.0.11
