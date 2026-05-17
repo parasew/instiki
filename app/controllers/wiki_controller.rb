@@ -350,6 +350,7 @@ EOL
   def revision_diff
     params[:mode] = "diff"
     revision
+    render :action => 'revision' unless performed?
   end
 
   def revision

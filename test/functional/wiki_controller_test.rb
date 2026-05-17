@@ -464,6 +464,14 @@ class WikiControllerTest < ActionController::TestCase
     assert r.flash[:error].to_s =~ /Redirected from nonexistent revision 100/
   end
 
+  def test_revision_diff
+    r = process 'revision_diff', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '1'
+
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_equal @home.revisions[0], r.template_objects['revision']
+  end
+
   def test_rollback
     # rollback shows a form where a revision can be edited.
     # its assigns the same as or revision
