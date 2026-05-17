@@ -200,7 +200,12 @@ class WikiControllerTest < ActionController::TestCase
   end
 
   def test_feeds
-    process('feeds', 'web' => 'wiki1')
+    r = process('feeds', 'web' => 'wiki1')
+    assert_response(:success)
+    assert_equal true, r.template_objects['rss_with_content_allowed']
+    assert_match %r{atom_with_content}, r.body
+    assert_match %r{atom_with_headlines}, r.body
+    assert_match %r{atom_with_changes}, r.body
   end
 
   def test_index

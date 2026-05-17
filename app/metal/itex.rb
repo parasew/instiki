@@ -1,17 +1,14 @@
- # Allow the metal piece to run in isolation
-require(File.dirname(__FILE__) + "/../../config/environment") unless defined?(Rails)
-
 require 'itex_stringsupport'
 
+# Stateless TeX → MathML endpoint. Mounted at /itex in config/routes.rb;
+# used by svg-edit (public/svg-edit/.../ext-itex.js) to convert TeX inside
+# SVGs. Predates Rails 3's ActionController::Metal — kept as a plain Rack
+# app since it needs no session, no controller machinery, no view layer.
 class Itex
   def self.call(env)
-    if env["PATH_INFO"] =~ /^\/itex/
-      [200, {"Content-Type" => "application/xml"}, [response(env)]]
-    else
-      [404, {"Content-Type" => "text/html"}, ["Not Found"]]
-    end
+    [200, {"Content-Type" => "application/xml"}, [response(env)]]
   end
-  
+
   private
 
   # plugable XML parser; falls back to REXML
@@ -56,7 +53,7 @@ class Itex
          filter = :inline_filter
     end
     return "<math xmlns='http://www.w3.org/1998/Math/MathML' display='" +
-        filter.to_s[/(.*?)_filter/] + "'/>" if tex == ''
+        filter.to_s[/(.*?)_filter/, 1] + "'/>" if tex == ''
     begin
       doc = parse_itex(tex, filter)
       # make sure the result is well-formed, before sending it off
