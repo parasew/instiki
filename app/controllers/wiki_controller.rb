@@ -520,7 +520,7 @@ EOL
   end
 
   def image_path(s)
-    @template.image_path(s)
+    helpers.image_path(s)
   end
 
   protected

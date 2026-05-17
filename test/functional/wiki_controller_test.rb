@@ -472,6 +472,12 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal @home.revisions[0], r.template_objects['revision']
   end
 
+  def test_image_path
+    # Regression: Rails 2.x @template stub no longer exists; must use helpers.
+    assert_equal '/images/cdf-player-white.png',
+      @controller.image_path('cdf-player-white.png')
+  end
+
   def test_rollback
     # rollback shows a form where a revision can be edited.
     # its assigns the same as or revision
