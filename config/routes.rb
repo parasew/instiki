@@ -18,6 +18,9 @@ Rails.application.routes.draw do
     match generic_path, **opts
   end
 
+  # TeX → MathML Rack endpoint (see app/metal/itex.rb). Called by svg-edit.
+  mount Itex => "/itex"
+
   # Top-level admin routes (no :web prefix).
   match "create_system",  to: "admin#create_system",  via: [:get, :post]
   match "create_web",     to: "admin#create_web",     via: [:get, :post]
