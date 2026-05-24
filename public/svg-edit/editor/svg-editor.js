@@ -1048,11 +1048,23 @@ editor.init = function () {
       // },
       '#tools_top': {
         left: 50 + $('#main_button').width(),
-        height: 72
+        // Track main_button's height (≈40*scale) so tools_top doesn't overshoot
+        // tools_left.top at large/xl; the medium default (40px) sits on the
+        // same curve, so the size selector no longer produces a discontinuity.
+        height: 40
       },
       '#tools_left': {
-        width: 31,
+        width: 30,
         top: 74
+      },
+      // Keep the y-ruler and corner flush with the right edge of #tools_left.
+      // panel.right = 1 (left) + 30*scale (width) + 2 (padding-left) = 3 + 30*scale.
+      // Can't express that as a single value*scale, so per-size constants.
+      '#ruler_corner, #ruler_y': {
+        left: {s: '25.5px', l: '40.5px', xl: '48px'}
+      },
+      '#ruler_x': {
+        left: {s: '40.5px', l: '55.5px', xl: '63px'}
       },
       'div#workarea': {
         left: 38,
@@ -2923,7 +2935,6 @@ editor.init = function () {
       }
 
       let timer;
-      const pos = $(showSel).position();
 
       // Clicking the "show" icon should set the current mode
       shower.mousedown(function (evt) {
@@ -2931,17 +2942,38 @@ editor.init = function () {
           return false;
         }
         const holder = $(holdSel);
-        const l = pos.left + 34;
-        const w = holder.width() * -1;
         const time = holder.data('shown_popop') ? 200 : 0;
         timer = setTimeout(function () {
-          // Show corresponding menu
+          // Stop any in-flight fade/slide and force full opacity + visible so a
+          // running animation can't keep overwriting the left we set below.
+          holder.stop(true, true).css('opacity', 1).show();
+          // Target = shower's visible icon's right edge. setIconSize scales the
+          // shower icon via transform:scale (origin 0 0), so its right edge — not
+          // the fixed box edge — is where the flyout should butt up; measure it
+          // with getBoundingClientRect (post-transform, viewport coords).
+          const iconEl = shower.children().not('.flyout_arrow_horiz').first();
+          const refRect = (iconEl.length ? iconEl[0] : shower[0]).getBoundingClientRect();
+          const targetVpLeft = refRect.right;
+          const targetVpTop = shower[0].getBoundingClientRect().top;
+          // Map CSS left/top -> viewport position empirically with two probes,
+          // then invert. The holder is itself transform:scale'd, so a CSS-px step
+          // moves it by scale px on screen — the slope isn't 1. Calibrating makes
+          // placement exact at every icon size, with no dependence on transform
+          // scale, containing-block inset, or the holder's prior position.
+          holder.css({left: 0, top: 0});
+          const p0 = holder[0].getBoundingClientRect();
+          holder.css({left: 100, top: 100});
+          const p1 = holder[0].getBoundingClientRect();
+          const sx = (p1.left - p0.left) / 100 || 1;
+          const sy = (p1.top - p0.top) / 100 || 1;
+          const targetCssLeft = (targetVpLeft - p0.left) / sx;
+          const targetCssTop = (targetVpTop - p0.top) / sy;
           if (!shower.data('isLibrary')) {
-            holder.css('left', w).show().animate({
-              left: l
-            }, 150);
+            // Slide in from offscreen-left by the holder's (layout) width.
+            holder.css({left: targetCssLeft - holder[0].offsetWidth, top: targetCssTop})
+              .animate({left: targetCssLeft}, 150);
           } else {
-            holder.css('left', l).show();
+            holder.css({left: targetCssLeft, top: targetCssTop});
           }
           holder.data('shown_popop', true);
         }, time);
