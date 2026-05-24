@@ -76,7 +76,7 @@ select {
 
 #ruler_corner {
   top: 41px;
-  left: 41px;
+  left: 33px;
   width: 15px;
   height: 15px;
 }
@@ -84,7 +84,7 @@ select {
 #ruler_x {
   height: 15px;
   top: 41px;
-  left: 56px;
+  left: 48px;
   right: 30px;
   border-bottom: 1px solid;
   border-left: 1px solid #777;
@@ -93,7 +93,7 @@ select {
 #ruler_y {
   width: 15px;
   top: 55px;
-  left: 41px;
+  left: 33px;
   bottom: 56px;
   border-right: 1px solid;
   border-top: 1px solid #777;
@@ -485,7 +485,7 @@ div.palette_item:first-child {
 #tools_left {
   position: absolute;
   border-right: none;
-  width: 32px;
+  width: 30px;
   top: 40px;
   left: 1px;
   margin-top: -2px;

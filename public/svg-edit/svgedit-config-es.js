@@ -20,6 +20,21 @@ For default config and extensions (and available options) available to
 
 import svgEditor from './editor/svg-editor.js';
 
+// Force the extension loader to use the script-tag-and-global path
+// (importScript + window.svgEditorExtension_*) rather than native dynamic
+// `import()`. Our extension files in editor/extensions/ (and dist/extensions/)
+// are IIFE-format and expose globals; they have no ES module exports, so
+// `import()` would resolve them to empty namespaces and `addExtension` would
+// throw "Function argument expected". editor.init() reads this flag at line 657
+// and also switches extPath to ../dist/extensions/ when it's false.
+//
+// Also expose the editor on window.svgEditor — host pages (e.g. the wiki's
+// page_helper.js) reach into the popup as editor.svgEditor.setCustomHandlers,
+// which the IIFE bundle provided via its IIFE-scope assignment but ES modules
+// don't expose automatically.
+svgEditor.modules = false;
+window.svgEditor = svgEditor;
+
 // URL OVERRIDE CONFIG
 svgEditor.setConfig({
   /**
@@ -51,8 +66,8 @@ svgEditor.setConfig({
 // EXTENSION CONFIG
 svgEditor.setConfig({
   extensions: [
-    // 'ext-overview_window.js', 'ext-markers.js', 'ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js', 'ext-grid.js', 'ext-polygon.js', 'ext-star.js', 'ext-panning.js', 'ext-storage.js'
-  ], noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in svgedit-config-es.js or in the URL
+    'ext-overview_window.js', 'ext-markers.js', 'ext-connector.js', 'ext-eyedropper.js', 'ext-imagelib.js', 'ext-grid.js', 'ext-polygon.js', 'ext-star.js', 'ext-panning.js', 'ext-storage.js', 'ext-itex.js'
+  ], noDefaultExtensions: true, // noDefaultExtensions can only be meaningfully used in svgedit-config-es.js or in the URL
 });
 
 // STYLESHEET CONFIG
