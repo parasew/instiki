@@ -1,3 +1,12 @@
+* 0.40.3
+
+* Upgrade to Rails 8.1.3
+* Fix a File controller bug
+* Improve compatibility with frozen string literals
+* Restore itex endpoint
+* Switch SVG-Edit from IIFE to ES, fixing some rendering bugs
+* Various other bugfixes
+
 * 0.40.2
 
 * Various bug fixes
