@@ -497,25 +497,33 @@ EOL
   end
 
   def tex
-    if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
-      s = convert_to_tex(@page.content)
-      @tex_content = s[0]
-      @tikz_libraries = s[1]
+    if @page.nil?
+      redirect_home
     else
-      @tex_content = 'TeX export only supported with the Markdown text filters.'
-      @tikz_libraries = []
+      if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
+        s = convert_to_tex(@page.content)
+        @tex_content = s[0]
+        @tikz_libraries = s[1]
+      else
+        @tex_content = 'TeX export only supported with the Markdown text filters.'
+        @tikz_libraries = []
+      end
+      render(:layout => 'tex')
     end
-    render(:layout => 'tex')
   end
 
   def s5
-    if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
-      my_rendered = PageRenderer.new(@page.current_revision)
-      @s5_content = my_rendered.display_s5
-      @s5_theme = my_rendered.s5_theme
+    if @page.nil?
+      redirect_home
     else
-      @s5_content = "S5 not supported with this text filter"
-      @s5_theme = "default"
+      if [:markdownMML, :markdownPNG, :markdown].include?(@web.markup)
+        my_rendered = PageRenderer.new(@page.current_revision)
+        @s5_content = my_rendered.display_s5
+        @s5_theme = my_rendered.s5_theme
+      else
+        @s5_content = "S5 not supported with this text filter"
+        @s5_theme = "default"
+      end
     end
   end
 
