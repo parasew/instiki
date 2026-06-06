@@ -627,5 +627,12 @@
    "input": "<math><mtext><table><mglyph><style><!--</style><img title=\"--&gt;&lt;img src=1 onerror=alert(1)&gt;\">",
    "output": "<math><mtext><table>&lt;mglyph&gt;&lt;style&gt;&lt;!--&lt;/style&gt;&lt;img title=&quot;--&gt;&lt;img src=1 onerror=alert(1)&gt;&quot;&gt;",
    "xhtml": "&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&amp;lt;mglyph&amp;gt;&amp;lt;style&amp;gt;&amp;lt;!--&amp;lt;/style&amp;gt;&amp;lt;img title=&amp;quot;--&amp;gt;&amp;lt;img src=1 onerror=alert(1)&amp;gt;&amp;quot;&amp;gt;"
+  },
+
+  {
+  "name": "SVG attributeName",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><animate attributeName=\"href\" values=\"javascript:alert(document.domain)\" begin=\"0s\" dur=\"20s\"/><text x=\"100\" y=\"200\">clickme</text></a></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><a><animate begin='0s' dur='20s'/><text x='100' y='200'>clickme</text></a></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><animate begin=\"0s\" dur=\"20s\"/><text x=\"100\" y=\"200\">clickme</text></a></svg>"
   }
 ]
