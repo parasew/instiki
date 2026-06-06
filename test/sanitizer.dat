@@ -634,5 +634,68 @@
   "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><animate attributeName=\"href\" values=\"javascript:alert(document.domain)\" begin=\"0s\" dur=\"20s\"/><text x=\"100\" y=\"200\">clickme</text></a></svg>",
   "output": "<svg xmlns='http://www.w3.org/2000/svg'><a><animate begin='0s' dur='20s'/><text x='100' y='200'>clickme</text></a></svg>",
   "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><animate begin=\"0s\" dur=\"20s\"/><text x=\"100\" y=\"200\">clickme</text></a></svg>"
+  },
+
+  {
+  "name": "SVG2 href external on use",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><use href=\"http://bad.com/evil.svg#x\"/></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><use/></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><use/></svg>"
+  },
+
+  {
+  "name": "SVG2 href javascript on use",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><use href=\"javascript:alert(1)\"/></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><use/></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><use/></svg>"
+  },
+
+  {
+  "name": "SVG2 href local fragment on use",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><use href=\"#foo\"/></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><use href='#foo'/></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><use href=\"#foo\"/></svg>"
+  },
+
+  {
+  "name": "SVG set attributeName href via to",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><set attributeName=\"href\" to=\"javascript:alert(1)\"/><text>x</text></a></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><a><set/><text>x</text></a></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><set/><text>x</text></a></svg>"
+  },
+
+  {
+  "name": "SVG animate attributeName xlinkhref via to",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><animate attributeName=\"xlink:href\" to=\"javascript:alert(1)\" dur=\"5s\"/><text>x</text></a></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><a><animate dur='5s'/><text>x</text></a></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a><animate dur=\"5s\"/><text>x</text></a></svg>"
+  },
+
+  {
+  "name": "SVG set attributeName style via to",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><set attributeName=\"style\" to=\"background:url(http://evil.com/x)\"/></rect></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><set/></rect></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><set/></rect></svg>"
+  },
+
+  {
+  "name": "SVG animate attributeName style via values",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"style\" values=\"x:url(http://evil)\" dur=\"5s\"/></rect></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><animate dur='5s'/></rect></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate dur=\"5s\"/></rect></svg>"
+  },
+
+  {
+  "name": "SVG animate fill to external url",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" to=\"url(http://evil)\" dur=\"5s\"/></rect></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><animate attributeName='fill' dur='5s' to=' '/></rect></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" dur=\"5s\" to=\" \"/></rect></svg>"
+  },
+
+  {
+  "name": "SVG animate fill to local ref kept",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" to=\"url(#grad)\" dur=\"5s\"/></rect></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><animate attributeName='fill' dur='5s' to='url(#grad)'/></rect></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" dur=\"5s\" to=\"url(#grad)\"/></rect></svg>"
   }
 ]

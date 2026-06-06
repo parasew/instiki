@@ -81,7 +81,8 @@ module Sanitizer
   attr_val_is_uri = Set.new %w[href src cite action formaction longdesc poster xlink:href xml:base]
 
   svg_attr_val_allows_ref = Set.new %w[clip-path color-profile cursor fill
-      filter marker marker-start marker-mid marker-end mask stroke]
+      filter marker marker-start marker-mid marker-end mask stroke
+      values to from by]
 
   svg_allow_local_href = Set.new %w[altGlyph animate animateColor animateMotion
       animateTransform cursor feImage filter linearGradient pattern
@@ -178,12 +179,12 @@ module Sanitizer
         else
           node.attributes.delete attr; next
         end
-        if attr == 'xlink:href' && SVG_ALLOW_LOCAL_HREF.include?(node.name) && val =~ /^\s*[^#\s]/m
+        if (attr == 'xlink:href' || attr == 'href') && SVG_ALLOW_LOCAL_HREF.include?(node.name) && val =~ /^\s*[^#\s]/m
           node.attributes.delete attr; next
         end
-        if attr == 'attributeName' && ATTR_VAL_IS_URI.include?(val)
+        if attr == 'attributeName' && (ATTR_VAL_IS_URI.include?(val) || val == 'style')
           node.attributes.delete attr
-          node.attributes.delete 'values' if node.attributes['values']
+          %w[values to from by].each {|a| node.attributes.delete a if node.attributes[a] }
           next
         end
         if ATTR_VAL_IS_URI.include?(attr)
