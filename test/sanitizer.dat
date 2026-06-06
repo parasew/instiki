@@ -697,5 +697,40 @@
   "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" to=\"url(#grad)\" dur=\"5s\"/></rect></svg>",
   "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><animate attributeName='fill' dur='5s' to='url(#grad)'/></rect></svg>",
   "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" dur=\"5s\" to=\"url(#grad)\"/></rect></svg>"
+  },
+
+  {
+  "name": "SVG animate fill to external url via multiple values",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" values=\"url(#grad);url(http://evil)\" dur=\"5s\"/></rect></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><animate attributeName='fill' dur='5s' values='url(#grad); '/></rect></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animate attributeName=\"fill\" dur=\"5s\" values=\"url(#grad); \"/></rect></svg>"
+  },
+
+  {
+  "name": "SVG mpath external url",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animateMotion><mpath href=\"http://evil\"/></animateMotion></rect></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><animateMotion><mpath/></animateMotion></rect></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animateMotion><mpath/></animateMotion></rect></svg>"
+  },
+
+  {
+  "name": "SVG mpath localref kept",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animateMotion><mpath href=\"#foo\"/></animateMotion></rect></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><rect><animateMotion><mpath href='#foo'/></animateMotion></rect></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect><animateMotion><mpath href=\"#foo\"/></animateMotion></rect></svg>"
+  },
+
+  {
+  "name": "SVG textPath external href stripped",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><text><textPath xlink:href=\"http://evil/x\">y</textPath></text></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><text><textPath>y</textPath></text></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><text><textPath>y</textPath></text></svg>"
+  },
+
+  {
+  "name": "SVG textPath local href kept",
+  "input": "<svg xmlns=\"http://www.w3.org/2000/svg\"><text><textPath xlink:href=\"#p\">y</textPath></text></svg>",
+  "output": "<svg xmlns='http://www.w3.org/2000/svg'><text><textPath xlink:href='#p'>y</textPath></text></svg>",
+  "xhtml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><text><textPath xlink:href=\"#p\">y</textPath></text></svg>"
   }
 ]

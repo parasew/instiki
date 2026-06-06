@@ -85,8 +85,8 @@ module Sanitizer
       values to from by]
 
   svg_allow_local_href = Set.new %w[altGlyph animate animateColor animateMotion
-      animateTransform cursor feImage filter linearGradient pattern
-      radialGradient textpath tref set use]
+      animateTransform cursor feImage filter linearGradient mpath pattern
+      radialGradient textPath tref set use]
 
   acceptable_css_properties = Set.new %w[azimuth background-color
       border-bottom-color border-collapse border-color border-left-color
