@@ -53,6 +53,20 @@ class RoutesTest < ActionController::TestCase
       'unknown_path')
   end
 
+  def test_source_with_revision
+    # The greedy :id constraint (/.+/) matches "/", so an optional (/:rev) was
+    # swallowed into :id and rev never set, making /source/page/<rev> miss the
+    # page and redirect home. A required :rev forces :id to backtrack.
+    assert_routing('wiki1/source/HomePage/12',
+      :controller => 'wiki', :web => 'wiki1', :action => 'source', :id => 'HomePage', :rev => '12')
+    assert_routing('wiki1/source/HomePage',
+      :controller => 'wiki', :web => 'wiki1', :action => 'source', :id => 'HomePage')
+    # :id may itself contain slashes; only a trailing /<digits> is the revision.
+    assert_recognizes(
+      {:controller => 'wiki', :web => 'wiki1', :action => 'source', :id => 'a/b/c', :rev => '12'},
+      'wiki1/source/a/b/c/12')
+  end
+
   def test_cases_broken_by_routes
     # Rails 6 treats '+' literally in URL paths (only in query strings is it
     # space-encoded). Use %20 to encode space in path segments.
