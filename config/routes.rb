@@ -45,7 +45,10 @@ Rails.application.routes.draw do
   connect_to_web ":web/show/diff/:id",                      controller: "wiki",  action: "show_diff",        constraints: { id: id_re }
   connect_to_web ":web/revision/diff/:id/:rev",             controller: "wiki",  action: "revision_diff",    constraints: { rev: /\d+/, id: id_re }
   connect_to_web ":web/revision/:id/:rev",                  controller: "wiki",  action: "revision",    constraints: { rev: /\d+/, id: id_re }
-  connect_to_web ":web/source/:id(/:rev)",                  controller: "wiki",  action: "source",      constraints: { rev: /\d+/, id: id_re }
+  # :id uses the greedy id_re (/.+/), which also matches "/".
+  # Match the rev-bearing form first then fall back to the id-only form.
+  connect_to_web ":web/source/:id/:rev",                    controller: "wiki",  action: "source",      constraints: { rev: /\d+/, id: id_re }
+  connect_to_web ":web/source/:id",                         controller: "wiki",  action: "source",      constraints: { id: id_re }
   connect_to_web ":web/list(/:category)",                   controller: "wiki",  action: "list",        constraints: { category: /.*/ }
   connect_to_web ":web/recently_revised(/:category)",       controller: "wiki",  action: "recently_revised", constraints: { category: /.*/ }
 
