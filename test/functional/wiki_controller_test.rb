@@ -469,12 +469,38 @@ class WikiControllerTest < ActionController::TestCase
     assert r.flash[:error].to_s =~ /Redirected from nonexistent revision 100/
   end
 
-  def test_revision_diff
-    r = process 'revision_diff', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '1'
+  def test_revision_hide_diff
+    r = process 'revision_diff', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '2'
 
     assert_response(:success)
     assert_equal @home, r.template_objects['page']
-    assert_equal @home.revisions[0], r.template_objects['revision']
+    assert_equal @home.revisions[1], r.template_objects['revision']
+    assert_match(/<a class="navlink" accesskey="C" id="see_changes" rel="nofollow" href="\/wiki1\/revision\/HomePage\/2">Hide changes<\/a>/, r.body)
+  end
+
+  def test_revision_see_diff
+    r = process 'revision', 'web' => 'wiki1', 'id' => 'HomePage', 'rev' => '2'
+
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_equal @home.revisions[1], r.template_objects['revision']
+    assert_match(/<a class="navlink" accesskey="C" id="see_changes" rel="nofollow" href="\/wiki1\/revision\/diff\/HomePage\/2">See changes<\/a>/, r.body)
+  end
+
+  def test_show_hide_diff
+    r = process 'show_diff', 'web' => 'wiki1', 'id' => 'HomePage'
+
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_match(/<a class="navlink" accesskey="C" id="see_changes" rel="nofollow" href="\/wiki1\/show\/HomePage">Hide changes<\/a>/, r.body)
+  end
+
+  def test_show_see_diff
+    r = process 'show', 'web' => 'wiki1', 'id' => 'HomePage'
+
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_match(/<a class="navlink" accesskey="C" id="see_changes" rel="nofollow" href="\/wiki1\/show\/diff\/HomePage">See changes<\/a>/, r.body)
   end
 
   def test_image_path

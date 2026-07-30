@@ -80,14 +80,13 @@ module WikiHelper
   
   def see_or_hide_changes_for_revision
     link_to(@show_diff ? 'Hide changes' : 'See changes', 
-        {:web => @web.address, :action => 'revision', :id => @page.name, :rev => @revision_number, 
-         :mode => (@show_diff ? nil : 'diff') },
+        {:web => @web.address, :action => (@show_diff ? 'revision' : 'revision_diff'), :id => @page.name, :rev => @revision_number },
         {:class => 'navlink', :accesskey => 'C', :id => 'see_changes', :rel => 'nofollow'})
   end
 
   def see_or_hide_changes_for_page
     link_to(@show_diff ? 'Hide changes' : 'See changes', 
-        {:web => @web.address, :action => 'show', :id => @page.name, :mode => (@show_diff ? nil : 'diff') },
+        {:web => @web.address, :action => (@show_diff ? 'show' : 'show_diff'), :id => @page.name },
         {:class => 'navlink', :accesskey => 'C', :id => 'see_changes', :rel => 'nofollow'})
   end
   
