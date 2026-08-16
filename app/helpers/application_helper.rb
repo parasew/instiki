@@ -59,12 +59,16 @@ require 'itex_stringsupport'
     revision_number == page.rev_ids.size ?
       link_to(
         text || page.plain_name,
-            {:web => @web.address, :action => 'show', :id => page.name,
-               :mode => mode}, html_options).html_safe :
+        mode == 'diff' ?
+          {:web => @web.address, :action => 'show_diff', :id => page.name} :
+          {:web => @web.address, :action => 'show', :id => page.name, :mode => mode},
+        html_options).html_safe :
       link_to(
         text || page.plain_name + "(rev # #{revision_number})".html_safe,
-            {:web => @web.address, :action => 'revision', :id => page.name,
-              :rev => revision_number, :mode => mode}, html_options).html_safe
+        mode == 'diff' ?
+          {:web => @web.address, :action => 'revision_diff', :id => page.name, :rev => revision_number} :
+          {:web => @web.address, :action => 'revision', :id => page.name, :rev => revision_number, :mode => mode},
+        html_options).html_safe
   end
 
   # Create a hyperlink to the history of a particular Wiki page

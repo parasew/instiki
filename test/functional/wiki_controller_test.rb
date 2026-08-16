@@ -487,6 +487,21 @@ class WikiControllerTest < ActionController::TestCase
     assert_match(/<a class="navlink" accesskey="C" id="see_changes" rel="nofollow" href="\/wiki1\/revision\/diff\/HomePage\/2">See changes<\/a>/, r.body)
   end
 
+  def test_history
+    r = process 'history', 'web' => 'wiki1', 'id' => 'HomePage'
+
+    assert_response(:success)
+    assert_equal @home, r.template_objects['page']
+    assert_match(Regexp.new("<ul>\n    <li>\n      <a href=\"\/wiki1\/show\/HomePage\">Current<\/a>\n          <span class=\"hist_views\">\n" +
+      "          \\(<a href=\"\/wiki1\/show\/diff\/HomePage\">diff<\/a>\\)\n          <\/span>\n      <div class=\"byline\" style=\"margin-b" +
+      "ottom: 0px\">\n        by <span class=\"newWikiWord\">David Heinemeier Hansson<a href=\"\/wiki1\/new\/DavidHeinemeierHansson\">\\?<\/" +
+      "a><\/span>\n        at April  4, 2004 16:50:00\n        from \n      <\/div>\n    <\/li>\n    <li>\n      <a href=\"\/wiki1\/revision" +
+      "\/HomePage\/1\">Revision 1<\/a>\n      <div class=\"byline\" style=\"margin-bottom: 0px\">\n        by <span class=\"newWikiWord\">An" +
+      " Author<a href=\"\/wiki1\/new\/AnAuthor\">\\?<\/a><\/span>\n        at April  4, 2004 15:50:00\n        from 127.0.0.1\n      <\/div>" +
+      "\n    <\/li>\n  <\/ul>"
+      ), r.body)
+  end
+
   def test_show_hide_diff
     r = process 'show_diff', 'web' => 'wiki1', 'id' => 'HomePage'
 
