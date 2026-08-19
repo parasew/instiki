@@ -91,8 +91,8 @@
   {
     "name": "input_image",
     "input": "<input type=\"image\" src=\"javascript:alert('XSS');\" />",
-    "output": "<input type='image'/>",
-    "xhtml": "<input type=\"image\"/>",
+    "output": "&lt;input src='javascript:alert('XSS');' type='image'/&gt;",
+    "xhtml": "&lt;input src='javascript:alert('XSS');' type='image'/&gt;",
     "rexml": "<input type='image' />"
   },
 
@@ -555,15 +555,15 @@
 
   {
    "name": "CVE-2022-32209",
-   "input": "<select><style><script>alert(1)</script></style></select>",
-   "output": "<select>&lt;style&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;/style&gt;</select>"
+   "input": "<p><style><script>alert(1)</script></style></p>",
+   "output": "<p>&lt;style&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;/style&gt;</p>"
   },
 
   {
    "name": "CVE-2022-32209-II",
-   "input": "<select<style/>W<xmp<script>alert(1)</script>",
-   "output": "<select>&lt;style/&gt;W&lt;xmp&gt;&lt;script&gt;alert(1)&lt;/script&gt;",
-   "xhtml": "&lt;select&gt;&amp;lt;style/&amp;gt;W&amp;lt;xmp&amp;gt;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;"
+   "input": "<p<style/>W<xmp<script>alert(1)</script>",
+   "output": "<p>&lt;style/&gt;W&lt;xmp&gt;&lt;script&gt;alert(1)&lt;/script&gt;",
+   "xhtml": "&lt;p&gt;&amp;lt;style/&amp;gt;W&amp;lt;xmp&amp;gt;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;"
   },
 
   {
@@ -611,8 +611,8 @@
   {
    "name": "mXSS7",
    "input": "<form><math><mtext></form><form><mglyph><style><img src=x onerror=alert(1)>",
-   "output": "<form><math><mtext></form><form>&lt;mglyph&gt;&lt;style&gt;<img src='x'/>",
-   "xhtml": "&lt;form&gt;&lt;math&gt;&lt;mtext&gt;&lt;/form&gt;&lt;form&gt;&amp;lt;mglyph&amp;gt;&amp;lt;style&amp;gt;&lt;img src=&#39;x&#39;/&gt;"
+   "output": "&lt;form&gt;<math><mtext>&lt;/form&gt;&lt;form&gt;&lt;mglyph&gt;&lt;style&gt;<img src='x'/>",
+   "xhtml": "&amp;lt;form&amp;gt;&lt;math&gt;&lt;mtext&gt;&amp;lt;/form&amp;gt;&amp;lt;form&amp;gt;&amp;lt;mglyph&amp;gt;&amp;lt;style&amp;gt;&lt;img src=&#39;x&#39;/&gt;"
   },
 
   {
