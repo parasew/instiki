@@ -31,16 +31,16 @@ module Sanitizer
       line marker mask metadata missing-glyph mpath path pattern polygon
       polyline radialGradient rect set stop svg switch symbol text textPath title tspan use]
 
-  acceptable_attributes = Set.new %w[abbr accept accept-charset accesskey action
-      align alt autocomplete axis bgcolor border cellpadding cellspacing char charoff
-      checked cite class clear cols colspan color compact contenteditable contextmenu
+  acceptable_attributes = Set.new %w[abbr accesskey
+      align alt axis bgcolor border cellpadding cellspacing char charoff
+      cite class clear cols colspan color compact contenteditable contextmenu
       controls coords datetime data-video-id data-video-width data-video-height
-      dir disabled draggable enctype face for formaction frame
+      dir disabled draggable face frame
       headers height high href hreflang hspace icon id ismap label list lang longdesc
-      loop low max maxlength media method min multiple name nohref noshade nowrap open
+      loop low max maxlength media min nohref noshade nowrap open
       optimumpattern placeholder poster preload pubdate radiogroup readonly rel
       required rev reversed rows rowspan rules spellcheck scope
-      selected shape size span src start step style summary tabindex target title
+      shape size span src start step style summary tabindex target title
       type usemap valign value vspace width wrap xml:lang]
 
   mathml_attributes = Set.new %w[actiontype align close accent accentunder
@@ -78,7 +78,7 @@ module Sanitizer
        xlink:arcrole xlink:href xlink:role xlink:show xlink:title xlink:type
        xml:base xml:lang xml:space xmlns xmlns:xlink xmlns:se y y1 y2 zoomAndPan]
 
-  attr_val_is_uri = Set.new %w[href src cite action formaction longdesc poster xlink:href xml:base]
+  attr_val_is_uri = Set.new %w[href src cite longdesc poster xlink:href xml:base]
 
   svg_attr_val_allows_ref = Set.new %w[clip-path color-profile cursor fill
       filter marker marker-start marker-mid marker-end mask stroke
