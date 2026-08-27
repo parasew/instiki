@@ -100,10 +100,6 @@ class WikiController < ApplicationController
     #{@web ? @web.additional_style : ''}
   /*]]>*/--></style>
   <script src="public/javascripts/prototype.js" type="text/javascript"></script>
-  <script src="public/javascripts/effects.js" type="text/javascript"></script>
-  <script src="public/javascripts/dragdrop.js" type="text/javascript"></script>
-  <script src="public/javascripts/controls.js" type="text/javascript"></script>
-  <script src="public/javascripts/application.js" type="text/javascript"></script>
 
   <script type="text/x-mathjax-config">
   <!--//--><![CDATA[//><!--
