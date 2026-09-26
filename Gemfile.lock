@@ -228,7 +228,7 @@ GEM
     reline (0.7.0)
       io-console (~> 0.5)
     rexml (3.4.4)
-    rubyzip (2.3.2)
+    rubyzip (3.7.0)
     securerandom (0.4.1)
     sqlite3 (2.9.6-aarch64-linux-gnu)
     sqlite3 (2.9.6-aarch64-linux-musl)
@@ -295,7 +295,7 @@ DEPENDENCIES
   rails-observers
   rdoc
   rexml
-  rubyzip (~> 2.3.0)
+  rubyzip (>= 3.4.0)
   sqlite3 (>= 2.1)
   strscan (>= 3.1.0)
   syntax (~> 1.1.0)

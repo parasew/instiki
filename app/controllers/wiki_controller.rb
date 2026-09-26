@@ -558,7 +558,7 @@ EOL
     file_path = @wiki.storage_path.join(file_prefix + timestamp + '.zip')
     tmp_path = "#{file_path}.tmp"
 
-    Zip::ZipFile.open(tmp_path, Zip::ZipFile::CREATE) do |zip_out|
+    Zip::ZipFile.open(tmp_path, create: true) do |zip_out|
       @web.select.by_name.each do |page|
         zip_out.get_output_stream("#{CGI.escape(page.name)}.#{file_type}") do |f|
           f.puts(block.call(page))
