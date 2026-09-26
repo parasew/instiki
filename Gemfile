@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.1.0"
+gem "rails", "~> 8.1.3"
 
 # Features extracted out of Rails core in 4.x:
 gem "actionpack-action_caching"
@@ -10,7 +10,7 @@ gem "rails-observers"
 gem "sqlite3", ">= 2.1"
 gem "itextomml", ">=1.6.1"
 gem "thin"
-gem "rubyzip", '~>2.3.0'
+gem "rubyzip", ">= 3.4.0"
 gem "zip-zip"
 gem "rexml"
 gem "webrick"
