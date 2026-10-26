@@ -239,6 +239,24 @@ class FileControllerTest < ActionController::TestCase
         renderer.display_published
   end
 
+  def test_invalid_filename
+#    PageRenderer.setup_url_generator(StubUrlGenerator.new)
+#    renderer = PageRenderer.new
+    r = post :file, params: {
+              :web => 'wiki1', :id => 'myfile.txt',
+              :referring_page => '/wiki1/show/Oak',
+              :file => {:file_name => '../myfile.txt',
+                        :content => fixture_file_upload('rails.gif', 'image/gif'),
+                        :description => 'Rails, end-to-end'}}
+    assert_match "<div class=\"errorExplanation\">\n    <h2>1 error prevented this" +
+                 " file from being saved:</h2>\n    <ul>\n      <li>File name is i" +
+                 "nvalid. Only latin characters, digits, dots, underscores, dashes" +
+                 " and spaces are accepted</li>\n    </ul>\n  </div>",
+                 r.body
+#        renderer.display_content
+#    assert @web.has_file?('myfile.txt')
+  end
+
   def test_import
     # POST is required for file uploads in Rails 5+; the original Rails-2 test
     # used GET to bypass form-spam-protection but Rails 6 url-encodes params for
