@@ -20,8 +20,8 @@ class WikiFile < ActiveRecord::Base
         if ['.', '..'].include? file_name
           errors.add(:file_name, "cannot be '.' or '..'")
         else
-          errors.add(:file_name, "is invalid. Only latin characters, digits, dots, underscores, " +
-           "dashes and spaces are accepted")
+          errors.add(:file_name, "is invalid. Only latin characters, digits, dots, underscores " +
+           "and dashes are accepted")
         end
       end
     end
@@ -62,7 +62,7 @@ class WikiFile < ActiveRecord::Base
     FileUtils.rm_f(content_path) if File.exist?(content_path)
   end
 
-  SANE_FILE_NAME = /^[a-zA-Z0-9\-_\. ]*$/
+  SANE_FILE_NAME = /^[a-zA-Z0-9\-_\.]*$/
   def self.is_valid?(name)
     name =~ SANE_FILE_NAME and not ['.', '..'].include? name
   end
